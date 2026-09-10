@@ -1,5 +1,7 @@
 .env
 .env.*
+config.toml
+.runtime
 .venv
 __pycache__
 *.pyc

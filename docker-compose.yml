@@ -3,13 +3,21 @@ name: novel-os
 services:
   postgres:
     image: postgres:16-alpine
-    env_file: ./backend/.env
+    entrypoint: ["sh", "/opt/novel/postgres-start.sh"]
+    stop_signal: SIGINT
     ports:
       - "127.0.0.1:55432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - ./backend/docker/postgres-start.sh:/opt/novel/postgres-start.sh:ro
+      - type: bind
+        source: ./backend/.runtime/postgres
+        target: /run/novel-postgres
+        read_only: true
+        bind:
+          create_host_path: false
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U \"$$POSTGRES_USER\" -d \"$$POSTGRES_DB\""]
+      test: ["CMD", "sh", "/opt/novel/postgres-start.sh", "healthcheck"]
       interval: 5s
       timeout: 3s
       retries: 10
@@ -17,17 +25,20 @@ services:
 
   backend:
     build: ./backend
-    env_file: ./backend/.env
-    environment:
-      POSTGRES_HOST: postgres
-      POSTGRES_PORT: "5432"
+    volumes:
+      - type: bind
+        source: ./backend/.runtime/config.toml
+        target: /app/config.toml
+        read_only: true
+        bind:
+          create_host_path: false
     ports:
       - "127.0.0.1:8000:8000"
     depends_on:
       postgres:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/v1/health', timeout=2)"]
+      test: ["CMD", "/app/.venv/bin/python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/v1/health', timeout=2)"]
       interval: 10s
       timeout: 3s
       retries: 3
@@ -35,15 +46,22 @@ services:
   postgres-test:
     image: postgres:16-alpine
     profiles: ["test"]
-    env_file: ./backend/.env
-    environment:
-      POSTGRES_DB: novel_os_test
+    entrypoint: ["sh", "/opt/novel/postgres-start.sh"]
+    stop_signal: SIGINT
+    volumes:
+      - ./backend/docker/postgres-start.sh:/opt/novel/postgres-start.sh:ro
+      - type: bind
+        source: ./backend/.runtime/postgres-test
+        target: /run/novel-postgres
+        read_only: true
+        bind:
+          create_host_path: false
     ports:
       - "127.0.0.1:55433:5432"
     tmpfs:
       - /var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U \"$$POSTGRES_USER\" -d \"$$POSTGRES_DB\""]
+      test: ["CMD", "sh", "/opt/novel/postgres-start.sh", "healthcheck"]
       interval: 5s
       timeout: 3s
       retries: 10

@@ -1,5 +1,9 @@
 # NOVEL-001 Implementation Report
 
+> 以下为首次实现的历史验收记录。配置方式与后续 Review 修复以
+> [NOVEL-001 配置修复报告](NOVEL-001-config-review-fixes.md) 和当前 README 为准；
+> 原 `.env` 方案已替换为 TOML 文件配置。
+
 日期：2026-09-10  
 分支：`wfg/novel-001-backend-bootstrap`  
 状态：代码、本地 PostgreSQL 验证及 Docker 容器运行验收完成，等待用户 Review。

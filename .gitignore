@@ -1,7 +1,8 @@
 .DS_Store
 .env
 .env.*
-!.env.example
+backend/config.toml
+backend/.runtime/
 .venv/
 __pycache__/
 *.py[cod]

@@ -30,7 +30,7 @@ packages = ["novel_os"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-ra --strict-markers"
-markers = ["integration: requires a separate PostgreSQL TEST_DATABASE_URL"]
+markers = ["integration: requires a separate PostgreSQL test_database_url in config.toml"]
 
 [tool.ruff]
 target-version = "py312"

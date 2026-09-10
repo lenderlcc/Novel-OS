@@ -1,0 +1,9 @@
+# Copy to config.toml and replace these development-only placeholders.
+# URLs must percent-encode reserved characters in credentials (e.g. @ -> %40).
+# TOML does not expand $ or ${...}; environment variables are never read.
+postgres_url = 'postgresql+psycopg://novel_os:change-me-local-only@127.0.0.1:55432/novel_os_dev'
+test_database_url = 'postgresql+psycopg://novel_os:change-me-test-only@127.0.0.1:55433/novel_os_test'
+log_level = "INFO"
+db_connect_timeout = 2
+db_statement_timeout_ms = 3000
+db_pool_timeout = 3
