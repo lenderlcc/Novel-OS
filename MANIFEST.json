@@ -1,0 +1,25 @@
+{
+  "specs": [
+    "01-PRD.md",
+    "02-AgentSpec.md",
+    "03-Data-Schema.md",
+    "04-Workflow-State-Machine.md",
+    "05-Internal-API-Tool-Contract.md",
+    "06-Technical-Architecture.md"
+  ],
+  "tickets": [
+    "NOVEL-001-backend-bootstrap.md",
+    "NOVEL-002-core-domain.md",
+    "NOVEL-003-workflow-engine.md",
+    "NOVEL-004-agent-runtime.md",
+    "NOVEL-005-prompt-runtime.md",
+    "NOVEL-006-context-engine.md",
+    "NOVEL-007-requirement-planning.md",
+    "NOVEL-008-writing-agent.md",
+    "NOVEL-009-quality-review.md",
+    "NOVEL-010-revision.md",
+    "NOVEL-011-human-feedback.md",
+    "NOVEL-012-memory-commit.md"
+  ],
+  "generated_path": "/mnt/data/novel-os-docs"
+}
