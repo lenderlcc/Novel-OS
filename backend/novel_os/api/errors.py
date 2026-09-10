@@ -7,7 +7,7 @@ from starlette.exceptions import HTTPException
 from starlette.responses import JSONResponse
 
 from novel_os.api.schemas import ErrorBody, ErrorDetail, ErrorResponse
-from novel_os.domain.errors import DatabaseUnavailableError
+from novel_os.domain.errors import DatabaseUnavailableError, DomainError
 
 logger = logging.getLogger(__name__)
 
@@ -32,6 +32,13 @@ def error_response(
 
 
 def register_exception_handlers(app: FastAPI) -> None:
+    @app.exception_handler(DomainError)
+    async def domain_error(request: Request, exc: DomainError) -> JSONResponse:
+        status = {"NOT_FOUND": 404, "AUTHORITY_DENIED": 403, "VALIDATION_ERROR": 422}.get(
+            exc.code, 409
+        )
+        return error_response(request, status, exc.code, exc.message)
+
     @app.exception_handler(DatabaseUnavailableError)
     async def database_unavailable(request: Request, exc: DatabaseUnavailableError) -> JSONResponse:
         logger.warning("database_unavailable", extra={"error_type": type(exc.__cause__).__name__})
