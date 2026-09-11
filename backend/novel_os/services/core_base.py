@@ -85,6 +85,15 @@ class CoreService:
                 "VERSION_CONFLICT", "A concurrent or conflicting write was rejected"
             ) from exc
 
+    def require_transaction(self, project_id: UUID) -> None:
+        """Join an application-owned transaction, retaining the shared root lock/checks."""
+        if not self.session.in_transaction():
+            raise RuntimeError("An application transaction is required")
+        project = self.repo.get_project(project_id, for_update=True)
+        if project.status == Status.ARCHIVED:
+            raise DomainError("INVALID_STATE", "Project is archived")
+        self.check_lock(project_id, ObjectRef(ObjectType.PROJECT, project_id))
+
     def check_lock(self, project_id: UUID, target: ObjectRef) -> None:
         if self.repo.active_lock(project_id, target) is not None:
             raise DomainError("LOCKED_OBJECT", "The object or its parent is locked")

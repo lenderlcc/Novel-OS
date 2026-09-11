@@ -11,7 +11,7 @@ from novel_os.domain.core import (
     VersionToken,
     now,
 )
-from novel_os.domain.enums import AuditAction, Authority, ObjectType, ScopeType, Status
+from novel_os.domain.enums import ActorType, AuditAction, Authority, ObjectType, ScopeType, Status
 from novel_os.domain.errors import DomainError
 from novel_os.services.core_base import CoreService, validate_payload
 
@@ -60,46 +60,56 @@ class VersionService(CoreService):
         reason: str,
     ):
         with self.mutation(project_id, context):
-            record = self.repo.get_version(self.kind, project_id, logical_id)
-            VersionToken(expected_version).check(record.version)
-            self.check_record_lock(record)
-            self.validate(
-                project_id, {name: getattr(record, name) for name in self.allowed}, record
+            return self.approve_in_transaction(
+                project_id, logical_id, expected_version, context, reason
             )
-            if record.status not in {Status.PROPOSED, Status.DRAFT}:
-                raise DomainError("INVALID_STATE", "Only a draft or proposal can be approved")
-            previous = self.repo.get_approved(self.kind, project_id, logical_id)
-            if previous is not None:
-                self.check_record_lock(previous)
-                retired = self.repo.save(
-                    replace(previous, status=Status.SUPERSEDED, updated_at=now())
-                )
-                self.audit(retired, AuditAction.SUPERSEDE, context, reason, previous)
-            authority = (
-                Authority.A4_APPROVED_PLAN
-                if self.kind == ObjectType.CHAPTER_PLAN
-                else Authority.A2_USER_APPROVED
+
+    def approve_in_transaction(
+        self,
+        project_id: UUID,
+        logical_id: UUID,
+        expected_version: int,
+        context: CommandContext,
+        reason: str,
+    ):
+        self.require_transaction(project_id)
+        context.require_user()
+        record = self.repo.get_version(self.kind, project_id, logical_id)
+        VersionToken(expected_version).check(record.version)
+        self.check_record_lock(record)
+        self.validate(project_id, {name: getattr(record, name) for name in self.allowed}, record)
+        if record.status not in {Status.PROPOSED, Status.DRAFT}:
+            raise DomainError("INVALID_STATE", "Only a draft or proposal can be approved")
+        previous = self.repo.get_approved(self.kind, project_id, logical_id)
+        if previous is not None:
+            self.check_record_lock(previous)
+            retired = self.repo.save(replace(previous, status=Status.SUPERSEDED, updated_at=now()))
+            self.audit(retired, AuditAction.SUPERSEDE, context, reason, previous)
+        authority = (
+            Authority.A4_APPROVED_PLAN
+            if self.kind == ObjectType.CHAPTER_PLAN
+            else Authority.A2_USER_APPROVED
+        )
+        approved = self.repo.save(
+            replace(
+                record,
+                status=Status.APPROVED,
+                authority_level=authority,
+                approved_by=context.actor_id,
+                approved_at=now(),
+                updated_at=now(),
             )
-            approved = self.repo.save(
-                replace(
-                    record,
-                    status=Status.APPROVED,
-                    authority_level=authority,
-                    approved_by=context.actor_id,
-                    approved_at=now(),
-                    updated_at=now(),
-                )
+        )
+        if self.kind == ObjectType.CHAPTER_PLAN:
+            self.update_chapter_pointer(
+                project_id, logical_id, context, reason, approved_plan_version=record.version
             )
-            if self.kind == ObjectType.CHAPTER_PLAN:
-                self.update_chapter_pointer(
-                    project_id, logical_id, context, reason, approved_plan_version=record.version
-                )
-            elif self.kind == ObjectType.CHAPTER_VERSION:
-                self.update_chapter_pointer(
-                    project_id, logical_id, context, reason, approved_version=record.version
-                )
-            self.audit(approved, AuditAction.APPROVE, context, reason, record)
-            return approved
+        elif self.kind == ObjectType.CHAPTER_VERSION:
+            self.update_chapter_pointer(
+                project_id, logical_id, context, reason, approved_version=record.version
+            )
+        self.audit(approved, AuditAction.APPROVE, context, reason, record)
+        return approved
 
 
 class ProposalService(VersionService):
@@ -242,45 +252,63 @@ class ChapterArtifactService(VersionService):
         reason: str,
     ):
         with self.mutation(project_id, context):
-            chapter = self.repo.get_chapter(project_id, chapter_id)
-            self.check_record_lock(chapter)
-            self.check_lock(project_id, ObjectRef(self.kind, chapter_id))
-            current = (
-                chapter.current_plan_version
-                if self.kind == ObjectType.CHAPTER_PLAN
-                else chapter.current_version
-            ) or 0
-            VersionToken(expected_version).check(current)
-            payload = self.validate(project_id, payload)
-            previous = self.repo.get_version(self.kind, project_id, chapter_id) if current else None
-            extra = {}
-            if self.kind == ObjectType.CHAPTER_VERSION:
-                extra = {
-                    "parent_version_id": previous.id if previous else None,
-                    "status": Status.DRAFT,
-                }
-            record = self.repo.add(
-                self.entity_type(
-                    project_id=project_id,
-                    logical_id=chapter_id,
-                    chapter_id=chapter_id,
-                    version=current + 1,
-                    supersedes_id=previous.id if previous else None,
-                    created_by=context.actor_id,
-                    **payload,
-                    **extra,
-                )
+            return self.create_version_in_transaction(
+                project_id, chapter_id, payload, expected_version, context, reason
             )
-            pointer = (
-                "current_plan_version"
-                if self.kind == ObjectType.CHAPTER_PLAN
-                else "current_version"
+
+    def create_version_in_transaction(
+        self,
+        project_id: UUID,
+        chapter_id: UUID,
+        payload: dict,
+        expected_version: int,
+        context: CommandContext,
+        reason: str,
+    ):
+        self.require_transaction(project_id)
+        chapter = self.repo.get_chapter(project_id, chapter_id)
+        self.check_record_lock(chapter)
+        self.check_lock(project_id, ObjectRef(self.kind, chapter_id))
+        current = (
+            chapter.current_plan_version
+            if self.kind == ObjectType.CHAPTER_PLAN
+            else chapter.current_version
+        ) or 0
+        VersionToken(expected_version).check(current)
+        payload = self.validate(project_id, payload)
+        previous = self.repo.get_version(self.kind, project_id, chapter_id) if current else None
+        extra = {}
+        if self.kind == ObjectType.CHAPTER_VERSION:
+            extra = {
+                "parent_version_id": previous.id if previous else None,
+                "status": Status.DRAFT,
+            }
+        record = self.repo.add(
+            self.entity_type(
+                project_id=project_id,
+                logical_id=chapter_id,
+                chapter_id=chapter_id,
+                version=current + 1,
+                supersedes_id=previous.id if previous else None,
+                created_by=context.actor_id,
+                source=context.actor_type,
+                authority_level=(
+                    Authority.A5_USER_PREFERENCE
+                    if context.actor_type == ActorType.USER
+                    else Authority.A7_AI_INFERENCE
+                ),
+                **payload,
+                **extra,
             )
-            self.update_chapter_pointer(
-                project_id, chapter_id, context, reason, **{pointer: record.version}
-            )
-            self.audit(record, AuditAction.VERSION_CREATE, context, reason, previous)
-            return record
+        )
+        pointer = (
+            "current_plan_version" if self.kind == ObjectType.CHAPTER_PLAN else "current_version"
+        )
+        self.update_chapter_pointer(
+            project_id, chapter_id, context, reason, **{pointer: record.version}
+        )
+        self.audit(record, AuditAction.VERSION_CREATE, context, reason, previous)
+        return record
 
 
 class PlanningService(ChapterArtifactService):

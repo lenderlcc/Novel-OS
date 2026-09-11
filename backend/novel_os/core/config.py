@@ -16,6 +16,7 @@ class Settings(BaseSettings):
     db_connect_timeout: int = Field(default=2, ge=1)
     db_statement_timeout_ms: int = Field(default=3000, ge=1)
     db_pool_timeout: int = Field(default=3, ge=1)
+    workflow_fake_executor_enabled: bool = False
     log_level: Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"] = "INFO"
 
     @classmethod

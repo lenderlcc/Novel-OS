@@ -1,0 +1,30 @@
+id: chapter-production
+version: 1
+initial_state: C00_CREATED
+max_technical_retries: 2
+simulation: true
+transitions:
+  - {source: C00_CREATED, event: USER_SUBMITTED, target: C01_REQUIREMENT_INTAKE, actor: USER}
+  - {source: C01_REQUIREMENT_INTAKE, event: AGENT_SUCCEEDED, target: C02_CONTEXT_ASSEMBLY, actor: AGENT}
+  - {source: C02_CONTEXT_ASSEMBLY, event: CONTEXT_READY, target: C03_REQUIREMENT_READY, actor: AGENT}
+  - {source: C03_REQUIREMENT_READY, event: AGENT_SUCCEEDED, target: C04_CHAPTER_PLANNING, actor: AGENT}
+  - {source: C04_CHAPTER_PLANNING, event: PLAN_READY, target: C05_PLAN_REVIEW, actor: AGENT, effect: create_plan}
+  - {source: C05_PLAN_REVIEW, event: PLAN_REVIEW_PASSED, target: C06_PLAN_APPROVAL, actor: AGENT, guards: [plan_current]}
+  - {source: C05_PLAN_REVIEW, event: REVIEW_FAILED, target: C04_CHAPTER_PLANNING, actor: AGENT}
+  - {source: C05_PLAN_REVIEW, event: PLAN_REVIEW_FAILED, target: C04_CHAPTER_PLANNING, actor: AGENT}
+  - {source: C06_PLAN_APPROVAL, event: USER_APPROVED, target: C07_WRITING, actor: USER, guards: [plan_approved]}
+  - {source: C06_PLAN_APPROVAL, event: USER_REJECTED, target: C04_CHAPTER_PLANNING, actor: USER}
+  - {source: C07_WRITING, event: DRAFT_READY, target: C08_DETERMINISTIC_CHECK, actor: AGENT, guards: [plan_approved], effect: create_draft}
+  - {source: C08_DETERMINISTIC_CHECK, event: DETERMINISTIC_CHECK_PASSED, target: C09_INTERNAL_REVIEW, actor: AGENT, guards: [draft_current]}
+  - {source: C08_DETERMINISTIC_CHECK, event: DETERMINISTIC_CHECK_FAILED, target: C10_REVISION, actor: AGENT}
+  - {source: C09_INTERNAL_REVIEW, event: REVIEW_FAILED, target: C10_REVISION, actor: AGENT}
+  - {source: C09_INTERNAL_REVIEW, event: REVIEW_PASSED, target: C11_INTERNAL_PASS, actor: AGENT, guards: [draft_current]}
+  - {source: C09_INTERNAL_REVIEW, event: REVIEW_WARNED, target: C11_INTERNAL_PASS, actor: AGENT, guards: [draft_current]}
+  - {source: C10_REVISION, event: REVISION_READY, target: C08_DETERMINISTIC_CHECK, actor: AGENT, guards: [plan_approved], effect: create_draft}
+  - {source: C11_INTERNAL_PASS, event: READY_FOR_USER, target: C12_USER_REVIEW, actor: AGENT, guards: [draft_current]}
+  - {source: C12_USER_REVIEW, event: USER_APPROVED, target: C14_MEMORY_PREPARATION, actor: USER, guards: [draft_approved]}
+  - {source: C12_USER_REVIEW, event: USER_REJECTED, target: C13_USER_FEEDBACK_DIAGNOSIS, actor: USER}
+  - {source: C13_USER_FEEDBACK_DIAGNOSIS, event: LOCAL_CHANGE, target: C10_REVISION, actor: AGENT}
+  - {source: C13_USER_FEEDBACK_DIAGNOSIS, event: CHAPTER_REPLAN_REQUIRED, target: C04_CHAPTER_PLANNING, actor: AGENT}
+  - {source: C14_MEMORY_PREPARATION, event: MEMORY_CHANGESET_READY, target: C15_MEMORY_COMMIT, actor: AGENT, guards: [draft_approved]}
+  - {source: C15_MEMORY_COMMIT, event: MEMORY_COMMITTED, target: C16_COMPLETED, actor: AGENT, guards: [draft_approved]}

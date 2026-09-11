@@ -96,16 +96,16 @@ NOVEL-001
 ## Current Status
 
 - Product / Architecture Specification: Frozen for Prototype v0.1
-- Actual Implementation: `NOVEL-002 — Core Domain & Persistence`，已完成代码审查与修复
+- Actual Implementation: `NOVEL-003 — Chapter Workflow Engine`，实现完成，等待 Review
 - NOVEL-001: 已通过 Review，沿用 TOML 配置和现有基础设施
-- Next Action: 等待后续开发指令；尚未开始 NOVEL-003
+- Next Action: Review NOVEL-003；尚未开始 NOVEL-004
 
 具体规格见 `docs/specs/`，开发任务见 `docs/tickets/`。
 
 ## Backend Development
 
-当前实现工程基础设施、健康检查，以及 NOVEL-002 的八类核心对象、版本、审批、锁和审计。
-上面的产品 Pipeline 是后续设计目标；尚未实现 Workflow、Agent、LLM 或前端。
+当前实现工程基础设施、NOVEL-002 Core Domain，以及 NOVEL-003 deterministic Chapter Workflow。
+Workflow 使用同步 FakeExecutor 验证控制流程；尚未实现真实 Agent、LLM、Memory/Canon 或前端。
 
 需要 Python 3.13（声明支持 3.12–3.14）、uv、Docker Engine 与 Docker Compose 插件（v2 或更新版本）。
 依赖的精确版本记录在 `backend/uv.lock`；Docker 构建使用 uv 0.9.30。
@@ -156,6 +156,7 @@ URL 中凭据的保留字符仍须进行百分号编码，例如 `@` 写成 `%40
 | `db_connect_timeout` | 2 秒，URL 未指定 `connect_timeout` 时生效 |
 | `db_statement_timeout_ms` | 3000 毫秒，URL 未指定 `options` 时生效 |
 | `db_pool_timeout` | 3 秒，连接池等待超时 |
+| `workflow_fake_executor_enabled` | `false`；仅在 test/dev 开启 FakeExecutor HTTP 入口 |
 
 示例文件使用开发端口 55432、测试端口 55433。连接外部 PostgreSQL 时直接编辑 URL；
 应用无须执行 Docker 配置生成命令。程序内测试可显式构造 `Settings(...)` 或调用
@@ -228,7 +229,7 @@ uv run --locked ruff format --check
 测试服务使用 55433 端口和独立的 `novel_os_test` 数据库，数据放在 tmpfs，
 与开发数据库 volume 分离。测试配置拒绝非 `_test` 数据库及与开发库同名的数据库。
 完整测试包含真实 PostgreSQL 查询、迁移、API 生命周期、并发和事务回滚验证。
-NOVEL-002 每项集成测试在测试库中创建独立临时 schema，结束后清理自己的 schema。
+Core Domain 与 Workflow 的每项集成测试在测试库中创建独立临时 schema，结束后清理自己的 schema。
 缺少测试库配置或连接失败会报错，不会静默跳过。
 普通单元测试使用本机未监听端口验证 DB 故障，不访问开发库。
 
@@ -249,9 +250,12 @@ uv run --locked alembic upgrade head
 uv run --locked alembic current
 ```
 
-当前 revision 是 `0002_core_domain`，前驱为 `0001_bootstrap`。新增八张核心业务表、
-外键、唯一约束，以及保护正文、已批准内容和审计记录的 PostgreSQL trigger。
-`downgrade -1` 会删除这八张业务表及其中的数据；升降级验证应使用空库或独立测试库。
+当前 revision 是 `0004_workflow_recovery`，前驱为 `0003_workflow_engine`。
+0003 新增五张 Workflow 表、约束和历史保护 trigger；0004 是 NOVEL-003 的 Review 修复迁移，
+独立保存跨阻塞的阶段恢复意图，不涉及 NOVEL-004 业务。
+从当前 head 执行 `downgrade -1` 仅移除新恢复字段，并转回 0003 的表示，保留 Workflow 和审计数据。
+若继续从 0003 降至 0002，会删除五张 Workflow 表及其中的数据，保留 Core Domain 和已有
+AuditRecord；重新 upgrade 不会恢复被删除的实例。升降级验证应使用空库或独立测试库。
 `uv run --locked alembic check` 可检查 ORM metadata 与当前表结构是否一致。
 
 ### API 与错误约定
@@ -293,6 +297,7 @@ backend/novel_os/
 ├── domain/                 纯 Python Entity、Enum、Value Object、业务异常
 ├── models/                 SQLAlchemy ORM、关系和数据库约束
 ├── services/               用例事务、版本、审批、锁、审计、健康检查
+├── workflow/               Workflow 应用用例、定义、Guard、Human Gate、FakeExecutor
 └── repositories/           Domain / ORM 映射、查询、flush，无 commit
 ```
 
@@ -374,3 +379,111 @@ Project / Chapter 锁；Decision 直接引用的受影响对象也参与锁检�
 [Compose 启动依赖](https://docs.docker.com/compose/how-tos/startup-order/)。
 Colima 安装与 Docker 代理配置分别参考 [Colima 文档](https://colima.run/docs/installation/) 和
 [Docker daemon 代理文档](https://docs.docker.com/engine/daemon/proxy/)。
+
+
+### Chapter Workflow — NOVEL-003
+
+状态表唯一来源为
+[`backend/novel_os/workflow/definitions/chapter-production.v1.yaml`](backend/novel_os/workflow/definitions/chapter-production.v1.yaml)。
+它随 wheel 和 Docker 镜像打包。实例创建时保存定义正文、摘要和 `(id, version)`，
+运行中只读取数据库中绑定的定义；修改已有定义版本会被拒绝，升级必须使用新版本号。
+
+| 接口 | 用途 |
+| --- | --- |
+| `POST /api/v1/workflows/chapter` | 为已有 Project / Chapter 创建 Workflow |
+| `GET /api/v1/workflows/{id}` | 读取状态、state_version、计数和绑定版本 |
+| `POST /api/v1/workflows/{id}/events` | USER_SUBMITTED / BLOCK / PAUSE / RESUME / CANCEL |
+| `POST /api/v1/workflows/{id}/pause` | 保留当前业务状态并暂停 |
+| `POST /api/v1/workflows/{id}/resume` | 重新检查 Guard 后恢复 |
+| `POST /api/v1/workflows/{id}/cancel` | 进入 C92_CANCELLED，并取消等待中的 Gate |
+| `GET /api/v1/workflows/{id}/history` | 按 state_version 排序的转换历史；支持 limit / offset |
+| `GET /api/v1/workflows/{id}/human-gates` | 按打开顺序列出 Gate；支持 limit / offset |
+| `POST /api/v1/human-gates/{id}/decision` | 用户 APPROVE / REJECT / MODIFY / REQUEST_ALTERNATIVE / CANCEL |
+| `POST /api/v1/workflows/{id}/fake-execute` | test/dev 模拟一步执行；默认关闭并返回 404 |
+
+手工验证可在 `backend/config.toml` 设置 `workflow_fake_executor_enabled = true` 后重启本地
+Python 服务。Docker 用户先重新运行 `prepare_docker`，再重建并启动 backend。通过 `/docs`
+创建 Project、Chapter，然后依次提交下列请求（UUID 使用实际值；每个新操作使用新的 event_id）：
+
+```json
+{
+  "event_id": "<新的 UUID>",
+  "project_id": "<project UUID>",
+  "chapter_id": "<chapter UUID>",
+  "definition_id": "chapter-production",
+  "definition_version": 1
+}
+```
+
+创建接口返回 `workflow`、`outcome`、`duplicate`、`error_code`。对 `/events` 提交：
+
+```json
+{
+  "event_id": "<新的 UUID>",
+  "expected_state_version": 1,
+  "event_type": "USER_SUBMITTED",
+  "reason": "开始本章"
+}
+```
+
+随后从每次响应取得最新 `current_state` 和 `state_version`，在非 Human Gate 状态调用
+`/fake-execute`：
+
+```json
+{
+  "event_id": "<新的 UUID>",
+  "expected_state_version": 2,
+  "origin_state": "C01_REQUIREMENT_INTAKE",
+  "outcome": "success"
+}
+```
+
+`outcome` 可选择 `success`、`review_failure`（Plan Review / Deterministic Check / Internal Review）、
+`technical_failure`、`fatal_failure` 或 `replan`（Feedback Diagnosis）。重复传输必须保留原始
+event_id 和完整请求；同 ID 同命令返回原处理结果，同 ID 换命令返回 `IDEMPOTENCY_CONFLICT`。
+并发或过期 state_version 返回 409 / `VERSION_CONFLICT`。过期执行结果会以 `STALE_IGNORED`
+记录在 workflow_events 中，不创建转换、版本、Gate 或审计；HTTP 同样返回 409。
+
+在 C06 / C12 读取 `/human-gates` 的 WAITING Gate，对它的 `/decision` 提交：
+
+```json
+{
+  "event_id": "<新的 UUID>",
+  "expected_state_version": 7,
+  "expected_artifact_version": 1,
+  "decision": "APPROVE",
+  "reason": "用户确认当前版本"
+}
+```
+
+数值必须取自最新 Workflow 和 Gate，示例仅代表第一轮 Plan Approval。Human Gate 绑定具体
+artifact ID/version；过期审批返回 409，并原子地保存 STALE Gate 和 BLOCKED Workflow。
+恢复后，旧 Plan 回到规划，新正文回到检查，重新经过 Review 和用户审批。
+正文检查、评审、进入 Revision、验收和模拟完成前均核验绑定的 Plan 仍为当前已批准版本；
+Plan 变更后旧正文不能继续推进或审批，需回到规划。旧版本和既有审批历史仍然保留。
+批准、Gate 决定、Workflow 转换、版本指针和审计在一个应用事务内提交。普通事件不能提交
+`USER_APPROVED`；所有 actor 信息由可信服务端入口产生。
+
+第一次进入 Planning 时 `planning_iteration_count = 1`；重规划时增加，新的 Plan 在该次
+`PLAN_READY` 返回时创建。进入 Revision 增加 `revision_count`，`REVISION_READY` 创建新的正文。
+两者与技术重试分离：v1 定义每个执行阶段允许两次技术重试，第三次失败进入 C91_FAILED；
+`retry_count` 保留累计次数，`state_retry_count` 在进入新的执行阶段时重置，同阶段暂停/阻塞恢复不刷新预算。
+
+BLOCKED 独立保存恢复位置、是否进入新阶段和缺失 Guard；再次阻塞不会覆盖阶段恢复意图。
+条件仍不满足时 Resume 仍返回 BLOCKED。PAUSED 不改变业务
+状态；Resume 保留原 Gate，不重复创建。COMPLETED / FAILED / CANCELLED 均为终态。
+每个 Chapter 同时只允许一个未终结的 Workflow。
+当前 YAML 只在创建新实例时读取；既有实例的读取、控制、审批和推进均使用数据库保存的定义。
+
+C14 / C15 只模拟事件交接，不产生 MemoryChangeSet，不写入 Memory 或 Canon；COMPLETED 仅表示
+本阶段的模拟流程完成。FakeExecutor 无 Repository、无状态写权限，也不能批准 Human Gate。
+本阶段仍使用本地单用户控制面，未接入真实 worker、登录或多用户权限。
+
+快速执行完整 Workflow 验证：
+
+```bash
+cd backend
+uv run --locked pytest tests/core/workflow
+```
+
+实现、验收和局限见 [NOVEL-003 实现报告](docs/reports/NOVEL-003-implementation.md)。
