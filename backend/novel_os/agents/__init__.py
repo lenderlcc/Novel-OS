@@ -1,1 +1,1 @@
-"""Reserved package only; agent implementation is outside NOVEL-001."""
+"""NOVEL-004 mock execution contracts; no real AI or domain persistence access."""

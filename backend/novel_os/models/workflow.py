@@ -41,6 +41,7 @@ class WorkflowDefinitionModel(Base):
 class WorkflowInstanceModel(Base):
     __tablename__ = "workflow_instances"
     __table_args__ = (
+        UniqueConstraint("id", "project_id", name="uq_workflow_instances_id_project"),
         ForeignKeyConstraint(["chapter_id", "project_id"], ["chapters.id", "chapters.project_id"]),
         ForeignKeyConstraint(
             ["workflow_definition_id", "workflow_definition_version"],

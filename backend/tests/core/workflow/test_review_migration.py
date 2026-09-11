@@ -45,6 +45,8 @@ def test_0004_roundtrip_preserves_pending_recovery_and_history(
     assert driver.workflow["current_state"] == "C90_BLOCKED"
     with core_database.engine.begin() as connection:
         migration_config.attributes["connection"] = connection
+        # NOVEL-004 adds 0005; this test still exercises the frozen 0004 recovery migration.
+        command.downgrade(migration_config, "0004_workflow_recovery")
         history = history_snapshot(connection)
         command.downgrade(migration_config, "-1")
         assert (
@@ -70,7 +72,7 @@ def test_0004_roundtrip_preserves_pending_recovery_and_history(
             )
         with pytest.raises(IntegrityError), connection.begin_nested():
             connection.execute(text("DELETE FROM workflow_instances"))
-        command.upgrade(migration_config, "head")
+        command.upgrade(migration_config, "0004_workflow_recovery")
         assert (
             connection.scalar(text("SELECT version_num FROM alembic_version"))
             == "0004_workflow_recovery"
@@ -81,6 +83,7 @@ def test_0004_roundtrip_preserves_pending_recovery_and_history(
         assert upgraded.pop("resume_new_stage") == (recovery != "same_stage")
         assert upgraded == row
         assert history_snapshot(connection) == history
+        command.upgrade(migration_config, "head")
         command.check(migration_config)
     driver.refresh()
     resume = driver.command()

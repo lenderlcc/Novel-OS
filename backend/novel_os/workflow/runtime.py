@@ -30,6 +30,7 @@ from novel_os.domain.workflow import (
 )
 from novel_os.repositories.workflows import WorkflowRepository
 from novel_os.services.core_base import CoreService, validate_payload
+from novel_os.services.task_scheduling import TaskScheduler
 from novel_os.services.versioning import ChapterVersionService, PlanningService
 from novel_os.workflow.audit import TransitionAudit, snapshot
 from novel_os.workflow.definitions import (
@@ -67,6 +68,7 @@ class WorkflowRuntime:
         self.registry = registry
         self.guards = GuardRegistry(self.core)
         self.audit = TransitionAudit(self.core.repo, self.repo)
+        self.tasks = TaskScheduler(session)
 
     def create(
         self,
@@ -192,6 +194,12 @@ class WorkflowRuntime:
             raise DomainError(
                 "VERSION_CONFLICT", "A concurrent or conflicting workflow write was rejected"
             ) from exc
+
+    def dispatch_in_transaction(self, workflow_id, command, context):
+        """Compose a validated execution result with its task/run updates atomically."""
+        if not self.session.in_transaction():
+            raise RuntimeError("An application transaction is required")
+        return self._dispatch(workflow_id, command, context)
 
     def _dispatch(self, workflow_id, command, context, *, gate_id=None):
         initial = self.repo.get(workflow_id)
@@ -554,6 +562,7 @@ class WorkflowRuntime:
         if target in GATE_STATES and after.status == RunStatus.WAITING_HUMAN:
             self._open_gate(after, context)
         self.audit.record(before, after, command, context, guards, reason or command.event_type)
+        self.tasks.synchronize(after, context)
         return after
 
     def _open_gate(self, workflow, context):

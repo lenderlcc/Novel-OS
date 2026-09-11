@@ -96,16 +96,16 @@ NOVEL-001
 ## Current Status
 
 - Product / Architecture Specification: Frozen for Prototype v0.1
-- Actual Implementation: `NOVEL-003 — Chapter Workflow Engine`，实现完成，等待 Review
-- NOVEL-001: 已通过 Review，沿用 TOML 配置和现有基础设施
-- Next Action: Review NOVEL-003；尚未开始 NOVEL-004
+- Actual Implementation: `NOVEL-004 — Agent Runtime & Mock Agent`，实现完成，等待 Review
+- NOVEL-001 / 002 / 003: 已通过 Review，沿用 TOML 配置和现有基础设施
+- Next Action: Review NOVEL-004；尚未开始 NOVEL-005
 
 具体规格见 `docs/specs/`，开发任务见 `docs/tickets/`。
 
 ## Backend Development
 
-当前实现工程基础设施、NOVEL-002 Core Domain，以及 NOVEL-003 deterministic Chapter Workflow。
-Workflow 使用同步 FakeExecutor 验证控制流程；尚未实现真实 Agent、LLM、Memory/Canon 或前端。
+当前实现工程基础设施、Core Domain、deterministic Chapter Workflow 和异步 Mock Agent Runtime。
+Workflow 通过 PostgreSQL 队列和独立 Worker 执行 Mock Task；尚未实现真实 LLM、Memory/Canon 或前端。
 
 需要 Python 3.13（声明支持 3.12–3.14）、uv、Docker Engine 与 Docker Compose 插件（v2 或更新版本）。
 依赖的精确版本记录在 `backend/uv.lock`；Docker 构建使用 uv 0.9.30。
@@ -157,6 +157,11 @@ URL 中凭据的保留字符仍须进行百分号编码，例如 `@` 写成 `%40
 | `db_statement_timeout_ms` | 3000 毫秒，URL 未指定 `options` 时生效 |
 | `db_pool_timeout` | 3 秒，连接池等待超时 |
 | `workflow_fake_executor_enabled` | `false`；仅在 test/dev 开启 FakeExecutor HTTP 入口 |
+| `agent_lease_seconds` | 30 秒，任务租约时长，范围 1–3600 |
+| `agent_heartbeat_seconds` | 5 秒，须小于租约时长 |
+| `agent_poll_seconds` | 1 秒，空闲轮询间隔 |
+| `agent_retry_seconds` | 1 秒，技术错误退避基数，逐次翻倍，上限 60 秒 |
+| `agent_mock_scenario` | `SUCCESS`，独立 Worker 的 Mock 场景 |
 
 示例文件使用开发端口 55432、测试端口 55433。连接外部 PostgreSQL 时直接编辑 URL；
 应用无须执行 Docker 配置生成命令。程序内测试可显式构造 `Settings(...)` 或调用
@@ -250,10 +255,12 @@ uv run --locked alembic upgrade head
 uv run --locked alembic current
 ```
 
-当前 revision 是 `0004_workflow_recovery`，前驱为 `0003_workflow_engine`。
-0003 新增五张 Workflow 表、约束和历史保护 trigger；0004 是 NOVEL-003 的 Review 修复迁移，
-独立保存跨阻塞的阶段恢复意图，不涉及 NOVEL-004 业务。
-从当前 head 执行 `downgrade -1` 仅移除新恢复字段，并转回 0003 的表示，保留 Workflow 和审计数据。
+当前 revision 是 `0005_agent_runtime`，前驱为 `0004_workflow_recovery`。
+0004 已用于 NOVEL-003 Review 修复，因此 NOVEL-004 顺延使用迁移编号 0005；不代表实现 NOVEL-005。
+0005 新增 `agent_tasks`、`agent_runs`、索引、约束和执行历史保护 trigger。
+从当前 head 执行 `downgrade -1` 会删除这两张表及执行记录，保留 Core、Workflow 和审计数据。
+重新升级后 Worker 可为仍在等待 Agent 的旧 Workflow 补建当前阶段任务，但不能恢复被删除的 Run。
+继续从 0004 降至 0003 会移除阶段恢复字段，并转回 0003 的表示，保留 Workflow 和审计数据。
 若继续从 0003 降至 0002，会删除五张 Workflow 表及其中的数据，保留 Core Domain 和已有
 AuditRecord；重新 upgrade 不会恢复被删除的实例。升降级验证应使用空库或独立测试库。
 `uv run --locked alembic check` 可检查 ORM metadata 与当前表结构是否一致。
@@ -298,6 +305,8 @@ backend/novel_os/
 ├── models/                 SQLAlchemy ORM、关系和数据库约束
 ├── services/               用例事务、版本、审批、锁、审计、健康检查
 ├── workflow/               Workflow 应用用例、定义、Guard、Human Gate、FakeExecutor
+├── agents/                 Mock Provider、结构化结果、Registry 和权限校验，无持久化调用
+├── worker.py               独立执行进程；轮询、执行、心跳
 └── repositories/           Domain / ORM 映射、查询、flush，无 commit
 ```
 
@@ -477,7 +486,8 @@ BLOCKED 独立保存恢复位置、是否进入新阶段和缺失 Guard；再次
 
 C14 / C15 只模拟事件交接，不产生 MemoryChangeSet，不写入 Memory 或 Canon；COMPLETED 仅表示
 本阶段的模拟流程完成。FakeExecutor 无 Repository、无状态写权限，也不能批准 Human Gate。
-本阶段仍使用本地单用户控制面，未接入真实 worker、登录或多用户权限。
+NOVEL-003 保留 FakeExecutor 用于控制流程测试；NOVEL-004 的独立 Worker 见下节。
+控制面仍为本地单用户，尚未实现登录或多用户权限。
 
 快速执行完整 Workflow 验证：
 
@@ -487,3 +497,58 @@ uv run --locked pytest tests/core/workflow
 ```
 
 实现、验收和局限见 [NOVEL-003 实现报告](docs/reports/NOVEL-003-implementation.md)。
+
+### Agent Runtime — NOVEL-004
+
+先执行 `alembic upgrade head`，再分别启动 FastAPI 和 Worker。在另一个终端从 `backend/` 执行：
+
+```bash
+uv run --locked python -m novel_os.worker
+```
+
+单步执行与指定配置文件：
+
+```bash
+uv run --locked python -m novel_os.worker --once --config config.toml
+```
+
+也可以复用后端 Docker 镜像启动独立进程（从仓库根目录运行）：
+
+```bash
+docker compose run --rm --no-deps backend /app/.venv/bin/python -m novel_os.worker
+```
+
+Worker 不随 FastAPI 自动启动，HTTP 请求只提交事务并返回。可启动多个 Worker；
+每个进程使用独立 worker ID，一次执行一个任务。SIGINT/SIGTERM 等待当前执行结束后退出，
+强制终止留下的租约可在到期后恢复。`--once` 没有可领取任务时正常退出。
+
+按前节创建 Workflow 并提交 `USER_SUBMITTED` 后，Worker 自动执行到 C06 Plan Approval；
+用户通过原 Human Gate 接口审批，再执行至 C12 Chapter Approval；第二次审批后抵达 C16。
+正常路径有 11 个 Task。Plan / Draft 使用固定 Mock 内容，C14 / C15 仅模拟交接，没有 Canon 写入。
+自动流程无须开启 `workflow_fake_executor_enabled`。
+
+| 只读接口 | 用途 |
+| --- | --- |
+| `GET /api/v1/agent-tasks/{task_id}` | 任务状态、尝试次数、租约期限、结果摘要 |
+| `GET /api/v1/agent-tasks/{task_id}/runs` | 每次尝试的状态、耗时、错误码和结果处置 |
+| `GET /api/v1/workflows/{workflow_id}/agent-tasks` | Workflow 的任务历史 |
+
+列表支持 `limit` / `offset`，不返回内部 fencing token。不提供 Task 创建或 mock-execute HTTP 接口。
+
+`agent_mock_scenario` 支持 SUCCESS、BLOCKED、FORMAT_ERROR_ONCE、MODEL_ERROR_ONCE、ALWAYS_FAIL、
+AUTHORITY_VIOLATION、LOW_CONFIDENCE、NEEDS_HUMAN、SLOW_SUCCESS、MALFORMED_OUTPUT、QUALITY_FAIL。
+修改 TOML 后重启 Worker；Docker 使用新配置前重新执行 `prepare_docker`。
+ONCE 场景由数据库中的 attempt number 决定，重启不会重置第一次错误。
+
+每次领取生成新的 AgentRun 和租约 token。租约到期后的旧 Worker 不能提交或续租，
+旧 Run 标记 ABANDONED；新 Worker 使用新 Run 继续同一 Task。Task 的 technical retry 默认最多
+3 次执行，不增加 Workflow 的 revision / planning iteration，也不借用 FakeExecutor 的重试计数。
+Review FAIL 由固定映射进入 Revision 或 Replanning，不触发技术重试。
+
+权限来自 Agent Definition、Task Type、Workflow State、Task Scope 的共同约束。
+AgentResult 禁止 next_state / next_event；所有事件由系统 ResultHandler 生成，并经过原 Workflow Guard。
+权限违规不会写入提案或推进业务阶段；Run 保存 AUTHORITY_DENIED，Task BLOCKED，系统进入 C90 等待用户处理。
+BLOCKED / NEEDS_HUMAN / 低置信结果同样阻塞，绝不自动审批。用户 Resume 后按新的 state_version 创建任务。
+取消或状态版本变化后的运行结果标记 STALE_IGNORED，不创建内容或转换；取消的 Task 不会再次被领取。
+
+验证与独立审查记录见 [NOVEL-004 实现报告](docs/reports/NOVEL-004-implementation.md)。

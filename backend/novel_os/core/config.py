@@ -2,10 +2,12 @@ import tomllib
 from pathlib import Path
 from typing import Literal, Self
 
-from pydantic import Field, SecretStr, field_validator
+from pydantic import Field, SecretStr, field_validator, model_validator
 from pydantic_settings import BaseSettings, PydanticBaseSettingsSource, SettingsConfigDict
 from sqlalchemy import URL, make_url
 from sqlalchemy.exc import ArgumentError
+
+from novel_os.domain.agents import MockScenario
 
 
 class Settings(BaseSettings):
@@ -17,7 +19,18 @@ class Settings(BaseSettings):
     db_statement_timeout_ms: int = Field(default=3000, ge=1)
     db_pool_timeout: int = Field(default=3, ge=1)
     workflow_fake_executor_enabled: bool = False
+    agent_lease_seconds: float = Field(default=30, ge=1, le=3600)
+    agent_heartbeat_seconds: float = Field(default=5, gt=0, le=300)
+    agent_poll_seconds: float = Field(default=1, gt=0, le=60)
+    agent_retry_seconds: float = Field(default=1, ge=0, le=60)
+    agent_mock_scenario: MockScenario = MockScenario.SUCCESS
     log_level: Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"] = "INFO"
+
+    @model_validator(mode="after")
+    def heartbeat_before_expiration(self):
+        if self.agent_heartbeat_seconds >= self.agent_lease_seconds:
+            raise ValueError("agent_heartbeat_seconds must be less than agent_lease_seconds")
+        return self
 
     @classmethod
     def settings_customise_sources(

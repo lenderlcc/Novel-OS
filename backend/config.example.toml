@@ -10,3 +10,10 @@ db_pool_timeout = 3
 
 # NOVEL-003 test/dev simulator. Keep false outside local development.
 workflow_fake_executor_enabled = false
+
+# NOVEL-004 independent worker; file configuration only, mock provider only.
+agent_lease_seconds = 30
+agent_heartbeat_seconds = 5
+agent_poll_seconds = 1
+agent_retry_seconds = 1
+agent_mock_scenario = "SUCCESS"
