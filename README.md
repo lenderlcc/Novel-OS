@@ -57,7 +57,7 @@ docs/specs/      核心产品与系统规格
 docs/tickets/    NOVEL-001 ~ NOVEL-012 开发任务
 backend/         后端（从 NOVEL-001 开始）
 frontend/        前端（后续）
-prompts/         Prompt Library
+backend/novel_os/prompts/library/  版本化 Prompt Library（随 wheel / Docker 打包）
 workflow-definitions/
 context-profiles/
 quality-profiles/
@@ -96,16 +96,17 @@ NOVEL-001
 ## Current Status
 
 - Product / Architecture Specification: Frozen for Prototype v0.1
-- Actual Implementation: `NOVEL-004 — Agent Runtime & Mock Agent`，实现完成，等待 Review
-- NOVEL-001 / 002 / 003: 已通过 Review，沿用 TOML 配置和现有基础设施
-- Next Action: Review NOVEL-004；尚未开始 NOVEL-005
+- Actual Implementation: `NOVEL-005 — Prompt Runtime & Model Provider`，实现、验证和独立审查完成，等待用户 Review
+- NOVEL-001 / 002 / 003 / 004: 已通过 Review，沿用 TOML 配置和现有基础设施
+- Next Action: Review NOVEL-005；不自动进入 NOVEL-006
 
 具体规格见 `docs/specs/`，开发任务见 `docs/tickets/`。
 
 ## Backend Development
 
-当前实现工程基础设施、Core Domain、deterministic Chapter Workflow 和异步 Mock Agent Runtime。
-Workflow 通过 PostgreSQL 队列和独立 Worker 执行 Mock Task；尚未实现真实 LLM、Memory/Canon 或前端。
+当前实现工程基础设施、Core Domain、deterministic Chapter Workflow、异步 Agent Runtime、
+版本化 Prompt 与可替换模型 Provider。默认使用 Mock；真实 Provider 通过 TOML 显式启用。
+尚未实现 Context Engine、真实业务 Agent、Memory/Canon 或前端。
 
 需要 Python 3.13（声明支持 3.12–3.14）、uv、Docker Engine 与 Docker Compose 插件（v2 或更新版本）。
 依赖的精确版本记录在 `backend/uv.lock`；Docker 构建使用 uv 0.9.30。
@@ -552,3 +553,92 @@ BLOCKED / NEEDS_HUMAN / 低置信结果同样阻塞，绝不自动审批。用�
 取消或状态版本变化后的运行结果标记 STALE_IGNORED，不创建内容或转换；取消的 Task 不会再次被领取。
 
 验证与独立审查记录见 [NOVEL-004 实现报告](docs/reports/NOVEL-004-implementation.md)。
+
+
+### Prompt Runtime / Model Provider — NOVEL-005
+
+Worker 保留原领取、租约、重试和结果处理流程；执行前解析并绑定每次 Run 的精确 Prompt
+模块版本。新增 migration 为 `0006_prompt_runtime`（`0005_agent_runtime` 已在上一阶段发布）。
+
+```bash
+cd backend
+uv sync --locked
+uv run --locked alembic upgrade head
+uv run --locked python -m novel_os.prompt_demo --text "一个发生在海边的温暖短篇"
+```
+
+Demo 使用 `INTERNAL_SMOKE_TEST` / A02 和 RequirementSpec，只验证编译、Provider、结构化输出
+与权限检查。不创建 AgentTask、Requirement、ChapterPlan 或 Workflow，也不写数据库。
+默认仍走完整 Mock pipeline，不需要 API Key。
+
+真实 OpenAI Responses Provider：在本地、已忽略的 `backend/config.toml` 配置：
+
+```toml
+agent_model_profile = "openai-structured"
+openai_api_key = "在本地配置实际密钥"
+```
+
+模型参数来自 Git 文件 `backend/novel_os/providers/profiles.toml`；当前仅有 `mock-default`
+和 `openai-structured` 两个 Profile。OpenAI 使用固定官方 HTTPS endpoint、显式 timeout、
+无客户端内部重试，重试预算仍由 AgentTask 管理。改为真实 Profile 后，Worker 也会调用真实
+模型，但已有任务 Prompt 仍明确属于 simulation，不提供 NOVEL-007 及以后的业务能力。
+HTTP 200 中的 `failed` 响应也按错误码分类：`server_error` 和 `rate_limit_exceeded` 分别进入
+MODEL_UNAVAILABLE / MODEL_RATE_LIMIT 技术重试，认证或额度配置错误保持不可重试。
+配置不读取环境变量。不要把真实密钥写进 example、Prompt module 或模型 Profile。
+Docker 使用变更后的配置前，按上文重新运行 `prepare_docker`。
+
+显式真实调用测试（会发起付费 API 请求；未提供密钥则 skip）：
+
+```bash
+uv run --locked pytest tests/prompts/test_providers.py -m live_model --live-model
+```
+
+普通 `pytest` 始终跳过真实调用；真实 Adapter 的 HTTP 格式、结构化验证、错误映射与秘密保护
+由 MockTransport 测试覆盖。流式输出、远程 token counting 尚未实现，接口明确拒绝不支持的能力。
+
+Prompt 文件位于 `backend/novel_os/prompts/library/{system,agents,tasks,skills,quality}/`，
+每个模块版本包含 `manifest.json` 和 `content.md`。manifest 声明版本、状态、依赖、兼容范围和
+规范化正文 SHA-256。新增版本创建新目录；不得原地修改已使用版本的正文或执行 metadata。
+状态可以从 EXPERIMENTAL 晋升 STABLE。未指定版本时只选择最高 STABLE，历史绑定始终保存
+具体 version/hash。RETIRED 不可新编译；DEPRECATED 不参与默认选择，但允许显式版本检查。
+每个 pin 另含自动计算的 `execution_hash`，覆盖除 status 外的全部 manifest 字段（含正文 hash）。
+依赖或兼容范围变化也必须创建新版本；状态晋升不改变该摘要。Compiler v2 将它纳入 compiled hash。
+
+修改正文后可在本地计算 LF 规范化摘要，将结果填入**新版本** manifest：
+
+```bash
+uv run --locked python -c 'from pathlib import Path; from novel_os.prompts.contracts import digest, normalize; print(digest(normalize(Path("path/to/new/content.md").read_text())))'
+```
+
+编译顺序固定为 System Policy → Agent Role → Task Template → Skills（按 ID/version 排序）
+→ Quality → Authority/Constraints → Context DATA → Pydantic Output Contract。
+Context 只接受调用方传入的数据，不读取 DB/Memory；依赖必须显式包含于所选组合中。
+
+查看某次持久化运行的配置：
+
+```text
+GET /api/v1/agent-runs/{run_id}/prompt-lineage
+```
+
+接口返回精确模块 ID/version/hash、Schema ID/version/hash、模型 Profile 的安全参数与摘要、
+compiled hash；不返回正文、Context 或密钥。升级前的 Run、编译前失败/失去租约的 Run 没有
+Lineage，接口返回 404。已有 AgentRun 不被回填或修改。
+修复前 compiler v1 的旧 pin 若没有 execution_hash，接口返回 null 表示未知，不用当前文件补造历史。
+遇到这种旧 pin，无法验证其执行 metadata 的同版本新绑定会被拒绝；需为涉及的模块发布新版本。
+升级时应停止旧 Worker，避免继续产生缺少 execution_hash 的记录。本次修复前开发库 Lineage 为 0 行。
+
+模型调用前，Service 在短事务中保存 Lineage 和审计。并发首次绑定同一模块版本使用 PostgreSQL
+事务锁，发现与已有历史相冲突的 hash 会拒绝新执行。Provider 调用期间不持有此事务。
+每次技术重试使用新 Run、新 Lineage，旧历史不变。模块正文的唯一来源仍是 Git。
+
+开发验证：
+
+```bash
+uv run --locked pytest
+uv run --locked ruff check
+uv run --locked ruff format --check
+uv build
+uv run --locked alembic check
+```
+
+实现详情及最终验证结果见 [NOVEL-005 实现报告](docs/reports/NOVEL-005-implementation.md)。

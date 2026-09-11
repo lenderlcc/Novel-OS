@@ -5,7 +5,7 @@ from uuid import uuid4
 import pytest
 from pydantic import ValidationError
 
-from novel_os.agents.provider import MockModelProvider, ModelProvider
+from novel_os.agents.provider import MockModelProvider, ModelProvider, ModelResponse
 from novel_os.agents.runtime import AgentRuntime
 from novel_os.domain.agents import AgentId, AgentTask, Capability
 from novel_os.domain.workflow import ChapterState
@@ -32,7 +32,7 @@ class RawProvider(ModelProvider):
         self.raw = raw
 
     def generate(self, request):
-        return self.raw
+        return ModelResponse(self.raw)
 
 
 @pytest.mark.parametrize("raw", ["not json", '{"status":1,"status":2}', "x" * 150_001, {}])

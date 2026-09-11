@@ -1,0 +1,21 @@
+[[profiles]]
+profile_id = "mock-default"
+provider = "mock"
+model = "mock-v1"
+capabilities = ["text"]
+structured_output = false
+stream_support = false
+timeout_seconds = 30
+max_output_tokens = 4096
+generation = { temperature = 0.2 }
+
+[[profiles]]
+profile_id = "openai-structured"
+provider = "openai"
+model = "gpt-4o-mini-2024-07-18"
+capabilities = ["text", "structured_output"]
+structured_output = true
+stream_support = false
+timeout_seconds = 30
+max_output_tokens = 4096
+generation = { temperature = 0.2 }

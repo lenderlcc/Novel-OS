@@ -5,7 +5,9 @@ from fastapi import APIRouter
 
 from novel_os.api.agent_schemas import AgentRunView, AgentTaskView
 from novel_os.api.core_routes import DbSession, Limit, Offset
+from novel_os.api.prompt_schemas import PromptLineageView
 from novel_os.services.agent_queries import AgentQueries
+from novel_os.services.prompt_lineages import PromptLineageService
 
 router = APIRouter(tags=["agent-execution"])
 
@@ -25,3 +27,8 @@ def get_workflow_tasks(
     workflow_id: UUID, session: DbSession, limit: Limit = 100, offset: Offset = 0
 ):
     return [asdict(task) for task in AgentQueries(session).tasks(workflow_id, limit, offset)]
+
+
+@router.get("/agent-runs/{run_id}/prompt-lineage", response_model=PromptLineageView)
+def get_prompt_lineage(run_id: UUID, session: DbSession):
+    return asdict(PromptLineageService(session).get(run_id))

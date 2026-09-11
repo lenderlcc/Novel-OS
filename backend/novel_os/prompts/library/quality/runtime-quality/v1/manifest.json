@@ -1,0 +1,22 @@
+{
+  "module_id": "runtime-quality",
+  "module_type": "QUALITY_PROFILE",
+  "version": 1,
+  "status": "STABLE",
+  "description": "NOVEL-005 runtime-quality runtime module",
+  "content_path": "content.md",
+  "dependencies": [
+    {
+      "module_id": "novel-os-core",
+      "version": 1
+    }
+  ],
+  "compatible_agents": [
+    "*"
+  ],
+  "compatible_task_types": [
+    "*"
+  ],
+  "created_at": "2026-09-11T00:00:00Z",
+  "content_hash": "5f80b1ed050ce8a5ff1139cf5a9b7f4d1191bb92960aaf6eceba9906244f2db5"
+}

@@ -12,7 +12,7 @@ def snapshot(connection):
     return {
         name: connection.execute(select(table).order_by(*table.primary_key)).mappings().all()
         for name, table in Base.metadata.tables.items()
-        if name not in {"agent_tasks", "agent_runs"}
+        if name not in {"agent_tasks", "agent_runs", "prompt_lineages"}
     }
 
 
@@ -25,6 +25,7 @@ def test_0005_roundtrip_preserves_core_workflow_audit_and_worker_recovers_waitin
     with core_database.engine.begin() as connection:
         migration_config.attributes["connection"] = connection
         assert connection.scalar(text("SELECT count(*) FROM agent_runs")) == 1
+        command.downgrade(migration_config, "0005_agent_runtime")
         before = snapshot(connection)
         command.downgrade(migration_config, "-1")
         assert connection.scalar(text("SELECT version_num FROM alembic_version")) == (
@@ -34,7 +35,7 @@ def test_0005_roundtrip_preserves_core_workflow_audit_and_worker_recovers_waitin
         assert snapshot(connection) == before
         command.upgrade(migration_config, "head")
         assert connection.scalar(text("SELECT version_num FROM alembic_version")) == (
-            "0005_agent_runtime"
+            "0006_prompt_runtime"
         )
         assert connection.scalar(text("SELECT count(*) FROM agent_tasks")) == 0
         assert snapshot(connection) == before

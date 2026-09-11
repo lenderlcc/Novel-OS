@@ -5,7 +5,7 @@ import pytest
 from agent_test_support import claim, complete, pending_task, runs, start, task_record
 from sqlalchemy import text
 
-from novel_os.agents.provider import MockModelProvider, ModelProvider
+from novel_os.agents.provider import MockModelProvider, ModelProvider, ModelResponse
 from novel_os.agents.runtime import AgentRuntime, ExecutionResult
 from novel_os.domain.agents import RunStatus, TaskStatus
 from novel_os.worker import AgentWorker
@@ -68,10 +68,10 @@ def test_invalid_artifact_output_records_schema_failure_then_retries(
 ):
     class InvalidTextOnce(ModelProvider):
         def generate(self, request):
-            output = json.loads(MockModelProvider().generate(request))
+            output = json.loads(MockModelProvider().generate(request).content)
             if request.attempt_number == 1:
                 output["result"][field] = invalid_text
-            return json.dumps(output)
+            return ModelResponse(json.dumps(output))
 
     driver.advance_to(stage)
     before = driver.workflow.copy()

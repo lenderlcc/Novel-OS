@@ -7,7 +7,7 @@ from uuid import UUID, uuid4
 import pytest
 from agent_test_support import claim, pending_task, runs, start, task_record
 
-from novel_os.agents.provider import MockModelProvider, ModelProvider
+from novel_os.agents.provider import MockModelProvider, ModelProvider, ModelResponse
 from novel_os.agents.registry import AgentRegistry
 from novel_os.agents.runtime import AgentRuntime
 from novel_os.domain.agents import AgentId, Capability, TaskStatus
@@ -23,9 +23,9 @@ class ModifiedProvider(ModelProvider):
         self.change = change
 
     def generate(self, request):
-        output = json.loads(MockModelProvider().generate(request))
+        output = json.loads(MockModelProvider().generate(request).content)
         self.change(output)
-        return json.dumps(output)
+        return ModelResponse(json.dumps(output))
 
 
 @pytest.mark.parametrize(

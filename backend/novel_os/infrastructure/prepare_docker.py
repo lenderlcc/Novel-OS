@@ -5,6 +5,7 @@ import json
 import shutil
 from pathlib import Path
 
+from pydantic import SecretStr
 from sqlalchemy import URL
 
 from novel_os.core.config import Settings
@@ -57,8 +58,13 @@ def prepare_docker(settings: Settings, output: Path) -> None:
             path.chmod(0o644)
 
     docker_url: URL = settings.database_url.set(host="postgres", port=5432)
-    values = settings.model_dump(exclude={"postgres_url", "test_database_url"})
+    values = settings.model_dump(exclude={"postgres_url", "test_database_url"}, exclude_none=True)
     values["postgres_url"] = docker_url.render_as_string(hide_password=False)
+    # Unwrap only at this protected file sink; never serialize secret reprs or TOML nulls.
+    values = {
+        name: value.get_secret_value() if isinstance(value, SecretStr) else value
+        for name, value in values.items()
+    }
     path = output / "config.toml"
     path.write_text(
         "".join(

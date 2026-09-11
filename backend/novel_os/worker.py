@@ -7,13 +7,15 @@ import threading
 from pathlib import Path
 from uuid import uuid4
 
-from novel_os.agents.provider import MockModelProvider
-from novel_os.agents.runtime import AgentRuntime
+from novel_os.agents.runtime import ExecutionResult
 from novel_os.core.config import Settings
 from novel_os.core.logging import configure_logging
 from novel_os.db.session import Database
+from novel_os.domain.errors import DomainError
+from novel_os.runtime_factory import build_agent_runtime
 from novel_os.services.agent_queue import AgentQueue
 from novel_os.services.agent_results import AgentResultHandler
+from novel_os.services.prompt_lineages import PromptLineageService
 
 logger = logging.getLogger(__name__)
 
@@ -40,7 +42,9 @@ class AgentWorker:
 
     def run_once(self):
         with self.database.session() as session:
-            lease = AgentQueue(session, lease_seconds=self.lease_seconds).claim(self.worker_id)
+            lease = AgentQueue(session, lease_seconds=self.lease_seconds).claim(
+                self.worker_id, profile_for_task=self.runtime.profile_for_task
+            )
         if lease is None:
             return False
         with self.database.session() as session:
@@ -71,7 +75,19 @@ class AgentWorker:
         heartbeat = threading.Thread(target=maintain_lease, daemon=True)
         heartbeat.start()
         try:
-            execution = self.runtime.execute(task)
+            prepared = self.runtime.prepare(task)
+            if isinstance(prepared, ExecutionResult):
+                execution = prepared
+            else:
+                try:
+                    with self.database.session() as session:
+                        bound = PromptLineageService(session).bind(lease, prepared)
+                except DomainError:
+                    execution = ExecutionResult(error_code="PROMPT_CONFIGURATION_ERROR")
+                else:
+                    if not bound:
+                        return True
+                    execution = self.runtime.execute(task, prepared)
         finally:
             stopped.set()
             heartbeat.join()
@@ -89,7 +105,7 @@ class AgentWorker:
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Novel OS mock agent worker")
+    parser = argparse.ArgumentParser(description="Novel OS agent worker")
     parser.add_argument("--config", type=Path, default=Path("config.toml"))
     parser.add_argument("--once", action="store_true", help="Claim and handle at most one task")
     args = parser.parse_args()
@@ -101,7 +117,7 @@ def main():
         signal.signal(signum, lambda *_: stopped.set())
     worker = AgentWorker(
         database,
-        AgentRuntime(MockModelProvider(settings.agent_mock_scenario)),
+        build_agent_runtime(settings),
         lease_seconds=settings.agent_lease_seconds,
         heartbeat_seconds=settings.agent_heartbeat_seconds,
         retry_seconds=settings.agent_retry_seconds,

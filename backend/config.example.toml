@@ -17,3 +17,8 @@ agent_heartbeat_seconds = 5
 agent_poll_seconds = 1
 agent_retry_seconds = 1
 agent_mock_scenario = "SUCCESS"
+
+# NOVEL-005: file configuration only. Default execution makes no external model calls.
+agent_model_profile = "mock-default"
+# Opt in to the real provider by selecting "openai-structured" and filling the key locally.
+# openai_api_key = "replace-in-your-ignored-config-only"

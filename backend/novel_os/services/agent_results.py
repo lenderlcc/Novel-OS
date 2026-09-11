@@ -13,6 +13,7 @@ from novel_os.domain.core import CommandContext
 from novel_os.domain.enums import ActorType
 from novel_os.domain.errors import DomainError
 from novel_os.domain.workflow import EventCommand
+from novel_os.providers.base import ERROR_RETRYABLE
 from novel_os.repositories.agent_tasks import AgentTaskRepository
 from novel_os.repositories.core import CoreRepository
 from novel_os.repositories.workflows import WorkflowRepository
@@ -113,7 +114,10 @@ class AgentResultHandler:
                     error = "SCHEMA_PARSE_ERROR"
                 except DomainError:
                     error = "AUTHORITY_DENIED"
-            elif error not in TECHNICAL_ERRORS | {"AUTHORITY_DENIED"}:
+            elif error not in TECHNICAL_ERRORS | set(ERROR_RETRYABLE) | {
+                "AUTHORITY_DENIED",
+                "PROMPT_CONFIGURATION_ERROR",
+            }:
                 error = "TRANSIENT_INFRASTRUCTURE_ERROR"
             metadata = (
                 {
@@ -130,6 +134,24 @@ class AgentResultHandler:
                 if result is not None and error is None
                 else {}
             )
+            if isinstance(execution.model_metadata, dict):
+                from novel_os.providers.base import ModelResponse, TokenUsage
+
+                summary = execution.model_metadata
+                usage = summary.get("usage", {})
+                if not isinstance(usage, dict):
+                    usage = {}
+                safe = ModelResponse(
+                    "",
+                    usage=TokenUsage(
+                        usage.get("input_tokens"),
+                        usage.get("output_tokens"),
+                        usage.get("total_tokens"),
+                    ),
+                    finish_reason=summary.get("finish_reason"),
+                    latency_ms=summary.get("latency_ms"),
+                ).safe_summary()
+                metadata["model"] = safe
             # Never save raw provider output, validation input, issue text or exception messages.
             if not expects_task(workflow, task):
                 self.history.finish_run(
@@ -169,6 +191,7 @@ class AgentResultHandler:
                     context,
                     RunStatus.FAILED,
                     error_code=error,
+                    output_metadata=metadata,
                     error_message="Agent execution or validation failed",
                     disposition=disposition,
                 )

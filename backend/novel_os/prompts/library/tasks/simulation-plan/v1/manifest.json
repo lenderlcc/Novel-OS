@@ -1,0 +1,22 @@
+{
+  "module_id": "simulation-plan",
+  "module_type": "TASK_TEMPLATE",
+  "version": 1,
+  "status": "STABLE",
+  "description": "NOVEL-005 simulation-plan runtime module",
+  "content_path": "content.md",
+  "dependencies": [
+    {
+      "module_id": "novel-os-core",
+      "version": 1
+    }
+  ],
+  "compatible_agents": [
+    "*"
+  ],
+  "compatible_task_types": [
+    "*"
+  ],
+  "created_at": "2026-09-11T00:00:00Z",
+  "content_hash": "8837a354b354eb20baec595af8ae89e25026a957e95079e70563eb9205711be6"
+}

@@ -23,6 +23,8 @@ class Settings(BaseSettings):
     agent_heartbeat_seconds: float = Field(default=5, gt=0, le=300)
     agent_poll_seconds: float = Field(default=1, gt=0, le=60)
     agent_retry_seconds: float = Field(default=1, ge=0, le=60)
+    agent_model_profile: Literal["mock-default", "openai-structured"] = "mock-default"
+    openai_api_key: SecretStr | None = None
     agent_mock_scenario: MockScenario = MockScenario.SUCCESS
     log_level: Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"] = "INFO"
 

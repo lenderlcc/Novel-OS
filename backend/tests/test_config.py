@@ -199,3 +199,26 @@ def test_missing_or_invalid_config_fails_without_fallback(tmp_path) -> None:
     with pytest.raises(ValueError) as error:
         Settings.from_file(path)
     assert "private-password" not in str(error.value)
+
+
+@pytest.mark.parametrize("key", [None, 'sk-fake-quote"\\${DO_NOT_EXPAND}'])
+def test_model_credentials_roundtrip_only_through_protected_config(tmp_path, monkeypatch, key):
+    monkeypatch.setenv("OPENAI_API_KEY", "must-not-be-read")
+    values = {
+        "postgres_url": url_with_password("dev-only"),
+        "agent_model_profile": "openai-structured" if key else "mock-default",
+    }
+    if key:
+        values["openai_api_key"] = key
+    source = write_config(tmp_path / "config.toml", **values)
+    settings = Settings.from_file(source)
+    output = tmp_path / "runtime"
+    prepare_docker(settings, output)
+    loaded = Settings.from_file(output / "config.toml")
+    assert loaded.agent_model_profile == settings.agent_model_profile
+    assert (loaded.openai_api_key.get_secret_value() if loaded.openai_api_key else None) == key
+    if key:
+        assert key not in repr(settings)
+        assert key not in "".join(p.read_text() for p in (output / "postgres").iterdir())
+    else:
+        assert "openai_api_key" not in (output / "config.toml").read_text()

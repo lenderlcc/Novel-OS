@@ -23,7 +23,7 @@ class AgentQueue:
         self.history = TaskHistory(session)
         self.lease_seconds = lease_seconds
 
-    def claim(self, worker_id: str) -> TaskLease | None:
+    def claim(self, worker_id: str, *, profile_for_task=None) -> TaskLease | None:
         if not re.fullmatch(r"[A-Za-z0-9_.:-]{1,128}", worker_id):
             raise DomainError("VALIDATION_ERROR", "Invalid worker identity")
         with self.session.begin():
@@ -92,6 +92,7 @@ class AgentQueue:
                 heartbeat_at=timestamp,
                 lease_expires_at=timestamp + timedelta(seconds=self.lease_seconds),
             )
+            profile = profile_for_task(task.task_type) if profile_for_task else None
             run = self.repo.add(
                 AgentRun(
                     task_id=task.task_id,
@@ -99,6 +100,8 @@ class AgentQueue:
                     worker_id=worker_id,
                     lease_token=token,
                     claimed_at=timestamp,
+                    provider=profile.provider if profile else "mock",
+                    model=profile.model if profile else "mock-v1",
                     input_metadata={
                         "task_type": task.task_type,
                         "state_version": task.workflow_state_version,

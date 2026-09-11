@@ -1,0 +1,22 @@
+{
+  "module_id": "simulation-review",
+  "module_type": "TASK_TEMPLATE",
+  "version": 1,
+  "status": "STABLE",
+  "description": "NOVEL-005 simulation-review runtime module",
+  "content_path": "content.md",
+  "dependencies": [
+    {
+      "module_id": "novel-os-core",
+      "version": 1
+    }
+  ],
+  "compatible_agents": [
+    "*"
+  ],
+  "compatible_task_types": [
+    "*"
+  ],
+  "created_at": "2026-09-11T00:00:00Z",
+  "content_hash": "3c2794c00aaa65c1e328319f7e2437e5208c3613e3a17be40902ee651e5dac7e"
+}

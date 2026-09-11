@@ -37,3 +37,7 @@ def configure_logging(level: str) -> None:
         logger = logging.getLogger(name)
         logger.handlers.clear()
         logger.propagate = True
+    # Transport debug output includes untrusted response headers/reason phrases.
+    # Application DEBUG must not enable credential-bearing provider wire diagnostics.
+    for name in ("httpx", "httpcore"):
+        logging.getLogger(name).setLevel(logging.WARNING)

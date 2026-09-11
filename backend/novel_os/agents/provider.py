@@ -1,32 +1,15 @@
-"""Minimal provider contract and deterministic mock; no real model integration."""
+"""Deterministic Mock adapter; shares the complete prompt/response contract."""
 
 import json
 import time
-from abc import ABC, abstractmethod
-from dataclasses import dataclass
-from uuid import UUID
 
 from novel_os.domain.agents import MockScenario
-
-
-@dataclass(frozen=True)
-class ModelRequest:
-    task_id: UUID
-    task_type: str
-    attempt_number: int
-    target_ref: UUID
-    output_kind: str
-
-
-class ProviderError(Exception):
-    def __init__(self, code="MODEL_UNAVAILABLE"):
-        self.code = code
-
-
-class ModelProvider(ABC):
-    @abstractmethod
-    def generate(self, request: ModelRequest) -> str:
-        """Return untrusted text for the normal parser/validators."""
+from novel_os.providers.base import (  # noqa: F401 -- retain the established import surface
+    ModelProvider,
+    ModelRequest,
+    ModelResponse,
+    ProviderError,
+)
 
 
 class MockModelProvider(ModelProvider):
@@ -34,7 +17,12 @@ class MockModelProvider(ModelProvider):
         self.scenario = MockScenario(scenario)
         self.delay_seconds = delay_seconds
 
-    def generate(self, request: ModelRequest) -> str:
+    def generate(self, request: ModelRequest) -> ModelResponse:
+        started = time.monotonic()
+        content = self._content(request)
+        return ModelResponse(content, latency_ms=int((time.monotonic() - started) * 1000))
+
+    def _content(self, request: ModelRequest) -> str:
         scenario = self.scenario
         if scenario == MockScenario.ALWAYS_FAIL or (
             scenario == MockScenario.MODEL_ERROR_ONCE and request.attempt_number == 1
@@ -47,6 +35,12 @@ class MockModelProvider(ModelProvider):
         if scenario == MockScenario.SLOW_SUCCESS:
             time.sleep(self.delay_seconds)
         output = {
+            "requirement_demo": {
+                "kind": "requirement_demo",
+                "summary": "Mock requirement extraction smoke report",
+                "explicit_constraints": [],
+                "simulation": True,
+            },
             "ack": {"kind": "ack", "simulation": True},
             "plan": {
                 "kind": "plan",

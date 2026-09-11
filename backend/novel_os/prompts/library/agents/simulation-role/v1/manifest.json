@@ -1,0 +1,22 @@
+{
+  "module_id": "simulation-role",
+  "module_type": "AGENT_ROLE",
+  "version": 1,
+  "status": "STABLE",
+  "description": "NOVEL-005 simulation-role runtime module",
+  "content_path": "content.md",
+  "dependencies": [
+    {
+      "module_id": "novel-os-core",
+      "version": 1
+    }
+  ],
+  "compatible_agents": [
+    "*"
+  ],
+  "compatible_task_types": [
+    "*"
+  ],
+  "created_at": "2026-09-11T00:00:00Z",
+  "content_hash": "bda73dde04f0dc13833f093f26eef9a0ebb367da48f6e62c0bdde93d0a93b927"
+}

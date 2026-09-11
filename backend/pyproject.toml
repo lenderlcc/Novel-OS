@@ -10,6 +10,7 @@ requires-python = ">=3.12,<3.15"
 dependencies = [
     "alembic>=1.13,<2",
     "fastapi>=0.115,<1",
+    "httpx>=0.27,<1",
     "psycopg[binary]>=3.2,<4",
     "pydantic>=2.9,<3",
     "pydantic-settings>=2.6,<3",
@@ -20,7 +21,6 @@ dependencies = [
 
 [dependency-groups]
 dev = [
-    "httpx>=0.27,<1",
     "pytest>=8,<10",
     "ruff>=0.11,<1",
 ]
@@ -31,7 +31,7 @@ packages = ["novel_os"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-ra --strict-markers"
-markers = ["integration: requires a separate PostgreSQL test_database_url in config.toml"]
+markers = ["integration: requires a separate PostgreSQL test_database_url in config.toml", "live_model: explicitly opted-in external model test"]
 
 [tool.ruff]
 target-version = "py312"

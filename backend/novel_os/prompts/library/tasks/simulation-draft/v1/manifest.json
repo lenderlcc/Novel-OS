@@ -1,0 +1,22 @@
+{
+  "module_id": "simulation-draft",
+  "module_type": "TASK_TEMPLATE",
+  "version": 1,
+  "status": "STABLE",
+  "description": "NOVEL-005 simulation-draft runtime module",
+  "content_path": "content.md",
+  "dependencies": [
+    {
+      "module_id": "novel-os-core",
+      "version": 1
+    }
+  ],
+  "compatible_agents": [
+    "*"
+  ],
+  "compatible_task_types": [
+    "*"
+  ],
+  "created_at": "2026-09-11T00:00:00Z",
+  "content_hash": "dd3ca3fc4e462d9dd3f4a3f00db628c5b2d4db0ee47a4b1e442a251b65776600"
+}

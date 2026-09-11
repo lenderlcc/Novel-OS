@@ -58,3 +58,12 @@ def database(database_settings: Settings) -> Iterator[Database]:
         yield database
     finally:
         database.dispose()
+
+
+def pytest_addoption(parser):
+    parser.addoption(
+        "--live-model",
+        action="store_true",
+        default=False,
+        help="Explicitly opt in to a paid real-provider smoke call (TOML key required)",
+    )

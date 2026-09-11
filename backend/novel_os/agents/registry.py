@@ -8,7 +8,7 @@ from novel_os.domain.workflow import ChapterState as State
 
 
 @dataclass(frozen=True)
-class TaskDefinition:
+class StageTaskMapping:
     task_type: str
     state: State
     agent_id: AgentId
@@ -97,7 +97,7 @@ KIND_CAPABILITY = {
     "review": Capability.REVIEW,
 }
 TASKS = {
-    "MOCK_" + name: TaskDefinition(
+    "MOCK_" + name: StageTaskMapping(
         "MOCK_" + name, state, agent, kind, KIND_CAPABILITY[kind], success, failure
     )
     for state, agent, name, kind, success, failure in _TASKS
@@ -128,7 +128,7 @@ class AgentRegistry:
         except KeyError:
             raise DomainError("AUTHORITY_DENIED", "Unknown agent") from None
 
-    def task(self, task_type: str) -> TaskDefinition:
+    def task(self, task_type: str) -> StageTaskMapping:
         try:
             return TASKS[task_type]
         except KeyError:
