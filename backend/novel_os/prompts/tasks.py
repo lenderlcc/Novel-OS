@@ -50,6 +50,8 @@ class TaskDefinitionRegistry:
         output = OutputContractGenerator.generate("mock-agent-result", 1, AgentResult)
         self._definitions = {}
         for mapping in TASKS.values():
+            if not mapping.task_type.startswith("MOCK_"):
+                continue
             self.register(
                 TaskDefinition(
                     mapping.task_type,
@@ -62,6 +64,34 @@ class TaskDefinitionRegistry:
                     output,
                     model_profile,
                     frozenset({mapping.capability}),
+                )
+            )
+        from novel_os.agents.planning_schemas import BUSINESS_RESULTS
+
+        roles = {
+            "PARSE_CHAPTER_REQUIREMENT": "requirement-agent",
+            "PLAN_CHAPTER": "planning-agent",
+            "REVIEW_CHAPTER_PLAN": "plan-review-agent",
+        }
+        skills = {
+            "PARSE_CHAPTER_REQUIREMENT": ("requirement-normalization",),
+            "PLAN_CHAPTER": ("chapter-structure", "creative-exploration", "requirement-alignment"),
+            "REVIEW_CHAPTER_PLAN": ("focused-plan-review", "requirement-alignment"),
+        }
+        for task_type, (schema_id, model) in BUSINESS_RESULTS.items():
+            mapping = TASKS[task_type]
+            self.register(
+                TaskDefinition(
+                    task_type=task_type,
+                    agent_id=mapping.agent_id,
+                    system_policy=ref("novel-os-core"),
+                    agent_role=ref(roles[task_type]),
+                    task_template=ref(task_type.lower().replace("_", "-")),
+                    skills=tuple(ref(name) for name in skills[task_type]),
+                    quality_profile=ref("planning-quality"),
+                    output_schema=OutputContractGenerator.generate(schema_id, 1, model),
+                    model_profile=model_profile,
+                    capabilities=frozenset({mapping.capability}),
                 )
             )
         self.register(

@@ -1,0 +1,24 @@
+{
+  "module_id": "requirement-agent",
+  "module_type": "AGENT_ROLE",
+  "version": 1,
+  "status": "STABLE",
+  "description": "NOVEL-007 requirement-agent",
+  "content_path": "content.md",
+  "dependencies": [
+    {
+      "module_id": "novel-os-core",
+      "version": 1
+    }
+  ],
+  "compatible_agents": [
+    "*"
+  ],
+  "compatible_task_types": [
+    "PARSE_CHAPTER_REQUIREMENT",
+    "PLAN_CHAPTER",
+    "REVIEW_CHAPTER_PLAN"
+  ],
+  "created_at": "2026-09-15T00:00:00Z",
+  "content_hash": "c7ecf7273e6458817d1a4a7f01682fd620a77ee5c691cfe3a1e01b454b8620e3"
+}

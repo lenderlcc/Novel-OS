@@ -1,0 +1,85 @@
+{
+  "profile_id": "CP-003A",
+  "version": 1,
+  "status": "STABLE",
+  "description": "Interpret raw chapter intent with relevant approved constraints only",
+  "allowed_task_types": [
+    "PARSE_CHAPTER_REQUIREMENT"
+  ],
+  "token_budget": 80000,
+  "future_knowledge_policy": "NONE",
+  "future_horizon": 1,
+  "selectors": [
+    {
+      "selector_id": "task-input",
+      "source_type": "TASK_INPUT",
+      "priority": "P0",
+      "required": true,
+      "authority_floor": "A7_AI_INFERENCE",
+      "allowed_statuses": [
+        "ACTIVE"
+      ],
+      "version_policy": "EXACT",
+      "scope": "TARGET_CHAPTER",
+      "max_items": 1
+    },
+    {
+      "selector_id": "target-chapter",
+      "source_type": "CHAPTER",
+      "priority": "P0",
+      "required": true,
+      "authority_floor": "A7_AI_INFERENCE",
+      "allowed_statuses": [
+        "DRAFT",
+        "ACTIVE",
+        "LOCKED",
+        "APPROVED"
+      ],
+      "version_policy": "TARGET_VERSION",
+      "scope": "TARGET_CHAPTER",
+      "max_items": 1
+    },
+    {
+      "selector_id": "effective-requirements",
+      "source_type": "REQUIREMENT",
+      "priority": "P1",
+      "required": false,
+      "authority_floor": "A2_USER_APPROVED",
+      "allowed_statuses": [
+        "APPROVED",
+        "LOCKED"
+      ],
+      "version_policy": "EFFECTIVE",
+      "scope": "TARGET_CHAPTER",
+      "max_items": 200
+    },
+    {
+      "selector_id": "effective-decisions",
+      "source_type": "DECISION",
+      "priority": "P1",
+      "required": false,
+      "authority_floor": "A2_USER_APPROVED",
+      "allowed_statuses": [
+        "APPROVED",
+        "LOCKED"
+      ],
+      "version_policy": "EFFECTIVE",
+      "scope": "TARGET_CHAPTER",
+      "max_items": 200
+    },
+    {
+      "selector_id": "project-metadata",
+      "source_type": "PROJECT",
+      "priority": "P2",
+      "required": false,
+      "authority_floor": "A7_AI_INFERENCE",
+      "allowed_statuses": [
+        "ACTIVE",
+        "LOCKED"
+      ],
+      "version_policy": "CURRENT",
+      "scope": "PROJECT",
+      "max_items": 1
+    }
+  ]
+}

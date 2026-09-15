@@ -61,7 +61,9 @@ class WorkflowInstanceModel(Base):
             "AND planning_iteration_count >= 0",
             name="nonnegative_counters",
         ),
-        CheckConstraint("simulation", name="simulation_only"),
+        CheckConstraint(
+            "simulation OR workflow_definition_id = 'chapter-planning'", name="supported_execution"
+        ),
         CheckConstraint(
             "NOT resume_new_stage OR status = 'BLOCKED'", name="recovery_requires_blocked"
         ),

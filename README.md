@@ -260,7 +260,7 @@ uv run --locked alembic check
 当前 revision 是 `0007_context_engine`，前驱为 `0006_prompt_runtime`。
 0004 已用于 NOVEL-003 Review 修复，0005 用于 Agent Runtime，0006 用于 Prompt Lineage；
 NOVEL-006 顺延使用 0007，未修改旧迁移。0007 新增 `context_packages` 及不可变快照保护。
-从当前 head 执行 `downgrade -1` 只删除 Context 快照，保留 Core、Workflow、AgentTask、AgentRun、
+从 0007 执行 `downgrade -1` 只删除 Context 快照，保留 Core、Workflow、AgentTask、AgentRun、
 PromptLineage 和审计；重新 upgrade 不会恢复删除的快照。验证使用空 Context 表或独立测试 schema。
 继续从 0006 降到 0005 会删除 PromptLineage，0005 降到 0004 会删除 AgentTask/AgentRun。
 继续从 0004 降至 0003 会移除阶段恢复字段，并转回 0003 的表示，保留 Workflow 和审计数据。
@@ -700,3 +700,110 @@ uv run --locked pytest tests/context tests/core/workflow/test_context_engine.py
 ```
 
 实现细节与最终验收结果见 [NOVEL-006 实现报告](docs/reports/NOVEL-006-implementation.md)。
+
+### Requirement / Planning Vertical Slice — NOVEL-007
+
+007 增加 `chapter-planning` v1 正式 Workflow；原 `chapter-production` v1 Mock 流程继续保留。
+正式链路使用 `PARSE_CHAPTER_REQUIREMENT`、`PLAN_CHAPTER`、`REVIEW_CHAPTER_PLAN`，
+复用现有 Worker、Prompt / Model Runtime、Context Engine、HumanGate 和 ChapterPlan 服务。
+C02/C03 是确定性控制步骤，不额外调用模型。用户批准合格 Plan 后停在 C07_WRITING，
+此定义不会调度 Writer，也不会创建 ChapterVersion。
+
+1. 使用现有 API 创建 Project 与 Chapter，然后提交自然语言需求：
+
+```http
+POST /api/v1/workflows/chapter-planning
+Content-Type: application/json
+
+{
+  "event_id": "<新的 UUID>",
+  "project_id": "<Project UUID>",
+  "chapter_id": "<Chapter UUID>",
+  "raw_requirement": "本章必须找到线索，不能杀死主角，保留人物之间的信任。"
+}
+```
+
+2. 保持现有 Workflow 的显式提交语义，对返回的 Workflow 发送 USER_SUBMITTED：
+
+```http
+POST /api/v1/workflows/<workflow_id>/events
+Content-Type: application/json
+
+{"event_id":"<新的 UUID>","expected_state_version":1,"event_type":"USER_SUBMITTED"}
+```
+
+3. 在 `backend/` 启动 Worker（配置继续只使用 `config.toml`）：
+
+```bash
+uv run --locked python -m novel_os.worker --config config.toml
+```
+
+默认 Mock 是确定性契约样例，不能代表自然语言理解质量。真实业务理解使用版本化 Prompt
+和 NOVEL-005 的真实 Provider；通过已有 `agent_model_profile` / `openai_api_key` TOML
+配置选择 Provider。CI 不需要密钥，不自动运行付费调用。
+
+4. 使用以下查询检查结果；返回 Domain / Pydantic DTO，不暴露 ORM：
+
+| Endpoint | 内容 |
+| --- | --- |
+| `GET /api/v1/workflows/{id}/creative-brief` | 最新 Brief 及状态、原始输入、版本和 lineage |
+| `GET /api/v1/workflows/{id}/creative-brief/versions/{version}` | 精确历史 Brief |
+| `GET /api/v1/workflows/{id}/planning/plan` | 当前 Workflow 绑定 Plan 与完整结构化生成证据 |
+| `GET /api/v1/workflows/{id}/planning/plan/versions/{version}` | 同一 Workflow 的指定 Plan 版本 |
+| `GET /api/v1/workflows/{id}/planning/review` | 当前 Plan 的 focused review，包含有效 verdict |
+| `GET /api/v1/workflows/{id}/planning/history?limit=100&offset=0` | 分页 Brief / Plan generation / Review 历史 |
+| `GET /api/v1/workflows/{id}/planning/metrics` | 本 Workflow 的解释、修正、规划、审批、硬门槛和技术重试统计 |
+
+现有 AgentRun 查询可读取 PromptLineage；新产物保存 `agent_run_id`、`prompt_lineage_id`、
+`context_package_id` 与 source versions。业务内容只进入相应 Artifact / Context 表，
+不会写入普通运行日志。
+
+5. Review PASS 或 PASS_WITH_WARNINGS 后，使用已有
+`GET /api/v1/workflows/{id}/human-gates` 和
+`POST /api/v1/human-gates/{gate_id}/decision` 提交用户决定。
+必须传入当前 `expected_state_version` 及 Gate 绑定的 `expected_artifact_version`。
+支持 APPROVE / REJECT / MODIFY / REQUEST_ALTERNATIVE / CANCEL。
+后三种规划反馈以 `reason` 保存结构化 directive，进入下一轮 Planning Context；不会直接改写旧 Plan。
+过期审批返回 409 / VERSION_CONFLICT。对象级 Decision / Plan Lock 沿用已有 Lock API。
+
+6. 需求出现必须由用户决定的歧义时，Brief 为 NEEDS_HUMAN，Workflow 为 BLOCKED。
+先查询 Brief 中的 issue / impact / user_decision_needed，再提交澄清：
+
+```http
+POST /api/v1/workflows/<workflow_id>/requirement
+Content-Type: application/json
+
+{
+  "event_id":"<新的 UUID>",
+  "expected_state_version":5,
+  "expected_brief_version":1,
+  "raw_requirement":"完整的修正后需求，包括本次澄清。"
+}
+```
+
+版本值取自实际查询，不使用示例数字。此操作取消过期任务与 Gate，将旧 Brief 标为
+SUPERSEDED，重新解释并生成下一 Brief；历史内容不可修改。C07 后不再接受本阶段的需求修正。
+低/中影响歧义应记录 assumption 后继续；仅高影响、低置信度且无法安全推断时升级决策。
+
+CP-003A v1 只读取自然语言输入、目标章节、相关有效约束及最小 Project 信息；
+CP-004 v3 强制 exact current Brief P0，同一 Brief 的重规划显式读取上一 Plan / Review；需求修正后排除旧 Brief 的 Plan、Review 和返工指令；
+CP-004R v1 只评审 exact Brief 与 exact Plan，不复用正文 Review 的 CP-006。
+旧 Mock Planning 继续使用 CP-004 v2。上一章只读取 approved_version，新增 Draft 不替换已批准正文。
+Brief 的用户约束保留原文引用；既有七类 Requirement 保持原类型与完整正文，QUALITY_EXPECTATION / CHANGE_REQUEST 分别进入 quality_expectations / change_requests。
+推断单列为 assumptions；重大变更始终为 PROPOSAL_ONLY，
+长期偏好只生成候选，不自动创建 Requirement / Decision / Canon。
+Plan 的 coverage 区分 SCENE 与 PLAN_GLOBAL：全局叙事/保留约束可通过 constraints 或 preserved_elements 说明覆盖，不强制创建场景。
+
+迁移 head 现在是 `0008_requirement_planning`，新增 `creative_briefs`、`plan_generations`、
+`plan_review_reports`。0007 已归属 Context Engine，所有历史迁移保持原样。
+`downgrade -1` 会删除这三个新增证据表，保留 0001–0007 的业务、Workflow、Run、Context、
+Lineage 和审计记录；再次升级不会恢复已删除的 007 证据。迁移往返在隔离测试库验证。
+
+```bash
+uv run --locked pytest -q tests/test_planning_contracts.py tests/core/workflow/test_planning_vertical_slice.py
+# 以下命令明确选择付费真实模型，需人工执行；默认完整 pytest 会跳过。
+uv run --locked pytest -q tests/core/workflow/test_planning_live.py --live-model
+```
+
+真实模型测试最多执行七次尝试并使用隔离测试 schema；它不代表全面的语义质量评估。
+实现与最终验收记录见 [NOVEL-007 实现报告](docs/reports/NOVEL-007-implementation.md)。

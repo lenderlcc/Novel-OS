@@ -9,6 +9,7 @@ from novel_os.api.core_routes import router as core_router
 from novel_os.api.errors import register_exception_handlers
 from novel_os.api.health import router as health_router
 from novel_os.api.middleware import RequestContextMiddleware
+from novel_os.api.planning_routes import router as planning_router
 from novel_os.api.schemas import ErrorResponse
 from novel_os.api.workflow_routes import router as workflow_router
 from novel_os.core.config import Settings
@@ -43,4 +44,5 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.include_router(workflow_router, prefix="/api/v1")
     app.include_router(agent_router, prefix="/api/v1")
     app.include_router(context_router, prefix="/api/v1")
+    app.include_router(planning_router, prefix="/api/v1")
     return app

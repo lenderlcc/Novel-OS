@@ -48,6 +48,7 @@ class ContextSourceReader(Protocol):
 
 class MemoryQueryService:
     def __init__(self, session, *, extensions=None):
+        self.session = session
         self.repo = ContextSourceRepository(session)
         self.extensions = extensions or {}
 
@@ -72,6 +73,10 @@ class MemoryQueryService:
 
     def _query(self, request, selector, timestamp, task_created_at):
         source = selector.source_type
+        if source in {SourceType.CREATIVE_BRIEF, SourceType.PLAN_REVIEW_REPORT}:
+            from novel_os.services.planning_context import PlanningContextReader
+
+            return PlanningContextReader(self.session).query(request, selector)
         if source == SourceType.TASK_INPUT:
             return (task_item(request, selector, task_created_at),), {}
         if source == SourceType.EXTENSION:
@@ -202,6 +207,22 @@ class MemoryQueryService:
             if lock:
                 provenance.append(f"lock:{lock.id}")
         payload = {name: getattr(record, name) for name in FIELDS[source]}
+        if source == SourceType.CHAPTER and request.task_type in {
+            "PLAN_CHAPTER",
+            "REVIEW_CHAPTER_PLAN",
+        }:
+            # Pin both pointers for review/rework freshness without retrieving any latest draft.
+            payload["current_plan_version"] = record.current_plan_version
+            payload["approved_plan_version"] = record.approved_plan_version
+        if source == SourceType.CHAPTER_PLAN and request.task_type in {
+            "PLAN_CHAPTER",
+            "REVIEW_CHAPTER_PLAN",
+        }:
+            from novel_os.repositories.planning import PlanningRepository
+
+            generation = PlanningRepository(self.session).generation(request.workflow_id, record.id)
+            if generation:
+                payload["planning"] = generation.body
         # UUIDs in typed relational fields are serialized explicitly, never generic config.
         payload = {
             name: str(value) if hasattr(value, "hex") else value for name, value in payload.items()

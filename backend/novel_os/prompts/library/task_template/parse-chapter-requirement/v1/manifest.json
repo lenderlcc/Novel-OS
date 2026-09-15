@@ -1,0 +1,24 @@
+{
+  "module_id": "parse-chapter-requirement",
+  "module_type": "TASK_TEMPLATE",
+  "version": 1,
+  "status": "STABLE",
+  "description": "NOVEL-007 parse-chapter-requirement",
+  "content_path": "content.md",
+  "dependencies": [
+    {
+      "module_id": "novel-os-core",
+      "version": 1
+    }
+  ],
+  "compatible_agents": [
+    "*"
+  ],
+  "compatible_task_types": [
+    "PARSE_CHAPTER_REQUIREMENT",
+    "PLAN_CHAPTER",
+    "REVIEW_CHAPTER_PLAN"
+  ],
+  "created_at": "2026-09-15T00:00:00Z",
+  "content_hash": "1a8945555964daec3923ab39231b57b6096f50fc633429c2a1e19bf431e956cc"
+}

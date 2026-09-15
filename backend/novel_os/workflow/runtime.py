@@ -1,7 +1,7 @@
 """Application use cases: the sole authority for workflow transitions and transactions."""
 
 from dataclasses import asdict, replace
-from uuid import UUID
+from uuid import UUID, uuid5
 
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
@@ -78,6 +78,8 @@ class WorkflowRuntime:
         context: CommandContext,
         definition_id: str = "chapter-production",
         definition_version: int = 1,
+        *,
+        raw_requirement: str | None = None,
     ) -> DispatchResult:
         context.require_user()
         command = EventCommand(
@@ -89,6 +91,7 @@ class WorkflowRuntime:
                 "chapter_id": str(chapter_id),
                 "definition_id": definition_id,
                 "definition_version": definition_version,
+                **({"raw_requirement": raw_requirement} if raw_requirement is not None else {}),
             },
         )
         try:
@@ -104,6 +107,22 @@ class WorkflowRuntime:
                     self.registry if self.registry is not None else WorkflowDefinitionRegistry()
                 )
                 definition = registry.get(definition_id, definition_version)
+                if not definition.body["simulation"]:
+                    if (
+                        not isinstance(raw_requirement, str)
+                        or not raw_requirement.strip()
+                        or "\x00" in raw_requirement
+                        or len(raw_requirement) > 12000
+                    ):
+                        raise DomainError(
+                            "VALIDATION_ERROR",
+                            "A chapter requirement of 1–12000 characters is required",
+                        )
+                elif raw_requirement is not None:
+                    raise DomainError(
+                        "VALIDATION_ERROR",
+                        "Natural language intake requires the planning definition",
+                    )
                 self.repo.ensure_definition(definition)
                 workflow = WorkflowInstance(
                     project_id=project_id,
@@ -111,6 +130,7 @@ class WorkflowRuntime:
                     workflow_definition_id=definition.id,
                     workflow_definition_version=definition.version,
                     created_by=context.actor_id,
+                    simulation=definition.body["simulation"],
                     plan_version=chapter.current_plan_version,
                     draft_version=chapter.current_version,
                 )
@@ -210,7 +230,10 @@ class WorkflowRuntime:
         if duplicate:
             return duplicate
         if context.actor_type != ActorType.USER:
-            if context.actor_type != ActorType.AGENT or command.origin_state is None:
+            if (
+                context.actor_type not in {ActorType.AGENT, ActorType.SYSTEM}
+                or command.origin_state is None
+            ):
                 raise DomainError(
                     "AUTHORITY_DENIED", "Executor events require a trusted origin token"
                 )
@@ -263,6 +286,10 @@ class WorkflowRuntime:
             return self._remember(failed, command, context)
         execution_command = command
         if command.event_type == "FAKE_EXECUTE":
+            if not workflow.simulation:
+                raise DomainError(
+                    "AUTHORITY_DENIED", "Business workflows require validated agent results"
+                )
             if context.actor_type != ActorType.AGENT:
                 raise DomainError("AUTHORITY_DENIED", "Simulation requires the fake executor")
             validate_payload(command.payload, {"outcome"})
@@ -280,7 +307,9 @@ class WorkflowRuntime:
         except Blocked as exc:
             updated = self._block(workflow, command, context, exc.failure)
             error = (
-                "VERSION_CONFLICT" if gate_id and exc.failure.code == "VERSION_CONFLICT" else None
+                exc.failure.code
+                if gate_id and exc.failure.code in {"VERSION_CONFLICT", "CONTEXT_STALE"}
+                else None
             )
             return self._remember(updated, command, context, outcome="BLOCKED", error_code=error)
         return self._remember(updated, command, context)
@@ -301,9 +330,26 @@ class WorkflowRuntime:
         for guard in guards:
             self._check(guard, workflow)
         changes = self._effect(workflow, rule.effect, command, context)
+        if not workflow.simulation:
+            self._check_planning(workflow, rule.target)
         return self._transition(workflow, rule.target, command, context, guards=guards, **changes)
 
     def _effect(self, workflow, effect, command, context):
+        if effect == "bind_plan":
+            validate_payload(command.payload, {"plan_id", "plan_version"})
+            from novel_os.repositories.planning import PlanningRepository
+
+            chapter = self.core.repo.get_chapter(workflow.project_id, workflow.chapter_id)
+            VersionToken(command.payload["plan_version"]).check(chapter.current_plan_version)
+            plan = PlanningService(self.session).get(
+                workflow.project_id, workflow.chapter_id, command.payload["plan_version"]
+            )
+            if (
+                str(plan.id) != command.payload["plan_id"]
+                or PlanningRepository(self.session).generation(workflow.id, plan.id) is None
+            ):
+                raise DomainError("VERSION_CONFLICT", "Planning artifact binding mismatch")
+            return {"plan_version": plan.version}
         if effect is None:
             allowed = (
                 {"gate_id", "decision", "expected_artifact_version", "reason"}
@@ -371,7 +417,10 @@ class WorkflowRuntime:
                 self._check(workflow.blocked_guard, workflow)
             changes = {}
             chapter = self.core.repo.get_chapter(workflow.project_id, workflow.chapter_id)
-            if workflow.resume_state == State.C04_CHAPTER_PLANNING:
+            if workflow.resume_state in {
+                State.C01_REQUIREMENT_INTAKE,
+                State.C04_CHAPTER_PLANNING,
+            }:
                 changes["plan_version"] = chapter.current_plan_version
             elif workflow.resume_state == State.C08_DETERMINISTIC_CHECK:
                 changes["draft_version"] = chapter.current_version
@@ -405,6 +454,12 @@ class WorkflowRuntime:
                 resume_status=workflow.status,
             )
         if event == "BLOCK":
+            if not workflow.simulation:
+                from novel_os.services.planning_freshness import PlanningFreshness
+
+                failure = PlanningFreshness(self.session).recovery_failure(workflow)
+                if failure:
+                    raise Blocked(failure)
             raise Blocked(GuardFailure("EXTERNAL_CONDITION", reason, "writable"))
         if workflow.status != RunStatus.WAITING_AGENT:
             raise DomainError("ILLEGAL_TRANSITION", "This state has no executor task")
@@ -435,6 +490,15 @@ class WorkflowRuntime:
         if failure:
             raise Blocked(failure)
 
+    def _check_planning(self, workflow, target):
+        from novel_os.services.planning_freshness import PlanningContextStale
+        from novel_os.services.planning_results import PlanningResultService
+
+        try:
+            PlanningResultService(self.session).check_transition(workflow, target)
+        except PlanningContextStale as exc:
+            raise Blocked(exc.failure) from exc
+
     def _prepare_gate(self, workflow, gate_id, command, context):
         context.require_user()
         gate = self.repo.gate(gate_id)
@@ -448,8 +512,12 @@ class WorkflowRuntime:
         VersionToken(command.payload["expected_artifact_version"]).check(gate.artifact_version)
         plan = gate.gate_type == GateType.PLAN_APPROVAL
         self._check("writable", workflow)
-        self._check("plan_current" if plan else "draft_current", workflow)
         decision = GateDecision(command.payload["decision"])
+        if plan and not workflow.simulation and decision == GateDecision.APPROVE:
+            # Check source validity before generic dependency guards, so a released
+            # dependency invalidates this Gate and selects a recoverable planning state.
+            self._check_planning(workflow, State.C06_PLAN_APPROVAL)
+        self._check("plan_current" if plan else "draft_current", workflow)
         if decision == GateDecision.APPROVE:
             service = PlanningService(self.session) if plan else ChapterVersionService(self.session)
             artifact = service.get(workflow.project_id, workflow.chapter_id, gate.artifact_version)
@@ -468,6 +536,7 @@ class WorkflowRuntime:
                     gate.artifact_version,
                     context,
                     command.payload["reason"],
+                    **({"gate_id": gate.id} if plan else {}),
                 )
         status = {
             GateDecision.APPROVE: GateStatus.APPROVED,
@@ -562,8 +631,100 @@ class WorkflowRuntime:
         if target in GATE_STATES and after.status == RunStatus.WAITING_HUMAN:
             self._open_gate(after, context)
         self.audit.record(before, after, command, context, guards, reason or command.event_type)
-        self.tasks.synchronize(after, context)
+        if command.event_type == "CORRECT_REQUIREMENT":
+            self.tasks.synchronize(after, context, command=command)
+        else:
+            self.tasks.synchronize(after, context)
         return after
+
+    def advance_planning_controls(self, workflow_id, run_id):
+        """Deterministic context/requirement readiness, without extra model calls."""
+        for state, event in (
+            (State.C02_CONTEXT_ASSEMBLY, "CONTEXT_READY"),
+            (State.C03_REQUIREMENT_READY, "REQUIREMENT_READY"),
+        ):
+            workflow = self.repo.get(workflow_id)
+            if workflow.simulation or workflow.current_state != state:
+                return
+            self.dispatch_in_transaction(
+                workflow_id,
+                EventCommand(
+                    event_id=uuid5(run_id, event),
+                    event_type=event,
+                    expected_state_version=workflow.state_version,
+                    origin_state=state,
+                ),
+                CommandContext(str(run_id), "planning-workflow", ActorType.SYSTEM),
+            )
+
+    def correct_requirement(
+        self,
+        workflow_id,
+        event_id,
+        expected_state_version,
+        expected_brief_version,
+        raw_requirement,
+        context,
+    ):
+        """User clarification restarts interpretation and invalidates in-flight planning."""
+        from novel_os.repositories.planning import PlanningRepository
+
+        context.require_user()
+        if (
+            not isinstance(raw_requirement, str)
+            or not raw_requirement.strip()
+            or "\x00" in raw_requirement
+            or len(raw_requirement) > 12000
+        ):
+            raise DomainError("VALIDATION_ERROR", "Invalid chapter requirement")
+        command = EventCommand(
+            event_id=event_id,
+            event_type="CORRECT_REQUIREMENT",
+            expected_state_version=expected_state_version,
+            payload={
+                "raw_requirement": raw_requirement,
+                "expected_brief_version": expected_brief_version,
+            },
+        )
+        with self.session.begin():
+            initial = self.repo.get(workflow_id)
+            self.core.require_transaction(initial.project_id)
+            workflow = self.repo.get(workflow_id, for_update=True)
+            duplicate = self._duplicate(command, context, workflow_id)
+            if duplicate:
+                return duplicate
+            VersionToken(expected_state_version).check(workflow.state_version)
+            if (
+                workflow.simulation
+                or workflow.current_state in TERMINAL_STATES
+                or workflow.current_state == State.C07_WRITING
+            ):
+                raise DomainError(
+                    "INVALID_STATE", "Requirement correction is limited to active planning"
+                )
+            self.core.check_record_lock(
+                self.core.repo.get_chapter(workflow.project_id, workflow.chapter_id)
+            )
+            repo = PlanningRepository(self.session)
+            brief = repo.brief(workflow_id)
+            VersionToken(expected_brief_version).check(brief.version if brief else 0)
+            if brief:
+                repo.supersede(brief)
+            self._close_gate(
+                workflow, GateStatus.STALE, context, command, "User corrected chapter requirement"
+            )
+            updated = self._transition(
+                workflow,
+                State.C01_REQUIREMENT_INTAKE,
+                command,
+                context,
+                resume_state=None,
+                resume_status=None,
+                resume_new_stage=False,
+                block_reason=None,
+                blocked_guard=None,
+            )
+            return self._remember(updated, command, context)
 
     def _open_gate(self, workflow, context):
         if self.repo.waiting_gate(workflow.id):

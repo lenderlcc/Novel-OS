@@ -5,6 +5,7 @@ from datetime import timedelta
 from pydantic import ValidationError
 
 from novel_os.agents.authority import AuthorityValidator
+from novel_os.agents.planning_schemas import BUSINESS_RESULTS, result_model
 from novel_os.agents.registry import AgentRegistry
 from novel_os.agents.runtime import TECHNICAL_ERRORS, ExecutionResult
 from novel_os.agents.schemas import AgentResult, ReviewOutput
@@ -65,6 +66,8 @@ class AgentResultHandler:
 
     def map_result(self, task, result):
         definition = self.authority.validate(task, result)
+        if task.task_type in BUSINESS_RESULTS:
+            return definition.success_event, {}, TaskStatus.SUCCEEDED
         if (
             result.status != ResultStatus.SUCCESS
             or result.confidence < 0.6
@@ -146,13 +149,25 @@ class AgentResultHandler:
                 try:
                     if not isinstance(result, AgentResult):
                         raise ValueError
-                    result = AgentResult.model_validate(result.model_dump())
+                    result = result_model(task.task_type).model_validate(result.model_dump())
                     self.authority.validate(task, result)
+                    if task.task_type in BUSINESS_RESULTS and expects_task(workflow, task):
+                        from novel_os.services.planning_results import PlanningResultService
+
+                        PlanningResultService(self.session).validate(
+                            task, run, result, package, workflow
+                        )
                     event, payload, terminal = self.map_result(task, result)
                 except (ValidationError, ValueError):
                     error = "SCHEMA_PARSE_ERROR"
-                except DomainError:
-                    error = "AUTHORITY_DENIED"
+                except DomainError as exc:
+                    error = (
+                        "CONTEXT_STALE"
+                        if exc.code == "VERSION_CONFLICT"
+                        else exc.code
+                        if exc.code in CONTEXT_BLOCK_ERRORS
+                        else "AUTHORITY_DENIED"
+                    )
             elif error not in TECHNICAL_ERRORS | set(ERROR_RETRYABLE) | CONTEXT_BLOCK_ERRORS | {
                 "AUTHORITY_DENIED",
                 "PROMPT_CONFIGURATION_ERROR",
@@ -163,9 +178,7 @@ class AgentResultHandler:
                     "result_status": result.status.value,
                     "confidence": result.confidence,
                     "kind": result.result.kind if result.result else None,
-                    "verdict": result.result.verdict
-                    if isinstance(result.result, ReviewOutput)
-                    else None,
+                    "verdict": getattr(result.result, "verdict", None),
                     "escalation_required": bool(result.escalation and result.escalation.required)
                     or result.confidence < 0.6
                     or result.status != ResultStatus.SUCCESS,
@@ -268,6 +281,13 @@ class AgentResultHandler:
                         {"reason": "Agent technical retry budget exhausted"},
                     )
                 return disposition
+            if task.task_type in BUSINESS_RESULTS:
+                from novel_os.services.planning_results import PlanningResultService
+
+                event, payload, terminal = PlanningResultService(self.session).persist(
+                    task, run, result, package, workflow
+                )
+                metadata["escalation_required"] = terminal == TaskStatus.BLOCKED
             self.history.task(
                 task,
                 context,
@@ -281,6 +301,12 @@ class AgentResultHandler:
                 **RELEASE_LEASE,
             )
             dispatched = self.emit(task, run, event, payload)
+            if (
+                task.task_type in BUSINESS_RESULTS
+                and terminal == TaskStatus.SUCCEEDED
+                and dispatched.outcome != "BLOCKED"
+            ):
+                WorkflowRuntime(self.session).advance_planning_controls(workflow.id, run.run_id)
             disposition = (
                 "BLOCKED"
                 if dispatched.outcome == "BLOCKED" or terminal == TaskStatus.BLOCKED

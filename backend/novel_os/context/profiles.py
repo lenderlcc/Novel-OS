@@ -81,6 +81,9 @@ class ContextProfile(FrozenModel):
 
 
 TASK_PROFILES = {
+    "PARSE_CHAPTER_REQUIREMENT": "CP-003A",
+    "PLAN_CHAPTER": "CP-004",
+    "REVIEW_CHAPTER_PLAN": "CP-004R",
     "CHAPTER_PLANNING": "CP-004",
     "CHAPTER_WRITING": "CP-005",
     "CHAPTER_REVIEW": "CP-006",
@@ -126,8 +129,15 @@ class ContextProfileRegistry:
         return profile
 
     def for_task(self, task_type):
-        profile = self.resolve(TASK_PROFILES.get(task_type, "CP-000"))
-        if task_type not in profile.allowed_task_types:
+        candidates = [
+            p
+            for p in self._profiles.values()
+            if p.profile_id == TASK_PROFILES.get(task_type, "CP-000")
+            and p.status == ModuleStatus.STABLE
+            and task_type in p.allowed_task_types
+        ]
+        profile = max(candidates, key=lambda p: p.version, default=None)
+        if profile is None:
             raise ContextConfigurationError("Task not supported by context profile")
         return profile
 

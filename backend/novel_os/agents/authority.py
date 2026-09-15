@@ -1,4 +1,4 @@
-from novel_os.agents.registry import STAGE_TASKS, AgentRegistry
+from novel_os.agents.registry import AgentRegistry
 from novel_os.agents.schemas import AgentResult
 from novel_os.domain.agents import FORBIDDEN_CAPABILITIES, AgentTask, Capability
 from novel_os.domain.errors import DomainError
@@ -19,8 +19,8 @@ class AuthorityValidator:
             not agent.enabled
             or task.task_type not in agent.accepted_task_types
             or definition.agent_id != task.agent_id
-            or STAGE_TASKS.get(task.workflow_state) != definition
-            or task.expected_output_schema != agent.result_schema
+            or task.workflow_state != definition.state
+            or task.expected_output_schema != definition.result_schema
             or scope & FORBIDDEN_CAPABILITIES
         ):
             raise DomainError("AUTHORITY_DENIED", "Task identity, state or capability is invalid")

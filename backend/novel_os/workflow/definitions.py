@@ -25,7 +25,7 @@ class TransitionRule(BaseModel):
     target: ChapterState
     actor: ActorType
     guards: tuple[str, ...] = ()
-    effect: Literal["create_plan", "create_draft"] | None = None
+    effect: Literal["create_plan", "create_draft", "bind_plan"] | None = None
 
 
 class DefinitionBody(BaseModel):
@@ -34,7 +34,7 @@ class DefinitionBody(BaseModel):
     version: int = Field(strict=True, ge=1)
     initial_state: Literal[ChapterState.C00_CREATED]
     max_technical_retries: int = Field(strict=True, ge=0, le=10)
-    simulation: Literal[True]
+    simulation: bool = Field(strict=True)
     transitions: tuple[TransitionRule, ...] = Field(min_length=1, max_length=100)
 
     @model_validator(mode="after")
@@ -94,6 +94,17 @@ class DefinitionBody(BaseModel):
             ChapterState.C91_FAILED,
             ChapterState.C92_CANCELLED,
         }
+        if not self.simulation:
+            required_states = {state for state in ChapterState if state.value <= "C07_WRITING"}
+            if self.id != "chapter-planning" or any(
+                rule.source not in required_states
+                or rule.target not in required_states
+                or rule.effect in {"create_draft", "create_plan"}
+                for rule in self.transitions
+            ):
+                raise ValueError("Business planning stops at C07")
+            if any(rule.source == ChapterState.C07_WRITING for rule in self.transitions):
+                raise ValueError("C07 is the planning handoff boundary")
         if not required_states <= reachable:
             raise ValueError("Chapter states must be reachable")
         return self
@@ -151,7 +162,14 @@ class WorkflowDefinitionRegistry:
     def __init__(self, definitions: list[WorkflowDefinition] | None = None):
         self._definitions = {}
         for definition in (
-            definitions if definitions is not None else [WorkflowDefinitionLoader().load()]
+            definitions
+            if definitions is not None
+            else [
+                WorkflowDefinitionLoader().load(),
+                WorkflowDefinitionLoader().load(
+                    Path(__file__).parent / "definitions/chapter-planning.v1.yaml"
+                ),
+            ]
         ):
             self.register(definition)
 

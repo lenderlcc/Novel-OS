@@ -2,7 +2,7 @@
 
 from datetime import timedelta
 
-from novel_os.agents.registry import STAGE_TASKS
+from novel_os.agents.registry import BUSINESS_STAGE_TASKS, STAGE_TASKS
 from novel_os.domain.agents import AgentTask, RunStatus, TaskStatus
 from novel_os.domain.errors import DomainError
 from novel_os.domain.workflow import WorkflowStatus
@@ -26,7 +26,7 @@ class TaskScheduler:
         self.repo = AgentTaskRepository(session)
         self.history = TaskHistory(session)
 
-    def synchronize(self, workflow, context, *, priority=0, delay_seconds=0):
+    def synchronize(self, workflow, context, *, priority=0, delay_seconds=0, command=None):
         if not self.session.in_transaction():
             raise RuntimeError("Task scheduling requires the workflow transaction")
         if type(priority) is not int or not -100 <= priority <= 100 or not 0 <= delay_seconds <= 60:
@@ -54,11 +54,44 @@ class TaskScheduler:
                     )
         if workflow.status != WorkflowStatus.WAITING_AGENT:
             return None
-        definition = STAGE_TASKS[workflow.current_state]
+        definition = (STAGE_TASKS if workflow.simulation else BUSINESS_STAGE_TASKS).get(
+            workflow.current_state
+        )
+        if definition is None:
+            return None  # C02/C03 are deterministic controls; C07 awaits NOVEL-008.
         existing = self.repo.logical(workflow.id, workflow.state_version, definition.task_type)
         if existing:
             return existing
         timestamp = self.repo.clock()
+        objective = "Execute the mock " + definition.task_type + " contract"
+        requirements = []
+        if not workflow.simulation:
+            from novel_os.prompts.contracts import canonical
+            from novel_os.repositories.planning import PlanningRepository
+
+            objective = (
+                command.payload["raw_requirement"]
+                if command and command.event_type == "CORRECT_REQUIREMENT"
+                else PlanningRepository(self.session)
+                .input_event(workflow.id)
+                .payload["raw_requirement"]
+            )
+            planning = PlanningRepository(self.session)
+            brief = planning.brief(workflow.id)
+            gate = planning.last_human_directive(workflow.id)
+            generation = planning.generation(workflow.id, gate.artifact_id) if gate else None
+            if brief and brief.status == "READY" and generation and generation.brief_id == brief.id:
+                requirements = [
+                    canonical(
+                        {
+                            "type": "USER_PLANNING_DIRECTIVE",
+                            "decision": gate.decision,
+                            "reason": gate.reason,
+                            "plan_id": str(gate.artifact_id),
+                            "plan_version": gate.artifact_version,
+                        }
+                    )
+                ]
         task = self.repo.add(
             AgentTask(
                 project_id=workflow.project_id,
@@ -68,9 +101,11 @@ class TaskScheduler:
                 agent_id=definition.agent_id,
                 task_type=definition.task_type,
                 target_ref=workflow.chapter_id,
-                objective="Execute the mock " + definition.task_type + " contract",
+                objective=objective,
+                requirements=requirements,
+                expected_output_schema=definition.result_schema,
                 constraints=[
-                    "Simulation only",
+                    "Simulation only" if workflow.simulation else "Planning only; no chapter prose",
                     "No approval, lock, canon commit or direct database access",
                 ],
                 capabilities=[definition.capability.value],

@@ -328,6 +328,20 @@ class PlanningService(ChapterArtifactService):
         "risks",
     }
 
+    def approve_in_transaction(
+        self, project_id, logical_id, expected_version, context, reason, *, gate_id=None
+    ):
+        from novel_os.services.planning_approval import validate_generated_plan_approval
+
+        self.require_transaction(project_id)
+        context.require_user()
+        record = self.repo.get_version(self.kind, project_id, logical_id)
+        VersionToken(expected_version).check(record.version)
+        validate_generated_plan_approval(self.session, record, gate_id)
+        return super().approve_in_transaction(
+            project_id, logical_id, expected_version, context, reason
+        )
+
     def validate(self, project_id: UUID, payload: dict, previous=None) -> dict:
         payload = dict(super().validate(project_id, payload, previous))
         references = payload.get(

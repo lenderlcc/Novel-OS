@@ -16,6 +16,7 @@ class StageTaskMapping:
     capability: Capability
     success_event: str
     quality_failure_event: str | None = None
+    result_schema: str = "mock-agent-result.v1"
 
 
 # System-owned mappings. Provider requests/results never contain these event names.
@@ -103,6 +104,38 @@ TASKS = {
     for state, agent, name, kind, success, failure in _TASKS
 }
 STAGE_TASKS = {definition.state: definition for definition in TASKS.values()}
+
+BUSINESS_STAGE_TASKS = {
+    State.C01_REQUIREMENT_INTAKE: StageTaskMapping(
+        "PARSE_CHAPTER_REQUIREMENT",
+        State.C01_REQUIREMENT_INTAKE,
+        AgentId.A02_REQUIREMENT,
+        "creative_brief",
+        Capability.REPORT_RESULT,
+        "AGENT_SUCCEEDED",
+        result_schema="chapter-requirement-result.v1",
+    ),
+    State.C04_CHAPTER_PLANNING: StageTaskMapping(
+        "PLAN_CHAPTER",
+        State.C04_CHAPTER_PLANNING,
+        AgentId.A03_PLANNING,
+        "chapter_plan",
+        Capability.PROPOSE_PLAN,
+        "PLAN_READY",
+        result_schema="chapter-planning-result.v1",
+    ),
+    State.C05_PLAN_REVIEW: StageTaskMapping(
+        "REVIEW_CHAPTER_PLAN",
+        State.C05_PLAN_REVIEW,
+        AgentId.A05_REVIEW,
+        "plan_review",
+        Capability.REVIEW,
+        "PLAN_REVIEW_PASSED",
+        "PLAN_REVIEW_FAILED",
+        "chapter-plan-review-result.v1",
+    ),
+}
+TASKS.update({mapping.task_type: mapping for mapping in BUSINESS_STAGE_TASKS.values()})
 
 
 class AgentRegistry:

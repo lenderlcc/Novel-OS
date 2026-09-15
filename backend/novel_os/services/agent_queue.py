@@ -5,6 +5,7 @@ from dataclasses import replace
 from datetime import timedelta
 from uuid import uuid4
 
+from novel_os.agents.registry import BUSINESS_STAGE_TASKS
 from novel_os.domain.agents import AgentRun, RunStatus, TaskLease, TaskStatus
 from novel_os.domain.errors import DomainError
 from novel_os.repositories.agent_tasks import AgentTaskRepository
@@ -29,7 +30,9 @@ class AgentQueue:
         with self.session.begin():
             task = self.repo.next_claimable()
             if task is None:
-                workflow_id = self.repo.unscheduled_workflow()
+                workflow_id = self.repo.unscheduled_workflow(
+                    business_states=tuple(BUSINESS_STAGE_TASKS)
+                )
                 if workflow_id is None:
                     return None
                 workflow = WorkflowRepository(self.session).get(workflow_id, for_update=True)

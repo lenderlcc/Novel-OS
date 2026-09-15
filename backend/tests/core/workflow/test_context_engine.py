@@ -381,12 +381,19 @@ def test_context_migration_roundtrip_preserves_all_preexisting_tables(
         return {
             name: connection.execute(select(table).order_by(*table.primary_key)).mappings().all()
             for name, table in Base.metadata.tables.items()
-            if name != "context_packages"
+            if name
+            not in {
+                "context_packages",
+                "creative_briefs",
+                "plan_generations",
+                "plan_review_reports",
+            }
         }
 
     with core_database.engine.begin() as connection:
         migration_config.attributes["connection"] = connection
         assert connection.scalar(text("SELECT count(*) FROM context_packages")) == 1
+        command.downgrade(migration_config, "0007_context_engine")
         before = snapshot(connection)
         command.downgrade(migration_config, "-1")
         assert (
@@ -398,7 +405,7 @@ def test_context_migration_roundtrip_preserves_all_preexisting_tables(
         command.upgrade(migration_config, "head")
         assert (
             connection.scalar(text("SELECT version_num FROM alembic_version"))
-            == "0007_context_engine"
+            == "0008_requirement_planning"
         )
         assert snapshot(connection) == before
         assert connection.scalar(text("SELECT count(*) FROM context_packages")) == 0

@@ -108,6 +108,14 @@ class ContextService:
                 else:
                     missing.append(f"locked_dependency:{kind}:{target}")
         refs = tuple(sorted(set(refs), key=lambda r: (r.source_type, str(r.logical_id), r.version)))
+        if task.task_type in {"PLAN_CHAPTER", "REVIEW_CHAPTER_PLAN"}:
+            from novel_os.services.planning_context import planning_refs
+
+            business_refs, business_missing = planning_refs(
+                self.core.session, task.task_type, workflow
+            )
+            refs = tuple(set(refs) | set(business_refs))
+            missing.extend(business_missing)
         return ContextRequest(
             project_id=task.project_id,
             task_id=task.task_id,
@@ -136,6 +144,18 @@ class ContextService:
                 return self.validate_in_transaction(existing, task, workflow)
             if not expects_task(workflow, task):
                 return ContextBuildResult(status=ContextStatus.STALE, error_code="CONTEXT_STALE")
+            if task.task_type in {"PLAN_CHAPTER", "REVIEW_CHAPTER_PLAN"}:
+                from novel_os.services.planning_freshness import (
+                    PlanningContextStale,
+                    PlanningFreshness,
+                )
+
+                try:
+                    PlanningFreshness(self.session).check_task(workflow)
+                except PlanningContextStale:
+                    return ContextBuildResult(
+                        status=ContextStatus.STALE, error_code="CONTEXT_STALE"
+                    )
             profile = self.registry.for_task(task.task_type)
             self.repo.check_profile(profile)
             request = self.request_for_task(task, workflow, profile)

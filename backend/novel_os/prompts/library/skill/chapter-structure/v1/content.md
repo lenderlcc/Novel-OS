@@ -1,0 +1,1 @@
+Design scene functions with a causal progression and a realizable required outcome. State what changes and why, not every line of dialogue. Use distinct scene functions and proportionate pacing. End with a clear state that connects to the chapter objective while leaving language, texture and local execution to the Writer.

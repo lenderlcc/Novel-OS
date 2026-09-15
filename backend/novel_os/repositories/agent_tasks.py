@@ -121,7 +121,7 @@ class AgentTaskRepository:
         )
         return to_domain(row, AgentTask) if row else None
 
-    def unscheduled_workflow(self):
+    def unscheduled_workflow(self, *, business_states=()):
         # Backfill an existing NOVEL-003 waiting stage after the additive migration.
         has_task = (
             select(AgentTaskModel.task_id)
@@ -134,7 +134,12 @@ class AgentTaskRepository:
         return self.session.scalar(
             select(WorkflowInstanceModel.id)
             .join(ProjectModel, ProjectModel.id == WorkflowInstanceModel.project_id)
-            .where(WorkflowInstanceModel.status == WorkflowStatus.WAITING_AGENT, ~has_task)
+            .where(
+                WorkflowInstanceModel.status == WorkflowStatus.WAITING_AGENT,
+                WorkflowInstanceModel.simulation.is_(True)
+                | WorkflowInstanceModel.current_state.in_(business_states),
+                ~has_task,
+            )
             .order_by(WorkflowInstanceModel.id)
             .with_for_update(of=ProjectModel, skip_locked=True)
             .limit(1)

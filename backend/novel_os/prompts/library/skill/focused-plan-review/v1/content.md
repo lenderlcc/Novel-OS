@@ -1,0 +1,1 @@
+Check objective-to-outcome causality, scene distinctness, constraint coverage and proportional specificity. Hard gates override a nominal PASS or any average score. Soft quality concerns can yield PASS_WITH_WARNINGS. Distinguish a genuine major change from harmless local detail to avoid false positives and needless user interruption.
