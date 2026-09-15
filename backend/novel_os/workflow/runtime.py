@@ -335,6 +335,22 @@ class WorkflowRuntime:
         return self._transition(workflow, rule.target, command, context, guards=guards, **changes)
 
     def _effect(self, workflow, effect, command, context):
+        if effect == "bind_draft":
+            validate_payload(command.payload, {"generation_id"})
+            from novel_os.services.writing_results import WritingResultService
+
+            version = WritingResultService(self.session).check_persisted(
+                workflow, command.payload["generation_id"], command.event_id
+            )
+            return {"draft_version": version.version}
+        if command.event_type == "REGENERATE_DRAFT":
+            context.require_user()
+            validate_payload(command.payload, {"expected_draft_version", "reason"})
+            chapter = self.core.repo.get_chapter(workflow.project_id, workflow.chapter_id)
+            token = VersionToken(command.payload["expected_draft_version"])
+            token.check(chapter.current_version or 0)
+            token.check(workflow.draft_version or 0)
+            return {}
         if effect == "bind_plan":
             validate_payload(command.payload, {"plan_id", "plan_version"})
             from novel_os.repositories.planning import PlanningRepository
@@ -412,6 +428,18 @@ class WorkflowRuntime:
                 or workflow.resume_state is None
             ):
                 raise DomainError("INVALID_STATE", "Only paused or blocked workflows can resume")
+            from dataclasses import replace
+
+            from novel_os.services.writing_binding import WritingBindingService
+
+            recovery = WritingBindingService(self.session).recovery_failure(
+                replace(
+                    workflow, current_state=workflow.resume_state, status=workflow.resume_status
+                )
+            )
+            if recovery:
+                # Re-evaluate sources changed while suspended before taking a new input snapshot.
+                raise Blocked(recovery)
             self._check("writable", workflow)
             if workflow.blocked_guard:
                 self._check(workflow.blocked_guard, workflow)
@@ -422,8 +450,10 @@ class WorkflowRuntime:
                 State.C04_CHAPTER_PLANNING,
             }:
                 changes["plan_version"] = chapter.current_plan_version
-            elif workflow.resume_state == State.C08_DETERMINISTIC_CHECK:
+            elif workflow.simulation and workflow.resume_state == State.C08_DETERMINISTIC_CHECK:
                 changes["draft_version"] = chapter.current_version
+            # Formal C08 preserves the Draft bound by its successful Writing check;
+            # an independently created current version cannot replace that evidence.
             return self._transition(
                 workflow,
                 workflow.resume_state,
@@ -456,8 +486,11 @@ class WorkflowRuntime:
         if event == "BLOCK":
             if not workflow.simulation:
                 from novel_os.services.planning_freshness import PlanningFreshness
+                from novel_os.services.writing_binding import WritingBindingService
 
-                failure = PlanningFreshness(self.session).recovery_failure(workflow)
+                failure = WritingBindingService(self.session).recovery_failure(workflow)
+                if failure is None:
+                    failure = PlanningFreshness(self.session).recovery_failure(workflow)
                 if failure:
                     raise Blocked(failure)
             raise Blocked(GuardFailure("EXTERNAL_CONDITION", reason, "writable"))
@@ -697,7 +730,7 @@ class WorkflowRuntime:
             if (
                 workflow.simulation
                 or workflow.current_state in TERMINAL_STATES
-                or workflow.current_state == State.C07_WRITING
+                or workflow.current_state in {State.C07_WRITING, State.C08_DETERMINISTIC_CHECK}
             ):
                 raise DomainError(
                     "INVALID_STATE", "Requirement correction is limited to active planning"

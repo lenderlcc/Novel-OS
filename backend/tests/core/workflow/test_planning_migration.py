@@ -13,7 +13,7 @@ def historical_rows(connection):
     return {
         name: connection.execute(select(table).order_by(*table.primary_key)).mappings().all()
         for name, table in Base.metadata.tables.items()
-        if name not in ADDED
+        if name not in ADDED | {"writing_task_bindings", "writing_generations"}
     }
 
 
@@ -25,8 +25,9 @@ def test_0008_roundtrip_preserves_all_older_tables_including_business_workflow(
         migration_config.attributes["connection"] = connection
         assert (
             connection.scalar(text("SELECT version_num FROM alembic_version"))
-            == "0008_requirement_planning"
+            == "0009_writing_agent"
         )
+        command.downgrade(migration_config, "0008_requirement_planning")
         before = historical_rows(connection)
         command.downgrade(migration_config, "-1")
         assert (
@@ -38,7 +39,7 @@ def test_0008_roundtrip_preserves_all_older_tables_including_business_workflow(
         command.upgrade(migration_config, "head")
         assert (
             connection.scalar(text("SELECT version_num FROM alembic_version"))
-            == "0008_requirement_planning"
+            == "0009_writing_agent"
         )
         assert set(inspect(connection).get_table_names()) >= ADDED
         assert historical_rows(connection) == before

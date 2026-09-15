@@ -807,3 +807,72 @@ uv run --locked pytest -q tests/core/workflow/test_planning_live.py --live-model
 
 真实模型测试最多执行七次尝试并使用隔离测试 schema；它不代表全面的语义质量评估。
 实现与最终验收记录见 [NOVEL-007 实现报告](docs/reports/NOVEL-007-implementation.md)。
+
+### Writing Vertical Slice — NOVEL-008
+
+NOVEL-008 将正式流程推进到 `C08_DETERMINISTIC_CHECK`。沿用规划流程的 Brief、Plan Review 和 Human Plan Gate；批准 Plan 后自动调度 `A04_WRITING / WRITE_CHAPTER`。Worker 通过 CP-005 v3、版本化 Writing Prompt 和同一个 Pydantic 输出契约生成正文。确定性校验通过后，系统创建不可变 `ChapterVersion DRAFT` 和可追溯生成记录。
+
+新入口：`POST /api/v1/workflows/chapter-writing`。请求字段与已有规划入口相同：
+
+```json
+{
+  "event_id": "<new UUID>",
+  "project_id": "<existing Project UUID>",
+  "chapter_id": "<existing Chapter UUID>",
+  "raw_requirement": "两人在雨夜会合，决定沿河寻找失落的信件。不要新增核心能力。"
+}
+```
+
+1. 复用 `/workflows/{id}/events` 提交 `USER_SUBMITTED` 和当前 `expected_state_version`。
+2. 启动 Worker：在 `backend/` 执行 `uv run python -m novel_os.worker --config config.toml`。默认 Mock，不调用外部模型。
+3. 等待 C06，通过 `/human-gates/{gate_id}/decision` 提交 `APPROVE`、准确的 `expected_artifact_version` 与工作流状态版本。
+4. Worker 自动执行 Writing；读取 `/workflows/{id}/writing/history` 查看生成记录，通过已有 `/projects/{project_id}/chapters/{chapter_id}/versions/{version}` 查看正文。
+5. 流程停在 C08，没有正文 Review/Revision/Memory Agent 任务。
+
+新入口使用 `chapter-planning` **v2**；原 `/workflows/chapter-planning` 仍使用 v1 并停在 C07。历史实例和已发布定义不改写。迁移为 `0009_writing_agent`，其父版本为 `0008_requirement_planning`。
+
+Writing 绑定具体已批准 Plan 的 ID/version，不取 current/latest。即使存在 Plan v2 PROPOSED，已批准 v1 仍是 Writing 输入。任务创建时冻结输入指纹，在调用模型前和保存结果前重新验证审批、锁、Brief、Context 与工作流状态。只有有效的批准版本进入 CP-005；未来信息只通过精确、必要的依赖进入，未来 Plan 还必须已批准。GLOBAL_ONLY 不构成人物知识授权。
+
+生成新正文仅更新 `current_version`，保留 `approved_version`。LOCAL 偏离可继续，MODERATE 留下显式元数据；MAJOR、requires_replan、明确的禁止项违反、核心方向改变和确认的人物知识泄漏会 BLOCK，保存检查原因但不保存为正常正文版本。小型 proposed facts 仅为生成元数据，没有 Canon 写入。
+
+`GET /api/v1/workflows/{id}/writing/history?limit=100&offset=0` 返回正文版本 ID、Task/Run、Plan、Brief、PromptLineage、ContextPackage、模型配置、正文哈希、Writing metadata 和确定性检查结果。正文不混入元数据，也不重复存进生成记录。
+
+在 C08 可由用户通过 `POST /api/v1/workflows/{id}/writing/regenerate` 请求新的业务版本：
+
+```json
+{
+  "event_id": "<new UUID>",
+  "expected_state_version": 9,
+  "expected_draft_version": 1,
+  "reason": "在同一个已批准计划内生成另一版表达"
+}
+```
+
+两个版本令牌应使用实际查询值。该操作创建新 Task 和新正文版本，不修改历史正文，也不属于技术重试。模型超时或格式错误仍使用原 Task 的新 Run，成功前不创建正文版本。
+
+正式流程从暂停或阻塞恢复到 C08 时，保留已经通过 Writing 检查的 `draft_version`。期间通过 Core API 独立创建的正文不会被自动绑定到工作流；当它与工作流正文版本不一致时，再生成返回版本冲突，保留用户编辑。如果 C08 所绑定的批准 Plan 已失效，再生成或恢复会记录 BLOCKED，并将恢复目标设为 C04；再次 RESUME 后重新规划、审查并通过用户 Plan Gate，才会生成新正文。
+
+Writing 启用 `scene-execution`、`dialogue`、`character-voice`、`narrative-rhythm`、`natural-prose` 五个技能。自然性规则是文学表达指导，不是词语禁令、句长配额或 AI detector 规避；Writer 不输出可被系统信任的 quality_pass。
+
+仍使用 TOML 文件配置。`agent_model_profile = "mock-default"` 为 Writing 选择 `mock-writing`；显式配置 `openai-structured` 时选择 `openai-writing`。Writing profile 默认预留 8192 输出 token、90 秒超时，记录到 PromptLineage；单章单次生成，技术重试另开 Run。Mock 正文是固定离线契约样例，不衡量任意用户需求的文学完成度。
+
+```bash
+cd backend
+uv run pytest tests/test_writing_contracts.py tests/core/writing
+uv run pytest
+uv run ruff check
+uv run ruff format --check
+uv run alembic upgrade head
+uv run alembic downgrade -1
+uv run alembic upgrade head
+uv run alembic check
+uv build
+```
+
+真实 Writing smoke 默认跳过。仅在本机忽略的 `config.toml` 配好密钥且明确同意外部调用费用后，手动执行：
+
+```bash
+uv run pytest tests/core/writing/test_live.py --live-model
+```
+
+该测试使用独立测试 schema、Mock 规划后经用户门批准的测试 Plan，最多进行三次 Writing 调用。文学质量、角色一致性、完整需求 Review 和正文验收属于后续 Ticket。本阶段的确定性检查只证明契约、权限、来源和持久化关系正确，不证明文学质量。

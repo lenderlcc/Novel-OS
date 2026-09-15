@@ -64,6 +64,21 @@ class ContextService:
             raise DomainError("LEASE_LOST", "Context execution lease is no longer valid")
         return task, workflow, run
 
+    def task_profile(self, task):
+        if task.task_type == "WRITE_CHAPTER":
+            from novel_os.repositories.writing import WritingRepository
+
+            return ContextProfile.model_validate_json(
+                WritingRepository(self.session).binding(task.task_id).profile_json
+            )
+        return self.registry.for_task(task.task_type)
+
+    def check_writing(self, task, workflow):
+        if task.task_type == "WRITE_CHAPTER":
+            from novel_os.services.writing_binding import WritingBindingService
+
+            WritingBindingService(self.session).check(task, workflow)
+
     def request_for_task(self, task, workflow, profile=None):
         profile = profile or self.registry.for_task(task.task_type)
         chapter = self.sources.chapter(task.project_id, task.target_ref)
@@ -107,6 +122,29 @@ class ContextService:
                     )
                 else:
                     missing.append(f"locked_dependency:{kind}:{target}")
+        if task.task_type == "WRITE_CHAPTER":
+            from novel_os.agents.planning_schemas import ChapterPlanOutput
+            from novel_os.repositories.planning import PlanningRepository
+
+            generation = (
+                PlanningRepository(self.session).generation(workflow.id, plan.id) if plan else None
+            )
+            refs = []
+            if generation is None:
+                missing.append("writing.plan_generation")
+            else:
+                for dependency in ChapterPlanOutput.model_validate(
+                    generation.body
+                ).locked_dependencies:
+                    ref = SourceRef(
+                        source_type=dependency.source_type,
+                        logical_id=dependency.logical_id,
+                        version=dependency.version,
+                    )
+                    refs.append(ref)
+                    lock = self.sources.lock(task.project_id, ref.source_type, ref.logical_id)
+                    if lock is None or lock.target_version != ref.version:
+                        missing.append("writing.exact_locked_dependency")
         refs = tuple(sorted(set(refs), key=lambda r: (r.source_type, str(r.logical_id), r.version)))
         if task.task_type in {"PLAN_CHAPTER", "REVIEW_CHAPTER_PLAN"}:
             from novel_os.services.planning_context import planning_refs
@@ -156,7 +194,11 @@ class ContextService:
                     return ContextBuildResult(
                         status=ContextStatus.STALE, error_code="CONTEXT_STALE"
                     )
-            profile = self.registry.for_task(task.task_type)
+            try:
+                self.check_writing(task, workflow)
+            except DomainError:
+                return ContextBuildResult(status=ContextStatus.STALE, error_code="CONTEXT_STALE")
+            profile = self.task_profile(task)
             self.repo.check_profile(profile)
             request = self.request_for_task(task, workflow, profile)
             batch = self.query.query(request, profile, self.tasks.clock(), task.created_at)
@@ -208,6 +250,12 @@ class ContextService:
             task.workflow_instance_id,
             task.target_ref,
         ) or not expects_task(workflow, task):
+            return ContextBuildResult(
+                status=ContextStatus.STALE, package=package, error_code="CONTEXT_STALE"
+            )
+        try:
+            self.check_writing(task, workflow)
+        except DomainError:
             return ContextBuildResult(
                 status=ContextStatus.STALE, package=package, error_code="CONTEXT_STALE"
             )

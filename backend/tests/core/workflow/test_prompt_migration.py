@@ -19,6 +19,8 @@ def historical_snapshot(connection):
             "creative_briefs",
             "plan_generations",
             "plan_review_reports",
+            "writing_task_bindings",
+            "writing_generations",
         }
     }
 
@@ -43,7 +45,7 @@ def test_0006_roundtrip_preserves_all_existing_core_workflow_agent_and_audit_row
         command.upgrade(migration_config, "head")
         assert (
             connection.scalar(text("SELECT version_num FROM alembic_version"))
-            == "0008_requirement_planning"
+            == "0009_writing_agent"
         )
         assert connection.scalar(text("SELECT count(*) FROM prompt_lineages")) == 0
         assert historical_snapshot(connection) == before

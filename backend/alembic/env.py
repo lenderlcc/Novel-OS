@@ -9,6 +9,7 @@ from novel_os.models import (  # noqa: F401 -- register ORM metadata
     planning,  # noqa: F401 -- register ORM metadata
     prompts,
     workflow,
+    writing,
 )
 from novel_os.models import context as context_models  # noqa: F401 -- register ORM metadata
 

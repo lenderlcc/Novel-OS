@@ -1,0 +1,22 @@
+{
+  "module_id": "natural-prose",
+  "module_type": "SKILL",
+  "version": 1,
+  "status": "STABLE",
+  "description": "NOVEL-008 natural-prose",
+  "content_path": "content.md",
+  "dependencies": [
+    {
+      "module_id": "novel-os-core",
+      "version": 1
+    }
+  ],
+  "compatible_agents": [
+    "A04_WRITING"
+  ],
+  "compatible_task_types": [
+    "WRITE_CHAPTER"
+  ],
+  "created_at": "2026-09-15T00:00:00Z",
+  "content_hash": "4c1120687e848044038bc3aa0a1ebf18c9cef9500fb179f9e2e4abf8950a3ff4"
+}

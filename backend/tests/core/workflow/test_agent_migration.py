@@ -21,6 +21,8 @@ def snapshot(connection):
             "creative_briefs",
             "plan_generations",
             "plan_review_reports",
+            "writing_task_bindings",
+            "writing_generations",
         }
     }
 
@@ -44,7 +46,7 @@ def test_0005_roundtrip_preserves_core_workflow_audit_and_worker_recovers_waitin
         assert snapshot(connection) == before
         command.upgrade(migration_config, "head")
         assert connection.scalar(text("SELECT version_num FROM alembic_version")) == (
-            "0008_requirement_planning"
+            "0009_writing_agent"
         )
         assert connection.scalar(text("SELECT count(*) FROM agent_tasks")) == 0
         assert snapshot(connection) == before

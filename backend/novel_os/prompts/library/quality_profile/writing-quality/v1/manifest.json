@@ -1,0 +1,22 @@
+{
+  "module_id": "writing-quality",
+  "module_type": "QUALITY_PROFILE",
+  "version": 1,
+  "status": "STABLE",
+  "description": "NOVEL-008 writing-quality",
+  "content_path": "content.md",
+  "dependencies": [
+    {
+      "module_id": "novel-os-core",
+      "version": 1
+    }
+  ],
+  "compatible_agents": [
+    "A04_WRITING"
+  ],
+  "compatible_task_types": [
+    "WRITE_CHAPTER"
+  ],
+  "created_at": "2026-09-15T00:00:00Z",
+  "content_hash": "a526984424d46ebc4790f1104547495439000f461360533da172f3aca97ee5f4"
+}

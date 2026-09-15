@@ -1,0 +1,22 @@
+{
+  "module_id": "dialogue",
+  "module_type": "SKILL",
+  "version": 1,
+  "status": "STABLE",
+  "description": "NOVEL-008 dialogue",
+  "content_path": "content.md",
+  "dependencies": [
+    {
+      "module_id": "novel-os-core",
+      "version": 1
+    }
+  ],
+  "compatible_agents": [
+    "A04_WRITING"
+  ],
+  "compatible_task_types": [
+    "WRITE_CHAPTER"
+  ],
+  "created_at": "2026-09-15T00:00:00Z",
+  "content_hash": "454a353168dfd3665f59437c46a94232d3105ca6b87d1f1827b0f816d67831d9"
+}

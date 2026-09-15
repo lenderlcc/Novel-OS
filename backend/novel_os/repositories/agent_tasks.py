@@ -137,7 +137,12 @@ class AgentTaskRepository:
             .where(
                 WorkflowInstanceModel.status == WorkflowStatus.WAITING_AGENT,
                 WorkflowInstanceModel.simulation.is_(True)
-                | WorkflowInstanceModel.current_state.in_(business_states),
+                | WorkflowInstanceModel.current_state.in_(business_states)
+                | (
+                    (WorkflowInstanceModel.workflow_definition_id == "chapter-planning")
+                    & (WorkflowInstanceModel.workflow_definition_version == 2)
+                    & (WorkflowInstanceModel.current_state == "C07_WRITING")
+                ),
                 ~has_task,
             )
             .order_by(WorkflowInstanceModel.id)

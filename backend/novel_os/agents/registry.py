@@ -135,6 +135,16 @@ BUSINESS_STAGE_TASKS = {
         "chapter-plan-review-result.v1",
     ),
 }
+WRITING_TASK = StageTaskMapping(
+    "WRITE_CHAPTER",
+    State.C07_WRITING,
+    AgentId.A04_WRITING,
+    "writing_result",
+    Capability.PROPOSE_DRAFT,
+    "DRAFT_READY",
+    result_schema="chapter-writing-result.v1",
+)
+TASKS[WRITING_TASK.task_type] = WRITING_TASK
 TASKS.update({mapping.task_type: mapping for mapping in BUSINESS_STAGE_TASKS.values()})
 
 
@@ -144,7 +154,12 @@ class AgentRegistry:
             agent: AgentDefinition(
                 agent_id=agent,
                 name=agent.value[4:].title(),
-                mission="Execute validated mock tasks within scope; never approve or commit canon.",
+                mission=(
+                    "Write a complete Draft within the exact approved Plan; local creativity only, "
+                    "major changes require escalation; never approve or commit canon."
+                    if agent == AgentId.A04_WRITING
+                    else "Execute validated mock tasks within scope; never approve or commit canon."
+                ),
                 accepted_task_types=tuple(
                     t.task_type for t in TASKS.values() if t.agent_id == agent
                 ),

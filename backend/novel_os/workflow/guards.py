@@ -14,7 +14,7 @@ class GuardRegistry:
         self.checks = {
             "writable": self.writable,
             "plan_current": lambda w: self.artifact(w, plan=True, approved=False),
-            "plan_approved": lambda w: self.artifact(w, plan=True, approved=True),
+            "plan_approved": self.plan_approved,
             "draft_current": lambda w: self.draft(w, approved=False),
             "draft_approved": lambda w: self.draft(w, approved=True),
         }
@@ -33,6 +33,19 @@ class GuardRegistry:
         if chapter.status in {Status.ARCHIVED, Status.CANCELLED, Status.DEPRECATED}:
             raise DomainError("INVALID_STATE", "Chapter is not writable")
         self.core.check_record_lock(chapter)
+
+    def plan_approved(self, instance):
+        from novel_os.services.writing_binding import WritingBindingService, supports_writing
+
+        if supports_writing(instance):
+            writing = WritingBindingService(self.core.session)
+            if instance.current_state == ChapterState.C08_DETERMINISTIC_CHECK:
+                failure = writing.recovery_failure(instance)
+                if failure:
+                    return failure
+            writing.approved_plan(instance)
+            return None
+        return self.artifact(instance, plan=True, approved=True)
 
     def draft(self, instance: WorkflowInstance, *, approved: bool):
         # A current/approved body is usable only while its bound plan remains approved.

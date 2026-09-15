@@ -81,6 +81,7 @@ class ContextProfile(FrozenModel):
 
 
 TASK_PROFILES = {
+    "WRITE_CHAPTER": "CP-005",
     "PARSE_CHAPTER_REQUIREMENT": "CP-003A",
     "PLAN_CHAPTER": "CP-004",
     "REVIEW_CHAPTER_PLAN": "CP-004R",

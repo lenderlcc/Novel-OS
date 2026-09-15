@@ -119,7 +119,7 @@ def build(request_value, items, selected_profile=None, **kwargs):
 def test_registry_loads_profiles_and_exact_version():
     registry = ContextProfileRegistry()
     assert [registry.resolve(f"CP-00{v}", 1).version for v in range(4, 8)] == [1] * 4
-    assert [registry.resolve(f"CP-00{v}").version for v in range(4, 8)] == [3, 2, 2, 2]
+    assert [registry.resolve(f"CP-00{v}").version for v in range(4, 8)] == [3, 3, 2, 2]
     assert (
         registry.for_task("MOCK_WRITE").future_knowledge_policy
         == FutureKnowledgePolicy.REQUIRED_ONLY

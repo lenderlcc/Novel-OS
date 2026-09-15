@@ -57,8 +57,14 @@ class TaskScheduler:
         definition = (STAGE_TASKS if workflow.simulation else BUSINESS_STAGE_TASKS).get(
             workflow.current_state
         )
+        from novel_os.agents.registry import WRITING_TASK
+        from novel_os.services.writing_binding import supports_writing
+
+        if supports_writing(workflow) and workflow.current_state == WRITING_TASK.state:
+            definition = WRITING_TASK
         if definition is None:
-            return None  # C02/C03 are deterministic controls; C07 awaits NOVEL-008.
+            return None  # Deterministic controls and versioned handoff boundaries have no agent.
+
         existing = self.repo.logical(workflow.id, workflow.state_version, definition.task_type)
         if existing:
             return existing
@@ -105,7 +111,11 @@ class TaskScheduler:
                 requirements=requirements,
                 expected_output_schema=definition.result_schema,
                 constraints=[
-                    "Simulation only" if workflow.simulation else "Planning only; no chapter prose",
+                    "Simulation only"
+                    if workflow.simulation
+                    else "Write from the exact approved Plan; local creativity only"
+                    if definition.task_type == "WRITE_CHAPTER"
+                    else "Planning only; no chapter prose",
                     "No approval, lock, canon commit or direct database access",
                 ],
                 capabilities=[definition.capability.value],
@@ -114,5 +124,9 @@ class TaskScheduler:
                 priority=priority,
             )
         )
+        if task.task_type == "WRITE_CHAPTER":
+            from novel_os.services.writing_binding import WritingBindingService
+
+            WritingBindingService(self.session).capture(task, workflow)
         self.history.audit(task, None, task, context, "Workflow scheduled agent task")
         return task

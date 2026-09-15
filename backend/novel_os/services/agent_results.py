@@ -66,7 +66,7 @@ class AgentResultHandler:
 
     def map_result(self, task, result):
         definition = self.authority.validate(task, result)
-        if task.task_type in BUSINESS_RESULTS:
+        if task.task_type in BUSINESS_RESULTS or task.task_type == "WRITE_CHAPTER":
             return definition.success_event, {}, TaskStatus.SUCCEEDED
         if (
             result.status != ResultStatus.SUCCESS
@@ -155,6 +155,12 @@ class AgentResultHandler:
                         from novel_os.services.planning_results import PlanningResultService
 
                         PlanningResultService(self.session).validate(
+                            task, run, result, package, workflow
+                        )
+                    if task.task_type == "WRITE_CHAPTER" and expects_task(workflow, task):
+                        from novel_os.services.writing_results import WritingResultService
+
+                        WritingResultService(self.session).validate(
                             task, run, result, package, workflow
                         )
                     event, payload, terminal = self.map_result(task, result)
@@ -285,6 +291,13 @@ class AgentResultHandler:
                 from novel_os.services.planning_results import PlanningResultService
 
                 event, payload, terminal = PlanningResultService(self.session).persist(
+                    task, run, result, package, workflow
+                )
+                metadata["escalation_required"] = terminal == TaskStatus.BLOCKED
+            if task.task_type == "WRITE_CHAPTER":
+                from novel_os.services.writing_results import WritingResultService
+
+                event, payload, terminal = WritingResultService(self.session).persist(
                     task, run, result, package, workflow
                 )
                 metadata["escalation_required"] = terminal == TaskStatus.BLOCKED

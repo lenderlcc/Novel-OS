@@ -1,0 +1,22 @@
+{
+  "module_id": "narrative-rhythm",
+  "module_type": "SKILL",
+  "version": 1,
+  "status": "STABLE",
+  "description": "NOVEL-008 narrative-rhythm",
+  "content_path": "content.md",
+  "dependencies": [
+    {
+      "module_id": "novel-os-core",
+      "version": 1
+    }
+  ],
+  "compatible_agents": [
+    "A04_WRITING"
+  ],
+  "compatible_task_types": [
+    "WRITE_CHAPTER"
+  ],
+  "created_at": "2026-09-15T00:00:00Z",
+  "content_hash": "c285814c4335349770c6f4d9129d8d3d0abbb818ae8584657920676207a241bb"
+}

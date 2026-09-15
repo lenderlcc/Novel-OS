@@ -1,0 +1,22 @@
+{
+  "module_id": "write-chapter",
+  "module_type": "TASK_TEMPLATE",
+  "version": 1,
+  "status": "STABLE",
+  "description": "NOVEL-008 write-chapter",
+  "content_path": "content.md",
+  "dependencies": [
+    {
+      "module_id": "novel-os-core",
+      "version": 1
+    }
+  ],
+  "compatible_agents": [
+    "A04_WRITING"
+  ],
+  "compatible_task_types": [
+    "WRITE_CHAPTER"
+  ],
+  "created_at": "2026-09-15T00:00:00Z",
+  "content_hash": "fe2edd0f6f5bce0d10bafdffc8a6cda0364e5c24ccda246e0d8f3bc563a32bfc"
+}

@@ -387,6 +387,8 @@ def test_context_migration_roundtrip_preserves_all_preexisting_tables(
                 "creative_briefs",
                 "plan_generations",
                 "plan_review_reports",
+                "writing_task_bindings",
+                "writing_generations",
             }
         }
 
@@ -405,7 +407,7 @@ def test_context_migration_roundtrip_preserves_all_preexisting_tables(
         command.upgrade(migration_config, "head")
         assert (
             connection.scalar(text("SELECT version_num FROM alembic_version"))
-            == "0008_requirement_planning"
+            == "0009_writing_agent"
         )
         assert snapshot(connection) == before
         assert connection.scalar(text("SELECT count(*) FROM context_packages")) == 0

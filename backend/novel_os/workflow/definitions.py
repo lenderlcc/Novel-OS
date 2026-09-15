@@ -25,7 +25,7 @@ class TransitionRule(BaseModel):
     target: ChapterState
     actor: ActorType
     guards: tuple[str, ...] = ()
-    effect: Literal["create_plan", "create_draft", "bind_plan"] | None = None
+    effect: Literal["create_plan", "create_draft", "bind_plan", "bind_draft"] | None = None
 
 
 class DefinitionBody(BaseModel):
@@ -76,6 +76,13 @@ class DefinitionBody(BaseModel):
                 raise ValueError("Gate transitions require user decisions")
             if rule.effect and rule.actor != ActorType.AGENT:
                 raise ValueError("Artifact effects require executor results")
+            if rule.effect == "bind_draft" and (
+                self.simulation
+                or self.version != 2
+                or (rule.source, rule.event, rule.target)
+                != (ChapterState.C07_WRITING, "DRAFT_READY", ChapterState.C08_DETERMINISTIC_CHECK)
+            ):
+                raise ValueError("Draft binding belongs to formal Writing completion")
             if rule.effect == "create_plan" and (rule.source, rule.event) != (
                 ChapterState.C04_CHAPTER_PLANNING,
                 "PLAN_READY",
@@ -95,7 +102,8 @@ class DefinitionBody(BaseModel):
             ChapterState.C92_CANCELLED,
         }
         if not self.simulation:
-            required_states = {state for state in ChapterState if state.value <= "C07_WRITING"}
+            boundary = "C08_DETERMINISTIC_CHECK" if self.version == 2 else "C07_WRITING"
+            required_states = {state for state in ChapterState if state.value <= boundary}
             if self.id != "chapter-planning" or any(
                 rule.source not in required_states
                 or rule.target not in required_states
@@ -103,8 +111,36 @@ class DefinitionBody(BaseModel):
                 for rule in self.transitions
             ):
                 raise ValueError("Business planning stops at C07")
-            if any(rule.source == ChapterState.C07_WRITING for rule in self.transitions):
+            if self.version != 2 and any(
+                rule.source == ChapterState.C07_WRITING for rule in self.transitions
+            ):
                 raise ValueError("C07 is the planning handoff boundary")
+            if self.version == 2:
+                writing_edges = [
+                    r
+                    for r in self.transitions
+                    if r.source in {ChapterState.C07_WRITING, ChapterState.C08_DETERMINISTIC_CHECK}
+                ]
+                expected = {
+                    (
+                        ChapterState.C07_WRITING,
+                        "DRAFT_READY",
+                        ChapterState.C08_DETERMINISTIC_CHECK,
+                        ActorType.AGENT,
+                        "bind_draft",
+                    ),
+                    (
+                        ChapterState.C08_DETERMINISTIC_CHECK,
+                        "REGENERATE_DRAFT",
+                        ChapterState.C07_WRITING,
+                        ActorType.USER,
+                        None,
+                    ),
+                }
+                if {
+                    (r.source, r.event, r.target, r.actor, r.effect) for r in writing_edges
+                } != expected or any("plan_approved" not in r.guards for r in writing_edges):
+                    raise ValueError("Writing v2 stops at C08 with explicit user regeneration")
         if not required_states <= reachable:
             raise ValueError("Chapter states must be reachable")
         return self
@@ -168,6 +204,9 @@ class WorkflowDefinitionRegistry:
                 WorkflowDefinitionLoader().load(),
                 WorkflowDefinitionLoader().load(
                     Path(__file__).parent / "definitions/chapter-planning.v1.yaml"
+                ),
+                WorkflowDefinitionLoader().load(
+                    Path(__file__).parent / "definitions/chapter-planning.v2.yaml"
                 ),
             ]
         ):

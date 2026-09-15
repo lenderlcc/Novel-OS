@@ -1,0 +1,22 @@
+{
+  "module_id": "character-voice",
+  "module_type": "SKILL",
+  "version": 1,
+  "status": "STABLE",
+  "description": "NOVEL-008 character-voice",
+  "content_path": "content.md",
+  "dependencies": [
+    {
+      "module_id": "novel-os-core",
+      "version": 1
+    }
+  ],
+  "compatible_agents": [
+    "A04_WRITING"
+  ],
+  "compatible_task_types": [
+    "WRITE_CHAPTER"
+  ],
+  "created_at": "2026-09-15T00:00:00Z",
+  "content_hash": "6dfe26a69afa215a7a016deca40aabd5c7c44011dad8a5a62673e508e5ce4f02"
+}

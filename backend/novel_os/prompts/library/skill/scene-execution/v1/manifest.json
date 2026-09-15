@@ -1,0 +1,22 @@
+{
+  "module_id": "scene-execution",
+  "module_type": "SKILL",
+  "version": 1,
+  "status": "STABLE",
+  "description": "NOVEL-008 scene-execution",
+  "content_path": "content.md",
+  "dependencies": [
+    {
+      "module_id": "novel-os-core",
+      "version": 1
+    }
+  ],
+  "compatible_agents": [
+    "A04_WRITING"
+  ],
+  "compatible_task_types": [
+    "WRITE_CHAPTER"
+  ],
+  "created_at": "2026-09-15T00:00:00Z",
+  "content_hash": "a9946e3341562845d2dd9eb947670e4ace86cd60e1bf39402cc34edba5f6e757"
+}

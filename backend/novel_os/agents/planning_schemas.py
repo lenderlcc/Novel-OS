@@ -240,4 +240,8 @@ BUSINESS_RESULTS = {
 
 
 def result_model(task_type):
+    if task_type == "WRITE_CHAPTER":
+        from novel_os.agents.writing_schemas import WritingAgentResult
+
+        return WritingAgentResult
     return BUSINESS_RESULTS[task_type][1] if task_type in BUSINESS_RESULTS else AgentResult

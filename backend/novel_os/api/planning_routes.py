@@ -27,6 +27,21 @@ def create(body: dto.CreatePlanningWorkflow, session: DbSession, context: Contex
     )
 
 
+@router.post("/workflows/chapter-writing", response_model=DispatchView, status_code=201)
+def create_writing(body: dto.CreatePlanningWorkflow, session: DbSession, context: Context):
+    return response(
+        WorkflowRuntime(session).create(
+            body.project_id,
+            body.chapter_id,
+            body.event_id,
+            context,
+            "chapter-planning",
+            2,
+            raw_requirement=body.raw_requirement,
+        )
+    )
+
+
 @router.post("/workflows/{workflow_id}/requirement", response_model=DispatchView)
 def correct(workflow_id: UUID, body: dto.CorrectRequirement, session: DbSession, context: Context):
     return response(

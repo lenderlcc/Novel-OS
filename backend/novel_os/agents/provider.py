@@ -34,6 +34,10 @@ class MockModelProvider(ModelProvider):
             return json.dumps({"task_id": str(request.task_id), "next_event": "UNTRUSTED"})
         if scenario == MockScenario.SLOW_SUCCESS:
             time.sleep(self.delay_seconds)
+        if request.output_kind == "writing_result":
+            from novel_os.agents.writing_mock import response
+
+            return json.dumps(response(request, scenario), ensure_ascii=False)
         if request.output_kind in {"creative_brief", "chapter_plan", "plan_review"}:
             from novel_os.agents.planning_mock import response
 

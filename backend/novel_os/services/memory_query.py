@@ -60,6 +60,10 @@ class MemoryQueryService:
             values = sorted(
                 (ITEM_ADAPTER.dump_python(item, mode="json") for item in candidates), key=canonical
             )
+            if request.task_type == "WRITE_CHAPTER" and selector.source_type == SourceType.CHAPTER:
+                for value in values:
+                    for key in ("context_item_id", "source_version", "source_updated_at"):
+                        value.pop(key)
             stamps.append(
                 SourceSnapshot(
                     selector_id=selector.selector_id,
@@ -214,9 +218,13 @@ class MemoryQueryService:
             # Pin both pointers for review/rework freshness without retrieving any latest draft.
             payload["current_plan_version"] = record.current_plan_version
             payload["approved_plan_version"] = record.approved_plan_version
+        if source == SourceType.CHAPTER and request.task_type == "WRITE_CHAPTER":
+            payload["approved_plan_version"] = record.approved_plan_version
+            payload["current_version"] = record.current_version
         if source == SourceType.CHAPTER_PLAN and request.task_type in {
             "PLAN_CHAPTER",
             "REVIEW_CHAPTER_PLAN",
+            "WRITE_CHAPTER",
         }:
             from novel_os.repositories.planning import PlanningRepository
 
