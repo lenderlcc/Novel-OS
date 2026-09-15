@@ -9,11 +9,11 @@ from agent_test_support import claim, pending_task, runs, start, task_record
 
 from novel_os.agents.provider import MockModelProvider, ModelProvider, ModelResponse
 from novel_os.agents.registry import AgentRegistry
-from novel_os.agents.runtime import AgentRuntime
 from novel_os.domain.agents import AgentId, Capability, TaskStatus
 from novel_os.domain.errors import DomainError
 from novel_os.services.agent_results import AgentResultHandler
 from novel_os.worker import AgentWorker
+from tests.context_support import ContextFixtureRuntime as AgentRuntime
 
 pytestmark = pytest.mark.integration
 

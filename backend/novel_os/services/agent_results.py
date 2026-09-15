@@ -101,6 +101,45 @@ class AgentResultHandler:
                 return "LEASE_LOST"
             if task.status != TaskStatus.RUNNING or run.status != RunStatus.RUNNING:
                 raise DomainError("INVALID_STATE", "Start the claimed attempt before completion")
+            from novel_os.domain.context import ContextStatus
+            from novel_os.repositories.context_packages import ContextPackageRepository
+            from novel_os.services.context import CONTEXT_BLOCK_ERRORS, ContextService
+
+            package = ContextPackageRepository(self.session).for_run(run.run_id)
+            if package is None and execution.error_code is None:
+                execution = ExecutionResult(
+                    error_code="CONTEXT_MISSING", model_metadata=execution.model_metadata
+                )
+            if (
+                package is not None
+                and execution.error_code is None
+                and (
+                    execution.context_package_id != package.context_package_id
+                    or execution.context_package_hash != package.package_hash
+                )
+            ):
+                execution = ExecutionResult(
+                    error_code="CONTEXT_STALE", model_metadata=execution.model_metadata
+                )
+            if package is not None and expects_task(workflow, task):
+                from novel_os.context.profiles import ContextConfigurationError
+
+                try:
+                    freshness = ContextService(self.session).validate_in_transaction(
+                        package, task, workflow
+                    )
+                    context_error = (
+                        None
+                        if freshness.status == ContextStatus.READY
+                        else freshness.error_code or "CONTEXT_STALE"
+                    )
+                except ContextConfigurationError:
+                    context_error = "CONTEXT_CONFIGURATION_ERROR"
+                if context_error:
+                    execution = ExecutionResult(
+                        error_code=context_error,
+                        model_metadata=execution.model_metadata,
+                    )
             context = worker_context(lease.worker_id, run.run_id)
             result, error = execution.result, execution.error_code
             if error is None:
@@ -114,7 +153,7 @@ class AgentResultHandler:
                     error = "SCHEMA_PARSE_ERROR"
                 except DomainError:
                     error = "AUTHORITY_DENIED"
-            elif error not in TECHNICAL_ERRORS | set(ERROR_RETRYABLE) | {
+            elif error not in TECHNICAL_ERRORS | set(ERROR_RETRYABLE) | CONTEXT_BLOCK_ERRORS | {
                 "AUTHORITY_DENIED",
                 "PROMPT_CONFIGURATION_ERROR",
             }:
@@ -177,7 +216,7 @@ class AgentResultHandler:
                 )
                 return "STALE_IGNORED"
             if error:
-                authority_block = error == "AUTHORITY_DENIED"
+                authority_block = error == "AUTHORITY_DENIED" or error in CONTEXT_BLOCK_ERRORS
                 retry = error in TECHNICAL_ERRORS and task.attempt_count < task.max_attempts
                 if authority_block:
                     disposition, terminal = "BLOCKED", TaskStatus.BLOCKED
@@ -219,7 +258,7 @@ class AgentResultHandler:
                         task,
                         run,
                         "BLOCK",
-                        {"reason": "Agent authority validation requires human attention"},
+                        {"reason": "Agent authority/context requires human attention"},
                     )
                 elif not retry:
                     self.emit(

@@ -7,7 +7,6 @@ import pytest
 from pydantic import SecretStr
 
 from novel_os.agents.provider import MockModelProvider
-from novel_os.agents.runtime import AgentRuntime
 from novel_os.prompts.tasks import TaskDefinitionRegistry
 from novel_os.providers.base import (
     ERROR_RETRYABLE,
@@ -18,6 +17,7 @@ from novel_os.providers.base import (
 )
 from novel_os.providers.openai import OpenAIAdapter, OpenAIModelProvider, native_schema
 from novel_os.providers.profiles import ModelProfileRegistry
+from tests.context_support import ContextFixtureRuntime as AgentRuntime
 
 
 def response_body(content):

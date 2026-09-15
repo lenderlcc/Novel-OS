@@ -1,6 +1,7 @@
 """Pure execution/validation layer. No service, repository, session or workflow writer."""
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
+from uuid import UUID
 
 from pydantic import ValidationError
 
@@ -8,12 +9,16 @@ from novel_os.agents.authority import AuthorityValidator
 from novel_os.agents.provider import ModelProvider
 from novel_os.agents.registry import AgentRegistry
 from novel_os.agents.schemas import AgentResult
+from novel_os.context.profiles import ContextConfigurationError, ContextProfileRegistry
+from novel_os.context.serialization import ContextSerializer
 from novel_os.domain.agents import AgentId, AgentTask, Capability, ResultStatus
+from novel_os.domain.context import ContextStatus
 from novel_os.domain.errors import DomainError
-from novel_os.prompts.contracts import PromptConfigurationError
+from novel_os.prompts.contracts import PromptConfigurationError, canonical
 from novel_os.prompts.output import OutputFormatError
 from novel_os.prompts.runtime import PromptRuntime
 from novel_os.providers.base import ERROR_RETRYABLE, ModelRequest, ProviderError
+from novel_os.providers.tokens import prompt_overhead
 
 TECHNICAL_ERRORS = frozenset(
     {
@@ -34,6 +39,8 @@ class ExecutionResult:
     result: AgentResult | None = None
     error_code: str | None = None
     model_metadata: dict | None = None
+    context_package_id: UUID | None = None
+    context_package_hash: str | None = None
 
     @property
     def retryable(self):
@@ -41,6 +48,8 @@ class ExecutionResult:
 
 
 def execution_failure(exc):
+    if isinstance(exc, ContextConfigurationError):
+        return ExecutionResult(error_code="CONTEXT_CONFIGURATION_ERROR")
     if isinstance(exc, ProviderError):
         return ExecutionResult(error_code=exc.code)
     if isinstance(exc, OutputFormatError):
@@ -73,7 +82,7 @@ class AgentRuntime:
     def profile_for_task(self, task_type):
         return self.prompts.profiles.get(self.prompts.tasks.get(task_type).model_profile)
 
-    def prepare(self, task: AgentTask) -> ModelRequest | ExecutionResult:
+    def prepare(self, task: AgentTask, context_package=None) -> ModelRequest | ExecutionResult:
         try:
             mapping = self.authority.validate(task)
             definition = self.prompts.tasks.get(task.task_type)
@@ -81,7 +90,21 @@ class AgentRuntime:
                 definition.output_schema.version
             ) != task.expected_output_schema or definition.capabilities != {mapping.capability}:
                 raise PromptConfigurationError("Task output/capability contract mismatch")
-            return self.prompts.prepare(
+            if context_package is not None:
+                profile = ContextProfileRegistry().for_task(task.task_type)
+                if (
+                    context_package.build_status != ContextStatus.READY
+                    or context_package.task_id != task.task_id
+                    or context_package.project_id != task.project_id
+                    or context_package.request.chapter_id != task.target_ref
+                    or context_package.workflow_id != task.workflow_instance_id
+                    or context_package.request.workflow_state_version != task.workflow_state_version
+                    or context_package.request.attempt_number != task.attempt_count
+                    or context_package.profile_id != profile.profile_id
+                    or ContextSerializer.hash(context_package) != context_package.package_hash
+                ):
+                    return ExecutionResult(error_code="CONTEXT_STALE")
+            request = self.prompts.prepare(
                 task_id=task.task_id,
                 task_type=task.task_type,
                 agent_id=task.agent_id,
@@ -90,8 +113,11 @@ class AgentRuntime:
                 output_kind=mapping.output_kind,
                 capabilities=task.capabilities,
                 constraints=task.constraints,
-                context_payload={"objective": task.objective, "requirements": task.requirements},
+                context_payload=ContextSerializer.serialize(context_package)
+                if context_package
+                else {},
             )
+            return replace(request, context_package=context_package)
         except Exception as exc:
             return execution_failure(exc)
 
@@ -99,6 +125,15 @@ class AgentRuntime:
         request = prepared if prepared is not None else self.prepare(task)
         if isinstance(request, ExecutionResult):
             return request
+
+        def finished(**values):
+            package = request.context_package
+            return ExecutionResult(
+                **values,
+                context_package_id=package.context_package_id if package else None,
+                context_package_hash=package.package_hash if package else None,
+            )
+
         response = None
         try:
             mapping = self.authority.validate(task)
@@ -109,19 +144,56 @@ class AgentRuntime:
                 task.target_ref,
             ):
                 raise PromptConfigurationError("Prepared execution binding mismatch")
+            if request.context_package is None:
+                return finished(error_code="CONTEXT_MISSING")
+            package = request.context_package
+            if (
+                package.build_status != ContextStatus.READY
+                or (
+                    package.task_id,
+                    package.project_id,
+                    package.workflow_id,
+                    package.request.chapter_id,
+                    package.request.workflow_state_version,
+                )
+                != (
+                    task.task_id,
+                    task.project_id,
+                    task.workflow_instance_id,
+                    task.target_ref,
+                    task.workflow_state_version,
+                )
+                or package.request.attempt_number != task.attempt_count
+                or ContextSerializer.hash(package) != package.package_hash
+            ):
+                return finished(error_code="CONTEXT_STALE")
+            profile = ContextProfileRegistry().resolve(
+                package.profile_id, package.profile_version, expected_hash=package.profile_hash
+            )
+            if task.task_type not in profile.allowed_task_types:
+                return finished(error_code="CONTEXT_PROFILE_MISMATCH")
+            data = canonical(
+                {"trust": "UNTRUSTED_DATA_ONLY", "data": ContextSerializer.serialize(package)}
+            )
+            if [
+                message.content
+                for message in request.prompt.messages
+                if message.layer == "CONTEXT_DATA"
+            ] != [data]:
+                raise PromptConfigurationError("Context/prompt binding mismatch")
             response = self.prompts.generate(request)
             result = request.prompt.output.parse(response.content)
             if result.status == ResultStatus.SUCCESS and (
                 result.result is None or result.result.kind != mapping.output_kind
             ):
-                return ExecutionResult(
+                return finished(
                     error_code="SCHEMA_PARSE_ERROR", model_metadata=response.safe_summary()
                 )
             self.authority.validate(task, result)
-            return ExecutionResult(result=result, model_metadata=response.safe_summary())
+            return finished(result=result, model_metadata=response.safe_summary())
         except Exception as exc:
             failure = execution_failure(exc)
-            return ExecutionResult(
+            return finished(
                 error_code=failure.error_code,
                 model_metadata=response.safe_summary() if response else None,
             )
@@ -132,16 +204,46 @@ class AgentRuntime:
 
         task_id = uuid4()
         try:
-            request = self.prompts.prepare(
+            from novel_os.context.engine import ContextEngine
+            from novel_os.context.inputs import task_item
+            from novel_os.domain.context import CandidateBatch, ContextRequest
+            from novel_os.domain.core import now
+
+            profile = ContextProfileRegistry().resolve("CP-000")
+            context_request = ContextRequest(
+                project_id=task_id,
                 task_id=task_id,
                 task_type="INTERNAL_SMOKE_TEST",
-                agent_id=AgentId.A02_REQUIREMENT,
-                attempt=1,
-                target_ref=task_id,
-                output_kind="requirement_demo",
-                capabilities=[Capability.REPORT_RESULT],
-                constraints=[],
-                context_payload={"user_text": user_text},
+                chapter_id=task_id,
+                objective=user_text,
+            )
+
+            def compile_context(payload):
+                return self.prompts.prepare(
+                    task_id=task_id,
+                    task_type="INTERNAL_SMOKE_TEST",
+                    agent_id=AgentId.A02_REQUIREMENT,
+                    attempt=1,
+                    target_ref=task_id,
+                    output_kind="requirement_demo",
+                    capabilities=[Capability.REPORT_RESULT],
+                    constraints=[],
+                    context_payload=payload,
+                )
+
+            skeleton = compile_context({})
+            built = ContextEngine().build(
+                context_request,
+                profile,
+                CandidateBatch((task_item(context_request, profile.selectors[0], now()),)),
+                prompt_overhead=prompt_overhead(skeleton),
+                output_reservation=skeleton.profile.max_output_tokens,
+            )
+            if built.status != ContextStatus.READY:
+                return ExecutionResult(error_code=built.error_code)
+            request = replace(
+                compile_context(ContextSerializer.serialize(built.package)),
+                context_package=built.package,
             )
             response = self.prompts.generate(request)
             result = request.prompt.output.parse(response.content)

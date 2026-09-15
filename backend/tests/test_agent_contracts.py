@@ -6,9 +6,9 @@ import pytest
 from pydantic import ValidationError
 
 from novel_os.agents.provider import MockModelProvider, ModelProvider, ModelResponse
-from novel_os.agents.runtime import AgentRuntime
 from novel_os.domain.agents import AgentId, AgentTask, Capability
 from novel_os.domain.workflow import ChapterState
+from tests.context_support import ContextFixtureRuntime as AgentRuntime
 
 
 @pytest.fixture

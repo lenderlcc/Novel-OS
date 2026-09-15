@@ -27,9 +27,18 @@ def claim(database, worker_id="test-worker"):
         return AgentQueue(session).claim(worker_id)
 
 
-def start(database, lease):
+def start(database, lease, *, bind_context=True):
     with database.session() as session:
-        return AgentQueue(session).start(lease)
+        task = AgentQueue(session).start(lease)
+    if task is not None and bind_context:
+        from novel_os.services.context import ContextService
+        from tests.context_support import BOUND_CONTEXT
+
+        with database.session() as session:
+            built = ContextService(session).build_for_run(lease)
+        if built.package is not None:
+            BOUND_CONTEXT[task.task_id] = built.package
+    return task
 
 
 def complete(database, lease, execution):

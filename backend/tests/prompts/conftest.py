@@ -5,10 +5,10 @@ from uuid import uuid4
 import pytest
 
 from novel_os.agents.provider import MockModelProvider
-from novel_os.agents.runtime import AgentRuntime
 from novel_os.domain.agents import AgentId, AgentTask, Capability
 from novel_os.domain.workflow import ChapterState
 from novel_os.prompts.registry import PromptRegistry
+from tests.context_support import ContextFixtureRuntime as AgentRuntime
 
 
 @pytest.fixture

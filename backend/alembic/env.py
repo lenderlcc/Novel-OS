@@ -4,6 +4,7 @@ from novel_os.core.logging import configure_logging
 from novel_os.db.base import Base
 from novel_os.db.session import Database
 from novel_os.models import agents, core, prompts, workflow  # noqa: F401 -- register ORM metadata
+from novel_os.models import context as context_models  # noqa: F401 -- register ORM metadata
 
 settings = Settings.from_file()
 configure_logging(settings.log_level)

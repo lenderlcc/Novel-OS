@@ -8,10 +8,10 @@ from agent_test_support import claim, complete, pending_task, runs, start, task_
 from sqlalchemy import event, text
 
 from novel_os.agents.provider import MockModelProvider
-from novel_os.agents.runtime import AgentRuntime
 from novel_os.domain.agents import RunStatus, TaskStatus
 from novel_os.services.agent_queue import AgentQueue
 from novel_os.worker import AgentWorker
+from tests.context_support import ContextFixtureRuntime as AgentRuntime
 
 pytestmark = pytest.mark.integration
 

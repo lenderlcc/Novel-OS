@@ -96,17 +96,17 @@ NOVEL-001
 ## Current Status
 
 - Product / Architecture Specification: Frozen for Prototype v0.1
-- Actual Implementation: `NOVEL-005 — Prompt Runtime & Model Provider`，实现、验证和独立审查完成，等待用户 Review
-- NOVEL-001 / 002 / 003 / 004: 已通过 Review，沿用 TOML 配置和现有基础设施
-- Next Action: Review NOVEL-005；不自动进入 NOVEL-006
+- Actual Implementation: `NOVEL-006 — Context Engine & Memory Query Foundation`，实现、验证和独立审查完成，等待用户 Review
+- NOVEL-001 / 002 / 003 / 004 / 005: 已通过 Review，沿用 TOML 配置和现有基础设施
+- Next Action: Review NOVEL-006；不自动进入 NOVEL-007
 
 具体规格见 `docs/specs/`，开发任务见 `docs/tickets/`。
 
 ## Backend Development
 
 当前实现工程基础设施、Core Domain、deterministic Chapter Workflow、异步 Agent Runtime、
-版本化 Prompt 与可替换模型 Provider。默认使用 Mock；真实 Provider 通过 TOML 显式启用。
-尚未实现 Context Engine、真实业务 Agent、Memory/Canon 或前端。
+版本化 Prompt、可替换模型 Provider 和结构化 Context Engine。默认使用 Mock；真实 Provider 通过 TOML 显式启用。
+尚未实现真实业务 Agent、Memory/Canon 或前端。
 
 需要 Python 3.13（声明支持 3.12–3.14）、uv、Docker Engine 与 Docker Compose 插件（v2 或更新版本）。
 依赖的精确版本记录在 `backend/uv.lock`；Docker 构建使用 uv 0.9.30。
@@ -254,13 +254,15 @@ uv run --locked alembic upgrade head
 uv run --locked alembic downgrade -1
 uv run --locked alembic upgrade head
 uv run --locked alembic current
+uv run --locked alembic check
 ```
 
-当前 revision 是 `0005_agent_runtime`，前驱为 `0004_workflow_recovery`。
-0004 已用于 NOVEL-003 Review 修复，因此 NOVEL-004 顺延使用迁移编号 0005；不代表实现 NOVEL-005。
-0005 新增 `agent_tasks`、`agent_runs`、索引、约束和执行历史保护 trigger。
-从当前 head 执行 `downgrade -1` 会删除这两张表及执行记录，保留 Core、Workflow 和审计数据。
-重新升级后 Worker 可为仍在等待 Agent 的旧 Workflow 补建当前阶段任务，但不能恢复被删除的 Run。
+当前 revision 是 `0007_context_engine`，前驱为 `0006_prompt_runtime`。
+0004 已用于 NOVEL-003 Review 修复，0005 用于 Agent Runtime，0006 用于 Prompt Lineage；
+NOVEL-006 顺延使用 0007，未修改旧迁移。0007 新增 `context_packages` 及不可变快照保护。
+从当前 head 执行 `downgrade -1` 只删除 Context 快照，保留 Core、Workflow、AgentTask、AgentRun、
+PromptLineage 和审计；重新 upgrade 不会恢复删除的快照。验证使用空 Context 表或独立测试 schema。
+继续从 0006 降到 0005 会删除 PromptLineage，0005 降到 0004 会删除 AgentTask/AgentRun。
 继续从 0004 降至 0003 会移除阶段恢复字段，并转回 0003 的表示，保留 Workflow 和审计数据。
 若继续从 0003 降至 0002，会删除五张 Workflow 表及其中的数据，保留 Core Domain 和已有
 AuditRecord；重新 upgrade 不会恢复被删除的实例。升降级验证应使用空库或独立测试库。
@@ -642,3 +644,59 @@ uv run --locked alembic check
 ```
 
 实现详情及最终验证结果见 [NOVEL-005 实现报告](docs/reports/NOVEL-005-implementation.md)。
+
+
+### Context Engine / Memory Query Foundation — NOVEL-006
+
+Worker 在模型调用前构建并持久化 ContextPackage，要求 READY，绑定当前运行尝试，然后通过
+ContextSerializer 生成 Prompt 的 `UNTRUSTED_DATA_ONLY` 数据层。模型调用前与结果应用前分别
+检查快照新鲜度；无数据库快照或结果引用不匹配会阻塞。Workflow 已切换阶段的结果沿用原有
+`STALE_IGNORED` 路径，保留模型运行结果并阻止其修改领域数据。
+
+Profile 位于 `backend/novel_os/context/profiles/`，以 JSON 文件发布明确版本：
+
+| Profile | 用途 | 默认未来信息策略 |
+|---|---|---|
+| CP-004 v2 | Planning 上下文 | LIMITED，显式引用且最多下一章 |
+| CP-005 v2 | Writing 上下文 | REQUIRED_ONLY，仅批准计划的必要依赖 |
+| CP-006 v2 | Review 上下文 | LIMITED，非 FULL |
+| CP-007 v2 | Revision 上下文 | REQUIRED_ONLY |
+| CP-000 v1 | 既有 Mock 控制阶段与独立 smoke | NONE，仅显式任务输入 |
+
+已发布版本的定义不可原地改写，新增版本需新增文件。Registry 同时支持 Mock 类型和通用
+`CHAPTER_PLANNING/WRITING/REVIEW/REVISION` 的 Context 契约；未增加这些真实 Agent 的业务逻辑。
+CP-004～CP-007 的 v1 文件保留用于历史快照；新任务使用 v2 的精确锁定依赖策略。
+默认预算 48,000，扣除 Prompt overhead 与模型输出预留；UTF-8 字节估算保守计数，不代表实际计费。
+P0 超预算或检索上限、缺少必要计划、同权威冲突均 BLOCKED，不能自动截断 P0 或触发模型调用。
+MUST/FORBIDDEN 等集合可以合法为空；已存在且有效的匹配项必须全部纳入 P0 或阻塞。
+
+前文章节只按 approved_version 读取，Writing 按 Workflow 绑定的已批准计划读取。
+创建新 Draft 不会替换批准内容。Review/Revision 允许其精确绑定的目标 Draft。
+显式锁定的 Requirement/Decision/Plan/ChapterVersion 依赖按项目、ID、版本和 active Lock 查询。
+已批准计划明确声明的 A1 锁定依赖可以尚未经过独立审批；普通主计划与前文读取仍要求批准版本。
+依赖解锁后，已有快照失效，模型结果不能落库。Profile 库加载异常按配置错误阻塞任务并结束运行尝试。
+所有获取使用结构化 SQL，没有 Embedding、Vector DB、全文检索或 LLM 排序。
+
+只读 Inspector：
+
+```text
+GET /api/v1/context-packages/{context_package_id}
+GET /api/v1/agent-tasks/{task_id}/context
+```
+
+响应包含不可变 package、运行时计算的 freshness 和 error_code；Task 接口返回最近一次执行
+尝试的快照。`package.build_status` 保留构建结果，`freshness=STALE` 不改写旧快照。
+Inspector 是既有本机单用户控制面的一部分，会显示业务上下文，不返回 Provider 密钥或配置。
+
+Character Knowledge 仅实现 GLOBAL_ONLY / CHARACTER_KNOWLEDGE 类型、角色 ID 过滤与
+ContextSourceReader 扩展契约。没有 Character、Event、Canon 或 CharacterKnowledge 数据表。
+扩展 reader 返回的候选必须属于被调用的 selector/source type；不匹配时返回配置错误，不能冒充必需项。
+
+专项测试：
+
+```bash
+cd backend
+uv run --locked pytest tests/context tests/core/workflow/test_context_engine.py
+```
+
+实现细节与最终验收结果见 [NOVEL-006 实现报告](docs/reports/NOVEL-006-implementation.md)。

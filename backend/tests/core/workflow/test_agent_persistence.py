@@ -10,12 +10,12 @@ from sqlalchemy import select, text
 from sqlalchemy.exc import IntegrityError
 
 from novel_os.agents.provider import MockModelProvider
-from novel_os.agents.runtime import AgentRuntime
 from novel_os.domain.agents import AgentTask, TaskStatus
 from novel_os.models.agents import AgentRunModel
 from novel_os.repositories.agent_tasks import AgentTaskRepository
 from novel_os.services.task_history import TaskHistory
 from novel_os.services.task_scheduling import TaskScheduler
+from tests.context_support import ContextFixtureRuntime as AgentRuntime
 
 pytestmark = pytest.mark.integration
 

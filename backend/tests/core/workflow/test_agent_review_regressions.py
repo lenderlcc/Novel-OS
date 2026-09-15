@@ -6,9 +6,10 @@ from agent_test_support import claim, complete, pending_task, runs, start, task_
 from sqlalchemy import text
 
 from novel_os.agents.provider import MockModelProvider, ModelProvider, ModelResponse
-from novel_os.agents.runtime import AgentRuntime, ExecutionResult
+from novel_os.agents.runtime import ExecutionResult
 from novel_os.domain.agents import RunStatus, TaskStatus
 from novel_os.worker import AgentWorker
+from tests.context_support import ContextFixtureRuntime as AgentRuntime
 
 pytestmark = pytest.mark.integration
 
@@ -102,11 +103,23 @@ def test_handler_revalidates_artifact_text_in_copied_result(driver, core_databas
     driver.advance_to("C04_CHAPTER_PLANNING")
     lease = claim(core_database)
     task = start(core_database, lease)
-    result = AgentRuntime(MockModelProvider()).execute(task).result
+    execution = AgentRuntime(MockModelProvider()).execute(task)
+    result = execution.result
     # model_copy does not validate updates; the application boundary must do so again.
     copied = result.model_copy(
         update={"result": result.result.model_copy(update={"objective": "   "})}
     )
-    assert complete(core_database, lease, ExecutionResult(result=copied)) == "RETRY_SCHEDULED"
+    assert (
+        complete(
+            core_database,
+            lease,
+            ExecutionResult(
+                result=copied,
+                context_package_id=execution.context_package_id,
+                context_package_hash=execution.context_package_hash,
+            ),
+        )
+        == "RETRY_SCHEDULED"
+    )
     assert runs(core_database, task.task_id)[0].error_code == "SCHEMA_PARSE_ERROR"
     assert task_record(core_database, task.task_id).status == TaskStatus.PENDING

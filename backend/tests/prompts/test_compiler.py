@@ -7,12 +7,12 @@ import pytest
 from prompt_test_support import add_role_v2, edit_manifest
 
 from novel_os.agents.provider import MockModelProvider
-from novel_os.agents.runtime import AgentRuntime
 from novel_os.agents.schemas import AgentResult
 from novel_os.prompts.compiler import PromptCompiler, PromptCompileRequest
 from novel_os.prompts.contracts import ModuleRef, PromptConfigurationError
 from novel_os.prompts.registry import PromptRegistry
 from novel_os.prompts.tasks import TaskDefinition, TaskDefinitionRegistry
+from tests.context_support import ContextFixtureRuntime as AgentRuntime
 
 
 def compile_request(prepared, **changes):

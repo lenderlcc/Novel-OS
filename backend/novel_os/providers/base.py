@@ -3,6 +3,7 @@ from dataclasses import dataclass, field
 from enum import StrEnum
 from uuid import UUID
 
+from novel_os.domain.context import ContextPackage
 from novel_os.prompts.compiler import CompiledPrompt
 from novel_os.providers.profiles import ModelProfile
 
@@ -44,6 +45,7 @@ class ModelRequest:
     output_kind: str
     prompt: CompiledPrompt
     profile: ModelProfile
+    context_package: ContextPackage | None = None
 
 
 @dataclass(frozen=True)

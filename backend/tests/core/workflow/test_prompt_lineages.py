@@ -14,7 +14,6 @@ from sqlalchemy import func, select, text
 from sqlalchemy.exc import DBAPIError
 
 from novel_os.agents.provider import MockModelProvider
-from novel_os.agents.runtime import AgentRuntime
 from novel_os.domain.agents import RunStatus, TaskStatus
 from novel_os.domain.errors import DomainError
 from novel_os.models.prompts import PromptLineageModel
@@ -27,6 +26,7 @@ from novel_os.repositories.prompt_lineages import PromptLineageRepository
 from novel_os.services.prompt_lineages import PromptLineageService
 from novel_os.services.task_history import TaskHistory
 from novel_os.worker import AgentWorker
+from tests.context_support import ContextFixtureRuntime as AgentRuntime
 
 pytestmark = pytest.mark.integration
 

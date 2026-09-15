@@ -12,7 +12,7 @@ def historical_snapshot(connection):
     return {
         name: connection.execute(select(table).order_by(*table.primary_key)).mappings().all()
         for name, table in Base.metadata.tables.items()
-        if name != "prompt_lineages"
+        if name not in {"prompt_lineages", "context_packages"}
     }
 
 
@@ -24,6 +24,7 @@ def test_0006_roundtrip_preserves_all_existing_core_workflow_agent_and_audit_row
     with core_database.engine.begin() as connection:
         migration_config.attributes["connection"] = connection
         assert connection.scalar(text("SELECT count(*) FROM prompt_lineages")) == 1
+        command.downgrade(migration_config, "0006_prompt_runtime")
         before = historical_snapshot(connection)
         command.downgrade(migration_config, "-1")
         assert (
@@ -35,7 +36,7 @@ def test_0006_roundtrip_preserves_all_existing_core_workflow_agent_and_audit_row
         command.upgrade(migration_config, "head")
         assert (
             connection.scalar(text("SELECT version_num FROM alembic_version"))
-            == "0006_prompt_runtime"
+            == "0007_context_engine"
         )
         assert connection.scalar(text("SELECT count(*) FROM prompt_lineages")) == 0
         assert historical_snapshot(connection) == before

@@ -1,0 +1,35 @@
+{
+  "profile_id": "CP-000",
+  "version": 1,
+  "status": "STABLE",
+  "description": "Explicit task input for simulation/control stages; no business retrieval",
+  "allowed_task_types": [
+    "MOCK_INTAKE",
+    "MOCK_CONTEXT",
+    "MOCK_READY",
+    "MOCK_PLAN_REVIEW",
+    "MOCK_HANDOFF",
+    "MOCK_FEEDBACK",
+    "MOCK_MEMORY_PREPARE",
+    "MOCK_COMPLETION",
+    "INTERNAL_SMOKE_TEST"
+  ],
+  "token_budget": 48000,
+  "future_knowledge_policy": "NONE",
+  "future_horizon": 1,
+  "selectors": [
+    {
+      "selector_id": "task-input",
+      "source_type": "TASK_INPUT",
+      "priority": "P0",
+      "required": true,
+      "authority_floor": "A7_AI_INFERENCE",
+      "allowed_statuses": [
+        "ACTIVE"
+      ],
+      "version_policy": "EXACT",
+      "scope": "TARGET_CHAPTER",
+      "max_items": 1
+    }
+  ]
+}

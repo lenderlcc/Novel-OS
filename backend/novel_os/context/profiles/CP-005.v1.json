@@ -1,0 +1,193 @@
+{
+  "profile_id": "CP-005",
+  "version": 1,
+  "status": "STABLE",
+  "description": "Chapter writing: approved plan and mandatory preserved constraints",
+  "allowed_task_types": [
+    "MOCK_WRITE",
+    "CHAPTER_WRITING"
+  ],
+  "token_budget": 48000,
+  "future_knowledge_policy": "REQUIRED_ONLY",
+  "future_horizon": 1,
+  "selectors": [
+    {
+      "selector_id": "task-input",
+      "source_type": "TASK_INPUT",
+      "priority": "P0",
+      "required": true,
+      "authority_floor": "A7_AI_INFERENCE",
+      "allowed_statuses": [
+        "ACTIVE"
+      ],
+      "version_policy": "EXACT",
+      "scope": "TARGET_CHAPTER",
+      "max_items": 1
+    },
+    {
+      "selector_id": "target-chapter",
+      "source_type": "CHAPTER",
+      "priority": "P0",
+      "required": true,
+      "authority_floor": "A7_AI_INFERENCE",
+      "allowed_statuses": [
+        "DRAFT",
+        "ACTIVE",
+        "LOCKED",
+        "APPROVED"
+      ],
+      "version_policy": "TARGET_VERSION",
+      "scope": "TARGET_CHAPTER",
+      "max_items": 1
+    },
+    {
+      "selector_id": "approved-plan",
+      "source_type": "CHAPTER_PLAN",
+      "priority": "P0",
+      "required": true,
+      "authority_floor": "A4_APPROVED_PLAN",
+      "allowed_statuses": [
+        "APPROVED",
+        "LOCKED"
+      ],
+      "version_policy": "APPROVED",
+      "scope": "TARGET_CHAPTER",
+      "max_items": 1
+    },
+    {
+      "selector_id": "effective-requirements",
+      "source_type": "REQUIREMENT",
+      "priority": "P0",
+      "required": false,
+      "authority_floor": "A2_USER_APPROVED",
+      "allowed_statuses": [
+        "APPROVED",
+        "LOCKED"
+      ],
+      "version_policy": "EFFECTIVE",
+      "scope": "TARGET_CHAPTER",
+      "max_items": 200,
+      "requirement_types": [
+        "MUST",
+        "FORBIDDEN",
+        "PRESERVE"
+      ]
+    },
+    {
+      "selector_id": "locked-decisions",
+      "source_type": "DECISION",
+      "priority": "P0",
+      "required": false,
+      "authority_floor": "A1_USER_LOCKED",
+      "allowed_statuses": [
+        "APPROVED",
+        "LOCKED"
+      ],
+      "version_policy": "LOCKED",
+      "scope": "TARGET_CHAPTER",
+      "max_items": 200
+    },
+    {
+      "selector_id": "supporting-requirements",
+      "source_type": "REQUIREMENT",
+      "priority": "P1",
+      "required": false,
+      "authority_floor": "A2_USER_APPROVED",
+      "allowed_statuses": [
+        "APPROVED",
+        "LOCKED"
+      ],
+      "version_policy": "EFFECTIVE",
+      "scope": "TARGET_CHAPTER",
+      "max_items": 200,
+      "requirement_types": [
+        "SHOULD",
+        "PREFERENCE",
+        "QUALITY_EXPECTATION",
+        "CHANGE_REQUEST"
+      ]
+    },
+    {
+      "selector_id": "effective-decisions",
+      "source_type": "DECISION",
+      "priority": "P1",
+      "required": false,
+      "authority_floor": "A2_USER_APPROVED",
+      "allowed_statuses": [
+        "APPROVED",
+        "LOCKED"
+      ],
+      "version_policy": "EFFECTIVE",
+      "scope": "TARGET_CHAPTER",
+      "max_items": 200
+    },
+    {
+      "selector_id": "previous-approved-chapter",
+      "source_type": "CHAPTER_VERSION",
+      "priority": "P1",
+      "required": false,
+      "authority_floor": "A2_USER_APPROVED",
+      "allowed_statuses": [
+        "APPROVED",
+        "LOCKED"
+      ],
+      "version_policy": "APPROVED",
+      "scope": "PREVIOUS_CHAPTER",
+      "max_items": 1
+    },
+    {
+      "selector_id": "dependency-chapter_plan",
+      "source_type": "CHAPTER_PLAN",
+      "priority": "P0",
+      "required": false,
+      "authority_floor": "A4_APPROVED_PLAN",
+      "allowed_statuses": [
+        "APPROVED",
+        "LOCKED"
+      ],
+      "version_policy": "APPROVED",
+      "scope": "EXPLICIT",
+      "max_items": 100
+    },
+    {
+      "selector_id": "dependency-chapter_version",
+      "source_type": "CHAPTER_VERSION",
+      "priority": "P0",
+      "required": false,
+      "authority_floor": "A2_USER_APPROVED",
+      "allowed_statuses": [
+        "APPROVED",
+        "LOCKED"
+      ],
+      "version_policy": "APPROVED",
+      "scope": "EXPLICIT",
+      "max_items": 100
+    },
+    {
+      "selector_id": "dependency-requirement",
+      "source_type": "REQUIREMENT",
+      "priority": "P0",
+      "required": false,
+      "authority_floor": "A1_USER_LOCKED",
+      "allowed_statuses": [
+        "LOCKED"
+      ],
+      "version_policy": "LOCKED",
+      "scope": "EXPLICIT",
+      "max_items": 100
+    },
+    {
+      "selector_id": "dependency-decision",
+      "source_type": "DECISION",
+      "priority": "P0",
+      "required": false,
+      "authority_floor": "A1_USER_LOCKED",
+      "allowed_statuses": [
+        "LOCKED"
+      ],
+      "version_policy": "LOCKED",
+      "scope": "EXPLICIT",
+      "max_items": 100
+    }
+  ]
+}

@@ -6,9 +6,9 @@ from sqlalchemy import select
 
 from novel_os.agents.provider import MockModelProvider
 from novel_os.agents.registry import STAGE_TASKS, AgentRegistry
-from novel_os.agents.runtime import AgentRuntime
 from novel_os.domain.agents import AgentId, RunStatus, TaskStatus
 from novel_os.models.core import AuditRecordModel
+from tests.context_support import ContextFixtureRuntime as AgentRuntime
 
 pytestmark = pytest.mark.integration
 

@@ -8,13 +8,17 @@ from pathlib import Path
 from uuid import uuid4
 
 from novel_os.agents.runtime import ExecutionResult
+from novel_os.context.profiles import ContextConfigurationError
 from novel_os.core.config import Settings
 from novel_os.core.logging import configure_logging
 from novel_os.db.session import Database
+from novel_os.domain.context import ContextStatus
 from novel_os.domain.errors import DomainError
+from novel_os.providers.tokens import prompt_overhead
 from novel_os.runtime_factory import build_agent_runtime
 from novel_os.services.agent_queue import AgentQueue
 from novel_os.services.agent_results import AgentResultHandler
+from novel_os.services.context import ContextService
 from novel_os.services.prompt_lineages import PromptLineageService
 
 logger = logging.getLogger(__name__)
@@ -75,19 +79,7 @@ class AgentWorker:
         heartbeat = threading.Thread(target=maintain_lease, daemon=True)
         heartbeat.start()
         try:
-            prepared = self.runtime.prepare(task)
-            if isinstance(prepared, ExecutionResult):
-                execution = prepared
-            else:
-                try:
-                    with self.database.session() as session:
-                        bound = PromptLineageService(session).bind(lease, prepared)
-                except DomainError:
-                    execution = ExecutionResult(error_code="PROMPT_CONFIGURATION_ERROR")
-                else:
-                    if not bound:
-                        return True
-                    execution = self.runtime.execute(task, prepared)
+            execution = self.prepare_and_execute(task, lease)
         finally:
             stopped.set()
             heartbeat.join()
@@ -102,6 +94,47 @@ class AgentWorker:
             extra={"request_id": str(lease.run_id), "disposition": disposition},
         )
         return True
+
+    def prepare_and_execute(self, task, lease):
+        skeleton = self.runtime.prepare(task)
+        if isinstance(skeleton, ExecutionResult):
+            return skeleton
+        overhead = prompt_overhead(skeleton)
+        try:
+            with self.database.session() as session:
+                built = ContextService(session).build_for_run(
+                    lease,
+                    prompt_overhead=overhead,
+                    output_reservation=skeleton.profile.max_output_tokens,
+                )
+            if built.status != ContextStatus.READY:
+                return ExecutionResult(error_code=built.error_code or "CONTEXT_MISSING")
+            prepared = self.runtime.prepare(task, built.package)
+            if isinstance(prepared, ExecutionResult):
+                return prepared
+            try:
+                with self.database.session() as session:
+                    bound = PromptLineageService(session).bind(lease, prepared)
+            except DomainError:
+                return ExecutionResult(error_code="PROMPT_CONFIGURATION_ERROR")
+            if not bound:
+                return ExecutionResult(error_code="LEASE_EXPIRED")
+            with self.database.session() as session:
+                fresh = ContextService(session).validate_before_model(lease, built.package)
+            if fresh.status != ContextStatus.READY:
+                return ExecutionResult(error_code=fresh.error_code or "CONTEXT_STALE")
+        except ContextConfigurationError:
+            return ExecutionResult(error_code="CONTEXT_CONFIGURATION_ERROR")
+        except DomainError as exc:
+            return ExecutionResult(
+                error_code="CONTEXT_CONFIGURATION_ERROR"
+                if exc.code == "VERSION_CONFLICT"
+                else "TRANSIENT_INFRASTRUCTURE_ERROR"
+            )
+        except Exception:
+            return ExecutionResult(error_code="TRANSIENT_INFRASTRUCTURE_ERROR")
+        # No database transaction spans the model call. Completion rechecks freshness.
+        return self.runtime.execute(task, prepared)
 
 
 def main():
