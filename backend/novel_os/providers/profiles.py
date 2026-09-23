@@ -14,12 +14,12 @@ from novel_os.prompts.contracts import (
 
 
 class GenerationParameters(FrozenModel):
-    temperature: float = Field(default=0.2, ge=0, le=2, allow_inf_nan=False)
+    temperature: float | None = Field(default=None, ge=0, le=2, allow_inf_nan=False)
 
 
 class ModelProfile(FrozenModel):
     profile_id: Identifier
-    provider: Literal["mock", "openai"]
+    provider: Literal["mock", "openai", "lingzhi"]
     model: Identifier
     capabilities: tuple[Literal["text", "structured_output", "stream", "count_tokens"], ...]
     structured_output: bool

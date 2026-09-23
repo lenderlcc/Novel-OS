@@ -1,0 +1,24 @@
+{
+  "module_id": "review-chapter-plan",
+  "module_type": "TASK_TEMPLATE",
+  "version": 2,
+  "status": "STABLE",
+  "description": "Evidence-bound Plan Review and bounded repair without authority promotion",
+  "content_path": "content.md",
+  "dependencies": [
+    {
+      "module_id": "novel-os-core",
+      "version": 1
+    }
+  ],
+  "compatible_agents": [
+    "*"
+  ],
+  "compatible_task_types": [
+    "PARSE_CHAPTER_REQUIREMENT",
+    "PLAN_CHAPTER",
+    "REVIEW_CHAPTER_PLAN"
+  ],
+  "created_at": "2026-09-16T00:00:00Z",
+  "content_hash": "f08005f2ba12836eedfafdb37e1d3136c46188277530c38d32eb4ba98f00265e"
+}

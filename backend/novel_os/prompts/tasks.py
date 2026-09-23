@@ -66,7 +66,7 @@ class TaskDefinitionRegistry:
                     frozenset({mapping.capability}),
                 )
             )
-        from novel_os.agents.planning_schemas import BUSINESS_RESULTS
+        from novel_os.agents.planning_schemas import BUSINESS_RESULTS, BUSINESS_SCHEMA_VERSIONS
 
         roles = {
             "PARSE_CHAPTER_REQUIREMENT": "requirement-agent",
@@ -89,7 +89,9 @@ class TaskDefinitionRegistry:
                     task_template=ref(task_type.lower().replace("_", "-")),
                     skills=tuple(ref(name) for name in skills[task_type]),
                     quality_profile=ref("planning-quality"),
-                    output_schema=OutputContractGenerator.generate(schema_id, 1, model),
+                    output_schema=OutputContractGenerator.generate(
+                        schema_id, BUSINESS_SCHEMA_VERSIONS.get(task_type, 1), model
+                    ),
                     model_profile=model_profile,
                     capabilities=frozenset({mapping.capability}),
                 )

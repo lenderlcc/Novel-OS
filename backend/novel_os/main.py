@@ -12,6 +12,7 @@ from novel_os.api.middleware import RequestContextMiddleware
 from novel_os.api.planning_routes import router as planning_router
 from novel_os.api.schemas import ErrorResponse
 from novel_os.api.workflow_routes import router as workflow_router
+from novel_os.api.writing_profile_routes import router as writing_profile_router
 from novel_os.api.writing_routes import router as writing_router
 from novel_os.core.config import Settings
 from novel_os.core.logging import configure_logging
@@ -47,4 +48,5 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.include_router(context_router, prefix="/api/v1")
     app.include_router(planning_router, prefix="/api/v1")
     app.include_router(writing_router, prefix="/api/v1")
+    app.include_router(writing_profile_router, prefix="/api/v1")
     return app

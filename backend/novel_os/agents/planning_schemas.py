@@ -187,6 +187,7 @@ HardGateCode = Literal[
 class HardGateIssue(StrictOutput):
     code: HardGateCode
     description: Text
+    constraint_id: str | None = Field(default=None, min_length=1, max_length=40)
 
 
 class LogicRisk(StrictOutput):
@@ -194,14 +195,16 @@ class LogicRisk(StrictOutput):
     impact: Impact
 
 
-class PlanReviewOutput(StrictOutput):
+class PlanReviewRecord(StrictOutput):
+    """Read shape for immutable reports, including historic invalid v1 evidence."""
+
     kind: Literal["plan_review"]
     verdict: ReviewVerdict
     # The overall output has a 150 KB parser bound; derived hard gates must never be truncated.
     hard_gate_issues: list[HardGateIssue]
     quality_issues: list[Text] = Field(max_length=30)
     requirement_coverage: list[Coverage] = Field(max_length=MAX_CONSTRAINTS)
-    missing_requirements: list[Text] = Field(max_length=50)
+    missing_requirements: list[Text] = Field(max_length=MAX_CONSTRAINTS)
     forbidden_violations: list[Text] = Field(max_length=30)
     locked_conflicts: list[Text] = Field(max_length=30)
     direction_conflicts: list[Text] = Field(max_length=30)
@@ -211,17 +214,52 @@ class PlanReviewOutput(StrictOutput):
     source_refs: list[EvidenceRef] = Field(min_length=2, max_length=MAX_REFERENCES)
     confidence: Confidence
 
+
+class PlanReviewOutput(PlanReviewRecord):
+    """New execution results must satisfy the v2 invariants before being accepted."""
+
     @model_validator(mode="after")
-    def unique_coverage(self):
+    def consistent_review(self):
         if len({c.constraint_id for c in self.requirement_coverage}) != len(
             self.requirement_coverage
         ):
             raise ValueError("Review coverage identifiers must be unique")
+        coverage = {entry.constraint_id: entry for entry in self.requirement_coverage}
+        for code, field in (
+            ("MISSING_MUST", "missing_requirements"),
+            ("FORBIDDEN_VIOLATION", "forbidden_violations"),
+        ):
+            ids = {issue.constraint_id for issue in self.hard_gate_issues if issue.code == code}
+            values = getattr(self, field)
+            if None in ids or ids != set(values) or len(values) != len(set(values)):
+                raise ValueError(f"{code} and {field} must name the same unique constraint ids")
+        for issue in self.hard_gate_issues:
+            if issue.code == "MISSING_MUST" or issue.constraint_id is not None:
+                entry = coverage.get(issue.constraint_id)
+                if entry is None or entry.covered:
+                    raise ValueError("Hard constraint failure requires matching uncovered evidence")
+        hard_evidence = bool(
+            self.hard_gate_issues
+            or self.forbidden_violations
+            or self.locked_conflicts
+            or self.direction_conflicts
+            or any(r.impact == "HIGH" for r in self.logic_risks)
+        )
+        if self.verdict == ReviewVerdict.FAIL and not hard_evidence:
+            raise ValueError("FAIL requires hard evidence; quality advice alone cannot fail a Plan")
+        if hard_evidence and self.verdict != ReviewVerdict.FAIL:
+            raise ValueError("Hard evidence requires FAIL")
         return self
 
 
 class RequirementAgentResult(AgentResult):
     result: CreativeBriefOutput
+
+    @model_validator(mode="after")
+    def consistent_semantic_confidence(self):
+        if self.confidence != self.result.confidence:
+            raise ValueError("Requirement envelope and Brief confidence must agree")
+        return self
 
 
 class PlanningAgentResult(AgentResult):
@@ -245,3 +283,7 @@ def result_model(task_type):
 
         return WritingAgentResult
     return BUSINESS_RESULTS[task_type][1] if task_type in BUSINESS_RESULTS else AgentResult
+
+
+# New review calls use a versioned cross-field contract; persisted v1 reports stay untouched.
+BUSINESS_SCHEMA_VERSIONS = {"REVIEW_CHAPTER_PLAN": 2}

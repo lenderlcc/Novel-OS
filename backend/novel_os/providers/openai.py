@@ -28,7 +28,7 @@ def native_schema(node):
         return node
     result = {}
     for key, value in node.items():
-        if key == "discriminator":
+        if key in {"discriminator", "default"}:
             continue
         if key == "oneOf":
             if "discriminator" not in node:
@@ -38,6 +38,10 @@ def native_schema(node):
             result["enum"] = [value]
         else:
             result[key] = native_schema(value)
+    if result.get("type") == "object" and "properties" in result:
+        # Strict Structured Outputs requires all properties, including nullable
+        # ones, to be present. Pydantic defaults remain local parser behavior.
+        result["required"] = list(result["properties"])
     return result
 
 
@@ -51,10 +55,11 @@ class OpenAIAdapter:
                 for message in request.prompt.messages
             ],
             "max_output_tokens": request.profile.max_output_tokens,
-            "temperature": request.profile.generation.temperature,
             "store": False,
             "stream": False,
         }
+        if request.profile.generation.temperature is not None:
+            payload["temperature"] = request.profile.generation.temperature
         if structured:
             payload["text"] = {
                 "format": {
@@ -91,7 +96,7 @@ class OpenAIAdapter:
         return ProviderError(normalized)
 
     @staticmethod
-    def response(body, request, latency_ms):
+    def response(body, request, latency_ms, *, provider_id="openai"):
         try:
             if not isinstance(body, dict):
                 raise ValueError
@@ -122,7 +127,7 @@ class OpenAIAdapter:
             # Response/header IDs, arbitrary metadata and echoed model names are not trusted.
             return ModelResponse(
                 text,
-                "openai",
+                provider_id,
                 request.profile.model,
                 TokenUsage(
                     *(usage.get(key) for key in ("input_tokens", "output_tokens", "total_tokens"))
@@ -135,8 +140,18 @@ class OpenAIAdapter:
 
 class OpenAIModelProvider(ModelProvider):
     provider_id = "openai"
+    base_url = "https://api.openai.com/v1"
 
-    def __init__(self, api_key: SecretStr | None, *, transport: httpx.BaseTransport | None = None):
+    def __init__(
+        self,
+        api_key: SecretStr | None,
+        *,
+        base_url: str | None = None,
+        transport: httpx.BaseTransport | None = None,
+    ):
+        # A provider identity has one trusted origin, including its lineage.
+        if base_url is not None and base_url != self.base_url:
+            raise ProviderError("MODEL_INVALID_REQUEST")
         self._api_key = api_key
         self._transport = transport
 
@@ -155,7 +170,7 @@ class OpenAIModelProvider(ModelProvider):
         payload = OpenAIAdapter.request(request, structured=structured)
         started = time.monotonic()
         try:
-            # Fixed endpoint, no redirect/retry, no proxy/environment configuration.
+            # Provider-owned endpoint, no redirect/retry or environment configuration.
             # Each attempt owns a client and closes it even after timeout or parse failure.
             with (
                 httpx.Client(
@@ -166,7 +181,7 @@ class OpenAIModelProvider(ModelProvider):
                 ) as client,
                 client.stream(
                     "POST",
-                    "https://api.openai.com/v1/responses",
+                    self.base_url + "/responses",
                     json=payload,
                     headers={"Authorization": "Bearer " + self._api_key.get_secret_value()},
                 ) as response,
@@ -185,9 +200,19 @@ class OpenAIModelProvider(ModelProvider):
                 if not response.is_success:
                     raise OpenAIAdapter.error(response.status_code, body)
                 return OpenAIAdapter.response(
-                    body, request, int((time.monotonic() - started) * 1000)
+                    body,
+                    request,
+                    int((time.monotonic() - started) * 1000),
+                    provider_id=self.provider_id,
                 )
         except httpx.TimeoutException:
             raise ProviderError("MODEL_TIMEOUT") from None
         except httpx.RequestError:
             raise ProviderError("MODEL_UNAVAILABLE") from None
+
+
+class LingzhiModelProvider(OpenAIModelProvider):
+    """Lingzhi's Responses wire contract, with distinct identity and credentials."""
+
+    provider_id = "lingzhi"
+    base_url = "https://lingzhi.agibot.com/v1"

@@ -143,6 +143,21 @@ class PlanningRepository:
         )
         return to_domain(model, domain.CreativeBrief) if model else None
 
+    def automatic_plan_count(self, workflow_id, brief_id, after=None):
+        from sqlalchemy import func
+
+        statement = (
+            select(func.count())
+            .select_from(orm.PlanGenerationModel)
+            .where(
+                orm.PlanGenerationModel.workflow_id == workflow_id,
+                orm.PlanGenerationModel.brief_id == brief_id,
+            )
+        )
+        if after is not None:
+            statement = statement.where(orm.PlanGenerationModel.created_at > after)
+        return self.session.scalar(statement)
+
     def generation(self, workflow_id, plan_id):
         model = self.session.scalar(
             select(orm.PlanGenerationModel).where(

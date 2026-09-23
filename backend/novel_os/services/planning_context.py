@@ -100,6 +100,21 @@ class PlanningContextReader:
         items = []
         for record in records:
             brief = selector.source_type == SourceType.CREATIVE_BRIEF
+            payload = record.body
+            if selector.selector_id == "planning-brief-with-policy":
+                from novel_os.agents.planning_schemas import CreativeBriefOutput
+                from novel_os.services.plan_review_policy import authoritative_constraints
+
+                payload = {
+                    **record.body,
+                    "authoritative_constraints": authoritative_constraints(
+                        CreativeBriefOutput.model_validate(record.body)
+                    ),
+                }
+            elif selector.selector_id == "review-revision-targets":
+                from novel_os.services.plan_review_policy import review_feedback
+
+                payload = review_feedback(record.body)
             items.append(
                 ContextItem(
                     context_item_id=uuid5(NAMESPACE_URL, f"{selector.selector_id}:{record.id}"),
@@ -116,7 +131,7 @@ class PlanningContextReader:
                     locked=False,
                     priority=selector.priority,
                     scope=selector.scope,
-                    payload_json=canonical(record.body),
+                    payload_json=canonical(payload),
                     selected_reason="Exact workflow-bound planning evidence",
                     source_created_at=record.created_at,
                     source_updated_at=record.created_at,

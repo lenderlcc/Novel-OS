@@ -7,6 +7,14 @@ from novel_os.domain.agents import AgentId, ResultStatus, RunStatus, TaskStatus
 from novel_os.domain.workflow import ChapterState
 
 
+class AgentExecutionConfigView(BaseModel):
+    model_profile: str
+    provider: str
+    model: str
+    task_types: list[str] | None
+    max_attempts: int | None
+
+
 class AgentTaskView(BaseModel):
     task_id: UUID
     project_id: UUID

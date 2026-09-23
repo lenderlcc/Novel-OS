@@ -43,6 +43,27 @@ services:
       timeout: 3s
       retries: 3
 
+  worker:
+    profiles: ["worker"]
+    build: ./backend
+    command: ["/app/.venv/bin/python", "-m", "novel_os.worker"]
+    restart: unless-stopped
+    # Docker Desktop's user-defined network can start without upstream DNS
+    # even while the host resolves the configured model gateway.
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
+    volumes:
+      - type: bind
+        source: ./backend/.runtime/config.toml
+        target: /app/config.toml
+        read_only: true
+        bind:
+          create_host_path: false
+    depends_on:
+      postgres:
+        condition: service_healthy
+
   postgres-test:
     image: postgres:16-alpine
     profiles: ["test"]

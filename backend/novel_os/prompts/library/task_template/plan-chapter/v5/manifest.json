@@ -1,0 +1,22 @@
+{
+  "module_id": "plan-chapter",
+  "module_type": "TASK_TEMPLATE",
+  "version": 5,
+  "status": "STABLE",
+  "description": "STYLE-001 plan-chapter: audience preferences within story authority",
+  "content_path": "content.md",
+  "dependencies": [
+    {
+      "module_id": "novel-os-core",
+      "version": 1
+    }
+  ],
+  "compatible_agents": [
+    "A03_PLANNING"
+  ],
+  "compatible_task_types": [
+    "PLAN_CHAPTER"
+  ],
+  "created_at": "2026-09-16T00:00:00Z",
+  "content_hash": "4c9e5f7e5c4e8240d4a3d3a90e422245c75325b84b29940dafb1042d61e7feee"
+}

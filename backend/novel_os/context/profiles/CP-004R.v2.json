@@ -1,0 +1,165 @@
+{
+  "profile_id": "CP-004R",
+  "version": 2,
+  "status": "STABLE",
+  "description": "Exact sourced constraints and separately bounded Review advice",
+  "allowed_task_types": [
+    "REVIEW_CHAPTER_PLAN"
+  ],
+  "token_budget": 100000,
+  "future_knowledge_policy": "NONE",
+  "future_horizon": 1,
+  "selectors": [
+    {
+      "selector_id": "task-input",
+      "source_type": "TASK_INPUT",
+      "priority": "P0",
+      "required": true,
+      "authority_floor": "A7_AI_INFERENCE",
+      "allowed_statuses": [
+        "ACTIVE"
+      ],
+      "version_policy": "EXACT",
+      "scope": "TARGET_CHAPTER",
+      "max_items": 1
+    },
+    {
+      "selector_id": "target-chapter",
+      "source_type": "CHAPTER",
+      "priority": "P0",
+      "required": true,
+      "authority_floor": "A7_AI_INFERENCE",
+      "allowed_statuses": [
+        "DRAFT",
+        "ACTIVE",
+        "LOCKED",
+        "APPROVED"
+      ],
+      "version_policy": "TARGET_VERSION",
+      "scope": "TARGET_CHAPTER",
+      "max_items": 1
+    },
+    {
+      "selector_id": "effective-requirements",
+      "source_type": "REQUIREMENT",
+      "priority": "P0",
+      "required": false,
+      "authority_floor": "A2_USER_APPROVED",
+      "allowed_statuses": [
+        "APPROVED",
+        "LOCKED"
+      ],
+      "version_policy": "EFFECTIVE",
+      "scope": "TARGET_CHAPTER",
+      "max_items": 200
+    },
+    {
+      "selector_id": "effective-decisions",
+      "source_type": "DECISION",
+      "priority": "P0",
+      "required": false,
+      "authority_floor": "A2_USER_APPROVED",
+      "allowed_statuses": [
+        "APPROVED",
+        "LOCKED"
+      ],
+      "version_policy": "EFFECTIVE",
+      "scope": "TARGET_CHAPTER",
+      "max_items": 200
+    },
+    {
+      "selector_id": "project-metadata",
+      "source_type": "PROJECT",
+      "priority": "P2",
+      "required": false,
+      "authority_floor": "A7_AI_INFERENCE",
+      "allowed_statuses": [
+        "ACTIVE",
+        "LOCKED"
+      ],
+      "version_policy": "CURRENT",
+      "scope": "PROJECT",
+      "max_items": 1
+    },
+    {
+      "selector_id": "dependency-chapter_plan",
+      "source_type": "CHAPTER_PLAN",
+      "priority": "P0",
+      "required": false,
+      "authority_floor": "A1_USER_LOCKED",
+      "allowed_statuses": [
+        "LOCKED"
+      ],
+      "version_policy": "LOCKED",
+      "scope": "EXPLICIT",
+      "max_items": 100
+    },
+    {
+      "selector_id": "dependency-chapter_version",
+      "source_type": "CHAPTER_VERSION",
+      "priority": "P0",
+      "required": false,
+      "authority_floor": "A1_USER_LOCKED",
+      "allowed_statuses": [
+        "LOCKED"
+      ],
+      "version_policy": "LOCKED",
+      "scope": "EXPLICIT",
+      "max_items": 100
+    },
+    {
+      "selector_id": "dependency-requirement",
+      "source_type": "REQUIREMENT",
+      "priority": "P0",
+      "required": false,
+      "authority_floor": "A1_USER_LOCKED",
+      "allowed_statuses": [
+        "LOCKED"
+      ],
+      "version_policy": "LOCKED",
+      "scope": "EXPLICIT",
+      "max_items": 100
+    },
+    {
+      "selector_id": "dependency-decision",
+      "source_type": "DECISION",
+      "priority": "P0",
+      "required": false,
+      "authority_floor": "A1_USER_LOCKED",
+      "allowed_statuses": [
+        "LOCKED"
+      ],
+      "version_policy": "LOCKED",
+      "scope": "EXPLICIT",
+      "max_items": 100
+    },
+    {
+      "selector_id": "planning-brief-with-policy",
+      "source_type": "CREATIVE_BRIEF",
+      "priority": "P0",
+      "required": true,
+      "authority_floor": "A7_AI_INFERENCE",
+      "allowed_statuses": [
+        "ACTIVE"
+      ],
+      "version_policy": "EXACT",
+      "scope": "EXPLICIT",
+      "max_items": 1
+    },
+    {
+      "selector_id": "target-plan",
+      "source_type": "CHAPTER_PLAN",
+      "priority": "P0",
+      "required": true,
+      "authority_floor": "A7_AI_INFERENCE",
+      "allowed_statuses": [
+        "PROPOSED",
+        "APPROVED",
+        "LOCKED"
+      ],
+      "version_policy": "EXACT",
+      "scope": "EXPLICIT",
+      "max_items": 1
+    }
+  ]
+}

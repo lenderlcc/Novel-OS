@@ -72,6 +72,19 @@ class WorkflowRepository:
         model = self.session.get(orm.WorkflowEventModel, event_id)
         return to_domain(model, domain.WorkflowEvent) if model else None
 
+    def for_chapter(self, project_id: UUID, chapter_id: UUID, limit: int, offset: int):
+        rows = self.session.scalars(
+            select(orm.WorkflowInstanceModel)
+            .where(
+                orm.WorkflowInstanceModel.project_id == project_id,
+                orm.WorkflowInstanceModel.chapter_id == chapter_id,
+            )
+            .order_by(orm.WorkflowInstanceModel.created_at.desc(), orm.WorkflowInstanceModel.id)
+            .limit(limit)
+            .offset(offset)
+        )
+        return [to_domain(row, domain.WorkflowInstance) for row in rows]
+
     def gate(self, gate_id: UUID):
         model = self.session.get(orm.HumanGateModel, gate_id)
         if model is None:

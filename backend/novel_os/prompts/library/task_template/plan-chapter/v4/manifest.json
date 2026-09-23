@@ -1,0 +1,24 @@
+{
+  "module_id": "plan-chapter",
+  "module_type": "TASK_TEMPLATE",
+  "version": 4,
+  "status": "STABLE",
+  "description": "Evidence-bound planning with explicit selected-source versus provenance boundary",
+  "content_path": "content.md",
+  "dependencies": [
+    {
+      "module_id": "novel-os-core",
+      "version": 1
+    }
+  ],
+  "compatible_agents": [
+    "*"
+  ],
+  "compatible_task_types": [
+    "PARSE_CHAPTER_REQUIREMENT",
+    "PLAN_CHAPTER",
+    "REVIEW_CHAPTER_PLAN"
+  ],
+  "created_at": "2026-09-16T00:00:00Z",
+  "content_hash": "6323a178b56d6158f715e1f8dfd97a68e62253e51e33108dbe5b00c33434a1d4"
+}

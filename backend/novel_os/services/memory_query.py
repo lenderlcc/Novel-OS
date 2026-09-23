@@ -77,6 +77,10 @@ class MemoryQueryService:
 
     def _query(self, request, selector, timestamp, task_created_at):
         source = selector.source_type
+        if source == SourceType.PROJECT_WRITING_PROFILE:
+            from novel_os.services.writing_profile_context import WritingProfileContext
+
+            return WritingProfileContext(self.session).query(request, selector)
         if source in {SourceType.CREATIVE_BRIEF, SourceType.PLAN_REVIEW_REPORT}:
             from novel_os.services.planning_context import PlanningContextReader
 

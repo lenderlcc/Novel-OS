@@ -581,7 +581,7 @@ openai_api_key = "在本地配置实际密钥"
 ```
 
 模型参数来自 Git 文件 `backend/novel_os/providers/profiles.toml`；当前仅有 `mock-default`
-和 `openai-structured` 两个 Profile。OpenAI 使用固定官方 HTTPS endpoint、显式 timeout、
+和 `openai-structured` 两个基础 Profile。OpenAI 使用固定官方 HTTPS endpoint、显式 timeout、
 无客户端内部重试，重试预算仍由 AgentTask 管理。改为真实 Profile 后，Worker 也会调用真实
 模型，但已有任务 Prompt 仍明确属于 simulation，不提供 NOVEL-007 及以后的业务能力。
 HTTP 200 中的 `failed` 响应也按错误码分类：`server_error` 和 `rate_limit_exceeded` 分别进入
@@ -876,3 +876,264 @@ uv run pytest tests/core/writing/test_live.py --live-model
 ```
 
 该测试使用独立测试 schema、Mock 规划后经用户门批准的测试 Plan，最多进行三次 Writing 调用。文学质量、角色一致性、完整需求 Review 和正文验收属于后续 Ticket。本阶段的确定性检查只证明契约、权限、来源和持久化关系正确，不证明文学质量。
+
+## DEV-UI-001 / UX-001：个人创作工作台
+
+`frontend/` 提供 Vue 3 + TypeScript + Vite 单页个人创作工作台。默认界面只呈现项目、章节、需求、方案和正文；Workflow、AgentRun、ContextPackage、PromptLineage 和原始 JSON 收纳到 Debug 抽屉。它复用正式 `chapter-planning v2` Workflow，到 `C08_DETERMINISTIC_CHECK` 停止；不提供 NOVEL-009 的审校或章节验收。
+
+### 启动三个进程
+
+首次使用先按上文准备 `backend/config.toml`、Docker 配置和数据库。推荐保留默认 `agent_model_profile = "mock-default"`，先跑通工程流程。Mock 的内容是固定契约样例，不能用它评价任意自然语言需求的理解能力或文笔。真实模型仍只在 Backend TOML 配置；切换前自行确认外部调用与费用。控制台没有密钥输入框。
+
+1. 在仓库根目录启动数据库和 Backend（更新代码后应重建镜像）：
+
+   ```bash
+   docker compose up --build -d --wait backend
+   docker compose run --rm --no-deps backend /app/.venv/bin/alembic upgrade head
+   ```
+
+2. 在另一个终端启动独立 Worker，保持进程运行：
+
+   ```bash
+   cd backend
+   uv run --locked python -m novel_os.worker --config config.toml
+   ```
+
+   也可在仓库根目录执行 `docker compose --profile worker up --build -d worker`，使用同一份渲染后的 TOML 启动独立 Worker 服务；用 `docker compose logs --tail=30 worker` 检查状态。Worker 不随 FastAPI 启动。不要同时启动两种 Worker 以免混用执行范围。停止容器执行器用 `docker compose stop worker`。
+
+3. 使用 Node.js 22.12+（本次验证 22.22.0）启动前端：
+
+   ```bash
+   cd frontend
+   npm ci
+   npm run dev
+   ```
+
+   浏览器打开 **http://127.0.0.1:5173**。Vite 将 `/api` 代理到 `http://127.0.0.1:8000`，没有扩大 Backend CORS。前端单独运行 Vite，用于本机单用户创作和人工测试。
+
+### 浏览器操作
+
+1. 在左侧展开 **＋ 新建项目** 和 **＋ 新建章节**；已有项目用顶部 Select 切换，章节直接从列表选择。
+2. 在 **章节需求** 输入自然语言，点击 **生成方案**。页面会依次显示“AI 正在理解需求”和“AI 正在设计方案”，无需处理 JSON 或内部 ID。
+3. 阅读 **AI 对需求的理解** 和 **章节方案**。可以点击 **批准并开始写作**、**换一个方案** 或 **我想修改**；修改仍经正式 HumanGate 生成新 Plan 版本。
+4. Writing 完成后在居中阅读器阅读 Draft。点击 **人工评价** 可将评价导出为本地 JSON，不会修改 Workflow 或正文。
+5. **写作偏好** 位于左侧项目区；保存新版本和批准仍是两个独立操作。
+6. 开发模式下可用 **测试** 载入 `evals/manual/` 的 Case 01—05 原始需求。Case 只能在尚未开始的章节载入，仍完整经过 Requirement、Planning 和 Writing。
+7. 点击右上角 **Debug** 查看 Workflow History、Task/Run、ContextPackage、PromptLineage、WritingProfile 版本和原始结构化数据。Debug 默认关闭。
+
+界面在运行阶段每 1.5 秒查询，人工审批、暂停、Blocked、Failed、Cancelled 和本阶段终点停止轮询。点击 **刷新** 获取最新状态。浏览器本地只记住上次项目、章节、未提交的需求草稿和 Debug 开关；Backend 仍是 Workflow 与业务数据的 source of truth。
+
+遇到 `VERSION_CONFLICT` 会提示“当前方案已发生变化，请刷新后重新审批。”，并禁用该次审批；不会自动重试。重新刷新、阅读当前版本后再决定。错误展示 code、message、request_id。后台持久化失败状态没有原 HTTP request_id 时会明确标记，可改用 Debug 的 Run ID 排查。Blocked 会展示原因；可在 **流程控制** 使用已有恢复/暂停/取消操作。需求澄清的专用重提表单未纳入本界面，遇到 `NEEDS_HUMAN` 可取消该流程，在新流程提交澄清后的需求。
+
+### 前端配置与 Debug
+
+默认无需额外配置。`frontend/.env.example` 只保留公开的同源 API 路径示例：
+
+```dotenv
+VITE_API_BASE_URL=/api/v1
+```
+
+这是**公开的浏览器配置**，Backend 仍只读取 TOML。API base 仅允许同源相对路径；修改后需与 Vite proxy / Backend 前缀匹配。不要放 Provider Key、数库地址或任何秘密；Vite 禁止从项目外读取 Backend 配置。界面只展示 Backend 提供的模块版本与哈希，不重建 Prompt。人工 Case 入口只在 Vite 开发模式显示。
+
+### 验证与 API 类型同步
+
+在 `frontend/` 执行：
+
+```bash
+npm run typecheck
+npm run lint
+npm test
+npm run build
+```
+
+浏览器 E2E 使用真实 Backend / Worker / PostgreSQL API，强制 Mock。在仓库根目录启动测试库，再运行：
+
+```bash
+docker compose --profile test up -d --wait postgres-test
+cd frontend
+npx playwright install chromium
+npm run test:e2e
+```
+
+测试使用 8011 / 5174 端口和测试库中的临时 schema，结束后清理；不改开发库、不增加测试控制 API、不消费真实模型 API。测试中的 `[E2E:MODEL_FAILURE]` 只由测试宿主识别，普通开发 Worker 没有该入口。开发环境如需手测失败，可按上文 TOML 配置 `agent_mock_scenario = "ALWAYS_FAIL"` 并重启 Mock Worker，完成后恢复 `SUCCESS`。
+
+`src/types/api.generated.ts` 来自实际 FastAPI OpenAPI，纳入源码管理；普通构建无需运行 Backend。后端 DTO 变更后启动最新版 Backend，在 `frontend/` 执行 `npm run types:api`，审查生成差异并运行上述检查。前端运行时仅依赖 Vue，无 Router、Pinia 或大型 UI 库。
+
+控制台使用的附加只读 API：
+
+- `GET /api/v1/projects/{project_id}/chapters/{chapter_id}/workflows`：按项目/章节找回流程，支持分页。
+- `GET /api/v1/agent-runs/{run_id}/context`：读取具体运行尝试的 Context，避免用 Task 的最新 Context 误解释早期重试。
+- `GET /api/v1/agent-execution/config`：返回 Backend 的模型和任务执行范围、次数上限，不返回凭据，也不表示 Worker 已在线。Backend 与 Worker 应使用同一配置。
+
+其余操作复用既有 API；审批只调用 HumanGate，客户端不能提交 authority、actor、approved state 或直接运行 Agent。实现与验证结果见 [DEV-UI-001 报告](docs/reports/DEV-UI-001-implementation.md) 和 [UX-001 报告](docs/reports/UX-001-personal-creative-workspace.md)。
+
+### Requirement 单次语义测试：Lingzhi
+
+Novel OS 使用自己的 `backend/config.toml`，不读取环境变量或 Codex CLI 配置：
+
+```toml
+agent_model_profile = "mock-default"
+requirement_smoke_profile = "lingzhi-requirement"
+lingzhi_base_url = "https://lingzhi.agibot.com/v1"
+# lingzhi_api_key = "只写入本机被 Git 忽略的配置文件"
+```
+
+`backend/novel_os/providers/profiles.toml` 中的 `lingzhi-requirement` 选择
+`gpt-5.6-sol`，Responses API、120 秒 timeout、8192 输出 token 上限。独立密钥字段
+避免 Lingzhi 凭据被误发给 OpenAI 官方端点。后台 Worker 仍保持 Mock；这个测试设置
+不会启动 Worker，也不会自动开启真实 Planning/Writing。
+
+获得一次真实调用授权后，停止后台 Worker，从 `backend/` 执行：
+
+```bash
+uv run pytest tests/core/workflow/test_requirement_semantics.py::test_case01_one_live_requirement_attempt --live-model -s
+```
+
+只执行一条 Case01 Requirement 尝试，失败不自动重试，隔离测试库，保存完整链路证据。
+再次运行就是一次新的外部调用。默认 `pytest` 跳过真实调用。细节见
+[Requirement eval](evals/requirements/v0.1/README.md) 和
+[Case01 诊断](docs/reports/requirement-case01-diagnosis.md)。
+
+### 在浏览器人工运行一次 Requirement
+
+在本机 `backend/config.toml` 设置以下字段，密钥仍只写入该文件：
+
+```toml
+agent_model_profile = "lingzhi-requirement"
+agent_execution_scope = "requirement-only"
+agent_max_attempts = 1
+```
+
+它与 `requirement_smoke_profile` 不同，控制真正领取页面任务的 Worker。仅领取正式
+`PARSE_CHAPTER_REQUIREMENT`，包括该类型过期租约的恢复；不领取 Planning、Plan Review、
+Writing 或模拟任务，也不为旧流程补调度其他阶段。尝试上限写入不可变 AgentRun 的
+`input_metadata.attempt_limit` 并随 Run 审计；不修改不可变的 Task 原始预算，且后续恢复
+只能收紧上限。超时或进程失联后不会进行第二次模型调用。默认 `all` / Mock 保留原有执行行为。
+
+启动 Worker 会消费已有待执行需求。要由测试者手动决定调用时间，应**先在界面暂停
+已有流程**，然后重新渲染配置、重建 Backend，并启动本机独立 Worker（以下命令从 `backend/` 执行）：
+
+```bash
+uv run python -m novel_os.infrastructure.prepare_docker
+docker compose -f ../docker-compose.yml up --build -d backend
+uv run --locked python -m novel_os.worker --config config.toml
+```
+
+Lingzhi 是内网域名。本机网络验证可访问，但本次 Docker 容器出现 DNS 解析失败，因此
+本机 Worker 是当前已验证的运行方式。不要同时启动 Compose Worker。只有确认容器自身
+能够解析并通过 TLS 访问该域名后，才改用可选的 Compose Worker；不要固定内网 IP 或关闭 TLS 验证。
+
+重载浏览器后应显示 `lingzhi / gpt-5.6-sol` 和仅执行 Requirement。点击暂停流程上方的
+**继续理解需求（调用真实模型）**，复用原 Workflow Resume 操作；不需重填原文。
+新测试点击 Start Workflow 也会产生一次模型尝试。每次手动提交或恢复都是新的执行决定，
+不是整个服务器总共只允许一次调用。页面本身不调用 Provider，也不提交模型名或密钥。
+
+状态显示：`PENDING` 为“等待后台执行”，`CLAIMED` 为“任务已领取，准备执行”，
+`RUNNING` 才显示“正在理解需求”。Requirement 成功后阅读 CreativeBrief；下一阶段显示
+“本阶段执行已停用”，停止自动轮询，Planning / Writing 保持等待。失败显示终态及错误码。
+后台配置更改需要重启两个进程并重载页面。
+
+如果先前尝试已经进入 FAILED，旧记录会保留，不会被重写为成功。使用相同原文创建新
+Workflow 进行下一次人工测试；点击 Start Workflow 才发起新尝试。
+
+若人工测试返回 `SCHEMA_PARSE_ERROR`，诊断前可在本机 `backend/config.toml` 设置
+`agent_capture_outputs = true` 并重启 Worker。默认关闭；它只保存之后实际执行的响应，
+不会触发调用，也无法恢复此前未保存的响应。仍须人工决定是否发起新的付费尝试。
+
+捕获文件位于 Worker 工作目录下的 `.runtime/agent-output/<task_id>-<attempt>.json`，
+包含模型原文、模型/Prompt/Schema 标识和用量摘要。目录权限 0700、文件 0600，
+Git 忽略且不由 API 提供下载；不保存密钥、请求头或 Provider 错误正文。内容可能含
+故事文本，只供本机诊断；完成后关闭配置并自行清理这些文件。捕获失败不会覆盖
+历史文件、改变模型返回值或额外重试模型；原有 Parser 与业务校验继续严格执行。
+
+### 开放后续 Planning / Writing 阶段
+
+在人工确认继续真实模型流程后，把本机 `backend/config.toml` 改为：
+
+```toml
+agent_model_profile = "lingzhi-structured"
+agent_execution_scope = "chapter-writing"
+agent_max_attempts = 1
+```
+
+这个独立 Profile 使用同一 Lingzhi 网关、`gpt-5.6-sol`、120 秒 timeout、8192 输出
+token 上限，只领取四种正式业务任务（不领取模拟任务），用于 Requirement、Planning、Plan Review 和 Writing。旧的
+`lingzhi-requirement` 保留原来的执行范围约束与历史 hash。配置仍只来自 TOML。
+
+停止当前 Worker，按上文重新渲染 Docker 配置、重建 Backend，再启动本机 Worker，
+并重载页面。已排队的 Planning 会从原 Workflow 继续，无须重新创建或重复执行
+成功的 Requirement。每个任务最多一次模型尝试；方案质量未通过时，现有 Workflow
+可能创建新的 Planning 迭代，这与技术重试不同。继续流程会调用真实模型。
+
+Plan Review 之后仍须在页面完成人工方案审批；Worker 不代替用户批准。
+通过审批后，Writing 流程才调度正文生成；未实现后续 NOVEL-009 阶段。
+
+若本机 Docker 重建受依赖下载影响，可使用已有锁定依赖运行 Backend。先在仓库根目录
+执行 `docker compose stop backend worker`，确认 8000 端口已释放；PostgreSQL 保持运行。
+然后在 `backend/` 的两个终端分别启动：
+
+```bash
+uv run --locked uvicorn novel_os.main:create_app --factory --host 127.0.0.1 --port 8000 --no-access-log
+```
+
+```bash
+uv run --locked python -m novel_os.worker --config config.toml
+```
+
+本机 Backend 和 Worker 均读取 `backend/config.toml`，仍连接原 Docker PostgreSQL。
+不要同时在同一端口启动 Docker Backend；切回 Docker 时先停止本机 Backend。
+
+### Plan Review 校验与自动迭代边界
+
+新 Review 使用 `chapter-plan-review-result.v2`：`MISSING_MUST` 和
+`FORBIDDEN_VIOLATION` 必须绑定 Brief 中相应硬约束 ID；`missing_requirements`、
+`forbidden_violations` 存放 ID，描述放在对应 issue 的 `description`。
+这些 ID 的 coverage 必须为 `false`，硬错误只能对应 FAIL。
+旧报告仍以只读形状展示，历史矛盾不会被改写，也不能作为新 v2 输出重新接受。
+
+Planning 的 CP-004 v4 将输入分成 `authoritative_constraints`（带来源的 Brief
+硬约束投影）、`review_revision_targets`（仅上一轮真实硬问题）、`recommendations`
+（仅上一轮可选建议）。Review 保持 `A7_AI_INFERENCE`。Service 只允许 Brief
+MUST/FORBIDDEN/CHANGE_REQUEST 的原文进入 Plan.constraints，PRESERVE 进入
+preserved_elements；合法类别/ID 标签可以被规范化，其他新增约束被拒绝。具体创意留在
+scenes、assumptions 等提案字段，Review 文本不得累积成用户或系统规则。
+
+同一 Brief、同一次人工规划指令最多自动生成两份 Plan。第二轮仍 FAIL 时保留失败报告，
+进入 `C90_BLOCKED / PLANNING_ITERATION_LIMIT`；直接 RESUME 不会再消费模型调用。
+检查失败原因后，可通过现有需求修正入口提交人工澄清，生成新 Brief。人工在通过后的
+Plan Gate 请求修改也会开始新的两轮预算。质量建议、over-specification 本身只能警告，
+不会为了凑 PASS 而忽略真实硬错误。
+
+人工只测 Requirement → Planning → Review 时，在本机 `backend/config.toml` 设置：
+
+```toml
+agent_model_profile = "lingzhi-structured"
+agent_execution_scope = "planning-only"
+agent_max_attempts = 1
+```
+
+此范围不领取 Writing。修改后重启 Worker；Docker 配置也需重新运行 `prepare_docker`。
+发布 v2 Review contract 前应停下 Worker、排空旧 v1 的 unfinished tasks，或通过带审计的
+取消/重新启动流程处理；不要修改不可变任务的 `expected_output_schema` 或旧 Prompt pin。
+旧 v1 未完成任务不能直接交给仅支持新 contract 的 Worker。本次本机发布已确认无此类任务。
+
+
+### Project Writing & Audience Profile（STYLE-001）
+
+测试台选择项目后可编辑读者与写作偏好。`Load Web Fiction Test Profile` 只填表，
+必须先 **Save Draft**，再单独 **Approve Profile vN** 才会影响后续模型上下文。
+当前 Draft 与批准版本分离；所有版本均保持 `A5_USER_PREFERENCE`，不能覆盖章节硬要求、
+Canon、锁定方向或已批准 Plan。没有批准 Profile 时不注入默认受众偏好。
+
+Profile API 位于 `/api/v1/projects/{project_id}/writing-profile`：GET 根路径读取
+current/approved；GET `/approved`、`/versions`；POST `/drafts` 创建不可变新版本；
+POST `/approve` 绑定 `expected_version` 批准当前 Draft。已批准内容不可原地修改。
+新版本批准会使旧上下文失效，必要时须重新 Planning 并重新通过人工 Plan Gate。
+
+修改前先运行 `uv run --locked alembic upgrade head`（0010）。本阶段不增加依赖，
+不配置环境变量，不自动从 Human Reject 学习偏好，也不实现 NOVEL-009。
+
+Case 01 原始证据和受控人工 A/B 步骤见
+[case01_style_ab](evals/writing/v0.1/case-01/case01_style_ab.md)。真实 A/B 需要新的明确 opt-in；
+只读 `scripts/case01_style_ab.py` 不调用模型。完整实现报告见
+[STYLE-001](docs/reports/STYLE-001-project-writing-profile.md)。

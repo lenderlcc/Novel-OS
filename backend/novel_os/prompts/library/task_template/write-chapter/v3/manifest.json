@@ -1,0 +1,22 @@
+{
+  "module_id": "write-chapter",
+  "module_type": "TASK_TEMPLATE",
+  "version": 3,
+  "status": "STABLE",
+  "description": "STYLE-001 write-chapter: audience preferences within story authority",
+  "content_path": "content.md",
+  "dependencies": [
+    {
+      "module_id": "novel-os-core",
+      "version": 1
+    }
+  ],
+  "compatible_agents": [
+    "A04_WRITING"
+  ],
+  "compatible_task_types": [
+    "WRITE_CHAPTER"
+  ],
+  "created_at": "2026-09-16T00:00:00Z",
+  "content_hash": "de78dc8167f43d0b0358cfbf2615ebc4bf44144dd562ac3617c0d683fc7135b9"
+}

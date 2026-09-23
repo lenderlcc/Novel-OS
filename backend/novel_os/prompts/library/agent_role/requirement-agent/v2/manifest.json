@@ -1,0 +1,24 @@
+{
+  "module_id": "requirement-agent",
+  "module_type": "AGENT_ROLE",
+  "version": 2,
+  "status": "STABLE",
+  "description": "Semantic requirement decomposition, evidence scope and confidence guidance",
+  "content_path": "content.md",
+  "dependencies": [
+    {
+      "module_id": "novel-os-core",
+      "version": 1
+    }
+  ],
+  "compatible_agents": [
+    "*"
+  ],
+  "compatible_task_types": [
+    "PARSE_CHAPTER_REQUIREMENT",
+    "PLAN_CHAPTER",
+    "REVIEW_CHAPTER_PLAN"
+  ],
+  "created_at": "2026-09-15T12:00:00Z",
+  "content_hash": "6a4feba9b9eaa0b6722881a2ff6679a99b7e5823a832252e1c332cd171f6e868"
+}

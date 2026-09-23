@@ -98,6 +98,12 @@ class TaskScheduler:
                         }
                     )
                 ]
+        if definition.task_type in {"PLAN_CHAPTER", "REVIEW_CHAPTER_PLAN"}:
+            from novel_os.services.writing_profile_context import WritingProfileContext
+
+            requirements.append(
+                WritingProfileContext(self.session).scheduling_input(workflow.project_id)
+            )
         task = self.repo.add(
             AgentTask(
                 project_id=workflow.project_id,

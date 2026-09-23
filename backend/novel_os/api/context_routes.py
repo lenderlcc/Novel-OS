@@ -27,3 +27,8 @@ def get_context_package(context_package_id: UUID, session: DbSession):
 @router.get("/agent-tasks/{task_id}/context", response_model=ContextInspection)
 def get_task_context(task_id: UUID, session: DbSession):
     return ContextService(session).inspect(task_id=task_id)
+
+
+@router.get("/agent-runs/{run_id}/context", response_model=ContextInspection)
+def get_run_context(run_id: UUID, session: DbSession):
+    return ContextService(session).inspect(run_id=run_id)

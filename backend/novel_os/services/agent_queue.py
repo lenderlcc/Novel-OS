@@ -6,6 +6,7 @@ from datetime import timedelta
 from uuid import uuid4
 
 from novel_os.agents.registry import BUSINESS_STAGE_TASKS
+from novel_os.agents.retry_policy import attempt_limit
 from novel_os.domain.agents import AgentRun, RunStatus, TaskLease, TaskStatus
 from novel_os.domain.errors import DomainError
 from novel_os.repositories.agent_tasks import AgentTaskRepository
@@ -24,12 +25,20 @@ class AgentQueue:
         self.history = TaskHistory(session)
         self.lease_seconds = lease_seconds
 
-    def claim(self, worker_id: str, *, profile_for_task=None) -> TaskLease | None:
+    def claim(
+        self, worker_id: str, *, profile_for_task=None, task_types=None, max_attempts=None
+    ) -> TaskLease | None:
         if not re.fullmatch(r"[A-Za-z0-9_.:-]{1,128}", worker_id):
             raise DomainError("VALIDATION_ERROR", "Invalid worker identity")
+        if max_attempts is not None and (type(max_attempts) is not int or max_attempts < 1):
+            raise ValueError("Attempt limit must be a positive integer")
         with self.session.begin():
-            task = self.repo.next_claimable()
+            task = self.repo.next_claimable(task_types=task_types)
             if task is None:
+                # Scoped workers only consume explicitly scheduled tasks. Legacy backfill
+                # remains with the general worker and must not schedule excluded stages.
+                if task_types is not None:
+                    return None
                 workflow_id = self.repo.unscheduled_workflow(
                     business_states=tuple(BUSINESS_STAGE_TASKS)
                 )
@@ -49,9 +58,13 @@ class AgentQueue:
                 return None
             workflow = WorkflowRepository(self.session).get(task.workflow_instance_id)
             context = worker_context(worker_id)
+            previous_run = (
+                self.repo.attempt(task.task_id, task.attempt_count) if task.attempt_count else None
+            )
+            budget = attempt_limit(task, previous_run, configured_limit=max_attempts)
             old_run = None
             if task.status in {TaskStatus.CLAIMED, TaskStatus.RUNNING}:
-                old_run = self.repo.attempt(task.task_id, task.attempt_count)
+                old_run = previous_run
                 self.history.finish_run(
                     task,
                     old_run,
@@ -61,8 +74,9 @@ class AgentQueue:
                     error_message="Worker lease expired",
                     disposition="LEASE_LOST",
                 )
-            if not expects_task(workflow, task) or task.attempt_count >= task.max_attempts:
+            if not expects_task(workflow, task) or task.attempt_count >= budget:
                 stale = not expects_task(workflow, task)
+                manual_retry = not stale and budget < task.max_attempts
                 self.history.task(
                     task,
                     context,
@@ -70,14 +84,26 @@ class AgentQueue:
                     status=TaskStatus.CANCELLED if stale else TaskStatus.FAILED,
                     completed_at=self.repo.clock(),
                     last_error_code="STALE_TASK" if stale else "RETRY_EXHAUSTED",
+                    result_metadata={
+                        **task.result_metadata,
+                        "attempt_limit": budget,
+                        "escalation_required": manual_retry,
+                    },
                     **RELEASE_LEASE,
                 )
-                if not stale and old_run:
+                exhausted_run = previous_run
+                if not stale and exhausted_run:
                     AgentResultHandler(self.session).emit(
                         task,
-                        old_run,
-                        "FATAL_ERROR",
-                        {"reason": "Worker recovery retry budget exhausted"},
+                        exhausted_run,
+                        "BLOCK" if manual_retry else "FATAL_ERROR",
+                        {
+                            "reason": (
+                                "Automatic model attempt limit reached; user retry required"
+                                if manual_retry
+                                else "Worker recovery retry budget exhausted"
+                            )
+                        },
                     )
                 return None
             token = uuid4()
@@ -109,6 +135,7 @@ class AgentQueue:
                         "task_type": task.task_type,
                         "state_version": task.workflow_state_version,
                         "output_schema": task.expected_output_schema,
+                        "attempt_limit": budget,
                     },
                 )
             )

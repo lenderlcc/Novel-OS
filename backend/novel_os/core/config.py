@@ -23,8 +23,20 @@ class Settings(BaseSettings):
     agent_heartbeat_seconds: float = Field(default=5, gt=0, le=300)
     agent_poll_seconds: float = Field(default=1, gt=0, le=60)
     agent_retry_seconds: float = Field(default=1, ge=0, le=60)
-    agent_model_profile: Literal["mock-default", "openai-structured"] = "mock-default"
+    agent_model_profile: Literal[
+        "mock-default", "openai-structured", "lingzhi-requirement", "lingzhi-structured"
+    ] = "mock-default"
+    agent_execution_scope: Literal[
+        "all", "requirement-only", "planning-only", "chapter-writing"
+    ] = "all"
+    agent_max_attempts: int | None = Field(default=None, ge=1, le=3)
+    agent_capture_outputs: bool = False
     openai_api_key: SecretStr | None = None
+    lingzhi_api_key: SecretStr | None = None
+    lingzhi_base_url: Literal["https://lingzhi.agibot.com/v1"] = "https://lingzhi.agibot.com/v1"
+    requirement_smoke_profile: Literal["openai-structured", "lingzhi-requirement"] = (
+        "openai-structured"
+    )
     agent_mock_scenario: MockScenario = MockScenario.SUCCESS
     log_level: Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"] = "INFO"
 
@@ -32,7 +44,30 @@ class Settings(BaseSettings):
     def heartbeat_before_expiration(self):
         if self.agent_heartbeat_seconds >= self.agent_lease_seconds:
             raise ValueError("agent_heartbeat_seconds must be less than agent_lease_seconds")
+        required_scope = {
+            "lingzhi-requirement": ("requirement-only",),
+            "lingzhi-structured": ("chapter-writing", "planning-only"),
+        }.get(self.agent_model_profile)
+        if required_scope and self.agent_execution_scope not in required_scope:
+            raise ValueError(
+                f"{self.agent_model_profile} requires agent_execution_scope="
+                + " or ".join(required_scope)
+            )
         return self
+
+    @property
+    def agent_task_types(self) -> tuple[str, ...] | None:
+        return {
+            "all": None,
+            "requirement-only": ("PARSE_CHAPTER_REQUIREMENT",),
+            "planning-only": ("PARSE_CHAPTER_REQUIREMENT", "PLAN_CHAPTER", "REVIEW_CHAPTER_PLAN"),
+            "chapter-writing": (
+                "PARSE_CHAPTER_REQUIREMENT",
+                "PLAN_CHAPTER",
+                "REVIEW_CHAPTER_PLAN",
+                "WRITE_CHAPTER",
+            ),
+        }[self.agent_execution_scope]
 
     @classmethod
     def settings_customise_sources(

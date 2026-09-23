@@ -1,0 +1,22 @@
+{
+  "module_id": "review-chapter-plan",
+  "module_type": "TASK_TEMPLATE",
+  "version": 4,
+  "status": "STABLE",
+  "description": "STYLE-001 review-chapter-plan: audience preferences within story authority",
+  "content_path": "content.md",
+  "dependencies": [
+    {
+      "module_id": "novel-os-core",
+      "version": 1
+    }
+  ],
+  "compatible_agents": [
+    "A05_REVIEW"
+  ],
+  "compatible_task_types": [
+    "REVIEW_CHAPTER_PLAN"
+  ],
+  "created_at": "2026-09-16T00:00:00Z",
+  "content_hash": "114f71d19668c007f28d4ad0d0652610f302d741e543a296bcec6757205d3ba0"
+}

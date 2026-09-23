@@ -20,5 +20,36 @@ agent_mock_scenario = "SUCCESS"
 
 # NOVEL-005: file configuration only. Default execution makes no external model calls.
 agent_model_profile = "mock-default"
+agent_execution_scope = "all"
+# Optional: lower the existing task retry budget (1 disables automatic retries).
+# agent_max_attempts = 1
+# Manual diagnosis only: save returned output before parsing under .runtime/agent-output/.
+# Files contain story data, are private, and are never exposed through an API.
+agent_capture_outputs = false
 # Opt in to the real provider by selecting "openai-structured" and filling the key locally.
 # openai_api_key = "replace-in-your-ignored-config-only"
+
+# Single-case Requirement evaluation. This does not enable the background worker.
+requirement_smoke_profile = "openai-structured"
+# To use Lingzhi, set requirement_smoke_profile = "lingzhi-requirement".
+# Model gpt-5.6-sol and generation limits are in novel_os/providers/profiles.toml.
+lingzhi_base_url = "https://lingzhi.agibot.com/v1"
+# lingzhi_api_key = "replace-in-your-ignored-config-only"
+# For the browser console's manual Requirement test, set:
+# agent_model_profile = "lingzhi-requirement"
+# agent_execution_scope = "requirement-only"
+# agent_max_attempts = 1
+# Start the independent Worker explicitly; it will consume already pending Requirements.
+# To continue the existing workflow through Planning / Plan Review / approved-plan Writing:
+# agent_model_profile = "lingzhi-structured"
+# agent_execution_scope = "chapter-writing"
+# agent_max_attempts = 1
+# This enables paid calls for queued tasks. Human plan approval remains required.
+
+# Pause Writing while manually testing Requirement -> Planning -> Plan Review:
+# agent_model_profile = "lingzhi-structured"
+# agent_execution_scope = "planning-only"
+# agent_max_attempts = 1
+# This is a worker rollout/debug scope, not a workflow gate. Restore chapter-writing
+# before approving a Plan; the internal console disables approval while Writing is closed.
+# Two automatic Plans per Brief/human directive; unresolved hard failures then block.

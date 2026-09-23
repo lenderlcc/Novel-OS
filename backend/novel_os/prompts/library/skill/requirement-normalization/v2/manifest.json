@@ -1,0 +1,24 @@
+{
+  "module_id": "requirement-normalization",
+  "module_type": "SKILL",
+  "version": 2,
+  "status": "STABLE",
+  "description": "Semantic requirement decomposition, evidence scope and confidence guidance",
+  "content_path": "content.md",
+  "dependencies": [
+    {
+      "module_id": "novel-os-core",
+      "version": 1
+    }
+  ],
+  "compatible_agents": [
+    "*"
+  ],
+  "compatible_task_types": [
+    "PARSE_CHAPTER_REQUIREMENT",
+    "PLAN_CHAPTER",
+    "REVIEW_CHAPTER_PLAN"
+  ],
+  "created_at": "2026-09-15T12:00:00Z",
+  "content_hash": "9e3fb170535136ca14ee1d81bc36254c7cd25ca52ce7df3dd7d13390719a3fdc"
+}

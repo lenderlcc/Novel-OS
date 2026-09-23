@@ -1,0 +1,22 @@
+{
+  "module_id": "natural-prose",
+  "module_type": "SKILL",
+  "version": 2,
+  "status": "STABLE",
+  "description": "STYLE-001 natural-prose: audience preferences within story authority",
+  "content_path": "content.md",
+  "dependencies": [
+    {
+      "module_id": "novel-os-core",
+      "version": 1
+    }
+  ],
+  "compatible_agents": [
+    "A04_WRITING"
+  ],
+  "compatible_task_types": [
+    "WRITE_CHAPTER"
+  ],
+  "created_at": "2026-09-16T00:00:00Z",
+  "content_hash": "a9744323e786f55de95b423c20ed616f81bf4b73528e8da9e721f586dc4a5c83"
+}

@@ -13,6 +13,7 @@ class GuardRegistry:
         self.core = core
         self.checks = {
             "writable": self.writable,
+            "planning_budget": self.planning_budget,
             "plan_current": lambda w: self.artifact(w, plan=True, approved=False),
             "plan_approved": self.plan_approved,
             "draft_current": lambda w: self.draft(w, approved=False),
@@ -26,6 +27,11 @@ class GuardRegistry:
             return self.checks[name](instance)
         except DomainError as exc:
             return GuardFailure(exc.code, exc.message, name)
+
+    def planning_budget(self, instance):
+        from novel_os.services.planning_budget import planning_budget_failure
+
+        return planning_budget_failure(self.core.session, instance)
 
     def writable(self, instance: WorkflowInstance) -> None:
         self.core.require_transaction(instance.project_id)

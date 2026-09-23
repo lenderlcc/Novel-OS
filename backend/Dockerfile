@@ -5,7 +5,8 @@ WORKDIR /app
 COPY pyproject.toml uv.lock ./
 COPY novel_os ./novel_os
 RUN uv sync --locked --no-dev --no-editable --no-python-downloads \
-    && useradd --create-home --uid 10001 novel
+    && useradd --create-home --uid 10001 novel \
+    && install -d -o novel -g novel -m 0700 /app/.runtime
 COPY alembic.ini ./
 COPY alembic ./alembic
 

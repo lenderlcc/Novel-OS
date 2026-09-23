@@ -74,6 +74,9 @@ class ContextService:
         return self.registry.for_task(task.task_type)
 
     def check_writing(self, task, workflow):
+        from novel_os.services.writing_profile_context import WritingProfileContext
+
+        WritingProfileContext(self.session).check_scheduled(task)
         if task.task_type == "WRITE_CHAPTER":
             from novel_os.services.writing_binding import WritingBindingService
 
@@ -154,6 +157,8 @@ class ContextService:
             )
             refs = tuple(set(refs) | set(business_refs))
             missing.extend(business_missing)
+        from novel_os.services.writing_profile_context import model_requirements
+
         return ContextRequest(
             project_id=task.project_id,
             task_id=task.task_id,
@@ -167,7 +172,7 @@ class ContextService:
             approved_plan_version=plan_version,
             missing_bindings=tuple(sorted(missing)),
             objective=task.objective,
-            requirements=tuple(task.requirements),
+            requirements=model_requirements(task.requirements),
             constraints=tuple(task.constraints),
             explicit_refs=refs,
             required_refs=refs,
@@ -297,8 +302,14 @@ class ContextService:
                 raise DomainError("VERSION_CONFLICT", "Run context binding mismatch")
             return self.validate_in_transaction(persisted, task, workflow)
 
-    def inspect(self, *, package_id=None, task_id=None):
+    def inspect(self, *, package_id=None, task_id=None, run_id=None):
         with self.session.begin():
+            if run_id is not None:
+                run = self.tasks.run(run_id)
+                package = self.repo.for_run(run.run_id)
+                if package is None:
+                    raise DomainError("NOT_FOUND", "This run has no context snapshot")
+                task_id, package_id = run.task_id, package.context_package_id
             if task_id is None:
                 package = self.repo.get(package_id)
                 task_id = package.task_id

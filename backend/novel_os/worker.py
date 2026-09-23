@@ -34,6 +34,8 @@ class AgentWorker:
         lease_seconds=30,
         heartbeat_seconds=5,
         retry_seconds=1,
+        task_types=None,
+        max_attempts=None,
     ):
         if not 0 < heartbeat_seconds < lease_seconds:
             raise ValueError("Heartbeat interval must be shorter than the lease")
@@ -43,11 +45,16 @@ class AgentWorker:
         self.lease_seconds = lease_seconds
         self.heartbeat_seconds = heartbeat_seconds
         self.retry_seconds = retry_seconds
+        self.task_types = task_types
+        self.max_attempts = max_attempts
 
     def run_once(self):
         with self.database.session() as session:
             lease = AgentQueue(session, lease_seconds=self.lease_seconds).claim(
-                self.worker_id, profile_for_task=self.runtime.profile_for_task
+                self.worker_id,
+                profile_for_task=self.runtime.profile_for_task,
+                task_types=self.task_types,
+                max_attempts=self.max_attempts,
             )
         if lease is None:
             return False
@@ -154,6 +161,8 @@ def main():
         lease_seconds=settings.agent_lease_seconds,
         heartbeat_seconds=settings.agent_heartbeat_seconds,
         retry_seconds=settings.agent_retry_seconds,
+        task_types=settings.agent_task_types,
+        max_attempts=settings.agent_max_attempts,
     )
     try:
         while not stopped.is_set():

@@ -132,7 +132,7 @@ BUSINESS_STAGE_TASKS = {
         Capability.REVIEW,
         "PLAN_REVIEW_PASSED",
         "PLAN_REVIEW_FAILED",
-        "chapter-plan-review-result.v1",
+        "chapter-plan-review-result.v2",
     ),
 }
 WRITING_TASK = StageTaskMapping(

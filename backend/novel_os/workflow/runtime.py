@@ -163,6 +163,10 @@ class WorkflowRuntime:
     def get(self, workflow_id: UUID):
         return self.repo.get(workflow_id)
 
+    def for_chapter(self, project_id: UUID, chapter_id: UUID, limit: int = 100, offset: int = 0):
+        self.core.repo.get_chapter(project_id, chapter_id)
+        return self.repo.for_chapter(project_id, chapter_id, limit, offset)
+
     def history(self, workflow_id: UUID, limit: int = 100, offset: int = 0):
         self.repo.get(workflow_id)
         return self.repo.list_history(workflow_id, limit, offset)
@@ -331,6 +335,8 @@ class WorkflowRuntime:
             self._check(guard, workflow)
         changes = self._effect(workflow, rule.effect, command, context)
         if not workflow.simulation:
+            if rule.target == State.C04_CHAPTER_PLANNING:
+                self._check("planning_budget", workflow)
             self._check_planning(workflow, rule.target)
         return self._transition(workflow, rule.target, command, context, guards=guards, **changes)
 
@@ -441,6 +447,8 @@ class WorkflowRuntime:
                 # Re-evaluate sources changed while suspended before taking a new input snapshot.
                 raise Blocked(recovery)
             self._check("writable", workflow)
+            if workflow.resume_state == State.C04_CHAPTER_PLANNING:
+                self._check("planning_budget", workflow)
             if workflow.blocked_guard:
                 self._check(workflow.blocked_guard, workflow)
             changes = {}

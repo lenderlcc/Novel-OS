@@ -14,6 +14,18 @@ from novel_os.workflow.runtime import WorkflowRuntime
 router = APIRouter(tags=["chapter-workflow"])
 
 
+@router.get(
+    "/projects/{project_id}/chapters/{chapter_id}/workflows", response_model=list[dto.WorkflowView]
+)
+def chapter_workflows(
+    project_id: UUID, chapter_id: UUID, session: DbSession, limit: Limit = 100, offset: Offset = 0
+):
+    return [
+        asdict(item)
+        for item in WorkflowRuntime(session).for_chapter(project_id, chapter_id, limit, offset)
+    ]
+
+
 def response(result):
     # The runtime commits the stale gate/block evidence before HTTP reports a conflict.
     if result.error_code:

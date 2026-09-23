@@ -6,7 +6,7 @@ from pydantic import BaseModel, Field
 from novel_os.agents.planning_schemas import (
     ChapterPlanOutput,
     CreativeBriefOutput,
-    PlanReviewOutput,
+    PlanReviewRecord,
 )
 from novel_os.agents.schemas import ArtifactText
 from novel_os.api.core_schemas import PlanView
@@ -58,7 +58,7 @@ class ReviewView(EvidenceView):
     plan_id: UUID
     brief_id: UUID
     verdict: ReviewVerdict
-    body: PlanReviewOutput
+    body: PlanReviewRecord
 
 
 class PlanningView(BaseModel):

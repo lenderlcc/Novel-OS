@@ -37,7 +37,9 @@ def response(request, scenario):
             "quality_expectations": [],
             "change_requests": [],
             "required_outcome": text,
-            "desired_reader_effect": "Follow the requested chapter intent",
+            "desired_reader_effect": (
+                "Mock contract fixture; semantic interpretation is not evaluated"
+            ),
             "character_focus": [],
             "plot_focus": [],
             "creative_freedom": {
@@ -62,7 +64,9 @@ def response(request, scenario):
             "conflicts": [],
             "persistent_preference_candidates": [],
             "source_refs": [source_ref(raw)],
-            "confidence": 0.2 if needs_human else 0.95,
+            # No language understanding took place. Zero means unmeasured here,
+            # not an empirically calibrated probability of an incorrect reading.
+            "confidence": 0.0,
         }
         for index, item in enumerate(items):
             if item.source_type == "REQUIREMENT":
@@ -166,9 +170,21 @@ def response(request, scenario):
         "task_id": str(request.task_id),
         "status": "NEEDS_HUMAN" if needs_human else "SUCCESS",
         "result": output,
-        "confidence": 0.2 if scenario == MockScenario.LOW_CONFIDENCE else 0.95,
+        "confidence": output["confidence"]
+        if kind == "creative_brief"
+        else 0.2
+        if scenario == MockScenario.LOW_CONFIDENCE
+        else 0.95,
         "assumptions": [],
-        "issues": [],
+        "issues": [
+            {
+                "code": "MOCK_SEMANTICS_NOT_EVALUATED",
+                "severity": "WARNING",
+                "description": "Contract fixture only; not natural-language decomposition.",
+            }
+        ]
+        if kind == "creative_brief"
+        else [],
         "proposed_changes": [{"capability": "APPROVE", "target_ref": str(request.target_ref)}]
         if scenario == MockScenario.AUTHORITY_VIOLATION
         else [],

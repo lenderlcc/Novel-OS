@@ -1,0 +1,22 @@
+{
+  "module_id": "write-chapter",
+  "module_type": "TASK_TEMPLATE",
+  "version": 2,
+  "status": "STABLE",
+  "description": "Writing envelope and exact approved scene binding",
+  "content_path": "content.md",
+  "dependencies": [
+    {
+      "module_id": "novel-os-core",
+      "version": 1
+    }
+  ],
+  "compatible_agents": [
+    "A04_WRITING"
+  ],
+  "compatible_task_types": [
+    "WRITE_CHAPTER"
+  ],
+  "created_at": "2026-09-16T00:00:00Z",
+  "content_hash": "5d48c411cfbd186f41b046d9d93da4ed87bacf37375e841ad57f119ace1a5eee"
+}

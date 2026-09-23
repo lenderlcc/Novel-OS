@@ -7,6 +7,7 @@ from pydantic import ValidationError
 from novel_os.agents.authority import AuthorityValidator
 from novel_os.agents.planning_schemas import BUSINESS_RESULTS, result_model
 from novel_os.agents.registry import AgentRegistry
+from novel_os.agents.retry_policy import attempt_limit
 from novel_os.agents.runtime import TECHNICAL_ERRORS, ExecutionResult
 from novel_os.agents.schemas import AgentResult, ReviewOutput
 from novel_os.domain.agents import ResultStatus, RunStatus, TaskStatus
@@ -236,11 +237,15 @@ class AgentResultHandler:
                 return "STALE_IGNORED"
             if error:
                 authority_block = error == "AUTHORITY_DENIED" or error in CONTEXT_BLOCK_ERRORS
-                retry = error in TECHNICAL_ERRORS and task.attempt_count < task.max_attempts
+                limit = attempt_limit(task, run)
+                retry = error in TECHNICAL_ERRORS and task.attempt_count < limit
+                manual_retry = error in TECHNICAL_ERRORS and not retry and limit < task.max_attempts
                 if authority_block:
                     disposition, terminal = "BLOCKED", TaskStatus.BLOCKED
                 elif retry:
                     disposition, terminal = "RETRY_SCHEDULED", TaskStatus.PENDING
+                elif manual_retry:
+                    disposition, terminal = "MANUAL_RETRY_REQUIRED", TaskStatus.FAILED
                 else:
                     disposition, terminal = "REJECTED", TaskStatus.FAILED
                 self.history.finish_run(
@@ -268,7 +273,7 @@ class AgentResultHandler:
                     result_ref=run.run_id,
                     result_metadata={
                         "disposition": disposition,
-                        "escalation_required": authority_block,
+                        "escalation_required": authority_block or manual_retry,
                     },
                     **RELEASE_LEASE,
                 )
@@ -278,6 +283,13 @@ class AgentResultHandler:
                         run,
                         "BLOCK",
                         {"reason": "Agent authority/context requires human attention"},
+                    )
+                elif manual_retry:
+                    self.emit(
+                        task,
+                        run,
+                        "BLOCK",
+                        {"reason": "Automatic model attempt limit reached; user retry required"},
                     )
                 elif not retry:
                     self.emit(

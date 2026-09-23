@@ -7,6 +7,7 @@ from novel_os.context.profiles import (
     ContextProfileRegistry,
 )
 from novel_os.domain.context import ContextStatus, SourceType
+from novel_os.domain.enums import ObjectType
 from novel_os.domain.errors import DomainError
 from novel_os.domain.planning import BriefStatus
 from novel_os.domain.workflow import ChapterState, GuardFailure
@@ -97,6 +98,23 @@ class PlanningFreshness:
             )
         if workflow.current_state == ChapterState.C05_PLAN_REVIEW:
             from novel_os.services.planning_context import planning_refs
+            from novel_os.services.writing_profile_context import WritingProfileContext
+
+            plan = CoreRepository(self.session).get_version(
+                ObjectType.CHAPTER_PLAN,
+                workflow.project_id,
+                workflow.chapter_id,
+                workflow.plan_version,
+            )
+            generation = self.repo.generation(workflow.id, plan.id)
+            if generation:
+                try:
+                    WritingProfileContext(self.session).check_plan(generation)
+                except DomainError:
+                    raise PlanningContextStale(
+                        "Plan writing preferences changed; replan with approved preferences",
+                        ChapterState.C04_CHAPTER_PLANNING,
+                    ) from None
 
             # Resolve against the bound generation, never substitute a new locked version.
             _, missing = planning_refs(self.session, "REVIEW_CHAPTER_PLAN", workflow)

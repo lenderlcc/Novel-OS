@@ -24,6 +24,7 @@ from novel_os.domain.workflow import ChapterState
 from novel_os.repositories.planning import PlanningRepository
 from novel_os.repositories.prompt_lineages import PromptLineageRepository
 from novel_os.services.core_base import CoreService
+from novel_os.services.plan_review_policy import canonical_plan_constraints, effective_verdict
 from novel_os.services.planning_policy import (
     LOCKED_DEPENDENCY_TYPES,
     denied,
@@ -39,60 +40,6 @@ def validate_sources(output, package):
     if any(ref_key(ref) not in selected for ref in output.source_refs):
         denied("Result cites a source outside its exact context snapshot")
     return selected
-
-
-def effective_verdict(review, brief, plan):
-    """A nominal PASS cannot override structured hard evidence or absent mandatory coverage."""
-    issues = list(review.hard_gate_issues)
-
-    def add(code, message):
-        if not any(item.code == code and item.description == message for item in issues):
-            issues.append(HardGateIssue(code=code, description=message))
-
-    mandatory = {item.id: item for item in brief.must + brief.preserve + brief.change_requests}
-    coverage = {item.constraint_id: item for item in review.requirement_coverage}
-    proposed = {item.constraint_id: item for item in plan.requirement_coverage}
-
-    def covered(key, entries):
-        entry = entries.get(key)
-        if entry is None or not entry.covered:
-            return False
-        if entry.scope == "SCENE":
-            return bool(entry.scene_ids)
-        # Global narration/preservation constraints need plan-level evidence,
-        # not an invented scene just to satisfy a coverage counter.
-        return mandatory[key].text in plan.constraints + plan.preserved_elements
-
-    for key in sorted(mandatory):
-        if any(not covered(key, entries) for entries in (coverage, proposed)):
-            add("MISSING_MUST", "Mandatory coverage missing: " + key)
-    for field, code in (
-        ("missing_requirements", "MISSING_MUST"),
-        ("forbidden_violations", "FORBIDDEN_VIOLATION"),
-        ("locked_conflicts", "LOCKED_CONFLICT"),
-        ("direction_conflicts", "DIRECTION_CONFLICT"),
-    ):
-        for message in getattr(review, field):
-            add(code, message)
-    for risk in review.logic_risks:
-        if risk.impact == "HIGH":
-            add("MAJOR_LOGIC_BREAK", risk.description)
-    if any(proposal.required_for_plan for proposal in plan.proposed_major_changes):
-        add("DIRECTION_CONFLICT", "Executable plan requires an unapproved major change")
-    if issues or review.verdict == ReviewVerdict.FAIL:
-        verdict = ReviewVerdict.FAIL
-    elif (
-        review.quality_issues
-        or review.over_specification_issues
-        or review.logic_risks
-        or review.recommendations
-        or review.confidence < 0.6
-        or review.verdict == ReviewVerdict.PASS_WITH_WARNINGS
-    ):
-        verdict = ReviewVerdict.PASS_WITH_WARNINGS
-    else:
-        verdict = ReviewVerdict.PASS
-    return review.model_copy(update={"verdict": verdict, "hard_gate_issues": issues})
 
 
 class PlanningResultService:
@@ -169,6 +116,7 @@ class PlanningResultService:
         chapter = self.core.repo.get_chapter(workflow.project_id, workflow.chapter_id)
         VersionToken(workflow.plan_version or 0).check(chapter.current_plan_version or 0)
         if task.task_type == "PLAN_CHAPTER":
+            canonical_plan_constraints(output, parsed_brief)
             freedom = output.creative_freedom
             baseline = parsed_brief.creative_freedom
             levels = {"LOW": 0, "MEDIUM": 1, "HIGH": 2}
@@ -197,6 +145,26 @@ class PlanningResultService:
             generation = self.repo.generation(workflow.id, plan.id)
             if generation is None or generation.brief_id != brief.id:
                 denied("Plan and review must share the exact Brief")
+            hard_ids = {
+                item.id
+                for item in (
+                    parsed_brief.must
+                    + parsed_brief.forbidden
+                    + parsed_brief.preserve
+                    + parsed_brief.change_requests
+                )
+            }
+            if any(
+                issue.constraint_id is not None and issue.constraint_id not in hard_ids
+                for issue in output.hard_gate_issues
+            ):
+                denied("Review cannot upgrade a soft preference to a hard constraint")
+            forbidden_ids = {item.id for item in parsed_brief.forbidden}
+            if any(
+                issue.code == "FORBIDDEN_VIOLATION" and issue.constraint_id not in forbidden_ids
+                for issue in output.hard_gate_issues
+            ):
+                denied("Forbidden violations must reference the Brief FORBIDDEN category")
             scene_ids = {scene["id"] for scene in generation.body["scenes"]}
             if any(set(item.scene_ids) - scene_ids for item in output.requirement_coverage):
                 denied("Review coverage references an unknown scene")
@@ -243,6 +211,9 @@ class PlanningResultService:
                 payload = {"reason": "User decision required; inspect CreativeBrief ambiguities"}
         elif task.task_type == "PLAN_CHAPTER":
             brief = self.current_brief(workflow)
+            output = canonical_plan_constraints(
+                output, CreativeBriefOutput.model_validate(brief.body)
+            )
             body = output.model_dump(mode="json")
             plan_payload = dict(
                 objective=output.objective,
@@ -289,25 +260,6 @@ class PlanningResultService:
                 ChapterPlanOutput.model_validate(generation.body),
             )
             issues = list(reviewed.hard_gate_issues)
-            parsed_brief = CreativeBriefOutput.model_validate(brief.body)
-            for constraint in (
-                parsed_brief.must + parsed_brief.forbidden + parsed_brief.change_requests
-            ):
-                if constraint.text not in generation.body["constraints"]:
-                    issues.append(
-                        HardGateIssue(
-                            code="MISSING_MUST",
-                            description="Plan omitted a mandatory constraint: " + constraint.id,
-                        )
-                    )
-            for constraint in parsed_brief.preserve:
-                if constraint.text not in generation.body["preserved_elements"]:
-                    issues.append(
-                        HardGateIssue(
-                            code="MISSING_MUST",
-                            description="Plan omitted a preservation constraint: " + constraint.id,
-                        )
-                    )
             declared = {
                 ref_key(ref)
                 for ref in ChapterPlanOutput.model_validate(generation.body).locked_dependencies

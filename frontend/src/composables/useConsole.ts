@@ -1,0 +1,205 @@
+import { computed, onScopeDispose, ref, shallowRef } from 'vue'
+import { api } from '../api/console'
+import { ApiError, asError } from '../api/client'
+import type { Project, Chapter, Workflow, Gate, Brief, Plan, PlanningHistory, Draft, Writing, Task, Decision, ExecutionConfig } from '../types/models'
+import { isWritingWorkflow, pollDelay } from './workflowState'
+
+export interface Snapshot {
+  workflow: Workflow; chapter: Chapter; gates: Gate[]; brief: Brief | null;
+  plans: Plan[]; history: PlanningHistory; drafts: Draft[]; writing: Writing[]; tasks: Task[]
+}
+
+function generatedDraftVersion(s: Snapshot): number | null {
+  const version = s.workflow.draft_version ?? null
+  if (!isWritingWorkflow(s.workflow)) return version
+  const draft = s.drafts.find(d => d.version === version)
+  return draft && s.writing.some(w => w.chapter_version_id === draft.id) ? version : null
+}
+
+export function useConsole(client = api) {
+  const projects = ref<Project[]>([]), chapters = ref<Chapter[]>([]), workflows = ref<Workflow[]>([])
+  const executionConfig = shallowRef<ExecutionConfig | null>(null)
+  const projectId = ref(''), chapterId = ref(''), workflowId = ref('')
+  const snapshot = shallowRef<Snapshot | null>(null)
+  const selectedPlan = ref<number | null>(null), selectedDraft = ref<number | null>(null)
+  const error = shallowRef<ApiError | null>(null), busy = ref(false), loading = ref(false), conflict = ref(false)
+  let epoch = 0, controller = new AbortController(), timer: ReturnType<typeof setTimeout> | undefined
+  let disposed = false
+  const stop = () => { clearTimeout(timer); timer = undefined }
+  function invalidate() { stop(); controller.abort(); controller = new AbortController(); return ++epoch }
+  const workflow = computed(() => snapshot.value?.workflow ?? null)
+  const plan = computed(() => snapshot.value?.plans.find(p => p.version === selectedPlan.value) ?? null)
+  const generation = computed(() => snapshot.value?.history.plans.find(p => p.plan_id === plan.value?.id) ?? null)
+  const review = computed(() => snapshot.value?.history.reviews.filter(r => r.plan_id === plan.value?.id).at(-1) ?? null)
+  const draft = computed(() => snapshot.value?.drafts.find(d => d.version === selectedDraft.value) ?? null)
+  const writing = computed(() => snapshot.value?.writing.find(w => w.chapter_version_id === draft.value?.id) ?? null)
+  const gate = computed(() => {
+    const s = snapshot.value
+    if (!s || conflict.value || !isWritingWorkflow(s.workflow) || s.workflow.current_state !== 'C06_PLAN_APPROVAL' || !generation.value) return null
+    return s.gates.find(g => g.status === 'WAITING' && g.gate_type === 'PLAN_APPROVAL' &&
+      g.artifact_id === plan.value?.id && g.artifact_version === plan.value?.version &&
+      g.artifact_version === s.workflow.plan_version && g.opened_state_version === s.workflow.state_version) ?? null
+  })
+  const formal = computed(() => workflow.value ? isWritingWorkflow(workflow.value) : false)
+
+  function schedule() {
+    stop()
+    const delay = pollDelay(workflow.value, snapshot.value?.tasks, executionConfig.value)
+    if (!disposed && delay !== null && !error.value) timer = setTimeout(() => { void refresh(false) }, delay)
+  }
+
+  async function refresh(manual = true) {
+    if (disposed || !workflowId.value) return
+    const token = invalidate(), signal = controller.signal
+    const p = projectId.value, c = chapterId.value, w = workflowId.value
+    if (manual) loading.value = true
+    try {
+      const [current, latestConfig] = await Promise.all([
+        client.workflow(w, signal),
+        manual ? client.executionConfig(signal) : Promise.resolve(executionConfig.value),
+      ])
+      const [chapter, gates, brief, plans, history, drafts, writing, tasks] = await Promise.all([
+        client.chapter(p, c, signal), client.gates(w, signal), current.simulation ? null : client.brief(w, signal), client.plans(p, c, signal),
+        current.simulation ? { briefs: [], plans: [], reviews: [] } : client.history(w, signal),
+        client.drafts(p, c, signal), client.writing(w, signal), client.tasks(w, signal),
+      ])
+      // Do not publish a mixed snapshot if the worker advanced while reading artifacts.
+      const after = await client.workflow(w, signal)
+      if (token !== epoch) return
+      if (after.state_version !== current.state_version) {
+        loading.value = false
+        timer = setTimeout(() => { void refresh(manual) }, 300)
+        return
+      }
+      const next: Snapshot = { workflow: current, chapter, gates, brief, plans, history, drafts, writing, tasks }
+      const previous = snapshot.value
+      if (!previous || selectedPlan.value === previous.workflow.plan_version) selectedPlan.value = current.plan_version
+      if (!previous || selectedDraft.value === generatedDraftVersion(previous)) selectedDraft.value = generatedDraftVersion(next)
+      snapshot.value = next
+      if (manual) executionConfig.value = latestConfig
+      workflows.value = workflows.value.map(item => item.id === w ? current : item)
+      chapters.value = chapters.value.map(item => item.id === c ? chapter : item)
+      if (manual) { error.value = null; conflict.value = false }
+      schedule()
+    } catch (err) {
+      if (token === epoch && !signal.aborted) error.value = asError(err)
+    } finally { if (token === epoch) loading.value = false }
+  }
+
+  async function loadProjects() {
+    if (disposed) return
+    const token = invalidate(); loading.value = true
+    try {
+      const [result, config] = await Promise.all([client.projects(controller.signal), client.executionConfig(controller.signal)])
+      if (token === epoch) { projects.value = result; executionConfig.value = config; error.value = null }
+    }
+    catch (err) { if (token === epoch) error.value = asError(err) }
+    finally { if (token === epoch) loading.value = false }
+  }
+  function clearWorkflow() {
+    workflowId.value = ''; snapshot.value = null; selectedPlan.value = null; selectedDraft.value = null
+    error.value = null; conflict.value = false
+  }
+  async function selectProject(id: string) {
+    if (disposed) return
+    const token = invalidate(); projectId.value = id; chapterId.value = ''; chapters.value = []; workflows.value = []; clearWorkflow()
+    if (!id) { loading.value = false; return }
+    loading.value = true
+    try { const result = await client.chapters(id, controller.signal); if (token === epoch) chapters.value = result }
+    catch (err) { if (token === epoch) error.value = asError(err) }
+    finally { if (token === epoch) loading.value = false }
+  }
+  async function selectChapter(id: string) {
+    if (disposed) return
+    const token = invalidate(); chapterId.value = id; workflows.value = []; clearWorkflow()
+    if (!id) { loading.value = false; return }
+    loading.value = true
+    try {
+      const result = await client.workflows(projectId.value, id, controller.signal)
+      if (token !== epoch) return
+      workflows.value = result
+      if (result[0]) await selectWorkflow(result[0].id)
+    } catch (err) { if (token === epoch) error.value = asError(err) }
+    finally { if (token === epoch) loading.value = false }
+  }
+  async function selectWorkflow(id: string) {
+    if (disposed) return
+    invalidate(); clearWorkflow(); workflowId.value = id
+    if (id) await refresh()
+    else loading.value = false
+  }
+  async function mutate(action: () => Promise<void>) {
+    if (disposed || busy.value) return
+    invalidate(); busy.value = true; loading.value = false; error.value = null
+    try { await action() }
+    catch (err) {
+      if (disposed) return
+      error.value = asError(err)
+      if (error.value.code === 'VERSION_CONFLICT') conflict.value = true
+    } finally { busy.value = false }
+  }
+  const createProject = (name: string) => mutate(async () => {
+    const project = await client.createProject(name)
+    if (disposed) return
+    projects.value = [...projects.value, project]; await selectProject(project.id)
+  })
+  const createChapter = (title: string, sequence: number) => mutate(async () => {
+    const chapter = await client.createChapter(projectId.value, title, sequence)
+    if (disposed) return
+    chapters.value = [...chapters.value, chapter]; await selectChapter(chapter.id)
+  })
+  const start = (raw: string) => mutate(async () => {
+    // After an uncertain create, the tester refreshes chapter workflows before submitting again.
+    const result = await client.start(projectId.value, chapterId.value, raw, crypto.randomUUID())
+    if (disposed) return
+    clearWorkflow(); workflowId.value = result.workflow.id; workflows.value.unshift(result.workflow)
+    try {
+      const submitted = await client.submit(result.workflow, crypto.randomUUID())
+      if (submitted.error_code) throw new ApiError(submitted.error_code, '需求提交未完成，请刷新查看流程。')
+    } catch (submitError) {
+      // The create is already durable. Publish C00 so the user can retry USER_SUBMITTED
+      // instead of creating another workflow or being stranded behind the active guard.
+      if (!disposed) await refresh()
+      throw submitError
+    }
+    await refresh()
+  })
+  const submit = () => mutate(async () => {
+    if (!workflow.value) return
+    const result = await client.submit(workflow.value, crypto.randomUUID())
+    if (result.error_code) throw new ApiError(result.error_code, '提交失败，请刷新。')
+    await refresh()
+  })
+  const decide = (decision: Decision, reason: string) => mutate(async () => {
+    const currentWorkflow = workflow.value, currentGate = gate.value
+    if (!currentWorkflow || !currentGate) throw new ApiError('STALE_VIEW', '请打开当前待审批方案后再操作。')
+    if (decision === 'APPROVE') {
+      const latestConfig = await client.executionConfig(controller.signal)
+      if (disposed) return
+      executionConfig.value = latestConfig
+      if (latestConfig.task_types && !latestConfig.task_types.includes('WRITE_CHAPTER')) {
+        throw new ApiError('EXECUTION_SCOPE_DISABLED', 'Writing 当前未开放。请启用 WRITE_CHAPTER 后刷新并重新审批。')
+      }
+    }
+    const normalizedReason = reason.trim() || (decision === 'APPROVE'
+      ? '人工批准当前方案'
+      : decision === 'REQUEST_ALTERNATIVE'
+        ? '人工请求一个不同方向的替代方案'
+        : '')
+    if (!normalizedReason) throw new ApiError('INVALID_INPUT', '请说明希望修改的内容。')
+    const result = await client.decide(currentWorkflow, currentGate, decision, normalizedReason, crypto.randomUUID())
+    if (result.error_code) throw new ApiError(result.error_code, '审批未完成，请刷新后检查流程。')
+    await refresh()
+  })
+  const control = (action: 'pause' | 'resume' | 'cancel', reason: string) => mutate(async () => {
+    if (!workflow.value) return
+    const result = await client.control(workflow.value, action, reason)
+    if (result.error_code) throw new ApiError(result.error_code, '操作未完成，请刷新后检查流程。')
+    await refresh()
+  })
+  onScopeDispose(() => { disposed = true; invalidate() })
+  return { projects, chapters, workflows, executionConfig, projectId, chapterId, workflowId, snapshot, workflow,
+    selectedPlan, selectedDraft, plan, generation, review, draft, writing, gate, formal,
+    error, busy, loading, conflict, loadProjects, selectProject, selectChapter, selectWorkflow,
+    refresh, createProject, createChapter, start, submit, decide, control }
+}
