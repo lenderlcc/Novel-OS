@@ -27,7 +27,7 @@ class Settings(BaseSettings):
         "mock-default", "openai-structured", "lingzhi-requirement", "lingzhi-structured"
     ] = "mock-default"
     agent_execution_scope: Literal[
-        "all", "requirement-only", "planning-only", "chapter-writing"
+        "all", "requirement-only", "planning-only", "chapter-writing", "chapter-quality"
     ] = "all"
     agent_max_attempts: int | None = Field(default=None, ge=1, le=3)
     agent_capture_outputs: bool = False
@@ -46,7 +46,7 @@ class Settings(BaseSettings):
             raise ValueError("agent_heartbeat_seconds must be less than agent_lease_seconds")
         required_scope = {
             "lingzhi-requirement": ("requirement-only",),
-            "lingzhi-structured": ("chapter-writing", "planning-only"),
+            "lingzhi-structured": ("chapter-writing", "planning-only", "chapter-quality"),
         }.get(self.agent_model_profile)
         if required_scope and self.agent_execution_scope not in required_scope:
             raise ValueError(
@@ -61,6 +61,14 @@ class Settings(BaseSettings):
             "all": None,
             "requirement-only": ("PARSE_CHAPTER_REQUIREMENT",),
             "planning-only": ("PARSE_CHAPTER_REQUIREMENT", "PLAN_CHAPTER", "REVIEW_CHAPTER_PLAN"),
+            "chapter-quality": (
+                "PARSE_CHAPTER_REQUIREMENT",
+                "PLAN_CHAPTER",
+                "REVIEW_CHAPTER_PLAN",
+                "WRITE_CHAPTER",
+                "REVIEW_CHAPTER_COMPLIANCE",
+                "REVIEW_CHAPTER_NARRATIVE",
+            ),
             "chapter-writing": (
                 "PARSE_CHAPTER_REQUIREMENT",
                 "PLAN_CHAPTER",

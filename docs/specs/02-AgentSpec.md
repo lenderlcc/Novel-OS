@@ -260,3 +260,7 @@ Skill 只有满足至少一个条件才考虑升级 Agent：
 - 独立 Retry / Escalation
 
 否则保持 Skill。
+
+## NOVEL-009 — Chapter Quality Review
+
+A05 新增 REVIEW_CHAPTER_COMPLIANCE 和 REVIEW_CHAPTER_NARRATIVE，能力限于 REVIEW。两轮依次审阅不可变正文；系统验证 exact sources 和结果契约。不得修改 Draft/Plan/Profile、替用户批准、提交 Canon 或调度 Revision。详见 [Quality Engine](07-Quality-Engine.md)。

@@ -1,0 +1,22 @@
+{
+  "module_id": "review-chapter-compliance",
+  "module_type": "TASK_TEMPLATE",
+  "version": 1,
+  "status": "STABLE",
+  "description": "NOVEL-009 review-chapter-compliance",
+  "content_path": "content.md",
+  "dependencies": [
+    {
+      "module_id": "novel-os-core",
+      "version": 1
+    }
+  ],
+  "compatible_agents": [
+    "A05_REVIEW"
+  ],
+  "compatible_task_types": [
+    "REVIEW_CHAPTER_COMPLIANCE"
+  ],
+  "created_at": "2026-09-24T00:00:00Z",
+  "content_hash": "4ab0812a2999f4b2ff3839c637f9c611d3f882eed76df48a90f9cddfd933e721"
+}

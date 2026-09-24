@@ -144,6 +144,23 @@ WRITING_TASK = StageTaskMapping(
     "DRAFT_READY",
     result_schema="chapter-writing-result.v1",
 )
+QUALITY_STAGE_TASKS = {
+    task: StageTaskMapping(
+        task,
+        State.C09_INTERNAL_REVIEW,
+        AgentId.A05_REVIEW,
+        kind,
+        Capability.REVIEW,
+        "REVIEW_PASSED",
+        "REVIEW_FAILED",
+        schema,
+    )
+    for task, kind, schema in (
+        ("REVIEW_CHAPTER_COMPLIANCE", "chapter_compliance_review", "chapter-compliance-review.v1"),
+        ("REVIEW_CHAPTER_NARRATIVE", "chapter_narrative_review", "chapter-narrative-review.v1"),
+    )
+}
+TASKS.update(QUALITY_STAGE_TASKS)
 TASKS[WRITING_TASK.task_type] = WRITING_TASK
 TASKS.update({mapping.task_type: mapping for mapping in BUSINESS_STAGE_TASKS.values()})
 

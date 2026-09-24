@@ -5,6 +5,7 @@ from datetime import timedelta
 from novel_os.agents.registry import BUSINESS_STAGE_TASKS, STAGE_TASKS
 from novel_os.domain.agents import AgentTask, RunStatus, TaskStatus
 from novel_os.domain.errors import DomainError
+from novel_os.domain.quality import QUALITY_TASKS
 from novel_os.domain.workflow import WorkflowStatus
 from novel_os.repositories.agent_tasks import AgentTaskRepository
 from novel_os.services.task_history import RELEASE_LEASE, TaskHistory
@@ -62,6 +63,18 @@ class TaskScheduler:
 
         if supports_writing(workflow) and workflow.current_state == WRITING_TASK.state:
             definition = WRITING_TASK
+        from novel_os.services.quality_binding import supports_quality
+
+        if supports_quality(workflow) and workflow.current_state == "C09_INTERNAL_REVIEW":
+            from novel_os.agents.registry import QUALITY_STAGE_TASKS
+            from novel_os.repositories.quality import QualityRepository
+
+            reviews = QualityRepository(self.session)
+            binding = reviews.binding(workflow.id, workflow.state_version)
+            first = reviews.pass_for(binding.id, "COMPLIANCE") if binding else None
+            definition = QUALITY_STAGE_TASKS[
+                "REVIEW_CHAPTER_NARRATIVE" if first else "REVIEW_CHAPTER_COMPLIANCE"
+            ]
         if definition is None:
             return None  # Deterministic controls and versioned handoff boundaries have no agent.
 
@@ -121,6 +134,8 @@ class TaskScheduler:
                     if workflow.simulation
                     else "Write from the exact approved Plan; local creativity only"
                     if definition.task_type == "WRITE_CHAPTER"
+                    else "Review the exact Draft; evidence only, no rewriting or authority changes"
+                    if definition.task_type in QUALITY_TASKS
                     else "Planning only; no chapter prose",
                     "No approval, lock, canon commit or direct database access",
                 ],
@@ -134,5 +149,9 @@ class TaskScheduler:
             from novel_os.services.writing_binding import WritingBindingService
 
             WritingBindingService(self.session).capture(task, workflow)
+        if task.task_type in QUALITY_TASKS:
+            from novel_os.services.quality_binding import QualityBindingService
+
+            QualityBindingService(self.session).capture(task, workflow)
         self.history.audit(task, None, task, context, "Workflow scheduled agent task")
         return task

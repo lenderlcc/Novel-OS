@@ -4,6 +4,7 @@ import { useConsole } from '../composables/useConsole'
 import BriefView from '../components/BriefView.vue'
 import PlanView from '../components/PlanView.vue'
 import DraftView from '../components/DraftView.vue'
+import QualityReview from '../components/QualityReview.vue'
 import HumanGate from '../components/HumanGate.vue'
 import WorkflowProgress from '../components/WorkflowProgress.vue'
 import DebugPanel from '../components/DebugPanel.vue'
@@ -28,14 +29,14 @@ const debugOpen = ref(storage.getItem('novel-os.debug-open') === 'true')
 const currentChapter = computed(() => chapters.value.find(item => item.id === chapterId.value) ?? null)
 const writingEnabled = computed(() => !executionConfig.value?.task_types || executionConfig.value.task_types.includes('WRITE_CHAPTER'))
 const disabled = computed(() => busy.value || loading.value)
-const active = computed(() => workflows.value.some(item => !['COMPLETED', 'FAILED', 'CANCELLED'].includes(item.status) && item.current_state !== 'C08_DETERMINISTIC_CHECK'))
+const active = computed(() => workflows.value.some(item => !['COMPLETED', 'FAILED', 'CANCELLED'].includes(item.status) && !['C08_DETERMINISTIC_CHECK', 'C10_REVISION', 'C11_INTERNAL_PASS'].includes(item.current_state)))
 const state = computed(() => workflow.value?.current_state ?? '')
-const stopped = computed(() => /^C9/.test(state.value))
 const requirementStage = computed(() => !workflow.value || state.value === 'C00_CREATED')
 const processingStage = computed(() => /^C0[1-5]_/.test(state.value))
 const planStage = computed(() => state.value === 'C06_PLAN_APPROVAL')
 const writingStage = computed(() => state.value === 'C07_WRITING')
-const draftStage = computed(() => state.value === 'C08_DETERMINISTIC_CHECK')
+const draftStage = computed(() => ['C08_DETERMINISTIC_CHECK', 'C09_INTERNAL_REVIEW', 'C10_REVISION', 'C11_INTERNAL_PASS'].includes(state.value))
+const qualityReview = computed(() => snapshot.value?.qualityReviews?.find(r => r.chapter_version_id === draft.value?.id && r.binding.workflow_id === workflowId.value) ?? null)
 const overlayOpen = computed(() =>
   (profileOpen.value && Boolean(projectId.value)) ||
   (testsOpen.value && manualTestAvailable) ||
@@ -146,7 +147,7 @@ onMounted(initialize)
       <section v-if="!currentChapter && !loading" class="empty-workspace"><h2>开始创作</h2><p>选择左侧章节后，可以用自然语言描述这一章。</p></section>
 
       <template v-else-if="currentChapter">
-        <WorkflowProgress v-if="workflow && !draftStage" :workflow="workflow" :tasks="snapshot?.tasks ?? []" :config="executionConfig" :can-resume="formal && !disabled && !conflict" @resume="control('resume', '人工继续当前创作流程')" />
+        <WorkflowProgress v-if="workflow && (!draftStage || workflow.workflow_definition_version === 3)" :workflow="workflow" :tasks="snapshot?.tasks ?? []" :config="executionConfig" :current-draft-version="snapshot?.chapter.current_version" :can-resume="formal && !disabled && !conflict" @resume="control('resume', '人工继续当前创作流程')" />
 
         <section v-if="requirementStage" class="requirement-workspace">
           <div class="section-heading"><h2>章节需求</h2><p>说说这一章你希望发生什么。具体结构和细节交给 AI 理解。</p></div>
@@ -176,9 +177,11 @@ onMounted(initialize)
 
         <section v-else-if="writingStage" class="writing-workspace"><div class="writing-indicator" aria-hidden="true">···</div><h2>AI 正在写作…</h2><p>需求、方案和审批已经完成。正文生成可能需要一些时间。</p></section>
 
-        <DraftView v-else-if="draftStage && draft" :draft="draft" :chapter-number="currentChapter.sequence" @evaluate="evaluationOpen = true" />
+        <section v-else-if="draftStage && draft">
+          <QualityReview :review="qualityReview" :pending="state === 'C09_INTERNAL_REVIEW'" />
+          <DraftView :draft="draft" :chapter-number="currentChapter.sequence" @evaluate="evaluationOpen = true" />
+        </section>
 
-        <section v-else-if="stopped && workflow" class="stopped-actions"><button v-if="workflow.current_state === 'C90_BLOCKED'" :disabled="disabled || conflict" @click="control('resume', '用户确认重试模型任务')">重试本阶段（会调用模型）</button></section>
       </template>
     </main>
 

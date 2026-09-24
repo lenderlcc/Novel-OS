@@ -78,7 +78,7 @@ class DefinitionBody(BaseModel):
                 raise ValueError("Artifact effects require executor results")
             if rule.effect == "bind_draft" and (
                 self.simulation
-                or self.version != 2
+                or self.version not in {2, 3}
                 or (rule.source, rule.event, rule.target)
                 != (ChapterState.C07_WRITING, "DRAFT_READY", ChapterState.C08_DETERMINISTIC_CHECK)
             ):
@@ -102,7 +102,11 @@ class DefinitionBody(BaseModel):
             ChapterState.C92_CANCELLED,
         }
         if not self.simulation:
-            boundary = "C08_DETERMINISTIC_CHECK" if self.version == 2 else "C07_WRITING"
+            boundary = {1: "C07_WRITING", 2: "C08_DETERMINISTIC_CHECK", 3: "C11_INTERNAL_PASS"}.get(
+                self.version
+            )
+            if boundary is None:
+                raise ValueError("Unknown formal workflow version")
             required_states = {state for state in ChapterState if state.value <= boundary}
             if self.id != "chapter-planning" or any(
                 rule.source not in required_states
@@ -111,7 +115,7 @@ class DefinitionBody(BaseModel):
                 for rule in self.transitions
             ):
                 raise ValueError("Business planning stops at C07")
-            if self.version != 2 and any(
+            if self.version == 1 and any(
                 rule.source == ChapterState.C07_WRITING for rule in self.transitions
             ):
                 raise ValueError("C07 is the planning handoff boundary")
@@ -141,6 +145,52 @@ class DefinitionBody(BaseModel):
                     (r.source, r.event, r.target, r.actor, r.effect) for r in writing_edges
                 } != expected or any("plan_approved" not in r.guards for r in writing_edges):
                     raise ValueError("Writing v2 stops at C08 with explicit user regeneration")
+            if self.version == 3:
+                review_edges = {
+                    (r.source, r.event, r.target, r.actor)
+                    for r in self.transitions
+                    if r.source.value >= "C08"
+                }
+                expected = {
+                    (
+                        ChapterState.C08_DETERMINISTIC_CHECK,
+                        "REGENERATE_DRAFT",
+                        ChapterState.C07_WRITING,
+                        ActorType.USER,
+                    ),
+                    (
+                        ChapterState.C08_DETERMINISTIC_CHECK,
+                        "DETERMINISTIC_CHECK_PASSED",
+                        ChapterState.C09_INTERNAL_REVIEW,
+                        ActorType.SYSTEM,
+                    ),
+                    (
+                        ChapterState.C09_INTERNAL_REVIEW,
+                        "REVIEW_PASSED",
+                        ChapterState.C11_INTERNAL_PASS,
+                        ActorType.AGENT,
+                    ),
+                    (
+                        ChapterState.C09_INTERNAL_REVIEW,
+                        "REVIEW_FAILED",
+                        ChapterState.C10_REVISION,
+                        ActorType.AGENT,
+                    ),
+                    (
+                        ChapterState.C10_REVISION,
+                        "REQUEST_REVIEW",
+                        ChapterState.C09_INTERNAL_REVIEW,
+                        ActorType.USER,
+                    ),
+                    (
+                        ChapterState.C11_INTERNAL_PASS,
+                        "REQUEST_REVIEW",
+                        ChapterState.C09_INTERNAL_REVIEW,
+                        ActorType.USER,
+                    ),
+                }
+                if review_edges != expected:
+                    raise ValueError("Quality review stops for human review; no automatic revision")
         if not required_states <= reachable:
             raise ValueError("Chapter states must be reachable")
         return self
@@ -207,6 +257,9 @@ class WorkflowDefinitionRegistry:
                 ),
                 WorkflowDefinitionLoader().load(
                     Path(__file__).parent / "definitions/chapter-planning.v2.yaml"
+                ),
+                WorkflowDefinitionLoader().load(
+                    Path(__file__).parent / "definitions/chapter-planning.v3.yaml"
                 ),
             ]
         ):

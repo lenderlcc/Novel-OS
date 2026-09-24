@@ -317,3 +317,7 @@ Agent → Tool → Service → Repository → Database
 8. Memory Commit 原子化
 9. 下一章读取新 Canon
 10. 全链路可 Audit
+
+## NOVEL-009 — Chapter Quality Review
+
+质量审阅复用既有 Worker/AgentRuntime/A05/Context/Prompt 链路，两个任务共享冻结的 review binding。Result Service 控制 pass → aggregate → workflow/audit 事务。数据库保护追加式证据和 exact lineage。没有新增调度器、Memory 数据库、评分服务、模型投票或自动修订。配置文件中的 chapter-quality 范围显式包含两个新任务；chapter-writing 保留原允许列表。详见 [Quality Engine](07-Quality-Engine.md)。

@@ -1,0 +1,23 @@
+{
+  "module_id": "quality-evidence",
+  "module_type": "SKILL",
+  "version": 1,
+  "status": "STABLE",
+  "description": "NOVEL-009 quality-evidence",
+  "content_path": "content.md",
+  "dependencies": [
+    {
+      "module_id": "novel-os-core",
+      "version": 1
+    }
+  ],
+  "compatible_agents": [
+    "A05_REVIEW"
+  ],
+  "compatible_task_types": [
+    "REVIEW_CHAPTER_COMPLIANCE",
+    "REVIEW_CHAPTER_NARRATIVE"
+  ],
+  "created_at": "2026-09-24T00:00:00Z",
+  "content_hash": "e8ecab8fa6ed1adf137b3704ed6d83d700eaf121ffe0087d510183d7d11e3cbf"
+}

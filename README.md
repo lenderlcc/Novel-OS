@@ -1137,3 +1137,13 @@ Case 01 原始证据和受控人工 A/B 步骤见
 [case01_style_ab](evals/writing/v0.1/case-01/case01_style_ab.md)。真实 A/B 需要新的明确 opt-in；
 只读 `scripts/case01_style_ab.py` 不调用模型。完整实现报告见
 [STYLE-001](docs/reports/STYLE-001-project-writing-profile.md)。
+
+### NOVEL-009 正文审阅
+
+新建的工作台流程使用 `chapter-planning.v3`：正文 → 约束审阅 → 叙事/受众审阅 → 等待人工决定。已有流程保持原定义，审阅不会自动修订正文。
+
+审阅期间新增正文版本会使旧任务失效。刷新工作台后，“重新审阅正文 vN”会提交页面所见的当前版本，创建新的两轮审阅，保留旧结果。API 调用 `POST /api/v1/workflows/{id}/resume` 时可传 `expected_draft_version`；正文已变化但未提供正确版本时返回 409。审阅完成后，也可通过 `POST /api/v1/workflows/{id}/quality-review` 提交当前正文版本进行显式复审。未批准的 Plan Draft 不影响基于原批准 Plan 的审阅。
+
+在本机 TOML 中设置 `agent_execution_scope = "chapter-quality"` 才允许执行两个新审阅任务。离线验证使用 `agent_model_profile = "mock-default"`。真实 Provider 扩大执行范围会允许付费调用，应仅用于用户明确授权的运行；本次开发和测试没有修改现有付费 Worker 的本机配置。配置继续使用文件，不需要环境变量。
+
+历史 Case 01～05 评估与显式真实调用步骤见 [evals/quality](evals/quality/README.md)。设计与 API 见 [Quality Engine](docs/specs/07-Quality-Engine.md)，验证结果见 [009 实施报告](docs/reports/NOVEL-009-quality-review-engine.md)。

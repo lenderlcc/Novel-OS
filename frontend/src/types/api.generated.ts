@@ -4,6 +4,57 @@
  */
 
 export interface paths {
+    "/api/v1/workflows/chapter-quality": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Create */
+        post: operations["create_api_v1_workflows_chapter_quality_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/projects/{project_id}/chapters/{chapter_id}/quality-reviews": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** History */
+        get: operations["history_api_v1_projects__project_id__chapters__chapter_id__quality_reviews_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/workflows/{workflow_id}/quality-review": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Request Review */
+        post: operations["request_review_api_v1_workflows__workflow_id__quality_review_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/health": {
         parameters: {
             query?: never;
@@ -1444,6 +1495,68 @@ export interface components {
             /** Source Refs */
             source_refs: components["schemas"]["EvidenceRef"][];
         };
+        /** ChapterReviewResult */
+        ChapterReviewResult: {
+            /**
+             * Chapter Id
+             * Format: uuid
+             */
+            chapter_id: string;
+            /**
+             * Chapter Version Id
+             * Format: uuid
+             */
+            chapter_version_id: string;
+            /** Strengths */
+            strengths: components["schemas"]["Strength"][];
+            /** Revision Priorities */
+            revision_priorities: components["schemas"]["RevisionPriority"][];
+            /** Source Refs */
+            source_refs: components["schemas"]["ReviewSource"][];
+            /** Confidence */
+            confidence: number;
+            /**
+             * Kind
+             * @default chapter_quality_review
+             * @constant
+             */
+            kind: "chapter_quality_review";
+            overall_verdict: components["schemas"]["Verdict"];
+            compliance_verdict: components["schemas"]["Verdict"];
+            narrative_verdict: components["schemas"]["Verdict"];
+            audience_fit_verdict: components["schemas"]["Verdict"];
+            /** Hard Gate Issues */
+            hard_gate_issues: components["schemas"]["QualityIssue"][];
+            /** Quality Issues */
+            quality_issues: components["schemas"]["QualityIssue"][];
+            /** Reviewer Version */
+            reviewer_version: string;
+            /**
+             * Prompt Lineage Id
+             * Format: uuid
+             */
+            prompt_lineage_id: string;
+            /**
+             * Context Package Id
+             * Format: uuid
+             */
+            context_package_id: string;
+            /**
+             * Compliance Prompt Lineage Id
+             * Format: uuid
+             */
+            compliance_prompt_lineage_id: string;
+            /**
+             * Compliance Context Package Id
+             * Format: uuid
+             */
+            compliance_context_package_id: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+        };
         /**
          * ChapterState
          * @enum {string}
@@ -1816,7 +1929,7 @@ export interface components {
          * ContextScope
          * @enum {string}
          */
-        ContextScope: "PROJECT" | "TARGET_CHAPTER" | "PREVIOUS_CHAPTER" | "EXPLICIT";
+        ContextScope: "PROJECT" | "TARGET_CHAPTER" | "PREVIOUS_CHAPTER" | "RECENT_APPROVED_CHAPTERS" | "EXPLICIT";
         /**
          * ContextStatus
          * @enum {string}
@@ -2389,6 +2502,11 @@ export interface components {
             /** Source Location */
             source_location: string;
         };
+        /**
+         * IssueCategory
+         * @enum {string}
+         */
+        IssueCategory: "COMPLIANCE" | "NARRATIVE" | "CREATIVE" | "AUDIENCE";
         JsonValue: unknown;
         /** KnowledgeRisk */
         KnowledgeRisk: {
@@ -2591,6 +2709,15 @@ export interface components {
          * @enum {string}
          */
         Pacing: "VERY_SLOW" | "SLOW" | "MEDIUM_SLOW" | "MEDIUM" | "MEDIUM_FAST" | "FAST" | "VERY_FAST";
+        /** ParagraphEvidence */
+        ParagraphEvidence: {
+            /** Paragraph Index */
+            paragraph_index: number;
+            /** Excerpt */
+            excerpt: string;
+            /** Reason */
+            reason: string;
+        };
         /** PlanCreate */
         PlanCreate: {
             /** Tags */
@@ -2935,6 +3062,140 @@ export interface components {
             /** Confidence */
             confidence: number;
         };
+        /** QualityBindingView */
+        QualityBindingView: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Project Id
+             * Format: uuid
+             */
+            project_id: string;
+            /**
+             * Chapter Id
+             * Format: uuid
+             */
+            chapter_id: string;
+            /**
+             * Workflow Id
+             * Format: uuid
+             */
+            workflow_id: string;
+            /** State Version */
+            state_version: number;
+            /**
+             * Chapter Version Id
+             * Format: uuid
+             */
+            chapter_version_id: string;
+            /** Draft Version */
+            draft_version: number;
+            /**
+             * Plan Id
+             * Format: uuid
+             */
+            plan_id: string;
+            /** Plan Version */
+            plan_version: number;
+            /**
+             * Brief Id
+             * Format: uuid
+             */
+            brief_id: string;
+            /** Profile Record Id */
+            profile_record_id: string | null;
+            /** Profile Version */
+            profile_version: number | null;
+            /** Profile Hash */
+            profile_hash: string | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+        };
+        /**
+         * QualityCode
+         * @enum {string}
+         */
+        QualityCode: "MISSING_MUST" | "FORBIDDEN_VIOLATION" | "CANON_CONFLICT" | "LOCKED_CONFLICT" | "MAJOR_DIRECTION_VIOLATION" | "NARRATIVE_POV_MISMATCH" | "CHARACTER_KNOWLEDGE_LEAK" | "LOW_IMMERSION" | "WEAK_POV_ANCHOR" | "UNSELECTIVE_DETAIL" | "MISALLOCATED_NARRATIVE_DETAIL" | "OVER_EXPLAINED_REASONING" | "OVER_EXPLAINED_EMOTIONAL_MEANING" | "FUNCTIONAL_DIALOGUE" | "OVER_STRUCTURED_DIALOGUE" | "WEAK_CHARACTER_VOICE" | "CHARACTERS_AS_ARGUMENTS" | "OVER_SYMMETRICAL_CONFLICT" | "ABSTRACT_STAKES" | "EXCESSIVE_CLOSURE" | "REQUIREMENT_VISIBILITY_BIAS" | "SAFE_GENERIC_CREATIVE_CHOICE" | "LOW_CREATIVE_NOVELTY" | "AUDIENCE_STYLE_MISMATCH";
+        /** QualityIssue */
+        QualityIssue: {
+            code: components["schemas"]["QualityCode"];
+            severity: components["schemas"]["Severity"];
+            category: components["schemas"]["IssueCategory"];
+            /** Title */
+            title: string;
+            /** Description */
+            description: string;
+            /** Evidence */
+            evidence: components["schemas"]["ParagraphEvidence"][];
+            /** Source Refs */
+            source_refs: components["schemas"]["ReviewSource"][];
+            /** Impact */
+            impact: string;
+            /** Revision Direction */
+            revision_direction: string;
+            /** Confidence */
+            confidence: number;
+            /** Requires Revision */
+            requires_revision: boolean;
+        };
+        /** QualityReviewView */
+        QualityReviewView: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Binding Id
+             * Format: uuid
+             */
+            binding_id: string;
+            /**
+             * Project Id
+             * Format: uuid
+             */
+            project_id: string;
+            /**
+             * Chapter Id
+             * Format: uuid
+             */
+            chapter_id: string;
+            /**
+             * Chapter Version Id
+             * Format: uuid
+             */
+            chapter_version_id: string;
+            /** Version */
+            version: number;
+            /**
+             * Compliance Pass Id
+             * Format: uuid
+             */
+            compliance_pass_id: string;
+            /**
+             * Narrative Pass Id
+             * Format: uuid
+             */
+            narrative_pass_id: string;
+            body: components["schemas"]["ChapterReviewResult"];
+            binding: components["schemas"]["QualityBindingView"];
+            /**
+             * Freshness
+             * @enum {string}
+             */
+            freshness: "CURRENT" | "STALE";
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+        };
         /** ReferenceInput */
         ReferenceInput: {
             /**
@@ -2950,6 +3211,23 @@ export interface components {
         };
         /** RegenerateDraft */
         RegenerateDraft: {
+            /**
+             * Event Id
+             * Format: uuid
+             */
+            event_id: string;
+            /** Expected State Version */
+            expected_state_version: number;
+            /**
+             * Reason
+             * @default User command
+             */
+            reason: string;
+            /** Expected Draft Version */
+            expected_draft_version: number;
+        };
+        /** RequestReview */
+        RequestReview: {
             /**
              * Event Id
              * Format: uuid
@@ -3119,6 +3397,36 @@ export interface components {
          * @enum {string}
          */
         ResultStatus: "SUCCESS" | "PARTIAL" | "BLOCKED" | "NEEDS_HUMAN" | "FAILED";
+        /** ResumeInput */
+        ResumeInput: {
+            /**
+             * Event Id
+             * Format: uuid
+             */
+            event_id: string;
+            /** Expected State Version */
+            expected_state_version: number;
+            /**
+             * Reason
+             * @default User command
+             */
+            reason: string;
+            /** Expected Draft Version */
+            expected_draft_version?: number | null;
+        };
+        /** ReviewSource */
+        ReviewSource: {
+            source_type: components["schemas"]["SourceType"];
+            /**
+             * Source Id
+             * Format: uuid
+             */
+            source_id: string;
+            /** Source Version */
+            source_version: number;
+            /** Field */
+            field: string | null;
+        };
         /**
          * ReviewVerdict
          * @enum {string}
@@ -3183,6 +3491,14 @@ export interface components {
             verdict: components["schemas"]["ReviewVerdict"];
             body: components["schemas"]["PlanReviewRecord"];
         };
+        /** RevisionPriority */
+        RevisionPriority: {
+            issue_code: components["schemas"]["QualityCode"];
+            /** Direction */
+            direction: string;
+            /** Preserve */
+            preserve: string;
+        };
         /**
          * RunStatus
          * @enum {string}
@@ -3225,6 +3541,11 @@ export interface components {
          * @enum {string}
          */
         ScopeType: "PROJECT" | "CHAPTER";
+        /**
+         * Severity
+         * @enum {string}
+         */
+        Severity: "P0" | "P1" | "P2" | "P3";
         /** SourceRef */
         SourceRef: {
             source_type: components["schemas"]["SourceType"];
@@ -3263,6 +3584,15 @@ export interface components {
          * @enum {string}
          */
         Status: "DRAFT" | "PROPOSED" | "APPROVED" | "LOCKED" | "ACTIVE" | "STALE" | "SUPERSEDED" | "DEPRECATED" | "CANCELLED" | "EXECUTED" | "ARCHIVED";
+        /** Strength */
+        Strength: {
+            /** Description */
+            description: string;
+            /** Evidence */
+            evidence: components["schemas"]["ParagraphEvidence"][];
+            /** Preservation Direction */
+            preservation_direction: string;
+        };
         /**
          * TaskStatus
          * @enum {string}
@@ -3308,6 +3638,11 @@ export interface components {
              */
             created_at: string;
         };
+        /**
+         * Verdict
+         * @enum {string}
+         */
+        Verdict: "PASS" | "PASS_WITH_WARNINGS" | "FAIL";
         /** VersionCommand */
         VersionCommand: {
             /** Expected Version */
@@ -3628,6 +3963,244 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+    create_api_v1_workflows_chapter_quality_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreatePlanningWorkflow"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DispatchView"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Method Not Allowed */
+            405: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unprocessable Content */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    history_api_v1_projects__project_id__chapters__chapter_id__quality_reviews_get: {
+        parameters: {
+            query?: {
+                limit?: number;
+                offset?: number;
+            };
+            header?: never;
+            path: {
+                project_id: string;
+                chapter_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["QualityReviewView"][];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Method Not Allowed */
+            405: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unprocessable Content */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    request_review_api_v1_workflows__workflow_id__quality_review_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                workflow_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RequestReview"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DispatchView"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Method Not Allowed */
+            405: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unprocessable Content */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
     health_api_v1_health_get: {
         parameters: {
             query?: never;
@@ -7052,7 +7625,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["CommandInput"];
+                "application/json": components["schemas"]["ResumeInput"];
             };
         };
         responses: {

@@ -1,0 +1,23 @@
+{
+  "module_id": "quality-evidence",
+  "module_type": "SKILL",
+  "version": 2,
+  "status": "STABLE",
+  "description": "Accept exact approved Requirement hard constraints without elevating preferences",
+  "content_path": "content.md",
+  "dependencies": [
+    {
+      "module_id": "novel-os-core",
+      "version": 1
+    }
+  ],
+  "compatible_agents": [
+    "A05_REVIEW"
+  ],
+  "compatible_task_types": [
+    "REVIEW_CHAPTER_COMPLIANCE",
+    "REVIEW_CHAPTER_NARRATIVE"
+  ],
+  "created_at": "2026-09-24T00:00:00Z",
+  "content_hash": "7d56a09ff1512b1185e69017ed1a1910de74b37a42a9ec938eabf43e4f4cc40f"
+}

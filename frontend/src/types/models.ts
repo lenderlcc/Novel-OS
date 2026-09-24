@@ -19,3 +19,5 @@ export type Context = S['ContextInspection']
 export type Lineage = S['PromptLineageView']
 export type Dispatch = S['DispatchView']
 export type Decision = 'APPROVE' | 'REJECT' | 'REQUEST_ALTERNATIVE' | 'MODIFY'
+
+export type QualityReview = S['QualityReviewView']

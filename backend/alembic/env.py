@@ -8,6 +8,7 @@ from novel_os.models import (  # noqa: F401 -- register ORM metadata
     core,
     planning,  # noqa: F401 -- register ORM metadata
     prompts,
+    quality,
     workflow,
     writing,
     writing_profile,

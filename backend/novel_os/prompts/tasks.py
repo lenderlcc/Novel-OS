@@ -96,6 +96,23 @@ class TaskDefinitionRegistry:
                     capabilities=frozenset({mapping.capability}),
                 )
             )
+        from novel_os.quality.schemas import QUALITY_RESULTS
+
+        for task_type, (schema_id, model) in QUALITY_RESULTS.items():
+            self.register(
+                TaskDefinition(
+                    task_type=task_type,
+                    agent_id=AgentId.A05_REVIEW,
+                    system_policy=ref("novel-os-core"),
+                    agent_role=ref("chapter-quality-reviewer"),
+                    task_template=ref(task_type.lower().replace("_", "-")),
+                    skills=(ref("quality-evidence"),),
+                    quality_profile=ref("chapter-review-quality"),
+                    output_schema=OutputContractGenerator.generate(schema_id, 1, model),
+                    model_profile=model_profile,
+                    capabilities=frozenset({Capability.REVIEW}),
+                )
+            )
         from novel_os.agents.writing_schemas import WritingAgentResult
 
         self.register(

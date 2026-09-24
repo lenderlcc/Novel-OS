@@ -18,6 +18,7 @@ from novel_os.domain.context import (
 from novel_os.domain.core import AuditRecord
 from novel_os.domain.enums import ActorType, AuditAction, ObjectType, Status
 from novel_os.domain.errors import DomainError
+from novel_os.domain.quality import QUALITY_TASKS
 from novel_os.repositories.agent_tasks import AgentTaskRepository
 from novel_os.repositories.context_packages import ContextPackageRepository
 from novel_os.repositories.context_sources import ContextSourceRepository
@@ -65,6 +66,15 @@ class ContextService:
         return task, workflow, run
 
     def task_profile(self, task):
+        if task.task_type in QUALITY_TASKS:
+            from novel_os.repositories.quality import QualityRepository
+
+            binding = QualityRepository(self.session).binding(
+                task.workflow_instance_id, task.workflow_state_version
+            )
+            if binding is None:
+                raise DomainError("CONTEXT_MISSING", "Review source binding is missing")
+            return ContextProfile.model_validate_json(binding.profile_json)
         if task.task_type == "WRITE_CHAPTER":
             from novel_os.repositories.writing import WritingRepository
 
@@ -77,6 +87,10 @@ class ContextService:
         from novel_os.services.writing_profile_context import WritingProfileContext
 
         WritingProfileContext(self.session).check_scheduled(task)
+        if task.task_type in QUALITY_TASKS:
+            from novel_os.services.quality_binding import QualityBindingService
+
+            QualityBindingService(self.session).check(task, workflow)
         if task.task_type == "WRITE_CHAPTER":
             from novel_os.services.writing_binding import WritingBindingService
 
@@ -125,7 +139,7 @@ class ContextService:
                     )
                 else:
                     missing.append(f"locked_dependency:{kind}:{target}")
-        if task.task_type == "WRITE_CHAPTER":
+        if task.task_type == "WRITE_CHAPTER" or task.task_type in QUALITY_TASKS:
             from novel_os.agents.planning_schemas import ChapterPlanOutput
             from novel_os.repositories.planning import PlanningRepository
 
@@ -148,6 +162,20 @@ class ContextService:
                     lock = self.sources.lock(task.project_id, ref.source_type, ref.logical_id)
                     if lock is None or lock.target_version != ref.version:
                         missing.append("writing.exact_locked_dependency")
+        if task.task_type in QUALITY_TASKS:
+            from novel_os.repositories.planning import PlanningRepository
+
+            brief = PlanningRepository(self.session).brief(workflow.id)
+            if brief is None or brief.status != "READY":
+                missing.append("review.creative_brief")
+            else:
+                refs.append(
+                    SourceRef(
+                        source_type=SourceType.CREATIVE_BRIEF,
+                        logical_id=workflow.id,
+                        version=brief.version,
+                    )
+                )
         refs = tuple(sorted(set(refs), key=lambda r: (r.source_type, str(r.logical_id), r.version)))
         if task.task_type in {"PLAN_CHAPTER", "REVIEW_CHAPTER_PLAN"}:
             from novel_os.services.planning_context import planning_refs

@@ -261,3 +261,7 @@ STALE 不等于删除；需 Revalidate 或 Supersede。
 10. Commit Is Explicit
 11. Idempotency Required
 12. Code Owns Workflow Truth
+
+## NOVEL-009 — Chapter Quality Review
+
+chapter-planning.v3 增加 C08 → C09 两轮 A05 审阅。PASS/PASS_WITH_WARNINGS 停在 C11 WAITING_HUMAN；FAIL 停在 C10 WAITING_HUMAN，不启动 A06。用户显式 REQUEST_REVIEW 产生新 binding/state version。Provider 失败沿用技术重试；质量 FAIL 不作为重试条件。旧 v1/v2 实例保持原定义。详见 [Quality Engine](07-Quality-Engine.md)。

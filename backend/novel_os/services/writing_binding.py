@@ -18,7 +18,7 @@ def supports_writing(workflow):
     return (
         not workflow.simulation
         and workflow.workflow_definition_id == "chapter-planning"
-        and workflow.workflow_definition_version == 2
+        and workflow.workflow_definition_version in {2, 3}
     )
 
 

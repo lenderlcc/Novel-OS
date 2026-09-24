@@ -35,6 +35,10 @@ class EventInput(CommandInput):
     event_type: Literal["USER_SUBMITTED", "BLOCK", "PAUSE", "RESUME", "CANCEL"]
 
 
+class ResumeInput(CommandInput):
+    expected_draft_version: int | None = Field(default=None, strict=True, gt=0)
+
+
 class GateInput(CommandInput):
     expected_artifact_version: int = Field(strict=True, ge=1)
     decision: GateDecision

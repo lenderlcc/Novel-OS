@@ -1,18 +1,20 @@
 import { computed, onScopeDispose, ref, shallowRef } from 'vue'
 import { api } from '../api/console'
 import { ApiError, asError } from '../api/client'
-import type { Project, Chapter, Workflow, Gate, Brief, Plan, PlanningHistory, Draft, Writing, Task, Decision, ExecutionConfig } from '../types/models'
-import { isWritingWorkflow, pollDelay } from './workflowState'
+import type { Project, Chapter, Workflow, Gate, Brief, Plan, PlanningHistory, Draft, Writing, Task, Decision, ExecutionConfig, QualityReview } from '../types/models'
+import { isReviewResume, isWritingWorkflow, pollDelay } from './workflowState'
 
 export interface Snapshot {
   workflow: Workflow; chapter: Chapter; gates: Gate[]; brief: Brief | null;
-  plans: Plan[]; history: PlanningHistory; drafts: Draft[]; writing: Writing[]; tasks: Task[]
+  plans: Plan[]; history: PlanningHistory; drafts: Draft[]; writing: Writing[]; tasks: Task[]; qualityReviews?: QualityReview[]
 }
 
 function generatedDraftVersion(s: Snapshot): number | null {
   const version = s.workflow.draft_version ?? null
   if (!isWritingWorkflow(s.workflow)) return version
   const draft = s.drafts.find(d => d.version === version)
+  // Review may explicitly bind a user-authored version without a Writing generation.
+  if (draft && s.workflow.workflow_definition_version === 3 && ['C09_INTERNAL_REVIEW', 'C10_REVISION', 'C11_INTERNAL_PASS'].includes(s.workflow.current_state)) return version
   return draft && s.writing.some(w => w.chapter_version_id === draft.id) ? version : null
 }
 
@@ -58,10 +60,11 @@ export function useConsole(client = api) {
         client.workflow(w, signal),
         manual ? client.executionConfig(signal) : Promise.resolve(executionConfig.value),
       ])
-      const [chapter, gates, brief, plans, history, drafts, writing, tasks] = await Promise.all([
+      const [chapter, gates, brief, plans, history, drafts, writing, tasks, qualityReviews] = await Promise.all([
         client.chapter(p, c, signal), client.gates(w, signal), current.simulation ? null : client.brief(w, signal), client.plans(p, c, signal),
         current.simulation ? { briefs: [], plans: [], reviews: [] } : client.history(w, signal),
         client.drafts(p, c, signal), client.writing(w, signal), client.tasks(w, signal),
+        current.workflow_definition_version === 3 && !current.simulation ? client.qualityReviews(p, c, signal) : [],
       ])
       // Do not publish a mixed snapshot if the worker advanced while reading artifacts.
       const after = await client.workflow(w, signal)
@@ -71,7 +74,7 @@ export function useConsole(client = api) {
         timer = setTimeout(() => { void refresh(manual) }, 300)
         return
       }
-      const next: Snapshot = { workflow: current, chapter, gates, brief, plans, history, drafts, writing, tasks }
+      const next: Snapshot = { workflow: current, chapter, gates, brief, plans, history, drafts, writing, tasks, qualityReviews }
       const previous = snapshot.value
       if (!previous || selectedPlan.value === previous.workflow.plan_version) selectedPlan.value = current.plan_version
       if (!previous || selectedDraft.value === generatedDraftVersion(previous)) selectedDraft.value = generatedDraftVersion(next)
@@ -193,7 +196,12 @@ export function useConsole(client = api) {
   })
   const control = (action: 'pause' | 'resume' | 'cancel', reason: string) => mutate(async () => {
     if (!workflow.value) return
-    const result = await client.control(workflow.value, action, reason)
+    const w = workflow.value, s = snapshot.value
+    const reviewResume = action === 'resume' && isReviewResume(w, s?.tasks ?? [])
+    // Bind the version actually loaded in this snapshot. A concurrent edit must return 409.
+    const result = reviewResume && s?.chapter.current_version
+      ? await client.control(w, action, reason, s.chapter.current_version)
+      : await client.control(w, action, reason)
     if (result.error_code) throw new ApiError(result.error_code, '操作未完成，请刷新后检查流程。')
     await refresh()
   })

@@ -38,6 +38,20 @@ class ContextSourceRepository:
         )
         return to_domain(row, Chapter) if row else None
 
+    def recent_approved(self, project_id, sequence, limit):
+        rows = self.session.scalars(
+            select(ChapterModel)
+            .where(
+                ChapterModel.project_id == project_id,
+                ChapterModel.sequence < sequence,
+                ChapterModel.approved_version.is_not(None),
+                ChapterModel.status.not_in([Status.ARCHIVED, Status.CANCELLED, Status.DEPRECATED]),
+            )
+            .order_by(ChapterModel.sequence.desc())
+            .limit(min(limit, 3))
+        )
+        return [to_domain(row, Chapter) for row in rows]
+
     def artifact(self, source_type, project_id, chapter_id, version):
         if version is None:
             return None

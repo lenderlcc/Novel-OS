@@ -66,6 +66,9 @@ def dispatch_event(workflow_id: UUID, body: dto.EventInput, session: DbSession, 
 
 
 def control(workflow_id, body, session, context, event):
+    payload = {"reason": body.reason}
+    if isinstance(body, dto.ResumeInput) and body.expected_draft_version is not None:
+        payload["expected_draft_version"] = body.expected_draft_version
     return response(
         WorkflowRuntime(session).dispatch_event(
             workflow_id,
@@ -73,7 +76,7 @@ def control(workflow_id, body, session, context, event):
                 event_id=body.event_id,
                 event_type=event,
                 expected_state_version=body.expected_state_version,
-                payload={"reason": body.reason},
+                payload=payload,
             ),
             context,
         )
@@ -86,7 +89,7 @@ def pause(workflow_id: UUID, body: dto.CommandInput, session: DbSession, context
 
 
 @router.post("/workflows/{workflow_id}/resume", response_model=dto.DispatchView)
-def resume(workflow_id: UUID, body: dto.CommandInput, session: DbSession, context: Context):
+def resume(workflow_id: UUID, body: dto.ResumeInput, session: DbSession, context: Context):
     return control(workflow_id, body, session, context, "RESUME")
 
 

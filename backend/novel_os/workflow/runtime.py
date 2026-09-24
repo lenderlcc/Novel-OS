@@ -48,7 +48,15 @@ class Blocked(Exception):
         self.failure = failure
 
 
-def state_status(state: State) -> RunStatus:
+def state_status(state: State, workflow=None) -> RunStatus:
+    from novel_os.services.quality_binding import supports_quality
+
+    if (
+        workflow is not None
+        and supports_quality(workflow)
+        and state in {State.C10_REVISION, State.C11_INTERNAL_PASS}
+    ):
+        return RunStatus.WAITING_HUMAN
     return {
         State.C00_CREATED: RunStatus.CREATED,
         State.C06_PLAN_APPROVAL: RunStatus.WAITING_HUMAN,
@@ -262,7 +270,7 @@ class WorkflowRuntime:
             )
         suspended = workflow.status in {RunStatus.PAUSED, RunStatus.BLOCKED}
         corrupt = (
-            (not suspended and workflow.status != state_status(workflow.current_state))
+            (not suspended and workflow.status != state_status(workflow.current_state, workflow))
             or (suspended and (workflow.resume_state is None or workflow.resume_status is None))
             or (not suspended and workflow.resume_state is not None)
         )
@@ -320,6 +328,8 @@ class WorkflowRuntime:
 
     def _advance(self, workflow, command, context, dispatcher):
         event = command.event_type
+        if event == "REQUEST_REVIEW":
+            return self._start_quality_review(workflow, command, context)
         if event in CONTROL_EVENTS:
             return self._control(workflow, command, context, dispatcher)
         if workflow.status in {RunStatus.PAUSED, RunStatus.BLOCKED}:
@@ -341,6 +351,16 @@ class WorkflowRuntime:
         return self._transition(workflow, rule.target, command, context, guards=guards, **changes)
 
     def _effect(self, workflow, effect, command, context):
+        from novel_os.services.quality_binding import supports_quality
+
+        if supports_quality(workflow) and command.event_type in {"REVIEW_PASSED", "REVIEW_FAILED"}:
+            validate_payload(command.payload, {"review_id"})
+            from novel_os.services.quality_results import QualityResultService
+
+            QualityResultService(self.session).check_persisted(
+                workflow, command.payload["review_id"], command.event_id, command.event_type
+            )
+            return {}
         if effect == "bind_draft":
             validate_payload(command.payload, {"generation_id"})
             from novel_os.services.writing_results import WritingResultService
@@ -413,6 +433,33 @@ class WorkflowRuntime:
             raise
         return {"plan_version" if effect == "create_plan" else "draft_version": record.version}
 
+    def _start_quality_review(self, workflow, command, context):
+        from novel_os.services.quality_workflow import QualityReviewControl
+
+        control = QualityReviewControl(self.session)
+        candidate = control.prepare(workflow, command, context)
+        self._check("writable", candidate)
+        recovery = control.recovery_failure(candidate)
+        if recovery:
+            raise Blocked(recovery)
+        guards = ("writable", "draft_current", "plan_approved")
+        for guard in guards[1:]:
+            self._check(guard, candidate)
+        return self._transition(
+            workflow,
+            State.C09_INTERNAL_REVIEW,
+            command,
+            context,
+            guards=guards,
+            status=RunStatus.WAITING_AGENT,
+            draft_version=candidate.draft_version,
+            resume_state=None,
+            resume_status=None,
+            resume_new_stage=False,
+            block_reason=None,
+            blocked_guard=None,
+        )
+
     def _control(self, workflow, command, context, dispatcher):
         event = command.event_type
         if event in {"PAUSE", "RESUME", "CANCEL"}:
@@ -420,7 +467,8 @@ class WorkflowRuntime:
         elif event in {"EXECUTOR_FAILED", "FATAL_ERROR"} and context.actor_type != ActorType.AGENT:
             raise DomainError("AUTHORITY_DENIED", "Only an executor can report execution failure")
         if "gate_id" not in command.payload:
-            validate_payload(command.payload, {"reason"})
+            allowed = {"reason", "expected_draft_version"} if event == "RESUME" else {"reason"}
+            validate_payload(command.payload, allowed)
         reason = command.payload.get("reason", event)
         if not isinstance(reason, str) or not reason.strip() or len(reason) > 2000:
             raise DomainError(
@@ -434,6 +482,12 @@ class WorkflowRuntime:
                 or workflow.resume_state is None
             ):
                 raise DomainError("INVALID_STATE", "Only paused or blocked workflows can resume")
+            from novel_os.services.quality_workflow import QualityReviewControl
+
+            if QualityReviewControl(self.session).can_resume(workflow):
+                return self._start_quality_review(workflow, command, context)
+            if "expected_draft_version" in command.payload:
+                raise DomainError("VALIDATION_ERROR", "Draft rebind is only valid for Review")
             from dataclasses import replace
 
             from novel_os.services.writing_binding import WritingBindingService
@@ -602,7 +656,7 @@ class WorkflowRuntime:
     def _block(self, workflow, command, context, failure):
         resume_state = failure.recovery_state or workflow.resume_state or workflow.current_state
         resume_status = (
-            state_status(resume_state)
+            state_status(resume_state, workflow)
             if failure.recovery_state
             else (workflow.resume_status or workflow.status)
         )
@@ -663,7 +717,7 @@ class WorkflowRuntime:
             replace(
                 before,
                 current_state=target,
-                status=status or state_status(target),
+                status=status or state_status(target, before),
                 state_version=before.state_version + 1,
                 updated_at=now(),
                 **changes,

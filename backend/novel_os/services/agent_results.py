@@ -14,6 +14,7 @@ from novel_os.domain.agents import ResultStatus, RunStatus, TaskStatus
 from novel_os.domain.core import CommandContext
 from novel_os.domain.enums import ActorType
 from novel_os.domain.errors import DomainError
+from novel_os.domain.quality import QUALITY_TASKS
 from novel_os.domain.workflow import EventCommand
 from novel_os.providers.base import ERROR_RETRYABLE
 from novel_os.repositories.agent_tasks import AgentTaskRepository
@@ -67,7 +68,11 @@ class AgentResultHandler:
 
     def map_result(self, task, result):
         definition = self.authority.validate(task, result)
-        if task.task_type in BUSINESS_RESULTS or task.task_type == "WRITE_CHAPTER":
+        if (
+            task.task_type in BUSINESS_RESULTS
+            or task.task_type in QUALITY_TASKS
+            or task.task_type == "WRITE_CHAPTER"
+        ):
             return definition.success_event, {}, TaskStatus.SUCCEEDED
         if (
             result.status != ResultStatus.SUCCESS
@@ -162,6 +167,12 @@ class AgentResultHandler:
                         from novel_os.services.writing_results import WritingResultService
 
                         WritingResultService(self.session).validate(
+                            task, run, result, package, workflow
+                        )
+                    if task.task_type in QUALITY_TASKS and expects_task(workflow, task):
+                        from novel_os.services.quality_results import QualityResultService
+
+                        QualityResultService(self.session).validate(
                             task, run, result, package, workflow
                         )
                     event, payload, terminal = self.map_result(task, result)
@@ -313,6 +324,12 @@ class AgentResultHandler:
                     task, run, result, package, workflow
                 )
                 metadata["escalation_required"] = terminal == TaskStatus.BLOCKED
+            if task.task_type in QUALITY_TASKS:
+                from novel_os.services.quality_results import QualityResultService
+
+                event, payload, terminal = QualityResultService(self.session).persist(
+                    task, run, result, package, workflow
+                )
             self.history.task(
                 task,
                 context,
@@ -325,7 +342,19 @@ class AgentResultHandler:
                 last_error_message=None,
                 **RELEASE_LEASE,
             )
-            dispatched = self.emit(task, run, event, payload)
+            dispatched = self.emit(task, run, event, payload) if event else None
+            if event is None:
+                from novel_os.services.task_scheduling import TaskScheduler
+
+                TaskScheduler(self.session).synchronize(workflow, context)
+            if (
+                task.task_type == "WRITE_CHAPTER"
+                and terminal == TaskStatus.SUCCEEDED
+                and dispatched.outcome != "BLOCKED"
+            ):
+                from novel_os.services.quality_workflow import advance_quality_check
+
+                advance_quality_check(self.session, workflow.id, run.run_id)
             if (
                 task.task_type in BUSINESS_RESULTS
                 and terminal == TaskStatus.SUCCEEDED
@@ -334,7 +363,8 @@ class AgentResultHandler:
                 WorkflowRuntime(self.session).advance_planning_controls(workflow.id, run.run_id)
             disposition = (
                 "BLOCKED"
-                if dispatched.outcome == "BLOCKED" or terminal == TaskStatus.BLOCKED
+                if (dispatched is not None and dispatched.outcome == "BLOCKED")
+                or terminal == TaskStatus.BLOCKED
                 else "APPLIED"
             )
             self.history.finish_run(

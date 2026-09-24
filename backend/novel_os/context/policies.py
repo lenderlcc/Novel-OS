@@ -40,9 +40,10 @@ class ContextFilter:
             request.chapter_id,
         }:
             return ExclusionReason.OUT_OF_SCOPE
-        if selector.scope == ContextScope.PREVIOUS_CHAPTER and (
-            item.chapter_sequence is None or item.chapter_sequence >= request.chapter_sequence
-        ):
+        if selector.scope in {
+            ContextScope.PREVIOUS_CHAPTER,
+            ContextScope.RECENT_APPROVED_CHAPTERS,
+        } and (item.chapter_sequence is None or item.chapter_sequence >= request.chapter_sequence):
             return ExclusionReason.OUT_OF_SCOPE
         if selector.scope == ContextScope.EXPLICIT and item.ref not in request.explicit_refs:
             return ExclusionReason.OUT_OF_SCOPE

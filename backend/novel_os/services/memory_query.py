@@ -15,6 +15,7 @@ from novel_os.domain.context import (
     VersionPolicy,
 )
 from novel_os.domain.enums import Authority, Status
+from novel_os.domain.quality import QUALITY_TASKS
 from novel_os.prompts.contracts import canonical, digest
 from novel_os.repositories.context_sources import ContextSourceRepository
 
@@ -60,7 +61,12 @@ class MemoryQueryService:
             values = sorted(
                 (ITEM_ADAPTER.dump_python(item, mode="json") for item in candidates), key=canonical
             )
-            if request.task_type == "WRITE_CHAPTER" and selector.source_type == SourceType.CHAPTER:
+            if (
+                request.task_type in {"WRITE_CHAPTER", *QUALITY_TASKS}
+                and selector.source_type == SourceType.CHAPTER
+            ):
+                # Unapproved Plan edits increment Chapter metadata but do not change
+                # the exact Draft or approved Plan consumed by Writing/Review.
                 for value in values:
                     for key in ("context_item_id", "source_version", "source_updated_at"):
                         value.pop(key)
@@ -126,6 +132,27 @@ class MemoryQueryService:
                 self._item(record, request, selector)
                 for record in self.repo.locks(request, selector)
             ), {}
+        if selector.scope == ContextScope.RECENT_APPROVED_CHAPTERS:
+            if (
+                source != SourceType.CHAPTER_VERSION
+                or selector.version_policy != VersionPolicy.APPROVED
+            ):
+                raise ContextConfigurationError("Recent review context requires approved chapters")
+            records, observed = [], []
+            for chapter in self.repo.recent_approved(
+                request.project_id, request.chapter_sequence, selector.max_items
+            ):
+                observed.append((str(chapter.id), chapter.approved_version))
+                record = self.repo.artifact(
+                    source, request.project_id, chapter.id, chapter.approved_version
+                )
+                if (
+                    record
+                    and record.approved_at
+                    and record.status in {Status.APPROVED, Status.LOCKED}
+                ):
+                    records.append(self._item(record, request, selector, chapter))
+            return tuple(records), {"recent_approved": observed}
         chapters = [self.repo.chapter(request.project_id, request.chapter_id)]
         if selector.scope == ContextScope.PREVIOUS_CHAPTER:
             chapters = [self.repo.previous(request.project_id, request.chapter_sequence)]
@@ -215,6 +242,13 @@ class MemoryQueryService:
             if lock:
                 provenance.append(f"lock:{lock.id}")
         payload = {name: getattr(record, name) for name in FIELDS[source]}
+        if request.task_type in QUALITY_TASKS and source == SourceType.CHAPTER_VERSION:
+            from novel_os.quality.policy import paragraphs
+
+            payload["paragraphs"] = [
+                {"paragraph_index": n, "text": text}
+                for n, text in enumerate(paragraphs(record.content), 1)
+            ]
         if source == SourceType.CHAPTER and request.task_type in {
             "PLAN_CHAPTER",
             "REVIEW_CHAPTER_PLAN",
@@ -229,6 +263,7 @@ class MemoryQueryService:
             "PLAN_CHAPTER",
             "REVIEW_CHAPTER_PLAN",
             "WRITE_CHAPTER",
+            *QUALITY_TASKS,
         }:
             from novel_os.repositories.planning import PlanningRepository
 

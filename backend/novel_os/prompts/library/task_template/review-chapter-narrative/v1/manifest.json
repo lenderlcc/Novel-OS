@@ -1,0 +1,22 @@
+{
+  "module_id": "review-chapter-narrative",
+  "module_type": "TASK_TEMPLATE",
+  "version": 1,
+  "status": "STABLE",
+  "description": "NOVEL-009 review-chapter-narrative",
+  "content_path": "content.md",
+  "dependencies": [
+    {
+      "module_id": "novel-os-core",
+      "version": 1
+    }
+  ],
+  "compatible_agents": [
+    "A05_REVIEW"
+  ],
+  "compatible_task_types": [
+    "REVIEW_CHAPTER_NARRATIVE"
+  ],
+  "created_at": "2026-09-24T00:00:00Z",
+  "content_hash": "9bad143fe2c9638d84d9dbf592c90e4cd92dde3c4820ee402930305cd32e13f8"
+}
