@@ -5,7 +5,7 @@ from uuid import UUID
 from pydantic import BaseModel, Field
 
 from novel_os.api.workflow_schemas import CommandInput
-from novel_os.quality.schemas import ChapterReviewResult
+from novel_os.quality.schemas import ChapterReviewResult, ChapterReviewResultV2
 
 
 class RequestReview(CommandInput):
@@ -38,7 +38,7 @@ class QualityReviewView(BaseModel):
     version: int
     compliance_pass_id: UUID
     narrative_pass_id: UUID
-    body: ChapterReviewResult
+    body: ChapterReviewResult | ChapterReviewResultV2
     binding: QualityBindingView
     freshness: Literal["CURRENT", "STALE"]
     created_at: datetime

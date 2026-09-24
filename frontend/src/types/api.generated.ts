@@ -1306,6 +1306,18 @@ export interface components {
             /** Confidence */
             confidence: number;
         };
+        /** AudienceEvidence */
+        AudienceEvidence: {
+            /** Profile Field */
+            profile_field: string;
+            profile_ref: components["schemas"]["ReviewSource"];
+            /** Expected */
+            expected: string | string[];
+            /** Observed */
+            observed: string;
+            /** Reason */
+            reason: string;
+        };
         /**
          * AuditAction
          * @enum {string}
@@ -1556,6 +1568,73 @@ export interface components {
              * Format: date-time
              */
             created_at: string;
+        };
+        /** ChapterReviewResultV2 */
+        ChapterReviewResultV2: {
+            /**
+             * Chapter Id
+             * Format: uuid
+             */
+            chapter_id: string;
+            /**
+             * Chapter Version Id
+             * Format: uuid
+             */
+            chapter_version_id: string;
+            /** Strengths */
+            strengths: components["schemas"]["Strength"][];
+            /** Revision Priorities */
+            revision_priorities: components["schemas"]["RevisionPriority"][];
+            /** Source Refs */
+            source_refs: components["schemas"]["ReviewSource"][];
+            /** Confidence */
+            confidence: number;
+            /**
+             * Kind
+             * @default chapter_quality_review
+             * @constant
+             */
+            kind: "chapter_quality_review";
+            overall_verdict: components["schemas"]["Verdict"];
+            compliance_verdict: components["schemas"]["Verdict"];
+            narrative_verdict: components["schemas"]["Verdict"];
+            audience_fit_verdict: components["schemas"]["Verdict"];
+            /** Hard Gate Issues */
+            hard_gate_issues: components["schemas"]["QualityIssue"][];
+            /** Quality Issues */
+            quality_issues: components["schemas"]["QualityIssue"][];
+            /**
+             * Reviewer Version
+             * @constant
+             */
+            reviewer_version: "A05-quality.v2";
+            /**
+             * Prompt Lineage Id
+             * Format: uuid
+             */
+            prompt_lineage_id: string;
+            /**
+             * Context Package Id
+             * Format: uuid
+             */
+            context_package_id: string;
+            /**
+             * Compliance Prompt Lineage Id
+             * Format: uuid
+             */
+            compliance_prompt_lineage_id: string;
+            /**
+             * Compliance Context Package Id
+             * Format: uuid
+             */
+            compliance_context_package_id: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Audience Evidence */
+            audience_evidence: components["schemas"]["AudienceEvidence"][];
         };
         /**
          * ChapterState
@@ -3183,7 +3262,8 @@ export interface components {
              * Format: uuid
              */
             narrative_pass_id: string;
-            body: components["schemas"]["ChapterReviewResult"];
+            /** Body */
+            body: components["schemas"]["ChapterReviewResult"] | components["schemas"]["ChapterReviewResultV2"];
             binding: components["schemas"]["QualityBindingView"];
             /**
              * Freshness

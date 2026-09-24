@@ -8,7 +8,7 @@ from novel_os.domain.enums import ActorType, AuditAction, ObjectType
 from novel_os.domain.errors import DomainError
 from novel_os.domain.quality import ChapterQualityReview, QualityPass, Verdict
 from novel_os.quality.policy import aggregate, validate_pass
-from novel_os.quality.schemas import ChapterReviewResult, ComplianceReview
+from novel_os.quality.schemas import ComplianceReview, read_review
 from novel_os.repositories.core import CoreRepository
 from novel_os.repositories.prompt_lineages import PromptLineageRepository
 from novel_os.repositories.quality import QualityRepository
@@ -131,7 +131,7 @@ class QualityResultService:
         final_pass = self.repo.pass_for(binding.id, "NARRATIVE")
         if final_pass is None or final_pass.run_id != run_id:
             raise DomainError("AUTHORITY_DENIED", "Review event must come from its recorded run")
-        reviewed = ChapterReviewResult.model_validate(record.body)
+        reviewed = read_review(record.body)
         expected = "REVIEW_FAILED" if reviewed.overall_verdict == Verdict.FAIL else "REVIEW_PASSED"
         if event != expected:
             raise DomainError("AUTHORITY_DENIED", "Review event contradicts persisted verdict")

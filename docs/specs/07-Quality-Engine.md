@@ -42,3 +42,13 @@ Existing v1/v2 workflow definitions and instances remain immutable. Legacy chapt
 Workspace steps: 需求 → 方案 → 正文 → 审阅. Normal view uses 通过/有改进空间/建议修改, short Chinese issues, expandable excerpts/impact/directions, strengths. Internal codes, severity, confidence, paragraph indices, raw JSON, source bindings, Context and Prompt are in Debug. Human evaluation import/comparison is local and independent; mismatch in exact artifact identity is rejected.
 
 No Revision Engine, quality ensemble, automatic prompt tuning, Writer changes, numeric score or NOVEL-010 behavior is introduced. Real evaluations require explicit `--real`, at most two calls per input, with no automatic retry.
+
+## NOVEL-009A — Narrative acceptance refinement
+
+New narrative tasks use `chapter-narrative-review.v2` and `review-chapter-narrative.v2`. The latter is the repository's narrative half of chapter-quality review; only this task Prompt receives new semantic instructions. Compliance, Writer, Planning and Requirement prompts are unchanged. Taxonomy codes, severity/aggregation rules and Context selection are unchanged.
+
+V2 adds `audience_evidence[]` describing an exact approved Profile field/value, observed reading effect and reason for mismatch. Non-PASS Audience requires an AUDIENCE_STYLE_MISMATCH issue with matching evidence/source references. Narrative warnings alone do not imply Audience warnings. This validates claims and bindings only; there are no deterministic dialogue detectors or added issue-count quotas.
+
+Persisted v2 aggregate reports use `reviewer_version=A05-quality.v2` and retain that evidence in their existing immutable JSON body. No table/migration changes. V1 models and their output schema hash stay intact; API history accepts both versions. Queued v1 narrative tasks explicitly select their old schema and task Prompt, while newly scheduled narrative tasks select v2. The shared runtime's optional schema selector defaults to existing behavior for every other task.
+
+The UI keeps its existing Chinese diagnosis view and adds expandable approved-preference evidence. Historical reports lacking that field render normally. Acceptance fixtures and before/after comparisons live in local `evals/quality/009a`; human themes never enter runtime Context or Prompt. Real re-evaluation still requires a new explicit trigger and does not create or rewrite a Draft.

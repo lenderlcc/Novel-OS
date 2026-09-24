@@ -85,7 +85,7 @@ class AgentRuntime:
     def prepare(self, task: AgentTask, context_package=None) -> ModelRequest | ExecutionResult:
         try:
             mapping = self.authority.validate(task)
-            definition = self.prompts.tasks.get(task.task_type)
+            definition = self.prompts.tasks.get(task.task_type, task.expected_output_schema)
             if definition.output_schema.schema_id + ".v" + str(
                 definition.output_schema.version
             ) != task.expected_output_schema or definition.capabilities != {mapping.capability}:
@@ -113,6 +113,7 @@ class AgentRuntime:
                 output_kind=mapping.output_kind,
                 capabilities=task.capabilities,
                 constraints=task.constraints,
+                expected_output_schema=task.expected_output_schema,
                 context_payload=ContextSerializer.serialize(context_package)
                 if context_package
                 else {},

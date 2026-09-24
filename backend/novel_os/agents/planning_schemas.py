@@ -277,10 +277,15 @@ BUSINESS_RESULTS = {
 }
 
 
-def result_model(task_type):
-    from novel_os.quality.schemas import QUALITY_RESULTS
+def result_model(task_type, output_schema=None):
+    from novel_os.quality.schemas import QUALITY_RESULTS, NarrativeAgentResult
 
     if task_type in QUALITY_RESULTS:
+        if (
+            task_type == "REVIEW_CHAPTER_NARRATIVE"
+            and output_schema == "chapter-narrative-review.v1"
+        ):
+            return NarrativeAgentResult
         return QUALITY_RESULTS[task_type][1]
     if task_type == "WRITE_CHAPTER":
         from novel_os.agents.writing_schemas import WritingAgentResult

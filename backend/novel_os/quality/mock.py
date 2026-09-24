@@ -30,6 +30,8 @@ def response(request, scenario):
         result.update(compliance_verdict="PASS", hard_gate_issues=[])
     else:
         result.update(narrative_verdict="PASS", audience_fit_verdict="PASS", quality_issues=[])
+        if request.prompt.output.version >= 2:
+            result["audience_evidence"] = []
         if scenario == "QUALITY_FAIL":
             result.update(
                 narrative_verdict="FAIL",

@@ -11,6 +11,9 @@ class AuthorityValidator:
     def validate(self, task: AgentTask, result: AgentResult | None = None):
         agent = self.registry.get(task.agent_id)
         definition = self.registry.task(task.task_type)
+        allowed_schemas = {definition.result_schema}
+        if definition.legacy_result_schema is not None:
+            allowed_schemas.add(definition.legacy_result_schema)
         try:
             scope = frozenset(Capability(value) for value in task.capabilities)
         except ValueError:
@@ -20,7 +23,7 @@ class AuthorityValidator:
             or task.task_type not in agent.accepted_task_types
             or definition.agent_id != task.agent_id
             or task.workflow_state != definition.state
-            or task.expected_output_schema != definition.result_schema
+            or task.expected_output_schema not in allowed_schemas
             or scope & FORBIDDEN_CAPABILITIES
         ):
             raise DomainError("AUTHORITY_DENIED", "Task identity, state or capability is invalid")

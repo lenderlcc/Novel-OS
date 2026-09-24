@@ -155,7 +155,9 @@ class AgentResultHandler:
                 try:
                     if not isinstance(result, AgentResult):
                         raise ValueError
-                    result = result_model(task.task_type).model_validate(result.model_dump())
+                    result = result_model(
+                        task.task_type, task.expected_output_schema
+                    ).model_validate(result.model_dump())
                     self.authority.validate(task, result)
                     if task.task_type in BUSINESS_RESULTS and expects_task(workflow, task):
                         from novel_os.services.planning_results import PlanningResultService

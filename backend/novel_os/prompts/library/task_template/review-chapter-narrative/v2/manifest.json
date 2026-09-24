@@ -1,0 +1,22 @@
+{
+  "module_id": "review-chapter-narrative",
+  "module_type": "TASK_TEMPLATE",
+  "version": 2,
+  "status": "STABLE",
+  "description": "NOVEL-009A dialogue/character diagnosis and evidenced audience fit",
+  "content_path": "content.md",
+  "dependencies": [
+    {
+      "module_id": "novel-os-core",
+      "version": 1
+    }
+  ],
+  "compatible_agents": [
+    "A05_REVIEW"
+  ],
+  "compatible_task_types": [
+    "REVIEW_CHAPTER_NARRATIVE"
+  ],
+  "created_at": "2026-09-24T00:00:00Z",
+  "content_hash": "b430defd21b2492d6c72fb92b510e767830fe2e4e8b09f2d561c449f0187a869"
+}

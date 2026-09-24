@@ -153,6 +153,47 @@ class NarrativeAgentResult(AgentResult):
     result: NarrativeReview
 
 
+class AudienceEvidence(StrictOutput):
+    profile_field: Text
+    profile_ref: ReviewSource
+    expected: Text | Annotated[list[Text], Field(min_length=1, max_length=30)]
+    observed: Text
+    reason: Text
+
+    @model_validator(mode="after")
+    def exact_profile_field(self):
+        if (
+            self.profile_ref.source_type != SourceType.PROJECT_WRITING_PROFILE
+            or self.profile_ref.field != self.profile_field
+        ):
+            raise ValueError("Audience evidence must name the exact Profile field")
+        if not self.expected:
+            raise ValueError("Audience evidence requires a populated expected preference")
+        return self
+
+
+class NarrativeReviewV2(NarrativeReview):
+    audience_evidence: list[AudienceEvidence] = Field(max_length=10)
+
+    @model_validator(mode="after")
+    def evidenced_audience_fit(self):
+        audience = [i for i in self.quality_issues if i.category == IssueCategory.AUDIENCE]
+        if bool(audience) != bool(self.audience_evidence):
+            raise ValueError("Audience findings require Profile mismatch evidence, and vice versa")
+        cited = {r for i in audience for r in i.source_refs}
+        evidence_refs = {e.profile_ref for e in self.audience_evidence}
+        profile_refs = {r for r in cited if r.source_type == SourceType.PROJECT_WRITING_PROFILE}
+        if evidence_refs != profile_refs or not evidence_refs <= set(self.source_refs):
+            raise ValueError("Audience evidence must match the issue and pass Profile references")
+        if len(evidence_refs) != len(self.audience_evidence):
+            raise ValueError("Consolidate Audience evidence for the same Profile field")
+        return self
+
+
+class NarrativeAgentResultV2(AgentResult):
+    result: NarrativeReviewV2
+
+
 class ChapterReviewResult(ReviewPassBase):
     kind: Literal["chapter_quality_review"] = "chapter_quality_review"
     overall_verdict: Verdict
@@ -171,6 +212,9 @@ class ChapterReviewResult(ReviewPassBase):
 
     @model_validator(mode="after")
     def coherent_aggregate(self):
+        return self.check_aggregate(NarrativeReview)
+
+    def check_aggregate(self, narrative_model, **narrative_fields):
         common = self.model_dump(
             include={"chapter_id", "chapter_version_id", "strengths", "confidence"}
         )
@@ -182,14 +226,15 @@ class ChapterReviewResult(ReviewPassBase):
             revision_priorities=[],
             source_refs=[],
         )
-        NarrativeReview(
+        narrative_model(
             **common,
             kind="chapter_narrative_review",
             narrative_verdict=self.narrative_verdict,
             audience_fit_verdict=self.audience_fit_verdict,
             quality_issues=self.quality_issues,
             revision_priorities=[],
-            source_refs=[],
+            source_refs=self.source_refs,
+            **narrative_fields,
         )
         self.check_priorities(self.hard_gate_issues + self.quality_issues)
         if self.overall_verdict != verdict_for(self.hard_gate_issues + self.quality_issues):
@@ -197,7 +242,27 @@ class ChapterReviewResult(ReviewPassBase):
         return self
 
 
+class ChapterReviewResultV2(ChapterReviewResult):
+    reviewer_version: Literal["A05-quality.v2"]
+    audience_evidence: list[AudienceEvidence] = Field(max_length=10)
+
+    @model_validator(mode="after")
+    def coherent_aggregate(self):
+        return self.check_aggregate(NarrativeReviewV2, audience_evidence=self.audience_evidence)
+
+
+def read_review(body):
+    model = (
+        ChapterReviewResultV2
+        if body.get("reviewer_version") == "A05-quality.v2"
+        else ChapterReviewResult
+    )
+    return model.model_validate(body)
+
+
 QUALITY_RESULTS = {
     "REVIEW_CHAPTER_COMPLIANCE": ("chapter-compliance-review", ComplianceAgentResult),
-    "REVIEW_CHAPTER_NARRATIVE": ("chapter-narrative-review", NarrativeAgentResult),
+    "REVIEW_CHAPTER_NARRATIVE": ("chapter-narrative-review", NarrativeAgentResultV2),
 }
+
+QUALITY_SCHEMA_VERSIONS = {"REVIEW_CHAPTER_NARRATIVE": 2}

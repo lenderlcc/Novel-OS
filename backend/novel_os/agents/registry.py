@@ -17,6 +17,7 @@ class StageTaskMapping:
     success_event: str
     quality_failure_event: str | None = None
     result_schema: str = "mock-agent-result.v1"
+    legacy_result_schema: str | None = None
 
 
 # System-owned mappings. Provider requests/results never contain these event names.
@@ -154,10 +155,11 @@ QUALITY_STAGE_TASKS = {
         "REVIEW_PASSED",
         "REVIEW_FAILED",
         schema,
+        "chapter-narrative-review.v1" if task == "REVIEW_CHAPTER_NARRATIVE" else None,
     )
     for task, kind, schema in (
         ("REVIEW_CHAPTER_COMPLIANCE", "chapter_compliance_review", "chapter-compliance-review.v1"),
-        ("REVIEW_CHAPTER_NARRATIVE", "chapter_narrative_review", "chapter-narrative-review.v1"),
+        ("REVIEW_CHAPTER_NARRATIVE", "chapter_narrative_review", "chapter-narrative-review.v2"),
     )
 }
 TASKS.update(QUALITY_STAGE_TASKS)

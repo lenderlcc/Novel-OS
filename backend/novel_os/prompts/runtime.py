@@ -29,8 +29,9 @@ class PromptRuntime:
         capabilities,
         constraints,
         context_payload,
+        expected_output_schema=None,
     ):
-        definition = self.tasks.get(task_type)
+        definition = self.tasks.get(task_type, expected_output_schema)
         if definition.agent_id != agent_id or not definition.capabilities <= set(capabilities):
             raise PromptConfigurationError("Task definition does not match execution scope")
         profile = self.profiles.get(definition.model_profile)

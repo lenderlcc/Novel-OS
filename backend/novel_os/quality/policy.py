@@ -1,11 +1,13 @@
 """Structural and source checks only. Literary judgments belong to the review model."""
 
 import re
+from dataclasses import fields
 
 from novel_os.domain.context import KnowledgeScope, SourceType
 from novel_os.domain.enums import Authority, RequirementType, Status
 from novel_os.domain.quality import QualityCode, verdict_for
-from novel_os.quality.schemas import ChapterReviewResult
+from novel_os.domain.writing_profile import WritingPreferences
+from novel_os.quality.schemas import ChapterReviewResult, ChapterReviewResultV2, NarrativeReviewV2
 
 
 def paragraphs(content):
@@ -139,12 +141,27 @@ def validate_pass(output, package):
                 raise ValueError(
                     "Repeated safe choices require at least two earlier chapter sources"
                 )
+    if isinstance(output, NarrativeReviewV2):
+        preference_fields = {f.name for f in fields(WritingPreferences)}
+        for evidence in output.audience_evidence:
+            _, profile = check_sources([evidence.profile_ref], package.items)[0]
+            if (
+                profile.status != Status.APPROVED
+                or profile.authority_level != Authority.A5_USER_PREFERENCE
+                or evidence.profile_field not in preference_fields
+            ):
+                raise ValueError("Audience evidence requires a selected approved A5 preference")
+            actual = profile.structured_payload.get(evidence.profile_field)
+            if actual in (None, "", [], "UNSPECIFIED") or actual != evidence.expected:
+                raise ValueError("Audience expected value must equal the exact approved field")
 
 
 def aggregate(compliance, narrative, compliance_pass, narrative_pass, created_at):
     issues = compliance.hard_gate_issues + narrative.quality_issues
     refs = {r.model_dump_json(): r for r in compliance.source_refs + narrative.source_refs}
-    return ChapterReviewResult(
+    current = isinstance(narrative, NarrativeReviewV2)
+    model = ChapterReviewResultV2 if current else ChapterReviewResult
+    return model(
         chapter_id=compliance.chapter_id,
         chapter_version_id=compliance.chapter_version_id,
         overall_verdict=verdict_for(issues),
@@ -159,7 +176,8 @@ def aggregate(compliance, narrative, compliance_pass, narrative_pass, created_at
         revision_priorities=(compliance.revision_priorities + narrative.revision_priorities)[:10],
         source_refs=list(refs.values()),
         confidence=min(compliance.confidence, narrative.confidence),
-        reviewer_version="A05-quality.v1",
+        reviewer_version="A05-quality.v2" if current else "A05-quality.v1",
+        **({"audience_evidence": narrative.audience_evidence} if current else {}),
         prompt_lineage_id=narrative_pass.prompt_lineage_id,
         context_package_id=narrative_pass.context_package_id,
         compliance_prompt_lineage_id=compliance_pass.prompt_lineage_id,
