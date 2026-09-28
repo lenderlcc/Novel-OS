@@ -216,7 +216,7 @@ export function useConsole(client = api) {
     const config = await client.executionConfig(controller.signal)
     if (disposed || workflow.value?.id !== w.id) return
     executionConfig.value = config
-    if (config.task_types && ['PLAN_CHAPTER_REVISION', 'REVISE_CHAPTER', 'REVIEW_CHAPTER_COMPLIANCE', 'REVIEW_CHAPTER_NARRATIVE'].some(type => !config.task_types!.includes(type))) throw new ApiError('EXECUTION_SCOPE_DISABLED', '本机尚未启用修改与重新审阅，请检查执行配置。')
+    if (config.task_types && ['PLAN_CHAPTER_REVISION', 'REVISE_CHAPTER', 'VALIDATE_REVISION_FIDELITY', 'REVIEW_CHAPTER_COMPLIANCE', 'REVIEW_CHAPTER_NARRATIVE'].some(type => !config.task_types!.includes(type))) throw new ApiError('EXECUTION_SCOPE_DISABLED', '本机尚未启用修改与重新审阅，请检查执行配置。')
     const key = `${w.id}:${w.state_version}:${currentReview.id}:${currentDraft.id}`
     if (revisionCommand?.key !== key) revisionCommand = { key, id: crypto.randomUUID() }
     const result = await client.revise(w, currentReview, currentDraft.version, revisionCommand.id)

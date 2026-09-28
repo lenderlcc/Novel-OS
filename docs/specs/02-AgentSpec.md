@@ -268,3 +268,7 @@ A05 新增 REVIEW_CHAPTER_COMPLIANCE 和 REVIEW_CHAPTER_NARRATIVE，能力限于
 ## NOVEL-010 正式 A06
 
 A06_REVISION 通过 PLAN_CHAPTER_REVISION → REVISE_CHAPTER 两阶段提出受控正文修改；两者均使用版本化 Prompt 和独立 Context/Run lineage。唯一修改能力是提出 Draft，不允许写 Plan、Brief、Profile、Lock、Canon 或提交 Memory。KEEP/CHANGE/DO_NOT_CHANGE 来自 exact Review 与原批准依据；Review 只提供 A7 诊断，不提升为 Authority。用户明确请求后生成 successor，再由 A05 独立重审一次。详见 [Revision Engine](08-Revision-Engine.md)。
+
+## NOVEL-010A Revision Fidelity
+
+A06 仍拥有 PLAN_CHAPTER_REVISION / REVISE_CHAPTER，输出分别为 locality Plan 与 immutable Candidate。A05 新增薄任务 VALIDATE_REVISION_FIDELITY，仅拥有 REVIEW 能力，独立核对场景、关系、strengths、隐式保护区域和结构授权。候选稿通过此门禁后，application 才创建新 Draft 并接回原 009 A05 两轮质量审阅。失败保持源稿 current 并停止。Source 为 EDIT_BASE，使用 CP-007 v4；详见 [Revision Engine](08-Revision-Engine.md)。

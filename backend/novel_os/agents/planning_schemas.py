@@ -279,9 +279,13 @@ BUSINESS_RESULTS = {
 
 def result_model(task_type, output_schema=None):
     from novel_os.quality.schemas import QUALITY_RESULTS, NarrativeAgentResult
-    from novel_os.revision.schemas import REVISION_RESULTS
+    from novel_os.revision.schemas import RevisionPlanAgentResult, revision_results
+
+    REVISION_RESULTS = revision_results()
 
     if task_type in REVISION_RESULTS:
+        if task_type == "PLAN_CHAPTER_REVISION" and output_schema == "chapter-revision-plan.v1":
+            return RevisionPlanAgentResult
         return REVISION_RESULTS[task_type][1]
     if task_type in QUALITY_RESULTS:
         if (

@@ -3,7 +3,7 @@
 from novel_os.domain.agents import TaskStatus
 from novel_os.domain.enums import ActorType
 from novel_os.domain.errors import DomainError
-from novel_os.domain.revision import RevisionResult
+from novel_os.domain.revision import RevisionCandidate, RevisionResult
 from novel_os.domain.workflow import ChapterState, WorkflowStatus
 from novel_os.repositories.agent_tasks import AgentTaskRepository
 from novel_os.repositories.revision import RevisionRepository
@@ -11,7 +11,12 @@ from novel_os.services.core_base import validate_payload
 from novel_os.services.revision_binding import RevisionBindingService
 from novel_os.services.revision_results import RevisionResultService
 
-REVISION_EVENTS = {"REQUEST_REVISION", "REVISION_PLAN_READY", "REVISION_READY"}
+REVISION_EVENTS = {
+    "REQUEST_REVISION",
+    "REVISION_PLAN_READY",
+    "REVISION_CANDIDATE_READY",
+    "REVISION_READY",
+}
 
 
 def advance_revision(runtime, workflow, command, context):
@@ -62,7 +67,12 @@ def check_resume(session, workflow):
         not plan.body["revision_targets"]
         or AgentTaskRepository(session).get(plan.task_id).status == TaskStatus.BLOCKED
     )
-    if result or blocked_plan:
+    candidate = service.repo.evidence(request.id, RevisionCandidate)
+    blocked_candidate = (
+        candidate
+        and AgentTaskRepository(session).get(candidate.task_id).status == TaskStatus.BLOCKED
+    )
+    if result or blocked_plan or blocked_candidate:
         raise DomainError(
             "INVALID_STATE",
             "Blocked Revision needs new source evidence and an explicit new request",

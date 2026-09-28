@@ -6,10 +6,11 @@ from novel_os.domain.agents import ResultStatus, TaskStatus
 from novel_os.domain.core import CommandContext
 from novel_os.domain.enums import ActorType, ObjectType
 from novel_os.domain.errors import DomainError
-from novel_os.domain.revision import RevisionPlan, RevisionResult
+from novel_os.domain.revision import RevisionCandidate, RevisionPlan, RevisionResult
 from novel_os.prompts.contracts import digest
 from novel_os.repositories.prompt_lineages import PromptLineageRepository
 from novel_os.repositories.revision import RevisionRepository
+from novel_os.revision.fidelity import RevisionFidelityValidator
 from novel_os.revision.policy import validate_plan, validate_result
 from novel_os.services.core_base import CoreService
 from novel_os.services.quality_results import QualityResultService
@@ -41,11 +42,22 @@ class RevisionResultService:
             )
         if task.task_type == "PLAN_CHAPTER_REVISION":
             validate_plan(result.result, request, package)
+            source = next(i for i in package.items if i.selector_id == "target-version")
+            RevisionFidelityValidator.plan(
+                result.result, request, source.structured_payload["content"]
+            )
         else:
             plan = self.repo.evidence(request.id)
             if plan is None or not plan.body["revision_targets"]:
                 raise DomainError("INVALID_STATE", "Execution requires a safe Revision Plan")
-            validate_result(result.result, request, plan, package)
+            if task.task_type == "VALIDATE_REVISION_FIDELITY":
+                candidate = self.repo.evidence(request.id, RevisionCandidate)
+                if candidate is None or not candidate.body["content"]:
+                    raise DomainError("INVALID_STATE", "Fidelity needs an immutable candidate")
+                RevisionFidelityValidator.semantic(result.result, request, plan, candidate, package)
+            else:
+                validate_result(result.result, request, plan, package)
+                RevisionFidelityValidator.candidate(result.result, request, plan, package)
         return request, lineage
 
     def persist(self, task, run, result, package, workflow):
@@ -68,37 +80,40 @@ class RevisionResultService:
             record = self.repo.add(RevisionPlan(**fields))
             blocked = blocked or not output.revision_targets
             event = "REVISION_PLAN_READY"
-        else:
+        elif task.task_type == "REVISE_CHAPTER":
             plan = self.repo.evidence(request.id)
-            source = self.core.repo.get_version(
-                ObjectType.CHAPTER_VERSION,
-                request.project_id,
-                request.chapter_id,
-                workflow.draft_version,
-            )
+            source = next(i for i in package.items if i.selector_id == "target-version")
             blocked = (
                 blocked
                 or output.content is None
-                or output.content == source.content
-                or not output.addressed_issue_ids
+                or output.content == source.structured_payload["content"]
             )
+            fields["body"]["content_hash"] = digest(output.content) if output.content else None
+            record = self.repo.add(RevisionCandidate(**fields, revision_plan_id=plan.id))
+            event = "REVISION_CANDIDATE_READY"
+        else:
+            plan = self.repo.evidence(request.id)
+            candidate = self.repo.evidence(request.id, RevisionCandidate)
+            blocked = blocked or output.verdict != "PASS"
             version = None
             if not blocked:
                 version = ChapterVersionService(self.session).create_version_in_transaction(
                     request.project_id,
                     request.chapter_id,
                     {
-                        "content": output.content,
+                        "content": candidate.body["content"],
                         "change_reason": "Targeted revision from Review "
                         + str(request.source_review_id),
                     },
-                    source.version,
+                    workflow.draft_version,
                     CommandContext(str(run.run_id), task.agent_id.value, ActorType.AGENT),
-                    "Revision created an immutable successor Draft",
+                    "Fidelity accepted an immutable successor Draft",
                 )
             fields["body"] = {
-                **output.model_dump(mode="json", exclude={"content"}),
-                "content_hash": digest(output.content) if output.content else None,
+                **{k: v for k, v in candidate.body.items() if k != "content"},
+                "candidate_id": str(candidate.id),
+                "fidelity": output.model_dump(mode="json"),
+                "accepted": not blocked,
             }
             record = self.repo.add(
                 RevisionResult(
@@ -121,7 +136,11 @@ class RevisionResultService:
         if blocked:
             return (
                 "BLOCK",
-                {"reason": "Revision cannot safely proceed; inspect preserved evidence"},
+                {
+                    "reason": "这次修改范围过大，未替换当前正文。"
+                    if task.task_type == "VALIDATE_REVISION_FIDELITY" and output.verdict == "FAIL"
+                    else "Revision cannot safely proceed; inspect preserved evidence"
+                },
                 TaskStatus.BLOCKED,
             )
         return event, {"revision_artifact_id": str(record.id)}, TaskStatus.SUCCEEDED
@@ -129,13 +148,21 @@ class RevisionResultService:
     def check_persisted(self, workflow, artifact_id, run_id, event):
         record = self.repo.evidence(
             workflow.revision_request_id,
-            RevisionPlan if event == "REVISION_PLAN_READY" else RevisionResult,
+            {
+                "REVISION_PLAN_READY": RevisionPlan,
+                "REVISION_CANDIDATE_READY": RevisionCandidate,
+                "REVISION_READY": RevisionResult,
+            }[event],
         )
         if record is None or str(record.id) != artifact_id or record.run_id != run_id:
             raise DomainError("AUTHORITY_DENIED", "Revision event requires its exact recorded run")
         if event == "REVISION_PLAN_READY":
             if not record.body["revision_targets"]:
                 raise DomainError("INVALID_STATE", "Blocked plan cannot execute")
+            return None
+        if event == "REVISION_CANDIDATE_READY":
+            if not record.body["content"]:
+                raise DomainError("INVALID_STATE", "Empty candidate cannot be validated")
             return None
         chapter = self.core.repo.get_chapter(workflow.project_id, workflow.chapter_id)
         version = self.core.repo.get_version(
@@ -155,13 +182,16 @@ class RevisionResultService:
 
         WorkflowRepository(self.session).get(workflow_id)
         values = []
-        for request, plan, result, binding in self.repo.history_bundles(workflow_id, limit, offset):
+        for request, plan, result, binding, candidate in self.repo.history_bundles(
+            workflow_id, limit, offset
+        ):
             values.append(
                 dict(
                     request=asdict(request),
                     source_binding=asdict(binding),
                     plan=asdict(plan) if plan else None,
                     result=asdict(result) if result else None,
+                    candidate=asdict(candidate) if candidate else None,
                 )
             )
         return values

@@ -1,0 +1,22 @@
+{
+  "module_id": "revision-fidelity",
+  "module_type": "SKILL",
+  "version": 1,
+  "status": "STABLE",
+  "description": "NOVEL-010A source fidelity and locality",
+  "content_path": "content.md",
+  "dependencies": [
+    {
+      "module_id": "novel-os-core",
+      "version": 1
+    }
+  ],
+  "compatible_agents": [
+    "A05_REVIEW"
+  ],
+  "compatible_task_types": [
+    "VALIDATE_REVISION_FIDELITY"
+  ],
+  "created_at": "2026-09-28T00:00:00Z",
+  "content_hash": "64ed676f8ece669ca01f8d6b201b906bf3c99b21dabc2cfa29e51acefee1c353"
+}

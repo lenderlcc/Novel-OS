@@ -129,27 +129,35 @@ class TaskDefinitionRegistry:
                         schema_id, 1, NarrativeAgentResult
                     ),
                 )
-        from novel_os.revision.schemas import REVISION_RESULTS
+        from novel_os.revision.schemas import RevisionPlanAgentResult, revision_results
 
-        for task_type, (schema_id, model) in REVISION_RESULTS.items():
+        for task_type, (schema_id, model) in revision_results().items():
+            fidelity = task_type == "VALIDATE_REVISION_FIDELITY"
             self.register(
                 TaskDefinition(
                     task_type=task_type,
-                    agent_id=AgentId.A06_REVISION,
+                    agent_id=TASKS[task_type].agent_id,
                     system_policy=ref("novel-os-core"),
-                    agent_role=ref("revision-agent"),
-                    task_template=ref(
-                        "plan-chapter-revision"
-                        if task_type == "PLAN_CHAPTER_REVISION"
-                        else "revise-chapter"
+                    agent_role=ref("revision-fidelity-reviewer" if fidelity else "revision-agent"),
+                    task_template=ref(task_type.lower().replace("_", "-")),
+                    skills=(ref("revision-fidelity" if fidelity else "targeted-revision"),),
+                    quality_profile=ref("fidelity-quality" if fidelity else "revision-quality"),
+                    output_schema=OutputContractGenerator.generate(
+                        schema_id, 2 if task_type == "PLAN_CHAPTER_REVISION" else 1, model
                     ),
-                    skills=(ref("targeted-revision"),),
-                    quality_profile=ref("revision-quality"),
-                    output_schema=OutputContractGenerator.generate(schema_id, 1, model),
                     model_profile=model_profile,
-                    capabilities=frozenset({Capability.PROPOSE_DRAFT}),
+                    capabilities=frozenset({TASKS[task_type].capability}),
                 )
             )
+            if task_type == "PLAN_CHAPTER_REVISION":
+                self._historical_definitions[(task_type, "chapter-revision-plan.v1")] = replace(
+                    self._definitions[task_type],
+                    task_template=ModuleRef(module_id="plan-chapter-revision", version=1),
+                    skills=(ModuleRef(module_id="targeted-revision", version=1),),
+                    output_schema=OutputContractGenerator.generate(
+                        schema_id, 1, RevisionPlanAgentResult
+                    ),
+                )
         from novel_os.agents.writing_schemas import WritingAgentResult
 
         self.register(

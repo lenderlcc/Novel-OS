@@ -43,6 +43,14 @@ def response(request, scenario):
             if blocked
             else [],
         )
+        if contract.get("fidelity_version") == 1:
+            output.update(
+                locality_fields(
+                    output, contract, items["target-version"].structured_payload["content"]
+                )
+            )
+    elif request.output_kind == "revision_fidelity":
+        output = fidelity_output(common, items, scenario)
     else:
         plan = items["revision-plan"].structured_payload
         safe = [i["issue_id"] for i in plan["revision_targets"]]
@@ -73,4 +81,86 @@ def response(request, scenario):
         proposed_changes=[],
         memory_proposals=[],
         escalation=None,
+    )
+
+
+def excerpt(content):
+    from novel_os.quality.policy import paragraphs
+
+    return dict(
+        paragraph_index=1,
+        excerpt=paragraphs(content)[0][: min(100, max(1, len(content) // 2))],
+        reason="离线证据，不代表语义判断。",
+    )
+
+
+def locality_fields(output, contract, source):
+    evidence = [excerpt(source)]
+    return dict(
+        preserve_scene_elements=[
+            dict(element_id="scene:0", description="保留原稿场景", evidence=evidence)
+        ],
+        preserve_relationship_elements=[
+            dict(element_id="relationship:0", description="保留原稿人物关系功能", evidence=evidence)
+        ],
+        preserve_effective_details=[
+            dict(element_id="detail:0", description="保留原稿有效细节", evidence=evidence)
+        ],
+        strength_preservation=[
+            dict(strength_id=k, mode="FUNCTIONAL", preservation_direction="保留原有阅读效果")
+            for k in contract["preserve_items"]
+            if k.startswith("strength:")
+        ],
+        strength_regression_risks=[],
+        revision_zones=[
+            dict(
+                issue_ids=[t["issue_id"]],
+                semantic_range="审阅证据所指向的段落",
+                paragraph_start=None,
+                paragraph_end=None,
+            )
+            for t in output["revision_targets"]
+        ],
+        allowed_structural_change="LOCAL",
+        structural_authorization=None,
+        change_budget="MINIMAL",
+    )
+
+
+def fidelity_output(common, items, scenario):
+    from novel_os.revision.fidelity import preservation_ids
+    from novel_os.revision.fidelity_schemas import FidelityRevisionPlan
+
+    plan = items["revision-plan"].structured_payload
+    candidate = items["revision-candidate"].structured_payload
+    source = items["target-version"].structured_payload["content"]
+    model = FidelityRevisionPlan.model_validate(
+        {k: v for k, v in plan.items() if k != "revision_plan_id"}
+    )
+    failed = scenario == "QUALITY_FAIL"
+    return dict(
+        **common,
+        revision_plan_id=plan["revision_plan_id"],
+        candidate_id=candidate["candidate_id"],
+        candidate_content_hash=candidate["content_hash"],
+        verdict="FAIL" if failed else "PASS",
+        checks=[
+            dict(
+                check_id=k,
+                preserved=not (failed and k == "SCENE_PREMISE"),
+                reason="离线验证判定分支，不代表文学评估。",
+                source_evidence=[excerpt(source)],
+                revised_evidence=[excerpt(candidate["content"])],
+            )
+            for k in sorted(preservation_ids(model))
+        ],
+        violations=[
+            dict(
+                code="UNAUTHORIZED_SCENE_REPLACEMENT",
+                check_ids=["SCENE_PREMISE"],
+                description="离线模拟场景替换拒绝。",
+            )
+        ]
+        if failed
+        else [],
     )

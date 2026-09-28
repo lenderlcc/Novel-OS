@@ -1,0 +1,22 @@
+{
+  "module_id": "fidelity-quality",
+  "module_type": "QUALITY_PROFILE",
+  "version": 1,
+  "status": "STABLE",
+  "description": "NOVEL-010A source fidelity and locality",
+  "content_path": "content.md",
+  "dependencies": [
+    {
+      "module_id": "novel-os-core",
+      "version": 1
+    }
+  ],
+  "compatible_agents": [
+    "A05_REVIEW"
+  ],
+  "compatible_task_types": [
+    "VALIDATE_REVISION_FIDELITY"
+  ],
+  "created_at": "2026-09-28T00:00:00Z",
+  "content_hash": "c7ca4b191eda0d38af4688dd5c7fce5d70136e2f59edacbefc77ad9f384d29ca"
+}

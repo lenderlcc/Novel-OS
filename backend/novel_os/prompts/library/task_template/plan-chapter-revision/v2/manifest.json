@@ -1,0 +1,22 @@
+{
+  "module_id": "plan-chapter-revision",
+  "module_type": "TASK_TEMPLATE",
+  "version": 2,
+  "status": "STABLE",
+  "description": "NOVEL-010A source fidelity and locality",
+  "content_path": "content.md",
+  "dependencies": [
+    {
+      "module_id": "novel-os-core",
+      "version": 1
+    }
+  ],
+  "compatible_agents": [
+    "A06_REVISION"
+  ],
+  "compatible_task_types": [
+    "PLAN_CHAPTER_REVISION"
+  ],
+  "created_at": "2026-09-28T00:00:00Z",
+  "content_hash": "6150edc5f65461e395eb6bae457936f8f9d5cdad6b6783f524da2c052182a027"
+}

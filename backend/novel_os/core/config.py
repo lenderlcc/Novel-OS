@@ -70,6 +70,7 @@ class Settings(BaseSettings):
                 "REVIEW_CHAPTER_NARRATIVE",
                 "PLAN_CHAPTER_REVISION",
                 "REVISE_CHAPTER",
+                "VALIDATE_REVISION_FIDELITY",
             ),
             "chapter-writing": (
                 "PARSE_CHAPTER_REQUIREMENT",

@@ -6,14 +6,25 @@ from sqlalchemy import select
 
 from novel_os.domain.errors import DomainError
 from novel_os.domain.quality import QualityBinding
-from novel_os.domain.revision import RevisionPlan, RevisionRequest, RevisionResult
+from novel_os.domain.revision import (
+    RevisionCandidate,
+    RevisionPlan,
+    RevisionRequest,
+    RevisionResult,
+)
 from novel_os.models.quality import QualityBindingModel
-from novel_os.models.revision import RevisionPlanModel, RevisionRequestModel, RevisionResultModel
+from novel_os.models.revision import (
+    RevisionCandidateModel,
+    RevisionPlanModel,
+    RevisionRequestModel,
+    RevisionResultModel,
+)
 
 MODELS = {
     RevisionRequest: RevisionRequestModel,
     RevisionPlan: RevisionPlanModel,
     RevisionResult: RevisionResultModel,
+    RevisionCandidate: RevisionCandidateModel,
 }
 
 
@@ -45,11 +56,18 @@ class RevisionRepository:
     def history_bundles(self, workflow_id, limit, offset):
         query = (
             select(
-                RevisionRequestModel, RevisionPlanModel, RevisionResultModel, QualityBindingModel
+                RevisionRequestModel,
+                RevisionPlanModel,
+                RevisionResultModel,
+                QualityBindingModel,
+                RevisionCandidateModel,
             )
             .outerjoin(RevisionPlanModel, RevisionPlanModel.request_id == RevisionRequestModel.id)
             .outerjoin(
                 RevisionResultModel, RevisionResultModel.request_id == RevisionRequestModel.id
+            )
+            .outerjoin(
+                RevisionCandidateModel, RevisionCandidateModel.request_id == RevisionRequestModel.id
             )
             .join(
                 QualityBindingModel,
@@ -65,7 +83,13 @@ class RevisionRepository:
                 self.entity(row, kind)
                 for row, kind in zip(
                     rows,
-                    (RevisionRequest, RevisionPlan, RevisionResult, QualityBinding),
+                    (
+                        RevisionRequest,
+                        RevisionPlan,
+                        RevisionResult,
+                        QualityBinding,
+                        RevisionCandidate,
+                    ),
                     strict=True,
                 )
             )

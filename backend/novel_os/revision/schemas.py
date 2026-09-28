@@ -77,7 +77,11 @@ class RevisionAgentResult(AgentResult):
     result: RevisionResultOutput
 
 
-REVISION_RESULTS = {
-    "PLAN_CHAPTER_REVISION": ("chapter-revision-plan", RevisionPlanAgentResult),
-    "REVISE_CHAPTER": ("chapter-revision-result", RevisionAgentResult),
-}
+def revision_results():
+    from novel_os.revision.fidelity_schemas import FidelityAgentResult, FidelityPlanAgentResult
+
+    return {
+        "PLAN_CHAPTER_REVISION": ("chapter-revision-plan", FidelityPlanAgentResult),
+        "REVISE_CHAPTER": ("chapter-revision-result", RevisionAgentResult),
+        "VALIDATE_REVISION_FIDELITY": ("revision-fidelity-result", FidelityAgentResult),
+    }

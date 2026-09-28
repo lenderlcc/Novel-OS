@@ -1491,6 +1491,11 @@ export interface components {
             /** Supersedes Id */
             supersedes_id: string | null;
         };
+        /**
+         * ChangeBudget
+         * @enum {string}
+         */
+        ChangeBudget: "MINIMAL" | "MODERATE" | "BROAD";
         /** ChapterInput */
         ChapterInput: {
             /** Tags */
@@ -2437,6 +2442,90 @@ export interface components {
              */
             outcome: "success" | "review_failure" | "technical_failure" | "fatal_failure" | "replan";
         };
+        /** FidelityCheck */
+        FidelityCheck: {
+            /** Check Id */
+            check_id: string;
+            /** Preserved */
+            preserved: boolean;
+            /** Reason */
+            reason: string;
+            /** Source Evidence */
+            source_evidence: components["schemas"]["ParagraphEvidence"][];
+            /** Revised Evidence */
+            revised_evidence: components["schemas"]["ParagraphEvidence"][];
+        };
+        /**
+         * FidelityCode
+         * @enum {string}
+         */
+        FidelityCode: "REVISION_SCOPE_VIOLATION" | "REVISION_STRENGTH_REGRESSION" | "UNAUTHORIZED_SCENE_REPLACEMENT";
+        /** FidelityRevisionPlan */
+        FidelityRevisionPlan: {
+            /**
+             * Kind
+             * @constant
+             */
+            kind: "revision_plan";
+            /**
+             * Chapter Id
+             * Format: uuid
+             */
+            chapter_id: string;
+            /**
+             * Source Chapter Version Id
+             * Format: uuid
+             */
+            source_chapter_version_id: string;
+            /**
+             * Source Review Id
+             * Format: uuid
+             */
+            source_review_id: string;
+            /** Target Issue Ids */
+            target_issue_ids: string[];
+            /** Preserve Items */
+            preserve_items: string[];
+            /** Revision Targets */
+            revision_targets: components["schemas"]["RevisionTarget"][];
+            /** Do Not Change */
+            do_not_change: string[];
+            /** Revision Strategy */
+            revision_strategy: string;
+            /** @default TARGETED */
+            scope: components["schemas"]["RevisionScope"];
+            /** Blocked Reasons */
+            blocked_reasons: components["schemas"]["BlockedReason"][];
+            /** Source Refs */
+            source_refs: components["schemas"]["ReviewSource"][];
+            /** Confidence */
+            confidence: number;
+            /** Preserve Scene Elements */
+            preserve_scene_elements: components["schemas"]["PreservationElement"][];
+            /** Preserve Relationship Elements */
+            preserve_relationship_elements: components["schemas"]["PreservationElement"][];
+            /** Preserve Effective Details */
+            preserve_effective_details: components["schemas"]["PreservationElement"][];
+            /** Strength Preservation */
+            strength_preservation: components["schemas"]["StrengthPreservation"][];
+            /** Strength Regression Risks */
+            strength_regression_risks: components["schemas"]["StrengthRegressionRisk"][];
+            /** Revision Zones */
+            revision_zones: components["schemas"]["RevisionZone"][];
+            /** @default LOCAL */
+            allowed_structural_change: components["schemas"]["StructuralChange"];
+            structural_authorization?: components["schemas"]["StructuralAuthorization"] | null;
+            /** @default MINIMAL */
+            change_budget: components["schemas"]["ChangeBudget"];
+        };
+        /** FidelityViolation */
+        FidelityViolation: {
+            code: components["schemas"]["FidelityCode"];
+            /** Check Ids */
+            check_ids: string[];
+            /** Description */
+            description: string;
+        };
         /**
          * FutureKnowledgePolicy
          * @enum {string}
@@ -3031,6 +3120,15 @@ export interface components {
         PlanningView: {
             plan: components["schemas"]["PlanView"];
             generation: components["schemas"]["GenerationView"];
+        };
+        /** PreservationElement */
+        PreservationElement: {
+            /** Element Id */
+            element_id: string;
+            /** Description */
+            description: string;
+            /** Evidence */
+            evidence: components["schemas"]["ParagraphEvidence"][];
         };
         /**
          * Priority
@@ -3637,6 +3735,134 @@ export interface components {
             verdict: components["schemas"]["ReviewVerdict"];
             body: components["schemas"]["PlanReviewRecord"];
         };
+        /** RevisionCandidateBody */
+        RevisionCandidateBody: {
+            /**
+             * Kind
+             * @constant
+             */
+            kind: "revision_result";
+            /**
+             * Source Chapter Version Id
+             * Format: uuid
+             */
+            source_chapter_version_id: string;
+            /**
+             * Revision Plan Id
+             * Format: uuid
+             */
+            revision_plan_id: string;
+            /**
+             * Source Review Id
+             * Format: uuid
+             */
+            source_review_id: string;
+            /** Addressed Issue Ids */
+            addressed_issue_ids: string[];
+            /** Preserved Items */
+            preserved_items: string[];
+            /** Declared Changes */
+            declared_changes: string[];
+            /** Unresolved Issue Ids */
+            unresolved_issue_ids: string[];
+            /** Blocked Reasons */
+            blocked_reasons: components["schemas"]["BlockedReason"][];
+            /** Source Refs */
+            source_refs: components["schemas"]["ReviewSource"][];
+            /** Confidence */
+            confidence: number;
+            /** Content */
+            content: string | null;
+            /** Content Hash */
+            content_hash: string | null;
+        };
+        /** RevisionCandidateView */
+        RevisionCandidateView: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Request Id
+             * Format: uuid
+             */
+            request_id: string;
+            /**
+             * Task Id
+             * Format: uuid
+             */
+            task_id: string;
+            /**
+             * Run Id
+             * Format: uuid
+             */
+            run_id: string;
+            /**
+             * Prompt Lineage Id
+             * Format: uuid
+             */
+            prompt_lineage_id: string;
+            /**
+             * Context Package Id
+             * Format: uuid
+             */
+            context_package_id: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Revision Plan Id
+             * Format: uuid
+             */
+            revision_plan_id: string;
+            body: components["schemas"]["RevisionCandidateBody"];
+        };
+        /** RevisionFidelityOutput */
+        RevisionFidelityOutput: {
+            /**
+             * Kind
+             * @constant
+             */
+            kind: "revision_fidelity";
+            /**
+             * Source Chapter Version Id
+             * Format: uuid
+             */
+            source_chapter_version_id: string;
+            /**
+             * Source Review Id
+             * Format: uuid
+             */
+            source_review_id: string;
+            /**
+             * Revision Plan Id
+             * Format: uuid
+             */
+            revision_plan_id: string;
+            /**
+             * Candidate Id
+             * Format: uuid
+             */
+            candidate_id: string;
+            /** Candidate Content Hash */
+            candidate_content_hash: string;
+            /**
+             * Verdict
+             * @enum {string}
+             */
+            verdict: "PASS" | "FAIL";
+            /** Checks */
+            checks: components["schemas"]["FidelityCheck"][];
+            /** Violations */
+            violations: components["schemas"]["FidelityViolation"][];
+            /** Source Refs */
+            source_refs: components["schemas"]["ReviewSource"][];
+            /** Confidence */
+            confidence: number;
+        };
         /** RevisionMetadataView */
         RevisionMetadataView: {
             /**
@@ -3675,6 +3901,11 @@ export interface components {
             confidence: number;
             /** Content Hash */
             content_hash: string | null;
+            /** Candidate Id */
+            candidate_id?: string | null;
+            fidelity?: components["schemas"]["RevisionFidelityOutput"] | null;
+            /** Accepted */
+            accepted?: boolean | null;
         };
         /** RevisionPlanOutput */
         RevisionPlanOutput: {
@@ -3754,7 +3985,8 @@ export interface components {
              * Format: date-time
              */
             created_at: string;
-            body: components["schemas"]["RevisionPlanOutput"];
+            /** Body */
+            body: components["schemas"]["FidelityRevisionPlan"] | components["schemas"]["RevisionPlanOutput"];
         };
         /** RevisionPriority */
         RevisionPriority: {
@@ -3889,6 +4121,18 @@ export interface components {
             source_binding: components["schemas"]["QualityBindingView"];
             plan: components["schemas"]["RevisionPlanView"] | null;
             result: components["schemas"]["RevisionResultView"] | null;
+            candidate?: components["schemas"]["RevisionCandidateView"] | null;
+        };
+        /** RevisionZone */
+        RevisionZone: {
+            /** Issue Ids */
+            issue_ids: string[];
+            /** Semantic Range */
+            semantic_range: string;
+            /** Paragraph Start */
+            paragraph_start?: number | null;
+            /** Paragraph End */
+            paragraph_end?: number | null;
         };
         /**
          * RunStatus
@@ -3984,6 +4228,46 @@ export interface components {
             /** Preservation Direction */
             preservation_direction: string;
         };
+        /** StrengthPreservation */
+        StrengthPreservation: {
+            /** Strength Id */
+            strength_id: string;
+            /**
+             * Mode
+             * @enum {string}
+             */
+            mode: "DIRECT" | "FUNCTIONAL";
+            /** Preservation Direction */
+            preservation_direction: string;
+        };
+        /** StrengthRegressionRisk */
+        StrengthRegressionRisk: {
+            /** Strength Id */
+            strength_id: string;
+            /** Risk */
+            risk: string;
+            /** Mitigation */
+            mitigation: string;
+        };
+        /** StructuralAuthorization */
+        StructuralAuthorization: {
+            /**
+             * Issue Id
+             * Format: uuid
+             */
+            issue_id: string;
+            /** Review Root Cause */
+            review_root_cause: string;
+            /** Reason */
+            reason: string;
+            /** Why Local Insufficient */
+            why_local_insufficient: string;
+        };
+        /**
+         * StructuralChange
+         * @enum {string}
+         */
+        StructuralChange: "NONE" | "LOCAL" | "CHAPTER_WIDE";
         /**
          * TaskStatus
          * @enum {string}

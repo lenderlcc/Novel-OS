@@ -142,6 +142,8 @@ legend { padding: 0 6px; font-weight: 600; }
 .prose { max-width: 720px; margin: 38px auto 56px; white-space: pre-wrap; font-size: 17px; line-height: 2; letter-spacing: .01em; }
 .reader-actions { display: flex; align-items: center; gap: 14px; max-width: 720px; margin: 0 auto; padding-top: 18px; border-top: 1px solid var(--border); }
 .reader-actions p { margin: 0; color: var(--muted); font-size: 13px; }
+.reader > .reader-actions { flex-wrap: wrap; }
+.reader-actions a { color: var(--accent); text-underline-offset: 3px; white-space: nowrap; }
 
 .error-notice { max-width: 760px; margin: 24px 0; padding: 16px 18px; border-left: 3px solid var(--danger); background: var(--danger-soft); }
 .error-notice h2 { margin-bottom: 5px; font-size: 17px; color: #75251d; }
@@ -194,3 +196,5 @@ legend { padding: 0 6px; font-weight: 600; }
 .quality-issue { padding: 14px 0; border-bottom: 1px solid var(--border); }
 .quality-issue summary { font-weight: 600; }
 .quality-issue blockquote { margin: 16px 0; padding-left: 16px; border-left: 2px solid var(--border); }
+
+.revision-candidate { white-space: pre-wrap; font: inherit; line-height: 1.9; }

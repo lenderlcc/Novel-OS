@@ -59,6 +59,14 @@ def contract_for(review, package):
         do_not_change=boundaries,
         review_authority="DIAGNOSIS_ONLY",
         default_scope="TARGETED",
+        fidelity_version=1,
+        edit_base={
+            "role": "EDIT_BASE",
+            "source_id": str(review.chapter_version_id),
+            "selector_id": "target-version",
+            "full_text_required": True,
+        },
+        preservation_default="Everything outside revision scope is implicitly preserved",
     )
 
 

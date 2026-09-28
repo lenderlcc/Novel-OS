@@ -44,6 +44,11 @@ class RevisionPlanModel(RevisionEvidenceColumns, Base):
     __tablename__ = "revision_plans"
 
 
+class RevisionCandidateModel(RevisionEvidenceColumns, Base):
+    __tablename__ = "revision_candidates"
+    revision_plan_id: Mapped[UUID] = mapped_column(ForeignKey("revision_plans.id"), unique=True)
+
+
 class RevisionResultModel(RevisionEvidenceColumns, Base):
     __tablename__ = "revision_results"
     revision_plan_id: Mapped[UUID] = mapped_column(ForeignKey("revision_plans.id"), unique=True)

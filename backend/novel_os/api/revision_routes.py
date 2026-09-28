@@ -9,7 +9,8 @@ from novel_os.api.quality_schemas import QualityBindingView
 from novel_os.api.workflow_routes import response
 from novel_os.api.workflow_schemas import CommandInput, DispatchView
 from novel_os.domain.workflow import EventCommand
-from novel_os.revision.schemas import RevisionMetadata, RevisionPlanOutput
+from novel_os.revision.fidelity_schemas import FidelityRevisionPlan, RevisionFidelityOutput
+from novel_os.revision.schemas import RevisionMetadata, RevisionPlanOutput, RevisionResultOutput
 from novel_os.services.revision_results import RevisionResultService
 from novel_os.workflow.runtime import WorkflowRuntime
 
@@ -45,11 +46,14 @@ class RevisionEvidenceView(BaseModel):
 
 
 class RevisionPlanView(RevisionEvidenceView):
-    body: RevisionPlanOutput
+    body: FidelityRevisionPlan | RevisionPlanOutput
 
 
 class RevisionMetadataView(RevisionMetadata):
     content_hash: str | None
+    candidate_id: UUID | None = None
+    fidelity: RevisionFidelityOutput | None = None
+    accepted: bool | None = None
 
 
 class RevisionResultView(RevisionEvidenceView):
@@ -58,11 +62,21 @@ class RevisionResultView(RevisionEvidenceView):
     body: RevisionMetadataView
 
 
+class RevisionCandidateBody(RevisionResultOutput):
+    content_hash: str | None
+
+
+class RevisionCandidateView(RevisionEvidenceView):
+    revision_plan_id: UUID
+    body: RevisionCandidateBody
+
+
 class RevisionView(BaseModel):
     request: RevisionRequestView
     source_binding: QualityBindingView
     plan: RevisionPlanView | None
     result: RevisionResultView | None
+    candidate: RevisionCandidateView | None = None
 
 
 @router.post("/workflows/{workflow_id}/revision", response_model=DispatchView)

@@ -364,7 +364,7 @@ class AgentResultHandler:
 
                 TaskScheduler(self.session).synchronize(workflow, context)
             if (
-                task.task_type in {"WRITE_CHAPTER", "REVISE_CHAPTER"}
+                task.task_type in {"WRITE_CHAPTER", "VALIDATE_REVISION_FIDELITY"}
                 and terminal == TaskStatus.SUCCEEDED
                 and dispatched.outcome != "BLOCKED"
             ):

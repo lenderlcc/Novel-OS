@@ -21,7 +21,7 @@ const displayPreference = (value: string | string[]) => Array.isArray(value) ? v
 </script>
 <template>
   <section class="quality-review" aria-labelledby="quality-heading">
-    <h2 id="quality-heading">正文审阅</h2>
+    <h2 id="quality-heading" tabindex="-1">正文审阅</h2>
     <p v-if="!review">{{ pending ? '正在检查约束、叙事和受众匹配。正文可以先阅读，完成后将自动更新。' : '这个版本尚无 AI 审阅结果。你可以先进行人工评价。' }}</p>
     <template v-else>
       <p class="muted">Review v{{ review.version }} · 对应 Draft v{{ review.binding.draft_version }}</p>

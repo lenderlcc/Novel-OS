@@ -1,4 +1,4 @@
-# Targeted Revision Engine — NOVEL-010
+# Targeted Revision Engine — NOVEL-010 / 010A
 
 本规范落实 2026-09-24 的 NOVEL-010 补充需求，取代旧 ticket 中多种 Revision Mode、自动循环及数值质量指标的设想。Formal Revision 属于现有 `chapter-planning.v3`；旧 v1/v2 工作流保持原行为。
 
@@ -10,11 +10,13 @@
 C10/C11 WAITING_HUMAN
   -- USER REQUEST_REVISION --> C10 WAITING_AGENT (A06 PLAN_CHAPTER_REVISION)
   -- AGENT REVISION_PLAN_READY --> C10 WAITING_AGENT (A06 REVISE_CHAPTER)
-  -- AGENT REVISION_READY --> C08 --> C09 (A05 Compliance + Narrative)
+  -- AGENT REVISION_CANDIDATE_READY --> C10 WAITING_AGENT (A05 VALIDATE_REVISION_FIDELITY)
+  -- fidelity PASS / AGENT REVISION_READY --> immutable successor → C08 → C09
+  -- fidelity FAIL --> C90 BLOCKED，原稿保持 current，STOP
   -- INTERNAL_REVIEW_PASSED/FAILED --> C11/C10 WAITING_HUMAN, STOP
 ```
 
-每个用户 request 至多一个 plan、一个 result、一个 successor Draft。Review v2 FAIL 也停止；需要用户基于新 Review 再次明确请求才可改下一版。revision_count 在用户请求时增加，不把技术重试或审阅 FAIL 计为新修改。特殊事件由 deterministic WorkflowRuntime 验证和处理，Agent 不能指定状态、事件或 next_state。
+每个用户 request 至多一个 plan、一个 candidate、一个 result，至多一个 successor Draft。Review v2 FAIL 也停止；需要用户基于新 Review 再次明确请求才可改下一版。revision_count 在用户请求时增加，不把技术重试或审阅 FAIL 计为新修改。特殊事件由 deterministic WorkflowRuntime 验证和处理，Agent 不能指定状态、事件或 next_state。
 
 ## 两阶段契约
 
@@ -24,7 +26,7 @@ A06 同时拥有 PLAN_CHAPTER_REVISION 和 REVISE_CHAPTER，不增加 Agent。
 
 `RevisionResultOutput`：source Draft/Review、revision_plan_id、content（安全阻塞时可为 null）、addressed/unresolved_issue_ids、preserved_items、declared_changes、blocked_reasons、source_refs、confidence。addressed 仅是 A06 自述，后续 A05 独立判断是否改善。
 
-唯一输出 Schema 是 Pydantic，Prompt 只引用 contract。持久化 Result metadata 不重复存正文，以 ChapterVersion ID 和 SHA-256 关联 immutable prose。
+唯一输出 Schema 是 Pydantic，Prompt 只引用 contract。A06 完整输出保存到 immutable RevisionCandidate；通过 Fidelity Gate 后才创建 ChapterVersion。RevisionResult 保存 candidate ID、hash、Fidelity 判定及 A06 issue 声明，不重复存正文。
 
 ## Authority 与最小修改
 
@@ -41,17 +43,17 @@ A06 只能提出正文修改。proposed_changes 与 memory_proposals 必须为�
 
 ## Context 与 exact binding
 
-CP-006 已属于 Quality Review，因此扩展已有 Revision profile 为 **CP-007 v3**。不改名或覆盖旧 CP-007 v1。
+CP-006 已属于 Quality Review，因此扩展已有 Revision profile 为 **CP-007 v4**。不改名或覆盖旧 CP-007 v1。
 
 用户触发时，RevisionRequest 冻结 source ChapterVersion / ChapterQualityReview / QualityBinding / 原 Review ContextPackage、CP-007 完整 profile snapshot/hash 和 authority contract。QualityBinding 已固定 Brief、approved Plan、approved Profile 和 relevant source fingerprints。Revision 要求原 Review 已绑定 approved WritingProfile；历史无 Profile 的 Review 返回 CONTEXT_MISSING，不创建任务。用户需先批准 Profile，再明确重新审阅，不能给旧 Review 偷换新 Profile。创建新未批准的 Plan/Profile 不使已批准绑定失效。
 
-两阶段各自经 Context Engine 构建与本次 AgentRun 绑定的 ContextPackage / PromptLineage；执行阶段必须有第一阶段的 exact RevisionPlan。任务创建、领取、Provider 前及返回写入前均校验原绑定。Draft、Review、批准 Plan/Profile、相关 Decision/Lock 等变化使结果 CONTEXT_STALE/BLOCKED，绝不读取 latest 替换原输入。普通 unrelated 数据不会全量进入上下文。
+A06 两阶段和 A05 Fidelity 各自经 Context Engine 构建与本次 AgentRun 绑定的 ContextPackage / PromptLineage；执行阶段必须有第一阶段的 exact RevisionPlan。任务创建、领取、Provider 前及返回写入前均校验原绑定。Draft、Review、批准 Plan/Profile、相关 Decision/Lock 等变化使结果 CONTEXT_STALE/BLOCKED，绝不读取 latest 替换原输入。普通 unrelated 数据不会全量进入上下文。
 
 Context 只选择目标章节、确切依赖及最近最多三章 approved 内容。006 尚未接入的 Character/Canon Memory 不在本阶段创造替代数据库；延续 Global Canon ≠ Character Knowledge 的 policy 边界，未知不能臆造。
 
 ## Persistence 与事务
 
-新增 `revision_requests`、`revision_plans`、`revision_results`，DB trigger 禁止 UPDATE/DELETE，唯一约束防止重复 artifact。RevisionRequest + 工作流事件/状态 + A06 task 在一个 Service transaction 内创建。
+010 新增 `revision_requests`、`revision_plans`、`revision_results`；010A 的 migration 0013 新增 `revision_candidates`，DB trigger 禁止 UPDATE/DELETE，唯一约束防止重复 artifact。RevisionRequest + 工作流事件/状态 + A06 task 在一个 Service transaction 内创建。
 
 每个结果处理在既有 Project → Workflow → Task 锁顺序下验证 lease/state/source，再在一个事务中写 artifact、Draft successor、Audit、task terminal state、合法 Workflow event 和下一 task。Repository 只 flush，不 commit。数据库进一步校验 task/run/Prompt/Context owner、active request、source scope，以及 successor 的 current pointer、version+1、supersedes/parent、AGENT/A7/DRAFT/unlocked/unapproved、非空正文和 hash。失败全部 rollback。
 
@@ -60,7 +62,7 @@ Context 只选择目标章节、确切依赖及最近最多三章 approved 内�
 ## API 与界面
 
 - `POST /api/v1/workflows/{workflow_id}/revision`：明确请求一次完整修改及重审。
-- `GET /api/v1/workflows/{workflow_id}/revisions?limit=100&offset=0`：最新在前，包含 request/source_binding/plan/result。批量 join 获取，避免逐条查询。
+- `GET /api/v1/workflows/{workflow_id}/revisions?limit=100&offset=0`：最新在前，包含 request/source_binding/plan/candidate/result。批量 join 获取，避免逐条查询。
 - `POST /api/v1/workflows/{workflow_id}/quality-review`：沿用现有端点，从业务阻塞的 Revision 明确重新审阅当前 Draft。
 
 正文版本入口切换 v1/v2，Review 按 exact chapter_version_id 和 workflow 选择，并标注 Review / Draft 版本。人工评价 storage key 仍包含 Draft 版本，切换时重建组件，禁止继承旧评价。正常界面只显示修改进度、简要重点、原因和审阅结果；Context/Prompt/Run 原始 lineage 留在 Debug。
@@ -70,3 +72,31 @@ Context 只选择目标章节、确切依赖及最近最多三章 approved 内�
 Mock 验证结构、权限、版本、重试与停止，不证明文字改善。真实 Provider 仅由用户显式触发 Case 04/05。人工记录 Improved = YES/PARTIAL/NO，Strength Lost = YES/NO，New Major Problem = YES/NO，保留两份 Draft/Review 和完整 lineage，不做数字打分或语义 Delta Engine。
 
 不实现 NOVEL-011 自然语言修改意见、不实现 NOVEL-012 Memory Commit、不自动更新 Profile/Prompt/Preference、不做无限循环或富文本 Diff。
+
+
+## NOVEL-010A：Source Fidelity 与 Locality
+
+正式三原则为 SOURCE FIDELITY、MINIMUM NECESSARY CHANGE、STORY DEVICE PRESERVATION。Source Draft 是完整的 EDIT_BASE，服务在 revision-contract 明确角色与 exact source ID；不新增通用 Context role 字段，不做 Context Engine 重构。target-version 与候选正文均为 P0，缺少完整文本或预算不足时拒绝，不能以 summary 替换。Review recommendations 仍是 A7 诊断。
+
+`chapter-revision-plan.v2` 扩展：
+
+- `preserve_scene_elements`：场景、物件、互动前提和事件机制；`preserve_relationship_elements`：关系功能；`preserve_effective_details`：已有效的动作/意象。每项有唯一 element_id、描述和原稿 exact paragraph evidence。
+- `strength_preservation`：每项 Review strength 的原 ID 必须完整映射为 DIRECT/FUNCTIONAL + preservation_direction。`strength_regression_risks` 记录可能影响的 strength、risk、mitigation。
+- `revision_zones`：每个 actionable issue 必须有 semantic_range，可带成对 1-based paragraph_start/end；blocked issue 无需制造修改区域。
+- `allowed_structural_change` 默认 LOCAL（另有 NONE / CHAPTER_WIDE）；`change_budget` 默认 MINIMAL（另有 MODERATE / BROAD）。全文输出不是 BROAD。CHAPTER_WIDE 必须引用实际 Review issue，逐字绑定其 description，并说明 reason 和 why_local_insufficient；BROAD / FULL_PASS 仅在有此授权时允许。A05 进一步判断该理由是否真实成立，Planner 不能自行将局部问题升级为全章根因。
+
+KEEP 数组不是保护的全部：未被问题覆盖的内容默认保留。必要局部对白可以整段调整；为衔接修改少量前后文、代词、节奏、对应动作也允许。禁止为了更容易满足 Review 而更换地点、核心物件、互动前提、人物关系角色或事件机制；Authority 可修改不等于 Fidelity 需要修改。
+
+ABSTRACT_STAKES 依次使用原稿已存在信息、授权 Context canon、Approved Plan/Brief、安全 Local Elaboration。仍无依据则保留 unresolved，并解释 `Insufficient authorized context for stronger concretization.`。addressed 是声明，不是已解决的证明。新稿有安全改动时可保留部分甚至全部 unresolved；不为清零问题制造故事事实。
+
+## NOVEL-010A：Fidelity Gate 与失败证据
+
+在 existing C10 加一个 A05 REVIEW 能力任务 `VALIDATE_REVISION_FIDELITY`，不增加 Agent/Workflow 状态，也不改变 009 的 detection 或 taxonomy。A06 REVISE_CHAPTER 仅存候选稿和 lineage，不更新 Chapter current/approved。A05 接收 exact source + frozen Review + RevisionPlan + candidate，分别检查 SCENE_PREMISE、RELATIONSHIP_FUNCTION、UNAFFECTED_MATERIAL、STRUCTURAL_SCOPE，以及全部 strength 和具体 preserve elements。隐式保护允许发现 Planner 未列出的关键场景/关系。
+
+`RevisionFidelityValidator` 检查 source/plan/candidate IDs、hash、完整输入、所有必须检查项、原文与候选证据位置，以及 verdict/checks/violations 的跨字段一致性。它不计算字符重合率、编辑距离或改动百分比；文学含义由独立 A05 判断，仍需人工验收。Fidelity 代码独立于 QualityCode：REVISION_SCOPE_VIOLATION、REVISION_STRENGTH_REGRESSION、UNAUTHORIZED_SCENE_REPLACEMENT。
+
+只有有效、高置信 PASS 才在同一 Service 事务创建 successor Draft、写 RevisionResult、更新 current 和调度既有质量审阅。approved pointer 不变。FAIL 则记录 candidate + rejected result + A05 lineage，保持源 Draft/current，不执行后续质量审阅或自动 A06 retry。显式 RESUME 也不能复用已拒绝产物；用户可补充依据后重新审阅，再明确发起新 Revision。技术执行错误沿用既有有界技术重试/lease fencing；不可与语义 FAIL 混淆。
+
+普通界面显示“这次修改范围过大，未替换当前正文。”，可展开未采用稿；成功后的体验仍为新 Draft 和正式 Review。Debug 显示 Source Fidelity、KEEP/CHANGE/DO NOT CHANGE、zones、budget、preserved strengths、risks 和 violations。分页历史批量 join candidate，不引入 N+1。
+
+plan-chapter-revision / revise-chapter 使用新增 v2，targeted-revision skill 使用 v2；Fidelity 独立版本化 Prompt。历史 Prompt 文件不变，v1 结果仍可读。执行中旧 RevisionRequest 无 fidelity contract 时 fail closed，需新的明确请求，不能沿旧路径跳过门禁。

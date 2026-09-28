@@ -25,7 +25,7 @@ export function progressLabel(w: Workflow, tasks: Task[], config?: ExecutionConf
   if (w.revision_request_id && w.current_state === 'C10_REVISION' && w.status === 'WAITING_AGENT') {
     const task = currentTask(w, tasks)
     if (task?.status === 'PENDING' && config?.task_types && !config.task_types.includes(task.task_type)) return '本阶段执行已停用'
-    return task?.task_type === 'REVISE_CHAPTER' ? '正在修改正文' : '正在分析修改范围'
+    return task?.task_type === 'VALIDATE_REVISION_FIDELITY' ? '正在检查修改结果' : task?.task_type === 'REVISE_CHAPTER' ? '正在修改正文' : '正在分析修改范围'
   }
   if (w.revision_request_id && w.current_state === 'C09_INTERNAL_REVIEW' && w.status === 'WAITING_AGENT') return '正在重新审阅'
   if (w.status !== 'WAITING_AGENT' || !/^C0[1-9]_/.test(w.current_state)) return stateLabel(w.current_state)

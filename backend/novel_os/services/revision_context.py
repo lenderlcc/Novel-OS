@@ -4,12 +4,18 @@ from uuid import NAMESPACE_URL, uuid5
 
 from novel_os.domain.context import ContextItem, SourceType
 from novel_os.domain.enums import Authority, Status
+from novel_os.domain.revision import RevisionCandidate
 from novel_os.prompts.contracts import canonical
 from novel_os.repositories.quality import QualityRepository
 from novel_os.repositories.revision import RevisionRepository
 from novel_os.repositories.workflows import WorkflowRepository
 
-REVISION_SELECTORS = {"revision-contract", "source-quality-review", "revision-plan"}
+REVISION_SELECTORS = {
+    "revision-contract",
+    "source-quality-review",
+    "revision-plan",
+    "revision-candidate",
+}
 
 
 class RevisionContextReader:
@@ -34,6 +40,11 @@ class RevisionContextReader:
         elif selector.selector_id == "source-quality-review":
             record = QualityRepository(self.session).get(revision.source_review_id)
             payload = record.body
+        elif selector.selector_id == "revision-candidate":
+            record = repo.evidence(revision.id, RevisionCandidate)
+            if record is None:
+                return (), {"candidate_id": None}
+            payload = {**record.body, "candidate_id": str(record.id)}
         else:
             record = repo.evidence(revision.id)
             if record is None:

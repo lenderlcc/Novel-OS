@@ -271,3 +271,7 @@ chapter-planning.v3 增加 C08 → C09 两轮 A05 审阅。PASS/PASS_WITH_WARNIN
 chapter-planning.v3 的 C10 复用为显式修订阶段：用户 REQUEST_REVISION 将 C10/C11 WAITING_HUMAN 转成 C10 WAITING_AGENT，依次调度 A06 PLAN_CHAPTER_REVISION、REVISE_CHAPTER。每阶段由精确 artifact/run 绑定的 REVISION_PLAN_READY、REVISION_READY 推进；新 Draft 进入既有 C08 → C09 两轮 A05。审阅完成清空 active revision_request_id 并停在 C10/C11 WAITING_HUMAN，绝不自动再次 Revision。
 
 revision_count 仅计算用户正式请求，技术 retry 不计入。安全阻塞持久保留原因，不能把已终结 artifact 作为技术 retry 重复执行；用户可显式 REQUEST_REVIEW 重新绑定当前 Draft。技术故障保留既有 retry/resume。v1/v2 的模拟/历史路径不接入正式 A06。详见 [Revision Engine](08-Revision-Engine.md)。
+
+## NOVEL-010A C10 Fidelity Gate
+
+C10 内顺序改为 PLAN_CHAPTER_REVISION → REVISE_CHAPTER → VALIDATE_REVISION_FIDELITY。REVISION_CANDIDATE_READY 仅保存候选稿并调度 A05，尚不修改 draft_version/current。A05 通过后 REVISION_READY 才进入 C08/C09；失败记录 rejected result、C90 BLOCKED、保持源稿 current，禁止自动 Revision 或用 RESUME 复用失败候选稿。质量重审后的 C10/C11 WAITING_HUMAN STOP 不变。没有新增 Workflow 状态或新 Agent。

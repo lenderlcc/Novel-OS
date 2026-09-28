@@ -82,10 +82,19 @@ class TaskScheduler:
             and workflow.revision_request_id
         ):
             from novel_os.agents.registry import REVISION_STAGE_TASKS
+            from novel_os.domain.revision import RevisionCandidate
             from novel_os.repositories.revision import RevisionRepository
 
-            plan = RevisionRepository(self.session).evidence(workflow.revision_request_id)
-            definition = REVISION_STAGE_TASKS["REVISE_CHAPTER" if plan else "PLAN_CHAPTER_REVISION"]
+            revisions = RevisionRepository(self.session)
+            plan = revisions.evidence(workflow.revision_request_id)
+            candidate = revisions.evidence(workflow.revision_request_id, RevisionCandidate)
+            definition = REVISION_STAGE_TASKS[
+                "VALIDATE_REVISION_FIDELITY"
+                if candidate
+                else "REVISE_CHAPTER"
+                if plan
+                else "PLAN_CHAPTER_REVISION"
+            ]
         if definition is None:
             return None  # Deterministic controls and versioned handoff boundaries have no agent.
 

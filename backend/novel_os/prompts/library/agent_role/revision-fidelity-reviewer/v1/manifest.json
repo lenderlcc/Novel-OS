@@ -1,0 +1,22 @@
+{
+  "module_id": "revision-fidelity-reviewer",
+  "module_type": "AGENT_ROLE",
+  "version": 1,
+  "status": "STABLE",
+  "description": "NOVEL-010A source fidelity and locality",
+  "content_path": "content.md",
+  "dependencies": [
+    {
+      "module_id": "novel-os-core",
+      "version": 1
+    }
+  ],
+  "compatible_agents": [
+    "A05_REVIEW"
+  ],
+  "compatible_task_types": [
+    "VALIDATE_REVISION_FIDELITY"
+  ],
+  "created_at": "2026-09-28T00:00:00Z",
+  "content_hash": "4664013c3955e20fce3815543cbd0c6c3c3ce2d446776878576f8e9e185a82cc"
+}

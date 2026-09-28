@@ -117,6 +117,10 @@ class RevisionBindingService:
         if workflow.revision_request_id is None:
             raise DomainError("CONTEXT_STALE", "Revision is no longer active")
         request = self.repo.get(workflow.revision_request_id)
+        if request.contract.get("fidelity_version") != 1:
+            raise DomainError(
+                "CONTEXT_STALE", "Historical Revision needs a new request with fidelity protection"
+            )
         if task.workflow_instance_id != workflow.id or task.target_ref != request.chapter_id:
             raise DomainError("AUTHORITY_DENIED", "Revision task scope mismatch")
         return self.check_source(request, workflow)

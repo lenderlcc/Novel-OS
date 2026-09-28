@@ -275,3 +275,9 @@ POST `/api/v1/workflows/chapter-quality` 使用现有 CreatePlanningWorkflow DTO
 `GET /workflows/{id}/revisions` 分页返回 immutable request、source_binding、可空 plan/result；包括 source IDs、具体 issue ID、preservation/boundary contract、AgentTask/Run/PromptLineage/ContextPackage IDs。输出 DTO 不暴露 ORM。
 
 PLAN_CHAPTER_REVISION / REVISE_CHAPTER 的 Pydantic schema 分别为 `chapter-revision-plan.v1` / `chapter-revision-result.v1`。Agent 无事件或状态字段；系统验证后发出合法完成事件。RevisionResult 的 addressed_issue_ids 不等同“已解决”，必须由 A05 新 Review 复核。详见 [Revision Engine](08-Revision-Engine.md)。
+
+## NOVEL-010A Fidelity Contract
+
+新 PLAN_CHAPTER_REVISION 使用 `chapter-revision-plan.v2`，新增三个 preservation arrays、strength_preservation/risks、revision_zones、allowed_structural_change、structural_authorization 和 change_budget。REVISE_CHAPTER 仍输出 `chapter-revision-result.v1`，但只保存候选产物，不直接创建当前正文。A05 VALIDATE_REVISION_FIDELITY 使用 `revision-fidelity-result.v1`；精确 source/plan/candidate/hash、checks、violations、verdict 由服务统一校验。
+
+GET `/workflows/{id}/revisions` 增加可空 candidate（完整 proposal、A06 lineage）以及 result.body.candidate_id/fidelity/accepted（A05 lineage），既有 v1 历史依旧可读。失败 result.chapter_version_id=null，不新增可接受 Draft；普通 UI 使用固定失败文案，Debug 查看具体内部 FidelityCode。这些字段不能通过客户端来授权新版本或绕过 Service gate。

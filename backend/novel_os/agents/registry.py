@@ -171,17 +171,34 @@ REVISION_STAGE_TASKS = {
         Capability.PROPOSE_DRAFT,
         event,
         result_schema=schema,
+        legacy_result_schema="chapter-revision-plan.v1"
+        if task == "PLAN_CHAPTER_REVISION"
+        else None,
     )
     for task, kind, event, schema in (
         (
             "PLAN_CHAPTER_REVISION",
             "revision_plan",
             "REVISION_PLAN_READY",
-            "chapter-revision-plan.v1",
+            "chapter-revision-plan.v2",
         ),
-        ("REVISE_CHAPTER", "revision_result", "REVISION_READY", "chapter-revision-result.v1"),
+        (
+            "REVISE_CHAPTER",
+            "revision_result",
+            "REVISION_CANDIDATE_READY",
+            "chapter-revision-result.v1",
+        ),
     )
 }
+REVISION_STAGE_TASKS["VALIDATE_REVISION_FIDELITY"] = StageTaskMapping(
+    "VALIDATE_REVISION_FIDELITY",
+    State.C10_REVISION,
+    AgentId.A05_REVIEW,
+    "revision_fidelity",
+    Capability.REVIEW,
+    "REVISION_READY",
+    result_schema="revision-fidelity-result.v1",
+)
 TASKS.update(REVISION_STAGE_TASKS)
 TASKS.update(QUALITY_STAGE_TASKS)
 TASKS[WRITING_TASK.task_type] = WRITING_TASK

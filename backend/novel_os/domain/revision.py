@@ -7,7 +7,9 @@ from uuid import UUID, uuid4
 
 from novel_os.domain.core import now
 
-REVISION_TASKS = frozenset({"PLAN_CHAPTER_REVISION", "REVISE_CHAPTER"})
+REVISION_TASKS = frozenset(
+    {"PLAN_CHAPTER_REVISION", "REVISE_CHAPTER", "VALIDATE_REVISION_FIDELITY"}
+)
 
 
 class RevisionScope(StrEnum):
@@ -46,3 +48,28 @@ class RevisionPlan:
 class RevisionResult(RevisionPlan):
     revision_plan_id: UUID
     chapter_version_id: UUID | None
+
+
+class StructuralChange(StrEnum):
+    NONE = "NONE"
+    LOCAL = "LOCAL"
+    CHAPTER_WIDE = "CHAPTER_WIDE"
+
+
+class ChangeBudget(StrEnum):
+    MINIMAL = "MINIMAL"
+    MODERATE = "MODERATE"
+    BROAD = "BROAD"
+
+
+class FidelityCode(StrEnum):
+    REVISION_SCOPE_VIOLATION = "REVISION_SCOPE_VIOLATION"
+    REVISION_STRENGTH_REGRESSION = "REVISION_STRENGTH_REGRESSION"
+    UNAUTHORIZED_SCENE_REPLACEMENT = "UNAUTHORIZED_SCENE_REPLACEMENT"
+
+
+@dataclass(frozen=True, kw_only=True)
+class RevisionCandidate(RevisionPlan):
+    """An A06 proposal, never an accepted ChapterVersion."""
+
+    revision_plan_id: UUID

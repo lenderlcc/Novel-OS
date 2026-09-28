@@ -1,0 +1,23 @@
+{
+  "module_id": "targeted-revision",
+  "module_type": "SKILL",
+  "version": 2,
+  "status": "STABLE",
+  "description": "NOVEL-010A source fidelity and locality",
+  "content_path": "content.md",
+  "dependencies": [
+    {
+      "module_id": "novel-os-core",
+      "version": 1
+    }
+  ],
+  "compatible_agents": [
+    "A06_REVISION"
+  ],
+  "compatible_task_types": [
+    "PLAN_CHAPTER_REVISION",
+    "REVISE_CHAPTER"
+  ],
+  "created_at": "2026-09-28T00:00:00Z",
+  "content_hash": "b367497c345eb12fdaf5b7e4d40a78f3ea7534e580f8ae24812687a006f327a6"
+}

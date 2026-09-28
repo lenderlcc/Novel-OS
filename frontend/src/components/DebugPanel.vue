@@ -7,6 +7,7 @@ import type { Snapshot } from '../composables/useConsole'
 import type { Context, Lineage, Run, Transition } from '../types/models'
 import ErrorNotice from './ErrorNotice.vue'
 import QualityComparison from './QualityComparison.vue'
+import RevisionDebug from './RevisionDebug.vue'
 const props = defineProps<{ snapshot: Snapshot; open: boolean }>()
 const emit = defineEmits<{ close: [] }>()
 const loading = ref(false), selectedRun = ref('')
@@ -93,7 +94,7 @@ const json = (value: unknown) => JSON.stringify(value, null, 2)
       <p v-else-if="!loading">此 Run 尚无 PromptLineage，或未选择 Run。</p>
       </div></details>
       <details><summary>Chapter Quality Reviews</summary><div v-for="record in snapshot.qualityReviews ?? []" :key="record.id" class="debug-section"><h3>Review v{{ record.version }} / {{ record.freshness }}</h3><QualityComparison :review="record" /><details><summary>QualityIssue / Evidence / Binding / Lineage JSON</summary><pre>{{ json(record) }}</pre></details></div></details>
-      <details><summary>Revision / Lineage</summary><pre>{{ json(snapshot.revisions ?? []) }}</pre></details>
+      <details><summary>Revision / Lineage</summary><RevisionDebug v-for="record in snapshot.revisions ?? []" :key="record.request.id" :record="record" /><pre>{{ json(snapshot.revisions ?? []) }}</pre></details>
       <details><summary>Artifacts / Raw JSON</summary><div class="debug-section"><details><summary>CreativeBrief / Plan / Review</summary><pre>{{ json({ brief: snapshot.brief, plans: snapshot.plans, planning: snapshot.history }) }}</pre></details><details><summary>WritingResult / ChapterVersion</summary><pre>{{ json({ writing: snapshot.writing, drafts: snapshot.drafts }) }}</pre></details><details><summary>WritingProfile Versions</summary><pre>{{ json(profileVersions) }}</pre></details><details><summary>Workflow / Tasks / Runs</summary><pre>{{ json({ workflow: snapshot.workflow, gates: snapshot.gates, tasks: snapshot.tasks, runs }) }}</pre></details></div></details>
     </aside>
   </div>

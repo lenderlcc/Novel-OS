@@ -50,7 +50,8 @@ const reviewNeedsRereview = computed(() => revisionMissingProfile.value || (revi
 const canRevise = computed(() => revisionAvailable.value && !revisionMissingProfile.value && qualityReview.value?.freshness === 'CURRENT')
 const revisionForDraft = computed(() => snapshot.value?.revisions?.find(r => r.result?.chapter_version_id === draft.value?.id))
 const revisionNeedsRereview = computed(() => workflow.value?.status === 'BLOCKED' && workflow.value.resume_state === 'C10_REVISION' && revising.value && Boolean(revision.value?.result || snapshot.value?.tasks.filter(t => t.agent_id === 'A06_REVISION').at(-1)?.status === 'BLOCKED'))
-const blockedReasons = computed(() => revision.value?.result?.body.blocked_reasons.length ? revision.value.result.body.blocked_reasons : revision.value?.plan?.body.blocked_reasons ?? [])
+const fidelityFailed = computed(() => revising.value && revision.value?.result?.body.fidelity?.verdict === 'FAIL')
+const blockedReasons = computed(() => revision.value?.result?.body.blocked_reasons.length ? revision.value.result.body.blocked_reasons : revision.value?.candidate?.body.blocked_reasons.length ? revision.value.candidate.body.blocked_reasons : revision.value?.plan?.body.blocked_reasons ?? [])
 const overlayOpen = computed(() =>
   (profileOpen.value && Boolean(projectId.value)) ||
   (testsOpen.value && manualTestAvailable) ||
@@ -194,9 +195,11 @@ onMounted(initialize)
         <section v-else-if="(draftStage || revising) && draft">
           <section v-if="revising" class="quality-review" aria-label="修改进度">
             <h2>{{ workflow?.status === 'BLOCKED' ? '修改需要处理' : 'AI 正在修改正文…' }}</h2>
-            <p v-if="revisionNeedsRereview">本次修改已停止。需要补充依据或重新审阅后，才能发起新的修改。</p>
-            <p v-else-if="workflow?.status !== 'BLOCKED'">{{ state === 'C09_INTERNAL_REVIEW' ? '正在重新审阅' : revision?.plan ? '正在修改正文' : '正在分析修改范围' }}</p>
+            <p v-if="fidelityFailed" role="status">这次修改范围过大，未替换当前正文。</p>
+            <p v-else-if="revisionNeedsRereview">本次修改已停止。需要补充依据或重新审阅后，才能发起新的修改。</p>
+            <p v-else-if="workflow?.status !== 'BLOCKED'">{{ state === 'C09_INTERNAL_REVIEW' ? '正在重新审阅' : revision?.candidate ? '正在检查修改结果' : revision?.plan ? '正在修改正文' : '正在分析修改范围' }}</p>
             <button v-if="workflow?.status === 'BLOCKED' && workflow.resume_state === 'C10_REVISION'" :disabled="disabled" @click="rereviewRevision">重新审阅正文 v{{ snapshot?.chapter.current_version }}（会调用模型）</button>
+            <details v-if="fidelityFailed && revision?.candidate?.body.content"><summary>查看未采用的修改稿</summary><pre class="revision-candidate">{{ revision.candidate.body.content }}</pre></details>
             <ul v-if="blockedReasons.length"><li v-for="item in blockedReasons" :key="item.issue_id">{{ item.reason }}</li></ul>
           </section>
           <details v-if="snapshot && snapshot.drafts.length > 1" class="version-history"><summary>查看上一版 / 切换正文版本</summary><div class="version-list"><button v-for="item in snapshot.drafts" :key="item.id" :class="{ selected: selectedDraft === item.version }" @click="selectedDraft = item.version">v{{ item.version }}{{ item.version === snapshot.chapter.current_version ? ' · 当前正文' : '' }}</button></div></details>
@@ -209,7 +212,7 @@ onMounted(initialize)
             <button :disabled="disabled || conflict" @click="rereviewRevision">重新审阅正文 v{{ snapshot?.chapter.current_version }}（会调用模型）</button>
           </div>
           <div v-if="canRevise" class="reader-actions"><button class="primary" :disabled="disabled || conflict" @click="revise">根据审阅修改</button><p>进行一次修改并重新审阅，完成后停止。真实模型会消耗 API 额度。</p></div>
-          <DraftView :draft="draft" :chapter-number="currentChapter.sequence" @evaluate="evaluationOpen = true" />
+          <DraftView :draft="draft" :chapter-number="currentChapter.sequence" :review-href="qualityReview ? '#quality-heading' : undefined" @evaluate="evaluationOpen = true" />
         </section>
 
       </template>
