@@ -1,5 +1,5 @@
 import { computed, type Ref } from 'vue'
-import type { Draft, QualityReview } from '../types/models'
+import type { Draft, QualityReview, Task } from '../types/models'
 import type { Snapshot } from './useConsole'
 
 // A chapter may have several reviews of the same immutable version. Select by
@@ -7,6 +7,13 @@ import type { Snapshot } from './useConsole'
 export function reviewForDraft(reviews: QualityReview[], draftId?: string): QualityReview | null {
   return reviews.filter(review => review.chapter_version_id === draftId)
     .reduce<QualityReview | null>((latest, review) => !latest || review.version > latest.version ? review : latest, null)
+}
+
+export function revisionOutputFailure(task?: Task) {
+  const stages: Record<string, string> = { PLAN_CHAPTER_REVISION: 'Revision Planning', REVISE_CHAPTER: 'Revision Execution', VALIDATE_REVISION_FIDELITY: 'Fidelity Validation' }
+  if (!task || !['FAILED', 'BLOCKED'].includes(task.status) || !['SCHEMA_PARSE_ERROR', 'FORMAT_ERROR', 'MODEL_OUTPUT_INVALID'].includes(task.last_error_code ?? '')) return null
+  const stage = stages[task.task_type]
+  return stage ? { stage, errorCode: task.last_error_code } : null
 }
 
 export function useRevisionWorkspace(snapshot: Ref<Snapshot | null>, draft: Ref<Draft | null>) {
@@ -30,6 +37,7 @@ export function useRevisionWorkspace(snapshot: Ref<Snapshot | null>, draft: Ref<
     task.workflow_instance_id === workflow.value.id && task.workflow_state === workflow.value.resume_state &&
     task.workflow_state_version === workflow.value.state_version - 1 && ['BLOCKED', 'FAILED'].includes(task.status)))
   const contextBudgetBlocked = computed(() => revising.value && workflow.value?.status === 'BLOCKED' && stoppedTask.value?.last_error_code === 'CONTEXT_BUDGET_EXCEEDED')
+  const revisionPlanningFailed = computed(() => revising.value && revisionOutputFailure(stoppedTask.value)?.stage === 'Revision Planning')
   const revisionNeedsRereview = computed(() => workflow.value?.status === 'BLOCKED' && workflow.value.resume_state === 'C10_REVISION' && revising.value && Boolean(
     revision.value?.result || (stoppedTask.value?.status === 'BLOCKED' &&
       ['PLAN_CHAPTER_REVISION', 'REVISE_CHAPTER', 'VALIDATE_REVISION_FIDELITY'].includes(stoppedTask.value.task_type)),
@@ -43,10 +51,12 @@ export function useRevisionWorkspace(snapshot: Ref<Snapshot | null>, draft: Ref<
   const revisionHeading = computed(() => {
     if (workflow.value?.status === 'PAUSED') return '修改已暂停'
     if (workflow.value?.status === 'CANCELLED') return '修改已取消'
+    if (revisionPlanningFailed.value) return '修改任务未能开始。'
     if (revisionNeedsRereview.value) return '修改需要处理'
     if (revisionStopped.value) return workflow.value?.resume_state === 'C09_INTERNAL_REVIEW' ? '重新审阅失败' : '修改正文失败'
-    return workflow.value?.current_state === 'C09_INTERNAL_REVIEW' ? 'AI 正在重新审阅…' : 'AI 正在修改正文…'
+    if (workflow.value?.current_state === 'C09_INTERNAL_REVIEW') return 'AI 正在重新审阅…'
+    return revision.value?.candidate ? 'AI 正在检查修改范围…' : revision.value?.plan ? 'AI 正在修改正文…' : 'AI 正在分析修改范围…'
   })
   return { qualityReview, revising, revision, historical, revisionMissingProfile, reviewNeedsRereview, canRevise,
-    revisionForDraft, fidelityFailed, contextBudgetBlocked, revisionNeedsRereview, blockedReasons, revisionStopped, reviewPending, revisionHeading }
+    revisionForDraft, fidelityFailed, contextBudgetBlocked, revisionPlanningFailed, revisionNeedsRereview, blockedReasons, revisionStopped, reviewPending, revisionHeading }
 }

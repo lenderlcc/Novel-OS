@@ -9,6 +9,7 @@ from novel_os.api.quality_schemas import QualityBindingView
 from novel_os.api.workflow_routes import response
 from novel_os.api.workflow_schemas import CommandInput, DispatchView
 from novel_os.domain.workflow import EventCommand
+from novel_os.revision.contracts import RevisionPlanV3
 from novel_os.revision.fidelity_schemas import FidelityRevisionPlan, RevisionFidelityOutput
 from novel_os.revision.schemas import RevisionMetadata, RevisionPlanOutput, RevisionResultOutput
 from novel_os.services.revision_results import RevisionResultService
@@ -46,7 +47,7 @@ class RevisionEvidenceView(BaseModel):
 
 
 class RevisionPlanView(RevisionEvidenceView):
-    body: FidelityRevisionPlan | RevisionPlanOutput
+    body: RevisionPlanV3 | FidelityRevisionPlan | RevisionPlanOutput
 
 
 class RevisionMetadataView(RevisionMetadata):

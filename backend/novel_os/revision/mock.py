@@ -49,6 +49,9 @@ def response(request, scenario):
                     output, contract, items["target-version"].structured_payload["content"]
                 )
             )
+        prompt = getattr(request, "prompt", None)
+        if prompt is not None and prompt.output.version >= 3:
+            output["unresolved_issue_ids"] = [b["issue_id"] for b in output["blocked_reasons"]]
     elif request.output_kind == "revision_fidelity":
         output = fidelity_output(common, items, scenario)
     else:
@@ -128,15 +131,13 @@ def locality_fields(output, contract, source):
 
 
 def fidelity_output(common, items, scenario):
+    from novel_os.revision.contracts import read_plan
     from novel_os.revision.fidelity import preservation_ids
-    from novel_os.revision.fidelity_schemas import FidelityRevisionPlan
 
     plan = items["revision-plan"].structured_payload
     candidate = items["revision-candidate"].structured_payload
     source = items["target-version"].structured_payload["content"]
-    model = FidelityRevisionPlan.model_validate(
-        {k: v for k, v in plan.items() if k != "revision_plan_id"}
-    )
+    model = read_plan({k: v for k, v in plan.items() if k != "revision_plan_id"})
     failed = scenario == "QUALITY_FAIL"
     return dict(
         **common,

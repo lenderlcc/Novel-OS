@@ -12,6 +12,7 @@ class AuthorityValidator:
         agent = self.registry.get(task.agent_id)
         definition = self.registry.task(task.task_type)
         allowed_schemas = {definition.result_schema}
+        allowed_schemas.update(definition.additional_legacy_schemas)
         if definition.legacy_result_schema is not None:
             allowed_schemas.add(definition.legacy_result_schema)
         try:

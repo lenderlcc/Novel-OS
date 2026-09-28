@@ -18,6 +18,7 @@ class StageTaskMapping:
     quality_failure_event: str | None = None
     result_schema: str = "mock-agent-result.v1"
     legacy_result_schema: str | None = None
+    additional_legacy_schemas: tuple[str, ...] = ()
 
 
 # System-owned mappings. Provider requests/results never contain these event names.
@@ -171,22 +172,25 @@ REVISION_STAGE_TASKS = {
         Capability.PROPOSE_DRAFT,
         event,
         result_schema=schema,
-        legacy_result_schema="chapter-revision-plan.v1"
+        legacy_result_schema="chapter-revision-plan.v2"
         if task == "PLAN_CHAPTER_REVISION"
-        else None,
+        else "chapter-revision-result.v1",
+        additional_legacy_schemas=("chapter-revision-plan.v1",)
+        if task == "PLAN_CHAPTER_REVISION"
+        else (),
     )
     for task, kind, event, schema in (
         (
             "PLAN_CHAPTER_REVISION",
             "revision_plan",
             "REVISION_PLAN_READY",
-            "chapter-revision-plan.v2",
+            "chapter-revision-plan.v3",
         ),
         (
             "REVISE_CHAPTER",
             "revision_result",
             "REVISION_CANDIDATE_READY",
-            "chapter-revision-result.v1",
+            "chapter-revision-result.v2",
         ),
     )
 }
@@ -197,7 +201,8 @@ REVISION_STAGE_TASKS["VALIDATE_REVISION_FIDELITY"] = StageTaskMapping(
     "revision_fidelity",
     Capability.REVIEW,
     "REVISION_READY",
-    result_schema="revision-fidelity-result.v1",
+    result_schema="revision-fidelity-result.v2",
+    legacy_result_schema="revision-fidelity-result.v1",
 )
 TASKS.update(REVISION_STAGE_TASKS)
 TASKS.update(QUALITY_STAGE_TASKS)

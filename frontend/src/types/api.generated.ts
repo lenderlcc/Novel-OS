@@ -3948,6 +3948,66 @@ export interface components {
             /** Confidence */
             confidence: number;
         };
+        /** RevisionPlanV3 */
+        RevisionPlanV3: {
+            /**
+             * Kind
+             * @constant
+             */
+            kind: "revision_plan";
+            /**
+             * Chapter Id
+             * Format: uuid
+             */
+            chapter_id: string;
+            /**
+             * Source Chapter Version Id
+             * Format: uuid
+             */
+            source_chapter_version_id: string;
+            /**
+             * Source Review Id
+             * Format: uuid
+             */
+            source_review_id: string;
+            /** Target Issue Ids */
+            target_issue_ids: string[];
+            /** Preserve Items */
+            preserve_items: string[];
+            /** Revision Targets */
+            revision_targets: components["schemas"]["RevisionTarget"][];
+            /** Do Not Change */
+            do_not_change: string[];
+            /** Revision Strategy */
+            revision_strategy: string;
+            /** @default TARGETED */
+            scope: components["schemas"]["RevisionScope"];
+            /** Blocked Reasons */
+            blocked_reasons: components["schemas"]["BlockedReason"][];
+            /** Source Refs */
+            source_refs: components["schemas"]["ReviewSource"][];
+            /** Confidence */
+            confidence: number;
+            /** Preserve Scene Elements */
+            preserve_scene_elements: components["schemas"]["PreservationElement"][];
+            /** Preserve Relationship Elements */
+            preserve_relationship_elements: components["schemas"]["PreservationElement"][];
+            /** Preserve Effective Details */
+            preserve_effective_details: components["schemas"]["PreservationElement"][];
+            /** Strength Preservation */
+            strength_preservation: components["schemas"]["StrengthPreservation"][];
+            /** Strength Regression Risks */
+            strength_regression_risks: components["schemas"]["StrengthRegressionRisk"][];
+            /** Revision Zones */
+            revision_zones: components["schemas"]["RevisionZone"][];
+            /** @default LOCAL */
+            allowed_structural_change: components["schemas"]["StructuralChange"];
+            structural_authorization?: components["schemas"]["StructuralAuthorization"] | null;
+            /** @default MINIMAL */
+            change_budget: components["schemas"]["ChangeBudget"];
+            /** Unresolved Issue Ids */
+            unresolved_issue_ids: string[];
+        };
         /** RevisionPlanView */
         RevisionPlanView: {
             /**
@@ -3986,7 +4046,7 @@ export interface components {
              */
             created_at: string;
             /** Body */
-            body: components["schemas"]["FidelityRevisionPlan"] | components["schemas"]["RevisionPlanOutput"];
+            body: components["schemas"]["RevisionPlanV3"] | components["schemas"]["FidelityRevisionPlan"] | components["schemas"]["RevisionPlanOutput"];
         };
         /** RevisionPriority */
         RevisionPriority: {

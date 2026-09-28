@@ -28,7 +28,9 @@ class RevisionResultService:
         request = RevisionBindingService(self.session).check(task, workflow)
         lineage = PromptLineageRepository(self.session).for_run(run.run_id)
         if result.proposed_changes or result.memory_proposals:
-            raise DomainError("AUTHORITY_DENIED", "Revision can only return typed prose proposals")
+            # Current schemas reject this before Service/Authority validation.
+            # Retain the guard for legacy envelopes without mislabeling format as permission.
+            raise ValueError("Revision output requires empty proposal arrays")
         if (
             package is None
             or lineage is None

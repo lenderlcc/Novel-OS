@@ -129,7 +129,8 @@ class TaskDefinitionRegistry:
                         schema_id, 1, NarrativeAgentResult
                     ),
                 )
-        from novel_os.revision.schemas import RevisionPlanAgentResult, revision_results
+        from novel_os.revision.contracts import LEGACY_CONTRACTS, SCHEMA_VERSIONS
+        from novel_os.revision.schemas import revision_results
 
         for task_type, (schema_id, model) in revision_results().items():
             fidelity = task_type == "VALIDATE_REVISION_FIDELITY"
@@ -143,19 +144,32 @@ class TaskDefinitionRegistry:
                     skills=(ref("revision-fidelity" if fidelity else "targeted-revision"),),
                     quality_profile=ref("fidelity-quality" if fidelity else "revision-quality"),
                     output_schema=OutputContractGenerator.generate(
-                        schema_id, 2 if task_type == "PLAN_CHAPTER_REVISION" else 1, model
+                        schema_id, SCHEMA_VERSIONS[task_type], model
                     ),
                     model_profile=model_profile,
                     capabilities=frozenset({TASKS[task_type].capability}),
                 )
             )
-            if task_type == "PLAN_CHAPTER_REVISION":
-                self._historical_definitions[(task_type, "chapter-revision-plan.v1")] = replace(
+            for (legacy_task, schema), (
+                legacy_model,
+                prompt_version,
+                skill_version,
+            ) in LEGACY_CONTRACTS.items():
+                if legacy_task != task_type:
+                    continue
+                self._historical_definitions[(task_type, schema)] = replace(
                     self._definitions[task_type],
-                    task_template=ModuleRef(module_id="plan-chapter-revision", version=1),
-                    skills=(ModuleRef(module_id="targeted-revision", version=1),),
+                    task_template=ModuleRef(
+                        module_id=task_type.lower().replace("_", "-"), version=prompt_version
+                    ),
+                    skills=(
+                        ModuleRef(
+                            module_id="revision-fidelity" if fidelity else "targeted-revision",
+                            version=skill_version,
+                        ),
+                    ),
                     output_schema=OutputContractGenerator.generate(
-                        schema_id, 1, RevisionPlanAgentResult
+                        schema_id, int(schema.rsplit(".v", 1)[1]), legacy_model
                     ),
                 )
         from novel_os.agents.writing_schemas import WritingAgentResult

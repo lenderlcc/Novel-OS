@@ -3,7 +3,8 @@
 from novel_os.domain.revision import FidelityCode
 from novel_os.prompts.contracts import digest
 from novel_os.quality.policy import check_evidence, check_sources, paragraphs
-from novel_os.revision.fidelity_schemas import REQUIRED_CHECKS, FidelityRevisionPlan
+from novel_os.revision.contracts import read_plan
+from novel_os.revision.fidelity_schemas import REQUIRED_CHECKS
 
 
 def preservation_ids(plan):
@@ -19,7 +20,7 @@ def preservation_ids(plan):
 class RevisionFidelityValidator:
     @staticmethod
     def plan(output, request, source):
-        plan = FidelityRevisionPlan.model_validate(output.model_dump())
+        plan = read_plan(output.model_dump())
         strengths = {k for k in request.contract["preserve_items"] if k.startswith("strength:")}
         if {s.strength_id for s in plan.strength_preservation} != strengths:
             raise ValueError("Every source Review strength needs direct or functional preservation")
@@ -45,7 +46,7 @@ class RevisionFidelityValidator:
         if draft is None or draft.source_id != request.source_chapter_version_id:
             raise ValueError("The exact Source Draft must be present as EDIT_BASE")
         RevisionFidelityValidator.plan(
-            FidelityRevisionPlan.model_validate(plan.body),
+            read_plan(plan.body),
             request,
             draft.structured_payload["content"],
         )
@@ -74,7 +75,7 @@ class RevisionFidelityValidator:
         ):
             raise ValueError("Fidelity must bind the exact source, plan and candidate text")
         parsed = RevisionFidelityValidator.plan(
-            FidelityRevisionPlan.model_validate(plan.body),
+            read_plan(plan.body),
             request,
             source.structured_payload["content"],
         )

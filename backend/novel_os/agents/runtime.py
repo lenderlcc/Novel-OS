@@ -19,6 +19,7 @@ from novel_os.prompts.output import OutputFormatError
 from novel_os.prompts.runtime import PromptRuntime
 from novel_os.providers.base import ERROR_RETRYABLE, ModelRequest, ProviderError
 from novel_os.providers.tokens import prompt_overhead
+from novel_os.revision.contracts import require_current_contract
 
 TECHNICAL_ERRORS = frozenset(
     {
@@ -85,6 +86,7 @@ class AgentRuntime:
     def prepare(self, task: AgentTask, context_package=None) -> ModelRequest | ExecutionResult:
         try:
             mapping = self.authority.validate(task)
+            require_current_contract(task.task_type, task.expected_output_schema)
             definition = self.prompts.tasks.get(task.task_type, task.expected_output_schema)
             if definition.output_schema.schema_id + ".v" + str(
                 definition.output_schema.version
@@ -138,6 +140,7 @@ class AgentRuntime:
         response = None
         try:
             mapping = self.authority.validate(task)
+            require_current_contract(task.task_type, task.expected_output_schema)
             if (request.task_id, request.task_type, request.attempt_number, request.target_ref) != (
                 task.task_id,
                 task.task_type,

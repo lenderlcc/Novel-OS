@@ -4,6 +4,7 @@ import { api } from '../api/console'
 import { asError, type ApiError } from '../api/client'
 import { writingProfiles, type Profile } from '../api/writingProfiles'
 import type { Snapshot } from '../composables/useConsole'
+import { revisionOutputFailure } from '../composables/revisionWorkspace'
 import type { Context, Lineage, Run, Transition } from '../types/models'
 import ErrorNotice from './ErrorNotice.vue'
 import QualityComparison from './QualityComparison.vue'
@@ -62,7 +63,7 @@ const json = (value: unknown) => JSON.stringify(value, null, 2)
         <details><summary>History / Human Gate</summary><pre>{{ json({ transitions, gates: snapshot.gates }) }}</pre></details>
       </div></details>
       <details><summary>Agent</summary><div class="debug-section">
-        <h3>Agent Tasks</h3><table><thead><tr><th>Agent / Task</th><th>Type</th><th>Status</th><th>Attempts</th><th>Error</th></tr></thead><tbody><tr v-for="task in snapshot.tasks" :key="task.task_id"><td>{{ task.agent_id }}<br><code>{{ task.task_id }}</code></td><td>{{ task.task_type }}</td><td>{{ task.status }}</td><td>{{ task.attempt_count }} / {{ task.max_attempts }}</td><td>{{ task.last_error_code }} {{ task.last_error_message }}</td></tr></tbody></table>
+        <h3>Agent Tasks</h3><table><thead><tr><th>Agent / Task</th><th>Type</th><th>Status</th><th>Attempts</th><th>Error</th></tr></thead><tbody><tr v-for="task in snapshot.tasks" :key="task.task_id"><td>{{ task.agent_id }}<br><code>{{ task.task_id }}</code></td><td>{{ task.task_type }}<template v-if="revisionOutputFailure(task)"><br>{{ revisionOutputFailure(task)?.stage }}<br>Output Validation Failed</template></td><td>{{ task.status }}</td><td>{{ task.attempt_count }} / {{ task.max_attempts }}</td><td>{{ task.last_error_code }} {{ task.last_error_message }}</td></tr></tbody></table>
         <h3>Agent Runs</h3><table><thead><tr><th>Run / Attempt</th><th>Status</th><th>Provider / Model</th><th>Duration</th><th>Error / Disposition</th></tr></thead><tbody><tr v-for="run in runs" :key="run.run_id"><td><button @click="inspect(run.run_id)">Attempt {{ run.attempt_number }}</button><br><code>{{ run.run_id }}</code></td><td>{{ run.status }}</td><td>{{ run.provider || '未调用' }} / {{ run.model || '—' }}</td><td>{{ run.duration_ms ?? '—' }} ms</td><td>{{ run.error_code }} {{ run.error_message }} {{ run.disposition }}</td></tr></tbody></table>
       </div></details>
       <details><summary>Context / Prompt</summary><div class="debug-section">
