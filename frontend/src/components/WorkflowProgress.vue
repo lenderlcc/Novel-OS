@@ -2,16 +2,16 @@
 import { computed } from 'vue'
 import type { Workflow, Task, ExecutionConfig } from '../types/models'
 import { currentTask, isReviewResume, progressLabel, resumeCallsModel, stateLabel } from '../composables/workflowState'
-const props = defineProps<{ workflow: Workflow; tasks: Task[]; config?: ExecutionConfig | null; canResume?: boolean; currentDraftVersion?: number | null }>()
+const props = defineProps<{ workflow: Workflow; tasks: Task[]; config?: ExecutionConfig | null; canResume?: boolean; hideResume?: boolean; currentDraftVersion?: number | null }>()
 defineEmits<{ resume: [] }>()
 const task = computed(() => currentTask(props.workflow, props.tasks))
 const requirementOnly = computed(() => props.config?.task_types?.length === 1 && props.config.task_types[0] === 'PARSE_CHAPTER_REQUIREMENT')
 const stateNumber = computed(() => Number(props.workflow.current_state.slice(1, 3)))
-const phase = computed(() => stateNumber.value <= 3 ? 0 : stateNumber.value <= 6 ? 1 : stateNumber.value <= 8 ? 2 : 3)
+const phase = computed(() => props.workflow.revision_request_id || props.workflow.revision_count > 0 ? 4 : stateNumber.value <= 3 ? 0 : stateNumber.value <= 6 ? 1 : stateNumber.value <= 8 ? 2 : 3)
 const failedTask = computed(() => props.tasks.filter(t => t.last_error_code).at(-1))
 const stopped = computed(() => stateNumber.value >= 90)
 const reviewResume = computed(() => isReviewResume(props.workflow, props.tasks))
-const stages = computed(() => props.workflow.workflow_definition_version === 3 && !props.workflow.simulation ? ['需求', '方案', '正文', '审阅'] : ['需求', '方案', '正文'])
+const stages = computed(() => props.workflow.workflow_definition_version === 3 && !props.workflow.simulation ? ['需求', '方案', '正文', '审阅', '修改'] : ['需求', '方案', '正文'])
 const technicalCode = computed(() => failedTask.value?.last_error_code || props.workflow.blocked_guard || props.workflow.current_state)
 const failureMessage = computed(() => {
   const copy: Record<string, string> = {
@@ -30,7 +30,7 @@ const failureMessage = computed(() => {
       <h3>{{ workflow.current_state === 'C90_BLOCKED' ? '当前流程暂停' : workflow.current_state === 'C91_FAILED' ? '生成失败' : '流程已停止' }}</h3>
       <p>{{ failureMessage }}</p>
       <details><summary>查看技术详情</summary><p><code>{{ technicalCode }}</code></p><p>关联运行记录可在 Debug 中查看。</p></details>
-      <button v-if="workflow.current_state === 'C90_BLOCKED'" :disabled="!canResume" @click="$emit('resume')">{{ reviewResume && currentDraftVersion ? `重新审阅正文 v${currentDraftVersion}` : '重试本阶段' }}（会调用模型）</button>
+      <button v-if="workflow.current_state === 'C90_BLOCKED' && !hideResume" :disabled="!canResume" @click="$emit('resume')">{{ reviewResume && currentDraftVersion ? `重新审阅正文 v${currentDraftVersion}` : '重试本阶段' }}（会调用模型）</button>
     </div>
     <div v-else-if="workflow.status === 'PAUSED'" class="paused"><p>已保留当前内容，可以继续这个流程。</p><button :disabled="!canResume" @click="$emit('resume')">{{ reviewResume && currentDraftVersion ? `重新审阅正文 v${currentDraftVersion}` : requirementOnly && workflow.current_state === 'C01_REQUIREMENT_INTAKE' ? '继续理解需求' : '继续' }}{{ resumeCallsModel(workflow, config, tasks) ? '（会调用模型）' : '' }}</button></div>
     <p v-else-if="workflow.current_state === 'C06_PLAN_APPROVAL'">方案已经准备好，请确认下一步。</p>

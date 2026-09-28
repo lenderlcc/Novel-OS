@@ -26,6 +26,11 @@ class QualityReviewControl:
             WorkflowStatus.BLOCKED,
         }:
             return False
+        if (
+            workflow.resume_state == ChapterState.C10_REVISION
+            and workflow.revision_request_id is not None
+        ):
+            return True
         if workflow.resume_state == ChapterState.C09_INTERNAL_REVIEW:
             return True
         # Recover instances blocked by the old draft_current guard during re-review.

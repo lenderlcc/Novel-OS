@@ -1,12 +1,13 @@
 import { computed, onScopeDispose, ref, shallowRef } from 'vue'
 import { api } from '../api/console'
+import { writingProfiles } from '../api/writingProfiles'
 import { ApiError, asError } from '../api/client'
-import type { Project, Chapter, Workflow, Gate, Brief, Plan, PlanningHistory, Draft, Writing, Task, Decision, ExecutionConfig, QualityReview } from '../types/models'
+import type { Project, Chapter, Workflow, Gate, Brief, Plan, PlanningHistory, Draft, Writing, Task, Decision, ExecutionConfig, QualityReview, Revision } from '../types/models'
 import { isReviewResume, isWritingWorkflow, pollDelay } from './workflowState'
 
 export interface Snapshot {
   workflow: Workflow; chapter: Chapter; gates: Gate[]; brief: Brief | null;
-  plans: Plan[]; history: PlanningHistory; drafts: Draft[]; writing: Writing[]; tasks: Task[]; qualityReviews?: QualityReview[]
+  plans: Plan[]; history: PlanningHistory; drafts: Draft[]; writing: Writing[]; tasks: Task[]; qualityReviews?: QualityReview[]; revisions?: Revision[]
 }
 
 function generatedDraftVersion(s: Snapshot): number | null {
@@ -15,7 +16,7 @@ function generatedDraftVersion(s: Snapshot): number | null {
   const draft = s.drafts.find(d => d.version === version)
   // Review may explicitly bind a user-authored version without a Writing generation.
   if (draft && s.workflow.workflow_definition_version === 3 && ['C09_INTERNAL_REVIEW', 'C10_REVISION', 'C11_INTERNAL_PASS'].includes(s.workflow.current_state)) return version
-  return draft && s.writing.some(w => w.chapter_version_id === draft.id) ? version : null
+  return draft && (s.writing.some(w => w.chapter_version_id === draft.id) || s.revisions?.some(r => r.result?.chapter_version_id === draft.id)) ? version : null
 }
 
 export function useConsole(client = api) {
@@ -27,6 +28,7 @@ export function useConsole(client = api) {
   const error = shallowRef<ApiError | null>(null), busy = ref(false), loading = ref(false), conflict = ref(false)
   let epoch = 0, controller = new AbortController(), timer: ReturnType<typeof setTimeout> | undefined
   let disposed = false
+  let revisionCommand: { key: string; id: string } | null = null
   const stop = () => { clearTimeout(timer); timer = undefined }
   function invalidate() { stop(); controller.abort(); controller = new AbortController(); return ++epoch }
   const workflow = computed(() => snapshot.value?.workflow ?? null)
@@ -60,11 +62,12 @@ export function useConsole(client = api) {
         client.workflow(w, signal),
         manual ? client.executionConfig(signal) : Promise.resolve(executionConfig.value),
       ])
-      const [chapter, gates, brief, plans, history, drafts, writing, tasks, qualityReviews] = await Promise.all([
+      const [chapter, gates, brief, plans, history, drafts, writing, tasks, qualityReviews, revisions] = await Promise.all([
         client.chapter(p, c, signal), client.gates(w, signal), current.simulation ? null : client.brief(w, signal), client.plans(p, c, signal),
         current.simulation ? { briefs: [], plans: [], reviews: [] } : client.history(w, signal),
         client.drafts(p, c, signal), client.writing(w, signal), client.tasks(w, signal),
         current.workflow_definition_version === 3 && !current.simulation ? client.qualityReviews(p, c, signal) : [],
+        current.workflow_definition_version === 3 && !current.simulation ? client.revisions(w, signal) : [],
       ])
       // Do not publish a mixed snapshot if the worker advanced while reading artifacts.
       const after = await client.workflow(w, signal)
@@ -74,7 +77,7 @@ export function useConsole(client = api) {
         timer = setTimeout(() => { void refresh(manual) }, 300)
         return
       }
-      const next: Snapshot = { workflow: current, chapter, gates, brief, plans, history, drafts, writing, tasks, qualityReviews }
+      const next: Snapshot = { workflow: current, chapter, gates, brief, plans, history, drafts, writing, tasks, qualityReviews, revisions }
       const previous = snapshot.value
       if (!previous || selectedPlan.value === previous.workflow.plan_version) selectedPlan.value = current.plan_version
       if (!previous || selectedDraft.value === generatedDraftVersion(previous)) selectedDraft.value = generatedDraftVersion(next)
@@ -205,9 +208,45 @@ export function useConsole(client = api) {
     if (result.error_code) throw new ApiError(result.error_code, '操作未完成，请刷新后检查流程。')
     await refresh()
   })
+  const revise = () => mutate(async () => {
+    const w = workflow.value, currentDraft = draft.value, s = snapshot.value
+    const currentReview = s?.qualityReviews?.find(r => r.chapter_version_id === currentDraft?.id && r.binding.workflow_id === w?.id)
+    if (!w || !currentDraft || !currentReview || currentReview.freshness !== 'CURRENT' || currentReview.body.overall_verdict === 'PASS' || currentDraft.version !== s?.chapter.current_version || w.status !== 'WAITING_HUMAN' || w.revision_request_id) throw new ApiError('STALE_VIEW', '请打开当前正文及有效审阅后再修改。')
+    if (!currentReview.binding.profile_record_id) throw new ApiError('CONTEXT_MISSING', '请先批准写作偏好，再重新审阅当前正文。')
+    const config = await client.executionConfig(controller.signal)
+    if (disposed || workflow.value?.id !== w.id) return
+    executionConfig.value = config
+    if (config.task_types && ['PLAN_CHAPTER_REVISION', 'REVISE_CHAPTER', 'REVIEW_CHAPTER_COMPLIANCE', 'REVIEW_CHAPTER_NARRATIVE'].some(type => !config.task_types!.includes(type))) throw new ApiError('EXECUTION_SCOPE_DISABLED', '本机尚未启用修改与重新审阅，请检查执行配置。')
+    const key = `${w.id}:${w.state_version}:${currentReview.id}:${currentDraft.id}`
+    if (revisionCommand?.key !== key) revisionCommand = { key, id: crypto.randomUUID() }
+    const result = await client.revise(w, currentReview, currentDraft.version, revisionCommand.id)
+    if (result.error_code) throw new ApiError(result.error_code, '修改请求未完成，请刷新检查。')
+    revisionCommand = null
+    await refresh()
+  })
+  const rereviewRevision = () => mutate(async () => {
+    const w = workflow.value, version = snapshot.value?.chapter.current_version
+    const completed = w?.status === 'WAITING_HUMAN' && ['C10_REVISION', 'C11_INTERNAL_PASS'].includes(w.current_state)
+    if (!w || !version || !(completed || (w.revision_request_id && w.status === 'BLOCKED'))) throw new ApiError('STALE_VIEW', '请刷新当前正文后再重新审阅。')
+    if (completed) {
+      const profile = await writingProfiles.state(w.project_id, controller.signal)
+      if (disposed || workflow.value?.id !== w.id) return
+      if (!profile.approved) throw new ApiError('CONTEXT_MISSING', '请先保存并批准写作偏好，再重新审阅正文。')
+    }
+    const config = await client.executionConfig(controller.signal)
+    if (disposed || workflow.value?.id !== w.id) return
+    executionConfig.value = config
+    if (config.task_types && ['REVIEW_CHAPTER_COMPLIANCE', 'REVIEW_CHAPTER_NARRATIVE'].some(type => !config.task_types!.includes(type))) throw new ApiError('EXECUTION_SCOPE_DISABLED', '本机尚未启用正文审阅。')
+    const key = `review:${w.id}:${w.state_version}:${version}`
+    if (revisionCommand?.key !== key) revisionCommand = { key, id: crypto.randomUUID() }
+    const result = await client.rereview(w, version, revisionCommand.id)
+    if (result.error_code) throw new ApiError(result.error_code, '重新审阅请求未完成，请刷新检查。')
+    revisionCommand = null
+    await refresh()
+  })
   onScopeDispose(() => { disposed = true; invalidate() })
   return { projects, chapters, workflows, executionConfig, projectId, chapterId, workflowId, snapshot, workflow,
     selectedPlan, selectedDraft, plan, generation, review, draft, writing, gate, formal,
     error, busy, loading, conflict, loadProjects, selectProject, selectChapter, selectWorkflow,
-    refresh, createProject, createChapter, start, submit, decide, control }
+    refresh, createProject, createChapter, start, submit, decide, control, revise, rereviewRevision }
 }

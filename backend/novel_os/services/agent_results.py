@@ -15,6 +15,7 @@ from novel_os.domain.core import CommandContext
 from novel_os.domain.enums import ActorType
 from novel_os.domain.errors import DomainError
 from novel_os.domain.quality import QUALITY_TASKS
+from novel_os.domain.revision import REVISION_TASKS
 from novel_os.domain.workflow import EventCommand
 from novel_os.providers.base import ERROR_RETRYABLE
 from novel_os.repositories.agent_tasks import AgentTaskRepository
@@ -70,7 +71,7 @@ class AgentResultHandler:
         definition = self.authority.validate(task, result)
         if (
             task.task_type in BUSINESS_RESULTS
-            or task.task_type in QUALITY_TASKS
+            or task.task_type in QUALITY_TASKS | REVISION_TASKS
             or task.task_type == "WRITE_CHAPTER"
         ):
             return definition.success_event, {}, TaskStatus.SUCCEEDED
@@ -175,6 +176,12 @@ class AgentResultHandler:
                         from novel_os.services.quality_results import QualityResultService
 
                         QualityResultService(self.session).validate(
+                            task, run, result, package, workflow
+                        )
+                    if task.task_type in REVISION_TASKS and expects_task(workflow, task):
+                        from novel_os.services.revision_results import RevisionResultService
+
+                        RevisionResultService(self.session).validate(
                             task, run, result, package, workflow
                         )
                     event, payload, terminal = self.map_result(task, result)
@@ -332,6 +339,13 @@ class AgentResultHandler:
                 event, payload, terminal = QualityResultService(self.session).persist(
                     task, run, result, package, workflow
                 )
+            if task.task_type in REVISION_TASKS:
+                from novel_os.services.revision_results import RevisionResultService
+
+                event, payload, terminal = RevisionResultService(self.session).persist(
+                    task, run, result, package, workflow
+                )
+                metadata["escalation_required"] = terminal == TaskStatus.BLOCKED
             self.history.task(
                 task,
                 context,
@@ -350,7 +364,7 @@ class AgentResultHandler:
 
                 TaskScheduler(self.session).synchronize(workflow, context)
             if (
-                task.task_type == "WRITE_CHAPTER"
+                task.task_type in {"WRITE_CHAPTER", "REVISE_CHAPTER"}
                 and terminal == TaskStatus.SUCCEEDED
                 and dispatched.outcome != "BLOCKED"
             ):

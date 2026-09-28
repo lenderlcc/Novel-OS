@@ -21,3 +21,4 @@ export type Dispatch = S['DispatchView']
 export type Decision = 'APPROVE' | 'REJECT' | 'REQUEST_ALTERNATIVE' | 'MODIFY'
 
 export type QualityReview = S['QualityReviewView']
+export type Revision = S['RevisionView']

@@ -321,3 +321,9 @@ Agent → Tool → Service → Repository → Database
 ## NOVEL-009 — Chapter Quality Review
 
 质量审阅复用既有 Worker/AgentRuntime/A05/Context/Prompt 链路，两个任务共享冻结的 review binding。Result Service 控制 pass → aggregate → workflow/audit 事务。数据库保护追加式证据和 exact lineage。没有新增调度器、Memory 数据库、评分服务、模型投票或自动修订。配置文件中的 chapter-quality 范围显式包含两个新任务；chapter-writing 保留原允许列表。详见 [Quality Engine](07-Quality-Engine.md)。
+
+## NOVEL-010 Persistence / Runtime
+
+在现有 API → Service → Repository → Database 和 Agent Runtime 上扩展 A06；无第二套队列/状态机。0012 添加 append-only revision_requests/plans/results 与 workflow active request FK。事务边界仍在 WorkflowRuntime / AgentResultHandler，Repository 仅 flush。新增 Draft 与 RevisionResult、Audit、工作流事件、下一 A05 task 原子提交；唯一约束、项目锁、乐观 token、lease fencing 共同防止重复写入。
+
+CP-007 v3 重用正式 Quality 源选择并加入 exact Review、authority contract、RevisionPlan；既有 QualityBinding 冻结 source fingerprints，运行时两次校验，继承 approved/current 分离。history 使用分页联合查询。Domain 无 FastAPI/ORM 依赖；所有 Prompt/Context/Model 通过原 Runtime 追溯。详见 [Revision Engine](08-Revision-Engine.md)。

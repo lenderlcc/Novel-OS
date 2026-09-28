@@ -68,6 +68,8 @@ class Settings(BaseSettings):
                 "WRITE_CHAPTER",
                 "REVIEW_CHAPTER_COMPLIANCE",
                 "REVIEW_CHAPTER_NARRATIVE",
+                "PLAN_CHAPTER_REVISION",
+                "REVISE_CHAPTER",
             ),
             "chapter-writing": (
                 "PARSE_CHAPTER_REQUIREMENT",

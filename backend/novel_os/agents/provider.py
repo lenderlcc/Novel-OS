@@ -38,6 +38,10 @@ class MockModelProvider(ModelProvider):
             from novel_os.quality.mock import response
 
             return json.dumps(response(request, scenario), ensure_ascii=False)
+        if request.output_kind in {"revision_plan", "revision_result"}:
+            from novel_os.revision.mock import response
+
+            return json.dumps(response(request, scenario), ensure_ascii=False)
         if request.output_kind == "writing_result":
             from novel_os.agents.writing_mock import response
 

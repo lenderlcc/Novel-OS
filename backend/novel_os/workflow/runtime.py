@@ -30,6 +30,7 @@ from novel_os.domain.workflow import (
 )
 from novel_os.repositories.workflows import WorkflowRepository
 from novel_os.services.core_base import CoreService, validate_payload
+from novel_os.services.quality_binding import supports_quality
 from novel_os.services.task_scheduling import TaskScheduler
 from novel_os.services.versioning import ChapterVersionService, PlanningService
 from novel_os.workflow.audit import TransitionAudit, snapshot
@@ -56,6 +57,8 @@ def state_status(state: State, workflow=None) -> RunStatus:
         and supports_quality(workflow)
         and state in {State.C10_REVISION, State.C11_INTERNAL_PASS}
     ):
+        if state == State.C10_REVISION and workflow.revision_request_id is not None:
+            return RunStatus.WAITING_AGENT
         return RunStatus.WAITING_HUMAN
     return {
         State.C00_CREATED: RunStatus.CREATED,
@@ -328,6 +331,10 @@ class WorkflowRuntime:
 
     def _advance(self, workflow, command, context, dispatcher):
         event = command.event_type
+        from novel_os.services.revision_workflow import REVISION_EVENTS, advance_revision
+
+        if event in REVISION_EVENTS and not workflow.simulation:
+            return advance_revision(self, workflow, command, context)
         if event == "REQUEST_REVIEW":
             return self._start_quality_review(workflow, command, context)
         if event in CONTROL_EVENTS:
@@ -360,7 +367,7 @@ class WorkflowRuntime:
             QualityResultService(self.session).check_persisted(
                 workflow, command.payload["review_id"], command.event_id, command.event_type
             )
-            return {}
+            return {"revision_request_id": None, "status": RunStatus.WAITING_HUMAN}
         if effect == "bind_draft":
             validate_payload(command.payload, {"generation_id"})
             from novel_os.services.writing_results import WritingResultService
@@ -453,6 +460,7 @@ class WorkflowRuntime:
             guards=guards,
             status=RunStatus.WAITING_AGENT,
             draft_version=candidate.draft_version,
+            revision_request_id=None,
             resume_state=None,
             resume_status=None,
             resume_new_stage=False,
@@ -482,9 +490,14 @@ class WorkflowRuntime:
                 or workflow.resume_state is None
             ):
                 raise DomainError("INVALID_STATE", "Only paused or blocked workflows can resume")
+            from novel_os.services.revision_workflow import check_resume
+
+            check_resume(self.session, workflow)
             from novel_os.services.quality_workflow import QualityReviewControl
 
-            if QualityReviewControl(self.session).can_resume(workflow):
+            if workflow.resume_state != State.C10_REVISION and QualityReviewControl(
+                self.session
+            ).can_resume(workflow):
                 return self._start_quality_review(workflow, command, context)
             if "expected_draft_version" in command.payload:
                 raise DomainError("VALIDATION_ERROR", "Draft rebind is only valid for Review")
@@ -695,7 +708,7 @@ class WorkflowRuntime:
         if entering and count_entry:
             if target == State.C04_CHAPTER_PLANNING:
                 changes["planning_iteration_count"] = before.planning_iteration_count + 1
-            if target == State.C10_REVISION:
+            if target == State.C10_REVISION and not supports_quality(before):
                 changes["revision_count"] = before.revision_count + 1
         resuming_same_stage = (
             before.current_state == State.C90_BLOCKED and not before.resume_new_stage

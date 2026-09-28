@@ -52,3 +52,7 @@ V2 adds `audience_evidence[]` describing an exact approved Profile field/value, 
 Persisted v2 aggregate reports use `reviewer_version=A05-quality.v2` and retain that evidence in their existing immutable JSON body. No table/migration changes. V1 models and their output schema hash stay intact; API history accepts both versions. Queued v1 narrative tasks explicitly select their old schema and task Prompt, while newly scheduled narrative tasks select v2. The shared runtime's optional schema selector defaults to existing behavior for every other task.
 
 The UI keeps its existing Chinese diagnosis view and adds expandable approved-preference evidence. Historical reports lacking that field render normally. Acceptance fixtures and before/after comparisons live in local `evals/quality/009a`; human themes never enter runtime Context or Prompt. Real re-evaluation still requires a new explicit trigger and does not create or rewrite a Draft.
+
+## NOVEL-010 Review / Revision 边界
+
+QualityReview 永久绑定原 ChapterVersion；A06 不修改旧 Review，也不能把建议转换为高 Authority。用户明确请求后 A06 创建新 Draft，新版通过本规范当前 A05 Compliance + Narrative 流程重新审阅一次。A06 的 addressed 声明不是质量证明；新问题、丢失 strength 或方向偏离仍按正常 A05 标准报告。Review v2 FAIL 仍停止等待用户，不自动无限修订。详见 [Revision Engine](08-Revision-Engine.md)。

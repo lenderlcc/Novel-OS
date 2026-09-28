@@ -16,6 +16,7 @@ from novel_os.domain.context import (
 )
 from novel_os.domain.enums import Authority, Status
 from novel_os.domain.quality import QUALITY_TASKS
+from novel_os.domain.revision import REVISION_TASKS
 from novel_os.prompts.contracts import canonical, digest
 from novel_os.repositories.context_sources import ContextSourceRepository
 
@@ -62,7 +63,7 @@ class MemoryQueryService:
                 (ITEM_ADAPTER.dump_python(item, mode="json") for item in candidates), key=canonical
             )
             if (
-                request.task_type in {"WRITE_CHAPTER", *QUALITY_TASKS}
+                request.task_type in {"WRITE_CHAPTER", *QUALITY_TASKS, *REVISION_TASKS}
                 and selector.source_type == SourceType.CHAPTER
             ):
                 # Unapproved Plan edits increment Chapter metadata but do not change
@@ -94,6 +95,10 @@ class MemoryQueryService:
         if source == SourceType.TASK_INPUT:
             return (task_item(request, selector, task_created_at),), {}
         if source == SourceType.EXTENSION:
+            from novel_os.services.revision_context import REVISION_SELECTORS, RevisionContextReader
+
+            if selector.selector_id in REVISION_SELECTORS:
+                return RevisionContextReader(self.session).query(request, selector)
             reader = self.extensions.get(selector.selector_id)
             candidates = tuple(reader.query(request, selector)) if reader else ()
             if any(
@@ -264,6 +269,7 @@ class MemoryQueryService:
             "REVIEW_CHAPTER_PLAN",
             "WRITE_CHAPTER",
             *QUALITY_TASKS,
+            *REVISION_TASKS,
         }:
             from novel_os.repositories.planning import PlanningRepository
 

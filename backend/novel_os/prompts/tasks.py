@@ -129,6 +129,27 @@ class TaskDefinitionRegistry:
                         schema_id, 1, NarrativeAgentResult
                     ),
                 )
+        from novel_os.revision.schemas import REVISION_RESULTS
+
+        for task_type, (schema_id, model) in REVISION_RESULTS.items():
+            self.register(
+                TaskDefinition(
+                    task_type=task_type,
+                    agent_id=AgentId.A06_REVISION,
+                    system_policy=ref("novel-os-core"),
+                    agent_role=ref("revision-agent"),
+                    task_template=ref(
+                        "plan-chapter-revision"
+                        if task_type == "PLAN_CHAPTER_REVISION"
+                        else "revise-chapter"
+                    ),
+                    skills=(ref("targeted-revision"),),
+                    quality_profile=ref("revision-quality"),
+                    output_schema=OutputContractGenerator.generate(schema_id, 1, model),
+                    model_profile=model_profile,
+                    capabilities=frozenset({Capability.PROPOSE_DRAFT}),
+                )
+            )
         from novel_os.agents.writing_schemas import WritingAgentResult
 
         self.register(

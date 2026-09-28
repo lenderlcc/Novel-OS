@@ -1,0 +1,23 @@
+{
+  "module_id": "revision-quality",
+  "module_type": "QUALITY_PROFILE",
+  "version": 1,
+  "status": "STABLE",
+  "description": "NOVEL-010 controlled revision",
+  "content_path": "content.md",
+  "dependencies": [
+    {
+      "module_id": "novel-os-core",
+      "version": 1
+    }
+  ],
+  "compatible_agents": [
+    "A06_REVISION"
+  ],
+  "compatible_task_types": [
+    "PLAN_CHAPTER_REVISION",
+    "REVISE_CHAPTER"
+  ],
+  "created_at": "2026-09-24T00:00:00Z",
+  "content_hash": "2566f4d1895930a3f4c8257782dbbc2ec982001e4c4cce005b721b51e5629a28"
+}

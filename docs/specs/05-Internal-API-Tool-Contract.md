@@ -267,3 +267,11 @@ Agent Identity ≠ Authority。
 POST `/api/v1/workflows/chapter-quality` 使用现有 CreatePlanningWorkflow DTO 创建 v3 流程。GET `/api/v1/projects/{project_id}/chapters/{chapter_id}/quality-reviews` 返回绑定精确版本的不可变结果及当前 freshness。POST `/api/v1/workflows/{workflow_id}/quality-review` 使用 event_id、expected_state_version、expected_draft_version、reason 显式重新审阅已完成的 v3 结果，不改写或批准 Draft。同一 event 幂等，过期版本拒绝。没有修改/删除审阅证据的 API。Pydantic `quality/schemas.py` 统一定义 Provider 和响应契约。
 
 复审可绑定新的 current Draft，必须提供精确的 `expected_draft_version`；旧结果继续保存。受阻/暂停的审阅也可使用该接口，或通过 POST `/api/v1/workflows/{workflow_id}/resume` 的可选 `expected_draft_version` 恢复。省略 token 只允许恢复仍为 current 的原绑定 Draft；版本变化返回 409。该 token 仅用于审阅恢复，其他阶段携带时拒绝，既有 Writing handoff 不变。审批 Plan/Brief 已变化仍需走原有 intake/replanning 恢复，不能借复审更换批准依据。
+
+## NOVEL-010 Revision Contract
+
+`POST /workflows/{id}/revision` 输入 event_id、expected_state_version、source_review_id、expected_draft_version、可选 reason；只接受真实 USER 上下文，禁止客户端指定 Authority/Agent 身份/新版本。重复 event 幂等返回，旧 state/Draft token 409。源 Review 必须是当前完成的 non-PASS Review，且已绑定 exact approved WritingProfile；缺失时返回 CONTEXT_MISSING，不创建任务，需用户批准 Profile 后明确重新审阅。
+
+`GET /workflows/{id}/revisions` 分页返回 immutable request、source_binding、可空 plan/result；包括 source IDs、具体 issue ID、preservation/boundary contract、AgentTask/Run/PromptLineage/ContextPackage IDs。输出 DTO 不暴露 ORM。
+
+PLAN_CHAPTER_REVISION / REVISE_CHAPTER 的 Pydantic schema 分别为 `chapter-revision-plan.v1` / `chapter-revision-result.v1`。Agent 无事件或状态字段；系统验证后发出合法完成事件。RevisionResult 的 addressed_issue_ids 不等同“已解决”，必须由 A05 新 Review 复核。详见 [Revision Engine](08-Revision-Engine.md)。

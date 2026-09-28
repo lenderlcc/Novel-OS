@@ -16,12 +16,18 @@ export const isReviewResume = (w: Workflow, tasks: Task[]) => !w.simulation && w
   (w.resume_state === 'C09_INTERNAL_REVIEW' || (w.resume_state === 'C08_DETERMINISTIC_CHECK' && tasks.some(t => t.workflow_instance_id === w.id && ['REVIEW_CHAPTER_COMPLIANCE', 'REVIEW_CHAPTER_NARRATIVE'].includes(t.task_type))))
 export function resumeCallsModel(w: Workflow, config?: ExecutionConfig | null, tasks: Task[] = []): boolean {
   if (!config || config.provider === 'mock' || w.simulation) return false
-  const taskTypes: Record<string, string> = { C01_REQUIREMENT_INTAKE: 'PARSE_CHAPTER_REQUIREMENT', C04_CHAPTER_PLANNING: 'PLAN_CHAPTER', C05_PLAN_REVIEW: 'REVIEW_CHAPTER_PLAN', C07_WRITING: 'WRITE_CHAPTER', C09_INTERNAL_REVIEW: 'REVIEW_CHAPTER_COMPLIANCE' }
+  const taskTypes: Record<string, string> = { C01_REQUIREMENT_INTAKE: 'PARSE_CHAPTER_REQUIREMENT', C04_CHAPTER_PLANNING: 'PLAN_CHAPTER', C05_PLAN_REVIEW: 'REVIEW_CHAPTER_PLAN', C07_WRITING: 'WRITE_CHAPTER', C09_INTERNAL_REVIEW: 'REVIEW_CHAPTER_COMPLIANCE', C10_REVISION: 'PLAN_CHAPTER_REVISION' }
   const type = isReviewResume(w, tasks) ? 'REVIEW_CHAPTER_COMPLIANCE' : taskTypes[w.resume_state ?? w.current_state]
   return Boolean(type && (!config.task_types || config.task_types.includes(type)))
 }
 export function progressLabel(w: Workflow, tasks: Task[], config?: ExecutionConfig | null): string {
   if (w.status === 'PAUSED') return '流程已暂停'
+  if (w.revision_request_id && w.current_state === 'C10_REVISION' && w.status === 'WAITING_AGENT') {
+    const task = currentTask(w, tasks)
+    if (task?.status === 'PENDING' && config?.task_types && !config.task_types.includes(task.task_type)) return '本阶段执行已停用'
+    return task?.task_type === 'REVISE_CHAPTER' ? '正在修改正文' : '正在分析修改范围'
+  }
+  if (w.revision_request_id && w.current_state === 'C09_INTERNAL_REVIEW' && w.status === 'WAITING_AGENT') return '正在重新审阅'
   if (w.status !== 'WAITING_AGENT' || !/^C0[1-9]_/.test(w.current_state)) return stateLabel(w.current_state)
   const task = currentTask(w, tasks)
   if (!task) return '等待任务调度'
@@ -37,6 +43,10 @@ export const isWritingWorkflow = (w: Workflow) => !w.simulation && w.workflow_de
 export function pollDelay(w: Workflow | null, tasks: Task[] = [], config?: ExecutionConfig | null): number | null {
   if (!w || !isWritingWorkflow(w) || w.current_state === 'C00_CREATED' || w.current_state === 'C08_DETERMINISTIC_CHECK' ||
     /^C9/.test(w.current_state) || ['PAUSED', 'COMPLETED', 'FAILED', 'CANCELLED', 'BLOCKED'].includes(w.status)) return null
+  if (w.current_state === 'C10_REVISION' && w.revision_request_id && w.status === 'WAITING_AGENT') {
+    const task = currentTask(w, tasks)
+    return task?.status === 'PENDING' && config?.task_types && !config.task_types.includes(task.task_type) ? null : 1500
+  }
   if (['C06_PLAN_APPROVAL', 'C10_REVISION', 'C11_INTERNAL_PASS'].includes(w.current_state)) return null
   const task = currentTask(w, tasks)
   if (task?.status === 'PENDING' && config?.task_types && !config.task_types.includes(task.task_type)) return null

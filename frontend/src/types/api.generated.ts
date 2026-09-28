@@ -4,6 +4,40 @@
  */
 
 export interface paths {
+    "/api/v1/workflows/{workflow_id}/revision": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Request Revision */
+        post: operations["request_revision_api_v1_workflows__workflow_id__revision_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/workflows/{workflow_id}/revisions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** History */
+        get: operations["history_api_v1_workflows__workflow_id__revisions_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/workflows/chapter-quality": {
         parameters: {
             query?: never;
@@ -1381,6 +1415,16 @@ export interface components {
             logical_id: string;
             /** Source Ids */
             source_ids: string[];
+        };
+        /** BlockedReason */
+        BlockedReason: {
+            /**
+             * Issue Id
+             * Format: uuid
+             */
+            issue_id: string;
+            /** Reason */
+            reason: string;
         };
         /**
          * BriefStatus
@@ -3323,6 +3367,28 @@ export interface components {
             /** Expected Draft Version */
             expected_draft_version: number;
         };
+        /** RequestRevision */
+        RequestRevision: {
+            /**
+             * Event Id
+             * Format: uuid
+             */
+            event_id: string;
+            /** Expected State Version */
+            expected_state_version: number;
+            /**
+             * Reason
+             * @default User command
+             */
+            reason: string;
+            /**
+             * Source Review Id
+             * Format: uuid
+             */
+            source_review_id: string;
+            /** Expected Draft Version */
+            expected_draft_version: number;
+        };
         /** RequirementInput */
         RequirementInput: {
             /** Tags */
@@ -3571,6 +3637,125 @@ export interface components {
             verdict: components["schemas"]["ReviewVerdict"];
             body: components["schemas"]["PlanReviewRecord"];
         };
+        /** RevisionMetadataView */
+        RevisionMetadataView: {
+            /**
+             * Kind
+             * @constant
+             */
+            kind: "revision_result";
+            /**
+             * Source Chapter Version Id
+             * Format: uuid
+             */
+            source_chapter_version_id: string;
+            /**
+             * Revision Plan Id
+             * Format: uuid
+             */
+            revision_plan_id: string;
+            /**
+             * Source Review Id
+             * Format: uuid
+             */
+            source_review_id: string;
+            /** Addressed Issue Ids */
+            addressed_issue_ids: string[];
+            /** Preserved Items */
+            preserved_items: string[];
+            /** Declared Changes */
+            declared_changes: string[];
+            /** Unresolved Issue Ids */
+            unresolved_issue_ids: string[];
+            /** Blocked Reasons */
+            blocked_reasons: components["schemas"]["BlockedReason"][];
+            /** Source Refs */
+            source_refs: components["schemas"]["ReviewSource"][];
+            /** Confidence */
+            confidence: number;
+            /** Content Hash */
+            content_hash: string | null;
+        };
+        /** RevisionPlanOutput */
+        RevisionPlanOutput: {
+            /**
+             * Kind
+             * @constant
+             */
+            kind: "revision_plan";
+            /**
+             * Chapter Id
+             * Format: uuid
+             */
+            chapter_id: string;
+            /**
+             * Source Chapter Version Id
+             * Format: uuid
+             */
+            source_chapter_version_id: string;
+            /**
+             * Source Review Id
+             * Format: uuid
+             */
+            source_review_id: string;
+            /** Target Issue Ids */
+            target_issue_ids: string[];
+            /** Preserve Items */
+            preserve_items: string[];
+            /** Revision Targets */
+            revision_targets: components["schemas"]["RevisionTarget"][];
+            /** Do Not Change */
+            do_not_change: string[];
+            /** Revision Strategy */
+            revision_strategy: string;
+            /** @default TARGETED */
+            scope: components["schemas"]["RevisionScope"];
+            /** Blocked Reasons */
+            blocked_reasons: components["schemas"]["BlockedReason"][];
+            /** Source Refs */
+            source_refs: components["schemas"]["ReviewSource"][];
+            /** Confidence */
+            confidence: number;
+        };
+        /** RevisionPlanView */
+        RevisionPlanView: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Request Id
+             * Format: uuid
+             */
+            request_id: string;
+            /**
+             * Task Id
+             * Format: uuid
+             */
+            task_id: string;
+            /**
+             * Run Id
+             * Format: uuid
+             */
+            run_id: string;
+            /**
+             * Prompt Lineage Id
+             * Format: uuid
+             */
+            prompt_lineage_id: string;
+            /**
+             * Context Package Id
+             * Format: uuid
+             */
+            context_package_id: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            body: components["schemas"]["RevisionPlanOutput"];
+        };
         /** RevisionPriority */
         RevisionPriority: {
             issue_code: components["schemas"]["QualityCode"];
@@ -3578,6 +3763,132 @@ export interface components {
             direction: string;
             /** Preserve */
             preserve: string;
+        };
+        /** RevisionRequestView */
+        RevisionRequestView: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Project Id
+             * Format: uuid
+             */
+            project_id: string;
+            /**
+             * Chapter Id
+             * Format: uuid
+             */
+            chapter_id: string;
+            /**
+             * Workflow Id
+             * Format: uuid
+             */
+            workflow_id: string;
+            /**
+             * Source Chapter Version Id
+             * Format: uuid
+             */
+            source_chapter_version_id: string;
+            /**
+             * Source Review Id
+             * Format: uuid
+             */
+            source_review_id: string;
+            /**
+             * Source Binding Id
+             * Format: uuid
+             */
+            source_binding_id: string;
+            /**
+             * Source Context Package Id
+             * Format: uuid
+             */
+            source_context_package_id: string;
+            /** Contract */
+            contract: {
+                [key: string]: unknown;
+            };
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+        };
+        /** RevisionResultView */
+        RevisionResultView: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Request Id
+             * Format: uuid
+             */
+            request_id: string;
+            /**
+             * Task Id
+             * Format: uuid
+             */
+            task_id: string;
+            /**
+             * Run Id
+             * Format: uuid
+             */
+            run_id: string;
+            /**
+             * Prompt Lineage Id
+             * Format: uuid
+             */
+            prompt_lineage_id: string;
+            /**
+             * Context Package Id
+             * Format: uuid
+             */
+            context_package_id: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Revision Plan Id
+             * Format: uuid
+             */
+            revision_plan_id: string;
+            /** Chapter Version Id */
+            chapter_version_id: string | null;
+            body: components["schemas"]["RevisionMetadataView"];
+        };
+        /**
+         * RevisionScope
+         * @enum {string}
+         */
+        RevisionScope: "TARGETED" | "FULL_PASS";
+        /** RevisionTarget */
+        RevisionTarget: {
+            /**
+             * Issue Id
+             * Format: uuid
+             */
+            issue_id: string;
+            issue_code: components["schemas"]["QualityCode"];
+            priority: components["schemas"]["Severity"];
+            /** Problem */
+            problem: string;
+            /** Revision Direction */
+            revision_direction: string;
+            /** Evidence Refs */
+            evidence_refs: components["schemas"]["ParagraphEvidence"][];
+        };
+        /** RevisionView */
+        RevisionView: {
+            request: components["schemas"]["RevisionRequestView"];
+            source_binding: components["schemas"]["QualityBindingView"];
+            plan: components["schemas"]["RevisionPlanView"] | null;
+            result: components["schemas"]["RevisionResultView"] | null;
         };
         /**
          * RunStatus
@@ -3775,6 +4086,8 @@ export interface components {
             plan_version: number | null;
             /** Draft Version */
             draft_version: number | null;
+            /** Revision Request Id */
+            revision_request_id?: string | null;
             resume_state: components["schemas"]["ChapterState"] | null;
             resume_status: components["schemas"]["WorkflowStatus"] | null;
             /** Block Reason */
@@ -4043,6 +4356,165 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+    request_revision_api_v1_workflows__workflow_id__revision_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                workflow_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RequestRevision"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DispatchView"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Method Not Allowed */
+            405: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unprocessable Content */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    history_api_v1_workflows__workflow_id__revisions_get: {
+        parameters: {
+            query?: {
+                limit?: number;
+                offset?: number;
+            };
+            header?: never;
+            path: {
+                workflow_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RevisionView"][];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Method Not Allowed */
+            405: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unprocessable Content */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
     create_api_v1_workflows_chapter_quality_post: {
         parameters: {
             query?: never;

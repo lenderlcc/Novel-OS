@@ -1,0 +1,23 @@
+{
+  "module_id": "targeted-revision",
+  "module_type": "SKILL",
+  "version": 1,
+  "status": "STABLE",
+  "description": "NOVEL-010 controlled revision",
+  "content_path": "content.md",
+  "dependencies": [
+    {
+      "module_id": "novel-os-core",
+      "version": 1
+    }
+  ],
+  "compatible_agents": [
+    "A06_REVISION"
+  ],
+  "compatible_task_types": [
+    "PLAN_CHAPTER_REVISION",
+    "REVISE_CHAPTER"
+  ],
+  "created_at": "2026-09-24T00:00:00Z",
+  "content_hash": "7270df38204c76a8e2a65db67f82f827250de415785c87c3938476de00b1a01a"
+}

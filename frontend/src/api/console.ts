@@ -1,5 +1,5 @@
 import { optional, pages, request } from './client'
-import type { Project, Chapter, Workflow, Gate, Brief, Plan, Planning, PlanningHistory, Draft, Writing, Task, Run, Transition, Context, Lineage, Dispatch, Decision, ExecutionConfig, QualityReview } from '../types/models'
+import type { Project, Chapter, Workflow, Gate, Brief, Plan, Planning, PlanningHistory, Draft, Writing, Task, Run, Transition, Context, Lineage, Dispatch, Decision, ExecutionConfig, QualityReview, Revision } from '../types/models'
 
 const chapterPath = (p: string, c: string) => `/projects/${p}/chapters/${c}`
 const workflowPath = (w: string) => `/workflows/${w}`
@@ -26,6 +26,9 @@ export const api = {
   },
   drafts: (p: string, c: string, signal?: AbortSignal) => pages<Draft>(`${chapterPath(p, c)}/versions`, signal),
   qualityReviews: (p: string, c: string, signal?: AbortSignal) => pages<QualityReview>(`${chapterPath(p, c)}/quality-reviews`, signal),
+  revisions: (w: string, signal?: AbortSignal) => pages<Revision>(`${workflowPath(w)}/revisions`, signal),
+  revise: (w: Workflow, review: QualityReview, draftVersion: number, event_id: string) => request<Dispatch>(`${workflowPath(w.id)}/revision`, { body: { event_id, expected_state_version: w.state_version, expected_draft_version: draftVersion, source_review_id: review.id, reason: '根据当前审阅进行一次针对性修改并重新审阅' } }),
+  rereview: (w: Workflow, draftVersion: number, event_id: string) => request<Dispatch>(`${workflowPath(w.id)}/quality-review`, { body: { event_id, expected_state_version: w.state_version, expected_draft_version: draftVersion, reason: '人工请求重新审阅当前正文' } }),
   writing: (w: string, signal?: AbortSignal) => pages<Writing>(`${workflowPath(w)}/writing/history`, signal),
   tasks: (w: string, signal?: AbortSignal) => pages<Task>(`${workflowPath(w)}/agent-tasks`, signal),
   transitions: (w: string, signal?: AbortSignal) => pages<Transition>(`${workflowPath(w)}/history`, signal),

@@ -162,6 +162,27 @@ QUALITY_STAGE_TASKS = {
         ("REVIEW_CHAPTER_NARRATIVE", "chapter_narrative_review", "chapter-narrative-review.v2"),
     )
 }
+REVISION_STAGE_TASKS = {
+    task: StageTaskMapping(
+        task,
+        State.C10_REVISION,
+        AgentId.A06_REVISION,
+        kind,
+        Capability.PROPOSE_DRAFT,
+        event,
+        result_schema=schema,
+    )
+    for task, kind, event, schema in (
+        (
+            "PLAN_CHAPTER_REVISION",
+            "revision_plan",
+            "REVISION_PLAN_READY",
+            "chapter-revision-plan.v1",
+        ),
+        ("REVISE_CHAPTER", "revision_result", "REVISION_READY", "chapter-revision-result.v1"),
+    )
+}
+TASKS.update(REVISION_STAGE_TASKS)
 TASKS.update(QUALITY_STAGE_TASKS)
 TASKS[WRITING_TASK.task_type] = WRITING_TASK
 TASKS.update({mapping.task_type: mapping for mapping in BUSINESS_STAGE_TASKS.values()})
@@ -177,6 +198,11 @@ class AgentRegistry:
                     "Write a complete Draft within the exact approved Plan; local creativity only, "
                     "major changes require escalation; never approve or commit canon."
                     if agent == AgentId.A04_WRITING
+                    else (
+                        "Revise prose minimally within approved authority, preserving strengths; "
+                        "never replan or commit canon."
+                    )
+                    if agent == AgentId.A06_REVISION
                     else "Execute validated mock tasks within scope; never approve or commit canon."
                 ),
                 accepted_task_types=tuple(

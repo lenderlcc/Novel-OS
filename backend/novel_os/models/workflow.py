@@ -99,6 +99,9 @@ class WorkflowInstanceModel(Base):
     planning_iteration_count: Mapped[int]
     plan_version: Mapped[int | None]
     draft_version: Mapped[int | None]
+    revision_request_id: Mapped[UUID | None] = mapped_column(
+        ForeignKey("revision_requests.id", use_alter=True)
+    )
     resume_state: Mapped[ChapterState | None] = mapped_column(
         Enum(ChapterState, native_enum=False, create_constraint=True, name="resume_state_enum")
     )

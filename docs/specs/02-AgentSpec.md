@@ -264,3 +264,7 @@ Skill 只有满足至少一个条件才考虑升级 Agent：
 ## NOVEL-009 — Chapter Quality Review
 
 A05 新增 REVIEW_CHAPTER_COMPLIANCE 和 REVIEW_CHAPTER_NARRATIVE，能力限于 REVIEW。两轮依次审阅不可变正文；系统验证 exact sources 和结果契约。不得修改 Draft/Plan/Profile、替用户批准、提交 Canon 或调度 Revision。详见 [Quality Engine](07-Quality-Engine.md)。
+
+## NOVEL-010 正式 A06
+
+A06_REVISION 通过 PLAN_CHAPTER_REVISION → REVISE_CHAPTER 两阶段提出受控正文修改；两者均使用版本化 Prompt 和独立 Context/Run lineage。唯一修改能力是提出 Draft，不允许写 Plan、Brief、Profile、Lock、Canon 或提交 Memory。KEEP/CHANGE/DO_NOT_CHANGE 来自 exact Review 与原批准依据；Review 只提供 A7 诊断，不提升为 Authority。用户明确请求后生成 successor，再由 A05 独立重审一次。详见 [Revision Engine](08-Revision-Engine.md)。

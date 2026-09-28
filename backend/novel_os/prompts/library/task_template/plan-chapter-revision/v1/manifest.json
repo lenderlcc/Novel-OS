@@ -1,0 +1,22 @@
+{
+  "module_id": "plan-chapter-revision",
+  "module_type": "TASK_TEMPLATE",
+  "version": 1,
+  "status": "STABLE",
+  "description": "NOVEL-010 controlled revision",
+  "content_path": "content.md",
+  "dependencies": [
+    {
+      "module_id": "novel-os-core",
+      "version": 1
+    }
+  ],
+  "compatible_agents": [
+    "A06_REVISION"
+  ],
+  "compatible_task_types": [
+    "PLAN_CHAPTER_REVISION"
+  ],
+  "created_at": "2026-09-24T00:00:00Z",
+  "content_hash": "62c95d890c3f307b72eae1cdd048412d387e6e7cc599ddd3d8bd7878afc93720"
+}

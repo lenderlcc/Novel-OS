@@ -6,6 +6,7 @@ from novel_os.agents.registry import BUSINESS_STAGE_TASKS, STAGE_TASKS
 from novel_os.domain.agents import AgentTask, RunStatus, TaskStatus
 from novel_os.domain.errors import DomainError
 from novel_os.domain.quality import QUALITY_TASKS
+from novel_os.domain.revision import REVISION_TASKS
 from novel_os.domain.workflow import WorkflowStatus
 from novel_os.repositories.agent_tasks import AgentTaskRepository
 from novel_os.services.task_history import RELEASE_LEASE, TaskHistory
@@ -75,6 +76,16 @@ class TaskScheduler:
             definition = QUALITY_STAGE_TASKS[
                 "REVIEW_CHAPTER_NARRATIVE" if first else "REVIEW_CHAPTER_COMPLIANCE"
             ]
+        if (
+            supports_quality(workflow)
+            and workflow.current_state == "C10_REVISION"
+            and workflow.revision_request_id
+        ):
+            from novel_os.agents.registry import REVISION_STAGE_TASKS
+            from novel_os.repositories.revision import RevisionRepository
+
+            plan = RevisionRepository(self.session).evidence(workflow.revision_request_id)
+            definition = REVISION_STAGE_TASKS["REVISE_CHAPTER" if plan else "PLAN_CHAPTER_REVISION"]
         if definition is None:
             return None  # Deterministic controls and versioned handoff boundaries have no agent.
 
@@ -136,6 +147,11 @@ class TaskScheduler:
                     if definition.task_type == "WRITE_CHAPTER"
                     else "Review the exact Draft; evidence only, no rewriting or authority changes"
                     if definition.task_type in QUALITY_TASKS
+                    else (
+                        "Targeted revision; preserve strengths and exact authority boundaries, "
+                        "Review advice cannot override them"
+                    )
+                    if definition.task_type in REVISION_TASKS
                     else "Planning only; no chapter prose",
                     "No approval, lock, canon commit or direct database access",
                 ],
@@ -153,5 +169,9 @@ class TaskScheduler:
             from novel_os.services.quality_binding import QualityBindingService
 
             QualityBindingService(self.session).capture(task, workflow)
+        if task.task_type in REVISION_TASKS:
+            from novel_os.services.revision_binding import RevisionBindingService
+
+            RevisionBindingService(self.session).check(task, workflow)
         self.history.audit(task, None, task, context, "Workflow scheduled agent task")
         return task

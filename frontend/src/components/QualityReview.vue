@@ -24,6 +24,7 @@ const displayPreference = (value: string | string[]) => Array.isArray(value) ? v
     <h2 id="quality-heading">正文审阅</h2>
     <p v-if="!review">{{ pending ? '正在检查约束、叙事和受众匹配。正文可以先阅读，完成后将自动更新。' : '这个版本尚无 AI 审阅结果。你可以先进行人工评价。' }}</p>
     <template v-else>
+      <p class="muted">Review v{{ review.version }} · 对应 Draft v{{ review.binding.draft_version }}</p>
       <p v-if="review.freshness === 'STALE'" role="status">这份审阅的依据已变化，仅供历史参考。</p>
       <h3>{{ verdicts[review.body.overall_verdict] }}</h3>
       <p class="quality-dimensions">约束：{{ verdicts[review.body.compliance_verdict] }} · 叙事：{{ verdicts[review.body.narrative_verdict] }} · 受众：{{ verdicts[review.body.audience_fit_verdict] }}</p>
