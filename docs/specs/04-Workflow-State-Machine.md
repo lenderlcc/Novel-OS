@@ -275,3 +275,9 @@ revision_count 仅计算用户正式请求，技术 retry 不计入。安全阻�
 ## NOVEL-010A C10 Fidelity Gate
 
 C10 内顺序改为 PLAN_CHAPTER_REVISION → REVISE_CHAPTER → VALIDATE_REVISION_FIDELITY。REVISION_CANDIDATE_READY 仅保存候选稿并调度 A05，尚不修改 draft_version/current。A05 通过后 REVISION_READY 才进入 C08/C09；失败记录 rejected result、C90 BLOCKED、保持源稿 current，禁止自动 Revision 或用 RESUME 复用失败候选稿。质量重审后的 C10/C11 WAITING_HUMAN STOP 不变。没有新增 Workflow 状态或新 Agent。
+
+## NOVEL-010B Workspace 集成
+
+工作区通过既有 REQUEST_REVISION 命令触发上述完整链路，不直接创建 Task、Chapter 或更新 current。界面显示分析范围 → 修改正文 → 检查范围 → 重新审阅；阶段来自 Workflow，不能随历史正文选择改变。新 Draft 在重审期间即可阅读，Review Ready、BLOCKED、FAILED 时停止轮询。刷新只恢复状态，不产生新命令。
+
+currentBackendVersion 与 viewingVersion 分离：默认跟随同章新 Draft，手动选择历史后固定阅读版本；返回章节或浏览器重新加载默认读 current。历史选择不修改数据库。每次显式请求最多一个 successor，重审 FAIL 也停在 WAITING_HUMAN。再次修改必须再次点击并绑定新的 Review/state/Draft tokens。旧 v2/C08 不自动升级，界面明确说明尚未接入审阅与修改。

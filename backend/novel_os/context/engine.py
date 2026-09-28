@@ -24,9 +24,27 @@ class ContextEngine:
     def __init__(self, estimator=None):
         self.budget = TokenBudgetService(estimator)
 
-    def build(self, request, profile, batch, *, prompt_overhead=0, output_reservation=0):
+    def build(
+        self,
+        request,
+        profile,
+        batch,
+        *,
+        prompt_overhead=0,
+        output_reservation=0,
+        model_context_window=None,
+    ):
         if prompt_overhead < 0 or output_reservation < 0:
             raise ValueError("Invalid context budget reservation")
+        if model_context_window is not None and (
+            type(model_context_window) is not int or model_context_window <= 0
+        ):
+            raise ValueError("Invalid model context window")
+        token_budget = (
+            min(profile.token_budget, model_context_window)
+            if model_context_window is not None
+            else profile.token_budget
+        )
         if request.task_type not in profile.allowed_task_types:
             return ContextBuildResult(
                 status=ContextStatus.FAILED, error_code="CONTEXT_PROFILE_MISMATCH"
@@ -75,7 +93,12 @@ class ContextEngine:
             limited.extend(group)
         resolved = tuple(limited)
         selected, budget_excluded, estimated, overflow = self.budget.select(
-            request, profile, resolved, prompt_overhead, output_reservation
+            request,
+            profile,
+            resolved,
+            prompt_overhead,
+            output_reservation,
+            token_budget=token_budget,
         )
         missing.extend(
             f"{ref.source_type}:{ref.logical_id}:v{ref.version}"
@@ -115,7 +138,7 @@ class ContextEngine:
             missing_required_items=tuple(sorted(missing)),
             authority_conflicts=conflicts,
             source_snapshots=tuple(sorted(batch.snapshots, key=lambda s: s.selector_id)),
-            token_budget=profile.token_budget,
+            token_budget=token_budget,
             prompt_overhead=prompt_overhead,
             output_reservation=output_reservation,
             estimated_tokens=estimated,

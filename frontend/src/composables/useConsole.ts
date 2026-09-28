@@ -4,6 +4,7 @@ import { writingProfiles } from '../api/writingProfiles'
 import { ApiError, asError } from '../api/client'
 import type { Project, Chapter, Workflow, Gate, Brief, Plan, PlanningHistory, Draft, Writing, Task, Decision, ExecutionConfig, QualityReview, Revision } from '../types/models'
 import { isReviewResume, isWritingWorkflow, pollDelay } from './workflowState'
+import { reviewForDraft } from './revisionWorkspace'
 
 export interface Snapshot {
   workflow: Workflow; chapter: Chapter; gates: Gate[]; brief: Brief | null;
@@ -11,6 +12,10 @@ export interface Snapshot {
 }
 
 function generatedDraftVersion(s: Snapshot): number | null {
+  // Reading selection follows the chapter pointer, not the workflow's source
+  // version, which remains old while a revision/re-review is in progress.
+  const qualityWorkspace = s.workflow.workflow_definition_version === 3 && (s.workflow.revision_request_id || s.workflow.resume_state === 'C09_INTERNAL_REVIEW' || ['C09_INTERNAL_REVIEW', 'C10_REVISION', 'C11_INTERNAL_PASS'].includes(s.workflow.current_state))
+  if (qualityWorkspace && s.drafts.some(draft => draft.version === s.chapter.current_version)) return s.chapter.current_version
   const version = s.workflow.draft_version ?? null
   if (!isWritingWorkflow(s.workflow)) return version
   const draft = s.drafts.find(d => d.version === version)
@@ -24,7 +29,14 @@ export function useConsole(client = api) {
   const executionConfig = shallowRef<ExecutionConfig | null>(null)
   const projectId = ref(''), chapterId = ref(''), workflowId = ref('')
   const snapshot = shallowRef<Snapshot | null>(null)
-  const selectedPlan = ref<number | null>(null), selectedDraft = ref<number | null>(null)
+  const selectedPlan = ref<number | null>(null), viewingVersion = ref<number | null>(null)
+  let followCurrentDraft = true
+  let selectionRevision = 0
+  const currentBackendVersion = computed(() => snapshot.value?.chapter.current_version ?? null)
+  const selectedDraft = computed({
+    get: () => viewingVersion.value,
+    set: (version: number | null) => { followCurrentDraft = false; viewingVersion.value = version; selectionRevision++ },
+  })
   const error = shallowRef<ApiError | null>(null), busy = ref(false), loading = ref(false), conflict = ref(false)
   let epoch = 0, controller = new AbortController(), timer: ReturnType<typeof setTimeout> | undefined
   let disposed = false
@@ -80,7 +92,9 @@ export function useConsole(client = api) {
       const next: Snapshot = { workflow: current, chapter, gates, brief, plans, history, drafts, writing, tasks, qualityReviews, revisions }
       const previous = snapshot.value
       if (!previous || selectedPlan.value === previous.workflow.plan_version) selectedPlan.value = current.plan_version
-      if (!previous || selectedDraft.value === generatedDraftVersion(previous)) selectedDraft.value = generatedDraftVersion(next)
+      // Explicit reading selection is pinned, even if it was current when a
+      // poll began. A late response must not switch the reader to another text.
+      if (followCurrentDraft) viewingVersion.value = generatedDraftVersion(next)
       snapshot.value = next
       if (manual) executionConfig.value = latestConfig
       workflows.value = workflows.value.map(item => item.id === w ? current : item)
@@ -103,7 +117,7 @@ export function useConsole(client = api) {
     finally { if (token === epoch) loading.value = false }
   }
   function clearWorkflow() {
-    workflowId.value = ''; snapshot.value = null; selectedPlan.value = null; selectedDraft.value = null
+    workflowId.value = ''; snapshot.value = null; selectedPlan.value = null; viewingVersion.value = null; followCurrentDraft = true
     error.value = null; conflict.value = false
   }
   async function selectProject(id: string) {
@@ -136,10 +150,11 @@ export function useConsole(client = api) {
   }
   async function mutate(action: () => Promise<void>) {
     if (disposed || busy.value) return
+    const operationProject = projectId.value, operationChapter = chapterId.value
     invalidate(); busy.value = true; loading.value = false; error.value = null
     try { await action() }
     catch (err) {
-      if (disposed) return
+      if (disposed || projectId.value !== operationProject || chapterId.value !== operationChapter) return
       error.value = asError(err)
       if (error.value.code === 'VERSION_CONFLICT') conflict.value = true
     } finally { busy.value = false }
@@ -210,8 +225,9 @@ export function useConsole(client = api) {
   })
   const revise = () => mutate(async () => {
     const w = workflow.value, currentDraft = draft.value, s = snapshot.value
-    const currentReview = s?.qualityReviews?.find(r => r.chapter_version_id === currentDraft?.id && r.binding.workflow_id === w?.id)
-    if (!w || !currentDraft || !currentReview || currentReview.freshness !== 'CURRENT' || currentReview.body.overall_verdict === 'PASS' || currentDraft.version !== s?.chapter.current_version || w.status !== 'WAITING_HUMAN' || w.revision_request_id) throw new ApiError('STALE_VIEW', '请打开当前正文及有效审阅后再修改。')
+    const selectionAtRequest = selectionRevision
+    const currentReview = reviewForDraft(s?.qualityReviews ?? [], currentDraft?.id)
+    if (!w || !currentDraft || !currentReview || currentReview.binding.workflow_id !== w.id || currentReview.freshness !== 'CURRENT' || currentReview.body.overall_verdict === 'PASS' || currentDraft.version !== s?.chapter.current_version || w.status !== 'WAITING_HUMAN' || w.revision_request_id) throw new ApiError('STALE_VIEW', '请打开当前正文及有效审阅后再修改。')
     if (!currentReview.binding.profile_record_id) throw new ApiError('CONTEXT_MISSING', '请先批准写作偏好，再重新审阅当前正文。')
     const config = await client.executionConfig(controller.signal)
     if (disposed || workflow.value?.id !== w.id) return
@@ -220,8 +236,10 @@ export function useConsole(client = api) {
     const key = `${w.id}:${w.state_version}:${currentReview.id}:${currentDraft.id}`
     if (revisionCommand?.key !== key) revisionCommand = { key, id: crypto.randomUUID() }
     const result = await client.revise(w, currentReview, currentDraft.version, revisionCommand.id)
+    if (disposed || workflow.value?.id !== w.id) return
     if (result.error_code) throw new ApiError(result.error_code, '修改请求未完成，请刷新检查。')
     revisionCommand = null
+    if (selectionAtRequest === selectionRevision) followCurrentDraft = true
     await refresh()
   })
   const rereviewRevision = () => mutate(async () => {
@@ -246,7 +264,7 @@ export function useConsole(client = api) {
   })
   onScopeDispose(() => { disposed = true; invalidate() })
   return { projects, chapters, workflows, executionConfig, projectId, chapterId, workflowId, snapshot, workflow,
-    selectedPlan, selectedDraft, plan, generation, review, draft, writing, gate, formal,
+    selectedPlan, selectedDraft, currentBackendVersion, plan, generation, review, draft, writing, gate, formal,
     error, busy, loading, conflict, loadProjects, selectProject, selectChapter, selectWorkflow,
     refresh, createProject, createChapter, start, submit, decide, control, revise, rereviewRevision }
 }

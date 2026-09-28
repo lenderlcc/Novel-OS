@@ -38,7 +38,7 @@ function download() {
 <template>
   <div class="modal-backdrop" @click.self="$emit('close')" @keydown.esc="$emit('close')">
     <section class="modal evaluation" role="dialog" aria-modal="true" aria-labelledby="evaluation-title">
-      <div class="drawer-header"><div><h2 id="evaluation-title">人工评价</h2><p>结果将下载为本地 JSON，不会改变正文或 Workflow。</p></div><button ref="closeButton" class="quiet" @click="$emit('close')">关闭</button></div>
+      <div class="drawer-header"><div><h2 id="evaluation-title">人工评价 · 正文 v{{ draftVersion }}</h2><p>结果将下载为本地 JSON，不会改变正文或 Workflow。</p></div><button ref="closeButton" class="quiet" @click="$emit('close')">关闭</button></div>
       <div class="evaluation-grid">
         <fieldset><legend>需求理解</legend><label v-for="value in (['GOOD','OK','BAD'] as const)" :key="value"><input v-model="understanding" type="radio" name="understanding" :value="value">{{ value }}</label></fieldset>
         <fieldset><legend>方案质量</legend><label v-for="value in (['GOOD','OK','BAD'] as const)" :key="value"><input v-model="planning" type="radio" name="planning" :value="value">{{ value }}</label></fieldset>

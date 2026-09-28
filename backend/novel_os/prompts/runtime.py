@@ -15,7 +15,7 @@ class PromptRuntime:
         self.prompts = prompts or PromptRegistry()
         self.profiles = profiles or ModelProfileRegistry()
         self.compiler = PromptCompiler()
-        self.adapter = DefaultAdapter()
+        self.adapter = DefaultAdapter(self.profiles)
 
     def prepare(
         self,

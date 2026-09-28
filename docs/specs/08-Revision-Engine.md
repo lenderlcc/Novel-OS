@@ -65,7 +65,7 @@ Context 只选择目标章节、确切依赖及最近最多三章 approved 内�
 - `GET /api/v1/workflows/{workflow_id}/revisions?limit=100&offset=0`：最新在前，包含 request/source_binding/plan/candidate/result。批量 join 获取，避免逐条查询。
 - `POST /api/v1/workflows/{workflow_id}/quality-review`：沿用现有端点，从业务阻塞的 Revision 明确重新审阅当前 Draft。
 
-正文版本入口切换 v1/v2，Review 按 exact chapter_version_id 和 workflow 选择，并标注 Review / Draft 版本。人工评价 storage key 仍包含 Draft 版本，切换时重建组件，禁止继承旧评价。正常界面只显示修改进度、简要重点、原因和审阅结果；Context/Prompt/Run 原始 lineage 留在 Debug。
+正文顶部的轻量选择器切换 v1/v2，Review 按 exact chapter_version_id 选择，并标注 Review / Draft 版本；同正文多次审阅取 Review.version 最大值，修改操作另外验证 workflow 绑定。人工评价导出仍包含 project/chapter/workflow/draft_version，弹窗按 Draft ID 重建，禁止继承旧评价；现有评价仅下载本地 JSON，不提供服务端保存/历史评价查询。正常界面只显示修改进度、简要重点、原因和审阅结果；Context/Prompt/Run 原始 lineage 留在 Debug。
 
 ## 验收边界
 
@@ -100,3 +100,19 @@ ABSTRACT_STAKES 依次使用原稿已存在信息、授权 Context canon、Appro
 普通界面显示“这次修改范围过大，未替换当前正文。”，可展开未采用稿；成功后的体验仍为新 Draft 和正式 Review。Debug 显示 Source Fidelity、KEEP/CHANGE/DO NOT CHANGE、zones、budget、preserved strengths、risks 和 violations。分页历史批量 join candidate，不引入 N+1。
 
 plan-chapter-revision / revise-chapter 使用新增 v2，targeted-revision skill 使用 v2；Fidelity 独立版本化 Prompt。历史 Prompt 文件不变，v1 结果仍可读。执行中旧 RevisionRequest 无 fidelity contract 时 fail closed，需新的明确请求，不能沿旧路径跳过门禁。
+
+## NOVEL-010B：Revision Workspace
+
+已完成审阅的当前 Draft 为 FAIL/PASS_WITH_WARNINGS 时显示“根据审阅修改”，PASS 不突出此操作。缺少 approved Profile 或 Review 已过期时先提供明确的偏好/重新审阅操作；旧 v2 无正式 Review 不伪装成可修改状态。
+
+正文顶部选择器只改变 viewingVersion，Chapter.current_version 是独立的后台事实。默认跟随新 Draft，显式选择后固定阅读位置，即使在慢轮询开始时所选版本仍是 current；切章或关闭页面使旧响应失效。Revision 成功后保留所有旧稿和对应 Review，进行中的重审不阻塞新稿阅读；人工评价仍按版本隔离。
+
+活动 Revision 通过 workflow.revision_request_id 匹配历史记录，不假设 revisions[0] 必然活动。C09 的全局进度来自 Workflow，历史 v1 的 Review 区仍显示 Review v1。技术失败仅提供状态机允许的恢复，Fidelity/业务阻塞不会自动重试。Fidelity FAIL 显示“这次修改范围过大，未替换当前正文。”和详情，Debug 提供完整源绑定、KEEP/CHANGE/DO NOT CHANGE、preservation arrays、zones/budget、addressed/unresolved、Fidelity/Result。
+
+### 真实输入容量修正
+
+010A 的完整 EDIT_BASE、Review、authority contract、Fidelity Schema 超过原 CP-007 v4 的 100000 保守 UTF-8 预算，真实 Case05 在 Provider 前失败。010B 新增 CP-007 v5（240000），只调整版本、描述和预算，selectors/Authority/版本/知识策略不变。三阶段预算测试保留全部 P0，超大输入继续 fail closed。旧文件和冻结请求不改；恢复走既有显式重审后新 RevisionRequest，不能称为篡改旧请求后重试。不存在模型消费或 Provider 容量承诺，实际结果仍须验证。
+
+### 重审证据协议澄清
+
+新增 A05 `quality-evidence` skill v3，明确单个 evidence 必须完整引用其 paragraph_index 对应段落中的连续原文。分析跨段对话模式时使用多个独立条目；不得拼接两段、改写或用省略号拼合。保留 v2 和历史 pin；现有确定性校验、Schema、严重程度、Verdict 与 A06 策略均不变。该修正对齐模型输入说明与已有校验，不接受不合法引用或自动改写模型结果。

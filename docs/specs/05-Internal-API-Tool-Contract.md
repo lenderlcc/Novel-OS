@@ -281,3 +281,13 @@ PLAN_CHAPTER_REVISION / REVISE_CHAPTER 的 Pydantic schema 分别为 `chapter-re
 新 PLAN_CHAPTER_REVISION 使用 `chapter-revision-plan.v2`，新增三个 preservation arrays、strength_preservation/risks、revision_zones、allowed_structural_change、structural_authorization 和 change_budget。REVISE_CHAPTER 仍输出 `chapter-revision-result.v1`，但只保存候选产物，不直接创建当前正文。A05 VALIDATE_REVISION_FIDELITY 使用 `revision-fidelity-result.v1`；精确 source/plan/candidate/hash、checks、violations、verdict 由服务统一校验。
 
 GET `/workflows/{id}/revisions` 增加可空 candidate（完整 proposal、A06 lineage）以及 result.body.candidate_id/fidelity/accepted（A05 lineage），既有 v1 历史依旧可读。失败 result.chapter_version_id=null，不新增可接受 Draft；普通 UI 使用固定失败文案，Debug 查看具体内部 FidelityCode。这些字段不能通过客户端来授权新版本或绕过 Service gate。
+
+## NOVEL-010B Workspace 复用 API
+
+不增加端点。GET `/projects/{project_id}/chapters/{chapter_id}/versions` 提供不可变版本列表，Chapter.current_version 是当前正文指针。GET 同路径 `/quality-reviews` 全量分页后按 exact chapter_version_id 筛选，以 Review.version 选该正文最新审阅，不能依赖返回数组顺序或直接取最新章级 Review。历史正文可读其历史 Review；请求修改还必须验证 Review.binding.workflow_id 是当前 Workflow。
+
+POST `/workflows/{id}/revision` 复用 `event_id + expected_state_version + expected_draft_version + source_review_id`。Workflow 确定 Chapter，Review 确定 immutable ChapterVersion ID；前端不传正文、Plan JSON、Agent 或 Authority。请求结果不确定时，同一来源重用 event_id；409 不静默刷新重试。后端锁、Fidelity、追加版本及事务规则不变。
+
+新增 CP-007 v5 仅提高本地保守预算至 240000，容纳完整 source/review/authority、RevisionPlan、candidate 及 Fidelity Schema；不截断 P0、不改变选择策略。v4 与已冻结请求保持不变，新请求绑定 v5。该预算不是计费 token 或 Provider 窗口声明。
+
+A05 Compliance/Narrative 的 evidence 仍是单个 paragraph_index 加该段的精确连续 excerpt。`quality-evidence` skill v3 明确跨段论证必须拆成独立引用条目；JSON Schema、API、校验规则和历史 v2 pin 均保持兼容。

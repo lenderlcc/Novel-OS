@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue'
 import { useConsole } from '../composables/useConsole'
+import { useRevisionWorkspace } from '../composables/revisionWorkspace'
 import BriefView from '../components/BriefView.vue'
 import PlanView from '../components/PlanView.vue'
 import DraftView from '../components/DraftView.vue'
@@ -17,14 +18,15 @@ import { manualCases, type ManualCase } from '../data/manualCases'
 
 const {
   projects, chapters, workflows, executionConfig, projectId, chapterId, workflowId, snapshot, workflow,
-  selectedPlan, selectedDraft, plan, generation, review, draft, gate, formal, error, busy, loading, conflict,
+  selectedPlan, selectedDraft, currentBackendVersion, plan, generation, review, draft, gate, formal, error, busy, loading, conflict,
   loadProjects, selectProject, selectChapter, refresh, createProject, createChapter,
   start, submit, decide, control, revise, rereviewRevision,
 } = useConsole()
 const manualTestAvailable = import.meta.env.DEV
 const storage = window.localStorage
 const requirement = ref(''), loadedCase = ref<ManualCase | null>(null)
-const profileOpen = ref(false), testsOpen = ref(manualTestAvailable && storage.getItem('novel-os.test-mode') === 'true'), evaluationOpen = ref(false)
+const profileOpen = ref(false), testsOpen = ref(manualTestAvailable && storage.getItem('novel-os.test-mode') === 'true')
+const evaluation = ref<{ draftId: string; projectId: string; chapterId: string; workflowId: string; draftVersion: number; caseId: string | null } | null>(null)
 const debugOpen = ref(storage.getItem('novel-os.debug-open') === 'true')
 const currentChapter = computed(() => chapters.value.find(item => item.id === chapterId.value) ?? null)
 const writingEnabled = computed(() => !executionConfig.value?.task_types || executionConfig.value.task_types.includes('WRITE_CHAPTER'))
@@ -36,26 +38,13 @@ const processingStage = computed(() => /^C0[1-5]_/.test(state.value))
 const planStage = computed(() => state.value === 'C06_PLAN_APPROVAL')
 const writingStage = computed(() => state.value === 'C07_WRITING')
 const draftStage = computed(() => ['C08_DETERMINISTIC_CHECK', 'C09_INTERNAL_REVIEW', 'C10_REVISION', 'C11_INTERNAL_PASS'].includes(state.value))
-const qualityReview = computed(() => snapshot.value?.qualityReviews?.find(r => r.chapter_version_id === draft.value?.id && r.binding.workflow_id === workflowId.value) ?? null)
-const revision = computed(() => snapshot.value?.revisions?.[0] ?? null)
-const revising = computed(() => Boolean(workflow.value?.revision_request_id))
-const reviewReady = computed(() =>
-  !revising.value && workflow.value?.status === 'WAITING_HUMAN' &&
-  ['C10_REVISION', 'C11_INTERNAL_PASS'].includes(state.value) && Boolean(qualityReview.value) &&
-  draft.value?.version === snapshot.value?.chapter.current_version,
-)
-const revisionAvailable = computed(() => reviewReady.value && qualityReview.value?.body.overall_verdict !== 'PASS')
-const revisionMissingProfile = computed(() => revisionAvailable.value && !qualityReview.value?.binding.profile_record_id)
-const reviewNeedsRereview = computed(() => revisionMissingProfile.value || (reviewReady.value && qualityReview.value?.freshness === 'STALE'))
-const canRevise = computed(() => revisionAvailable.value && !revisionMissingProfile.value && qualityReview.value?.freshness === 'CURRENT')
-const revisionForDraft = computed(() => snapshot.value?.revisions?.find(r => r.result?.chapter_version_id === draft.value?.id))
-const revisionNeedsRereview = computed(() => workflow.value?.status === 'BLOCKED' && workflow.value.resume_state === 'C10_REVISION' && revising.value && Boolean(revision.value?.result || snapshot.value?.tasks.filter(t => t.agent_id === 'A06_REVISION').at(-1)?.status === 'BLOCKED'))
-const fidelityFailed = computed(() => revising.value && revision.value?.result?.body.fidelity?.verdict === 'FAIL')
-const blockedReasons = computed(() => revision.value?.result?.body.blocked_reasons.length ? revision.value.result.body.blocked_reasons : revision.value?.candidate?.body.blocked_reasons.length ? revision.value.candidate.body.blocked_reasons : revision.value?.plan?.body.blocked_reasons ?? [])
+const { qualityReview, revision, revising, historical, revisionMissingProfile, reviewNeedsRereview, canRevise,
+  revisionForDraft, revisionNeedsRereview, fidelityFailed, contextBudgetBlocked, blockedReasons, revisionStopped, reviewPending, revisionHeading,
+} = useRevisionWorkspace(snapshot, draft)
 const overlayOpen = computed(() =>
   (profileOpen.value && Boolean(projectId.value)) ||
   (testsOpen.value && manualTestAvailable) ||
-  (evaluationOpen.value && Boolean(draft.value)) ||
+  Boolean(evaluation.value) ||
   (debugOpen.value && Boolean(snapshot.value)),
 )
 
@@ -65,6 +54,14 @@ const draftKey = (chapter: string) => `novel-os.requirement-draft.${chapter}`
 const caseKey = (chapter: string) => `novel-os.manual-case.${chapter}`
 const workflowCaseKey = (workflow: string) => `novel-os.manual-case.workflow.${workflow}`
 const evaluationCaseId = computed(() => workflowId.value ? storage.getItem(workflowCaseKey(workflowId.value)) : null)
+
+function openEvaluation() {
+  if (!draft.value) return
+  // Evaluation owns its immutable target while polling may advance the reader.
+  evaluation.value = { draftId: draft.value.id, projectId: projectId.value, chapterId: chapterId.value,
+    workflowId: workflowId.value, draftVersion: draft.value.version, caseId: evaluationCaseId.value }
+}
+watch([projectId, chapterId, workflowId], () => { evaluation.value = null })
 
 async function chooseProject(id: string, restore = true) {
   await selectProject(id)
@@ -192,27 +189,32 @@ onMounted(initialize)
 
         <section v-else-if="writingStage" class="writing-workspace"><div class="writing-indicator" aria-hidden="true">···</div><h2>AI 正在写作…</h2><p>需求、方案和审批已经完成。正文生成可能需要一些时间。</p></section>
 
-        <section v-else-if="(draftStage || revising) && draft">
+        <section v-else-if="(draftStage || revising || /^C9/.test(state)) && draft">
           <section v-if="revising" class="quality-review" aria-label="修改进度">
-            <h2>{{ workflow?.status === 'BLOCKED' ? '修改需要处理' : 'AI 正在修改正文…' }}</h2>
+            <h2>{{ revisionHeading }}</h2>
             <p v-if="fidelityFailed" role="status">这次修改范围过大，未替换当前正文。</p>
+            <p v-else-if="contextBudgetBlocked">修改所需内容超出当前处理预算，当前阶段尚未调用模型。已有正文版本已保留；配置修复后可重新审阅，再发起修改。</p>
             <p v-else-if="revisionNeedsRereview">本次修改已停止。需要补充依据或重新审阅后，才能发起新的修改。</p>
-            <p v-else-if="workflow?.status !== 'BLOCKED'">{{ state === 'C09_INTERNAL_REVIEW' ? '正在重新审阅' : revision?.candidate ? '正在检查修改结果' : revision?.plan ? '正在修改正文' : '正在分析修改范围' }}</p>
-            <button v-if="workflow?.status === 'BLOCKED' && workflow.resume_state === 'C10_REVISION'" :disabled="disabled" @click="rereviewRevision">重新审阅正文 v{{ snapshot?.chapter.current_version }}（会调用模型）</button>
-            <details v-if="fidelityFailed && revision?.candidate?.body.content"><summary>查看未采用的修改稿</summary><pre class="revision-candidate">{{ revision.candidate.body.content }}</pre></details>
+            <p v-else-if="!revisionStopped">{{ state === 'C09_INTERNAL_REVIEW' ? '正在重新审阅' : revision?.candidate ? '正在检查修改范围' : revision?.plan ? '正在修改正文' : '正在分析修改范围' }}</p>
+            <p v-else>已保留现有正文。可在上方查看流程状态和允许的恢复操作。</p>
+            <button v-if="revisionNeedsRereview && !historical" :disabled="disabled || conflict" @click="rereviewRevision">重新审阅正文 v{{ currentBackendVersion }}（会调用模型）</button>
+            <details v-if="fidelityFailed"><summary>查看详情</summary><p>修改稿未通过原稿保留与范围检查。现有正文没有被替换；具体检查记录可在 Debug 中查看。</p><details v-if="revision?.candidate?.body.content"><summary>查看未采用的修改稿</summary><pre class="revision-candidate">{{ revision.candidate.body.content }}</pre></details><button @click="toggleDebug">查看检查记录</button></details>
             <ul v-if="blockedReasons.length"><li v-for="item in blockedReasons" :key="item.issue_id">{{ item.reason }}</li></ul>
           </section>
-          <details v-if="snapshot && snapshot.drafts.length > 1" class="version-history"><summary>查看上一版 / 切换正文版本</summary><div class="version-list"><button v-for="item in snapshot.drafts" :key="item.id" :class="{ selected: selectedDraft === item.version }" @click="selectedDraft = item.version">v{{ item.version }}{{ item.version === snapshot.chapter.current_version ? ' · 当前正文' : '' }}</button></div></details>
-          <section v-if="revisionForDraft?.result" class="quality-review"><h2>本次修改重点</h2><ul><li v-for="(change, index) in revisionForDraft.result.body.declared_changes" :key="index">{{ change }}</li></ul><p>是否改善请结合重新审阅结果和正文判断。</p></section>
-          <QualityReview :review="qualityReview" :pending="state === 'C09_INTERNAL_REVIEW' && draft.version === workflow?.draft_version" />
-          <div v-if="reviewNeedsRereview" class="reader-actions">
-            <p v-if="revisionMissingProfile">这份审阅没有绑定已批准的写作偏好。请先创建并批准写作偏好，再重新审阅当前正文。</p>
-            <p v-else>审阅依据已变化。请重新审阅当前正文，再根据最新结果决定是否修改。</p>
-            <button v-if="revisionMissingProfile" :disabled="disabled" @click="profileOpen = true">设置写作偏好</button>
-            <button :disabled="disabled || conflict" @click="rereviewRevision">重新审阅正文 v{{ snapshot?.chapter.current_version }}（会调用模型）</button>
-          </div>
-          <div v-if="canRevise" class="reader-actions"><button class="primary" :disabled="disabled || conflict" @click="revise">根据审阅修改</button><p>进行一次修改并重新审阅，完成后停止。真实模型会消耗 API 额度。</p></div>
-          <DraftView :draft="draft" :chapter-number="currentChapter.sequence" :review-href="qualityReview ? '#quality-heading' : undefined" @evaluate="evaluationOpen = true" />
+          <DraftView :draft="draft" :chapter-number="currentChapter.sequence" :versions="snapshot?.drafts" :current-version="currentBackendVersion" :review-href="qualityReview ? '#quality-heading' : undefined" @select-version="selectedDraft = $event" @evaluate="openEvaluation">
+            <template #before-prose>
+              <section v-if="revisionForDraft?.result" class="quality-review"><h2>本次修改重点</h2><ul><li v-for="(change, index) in revisionForDraft.result.body.declared_changes" :key="index">{{ change }}</li></ul><p>是否改善请结合重新审阅结果和正文判断。</p></section>
+              <QualityReview :review="qualityReview" :pending="reviewPending" :rereviewing="revising" />
+              <p v-if="workflow?.workflow_definition_version !== 3" class="notice">此章节使用旧版创作流程，尚未接入正文审阅与修改。原稿可以继续阅读和人工评价。</p>
+              <div v-if="reviewNeedsRereview" class="reader-actions">
+                <p v-if="revisionMissingProfile">这份审阅没有绑定已批准的写作偏好。请先创建并批准写作偏好，再重新审阅当前正文。</p>
+                <p v-else>审阅依据已变化。请重新审阅当前正文，再根据最新结果决定是否修改。</p>
+                <button v-if="revisionMissingProfile" :disabled="disabled" @click="profileOpen = true">设置写作偏好</button>
+                <button :disabled="disabled || conflict" @click="rereviewRevision">重新审阅正文 v{{ currentBackendVersion }}（会调用模型）</button>
+              </div>
+              <div v-if="canRevise || (revising && !revisionStopped && !historical)" class="reader-actions"><button class="primary" :disabled="disabled || conflict || revising" @click="revise">{{ revising ? '修改进行中…' : '根据审阅修改' }}</button><p>进行一次修改并重新审阅，完成后停止。真实模型会消耗 API 额度。</p></div>
+            </template>
+          </DraftView>
         </section>
 
       </template>
@@ -220,7 +222,7 @@ onMounted(initialize)
 
     <WritingProfile v-if="profileOpen && projectId" :key="projectId" :project-id="projectId" :disabled="disabled" @close="profileOpen = false" />
     <ManualCaseLoader v-if="testsOpen && manualTestAvailable" :cases="manualCases" :selected-id="loadedCase?.id" :can-load="Boolean(currentChapter && !workflow)" @load="loadCase" @close="closeTests" />
-    <HumanEvaluation v-if="evaluationOpen && draft" :key="draft.id" :project-id="projectId" :chapter-id="chapterId" :workflow-id="workflowId" :draft-version="draft.version" :case-id="evaluationCaseId" @close="evaluationOpen = false" />
+    <HumanEvaluation v-if="evaluation" :key="evaluation.draftId" :project-id="evaluation.projectId" :chapter-id="evaluation.chapterId" :workflow-id="evaluation.workflowId" :draft-version="evaluation.draftVersion" :case-id="evaluation.caseId" @close="evaluation = null" />
     <DebugPanel v-if="snapshot" :snapshot="snapshot" :open="debugOpen" @close="toggleDebug" />
   </div>
 </template>

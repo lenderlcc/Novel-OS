@@ -5,7 +5,8 @@ from uuid import UUID
 
 from novel_os.domain.context import ContextPackage
 from novel_os.prompts.compiler import CompiledPrompt
-from novel_os.providers.profiles import ModelProfile
+from novel_os.providers.profiles import ModelProfile, ModelProfileRegistry
+from novel_os.providers.tokens import prompt_overhead
 
 
 class ModelCapability(StrEnum):
@@ -108,6 +109,9 @@ class ModelProvider(ABC):
 class DefaultAdapter:
     """Provider-neutral dispatch; unsupported capabilities fail before any network call."""
 
+    def __init__(self, profiles=None):
+        self.profiles = profiles or ModelProfileRegistry()
+
     def generate(self, provider: ModelProvider, request: ModelRequest) -> ModelResponse:
         capabilities = provider.get_capabilities()
         if (
@@ -115,6 +119,14 @@ class DefaultAdapter:
             or not set(request.profile.capabilities) <= capabilities
         ):
             raise ProviderError("MODEL_INVALID_REQUEST")
+        window = self.profiles.context_window(request.profile)
+        # Check the fully rendered prompt as well as Context preflight. This
+        # protects direct/smoke calls and cached packages built under old limits.
+        if (
+            window is not None
+            and prompt_overhead(request) + request.profile.max_output_tokens > window
+        ):
+            raise ProviderError("MODEL_CONTEXT_LIMIT")
         if request.profile.structured_output:
             if ModelCapability.STRUCTURED_OUTPUT not in capabilities:
                 raise ProviderError("MODEL_INVALID_REQUEST")

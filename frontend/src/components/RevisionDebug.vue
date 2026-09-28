@@ -11,11 +11,17 @@ const json = (value: unknown) => JSON.stringify(value, null, 2)
 </script>
 <template>
   <section class="debug-section" aria-label="Revision Fidelity">
+    <dl class="values">
+      <dt>Source Draft Version</dt><dd>v{{ record.source_binding?.draft_version }} · {{ record.request.source_chapter_version_id }}</dd>
+      <dt>Source Review</dt><dd>{{ record.request.source_review_id }}</dd>
+    </dl>
     <h3>Source Fidelity: {{ fidelity?.verdict ?? '尚无结果' }}</h3>
     <template v-if="plan">
       <dl class="values"><dt>Revision Scope</dt><dd>{{ plan.scope }} / {{ plan.allowed_structural_change }}</dd><dt>CHANGE BUDGET</dt><dd>{{ plan.change_budget }}</dd></dl>
       <h4>KEEP</h4>
-      <ul><li v-for="element in [...plan.preserve_scene_elements, ...plan.preserve_relationship_elements, ...plan.preserve_effective_details]" :key="element.element_id">{{ element.description }}</li></ul>
+      <h5>Preserve Scene Elements</h5><ul><li v-for="element in plan.preserve_scene_elements" :key="element.element_id">{{ element.description }}</li></ul>
+      <h5>Preserve Relationship Elements</h5><ul><li v-for="element in plan.preserve_relationship_elements" :key="element.element_id">{{ element.description }}</li></ul>
+      <h5>Preserve Effective Details</h5><ul><li v-for="element in plan.preserve_effective_details" :key="element.element_id">{{ element.description }}</li></ul>
       <h4>Preserved Strengths</h4>
       <ul><li v-for="strength in plan.strength_preservation" :key="strength.strength_id">{{ strength.strength_id }} · {{ strength.mode }} · {{ strength.preservation_direction }}</li></ul>
       <h4>CHANGE</h4><ul><li v-for="target in plan.revision_targets" :key="target.issue_id">{{ target.problem }}：{{ target.revision_direction }}</li></ul>
@@ -26,6 +32,11 @@ const json = (value: unknown) => JSON.stringify(value, null, 2)
     <template v-if="fidelity">
       <ul><li v-for="(violation, index) in fidelity.violations" :key="index">{{ violation.code }} · {{ violation.check_ids.join(', ') }}：{{ violation.description }}</li></ul>
       <details><summary>Preserve Checks / Evidence / Affected Strengths</summary><pre>{{ json(fidelity.checks) }}</pre></details>
+    </template>
+    <template v-if="record.result">
+      <h4>Addressed Issues</h4><pre>{{ json(record.result.body.addressed_issue_ids) }}</pre>
+      <h4>Unresolved Issues</h4><pre>{{ json(record.result.body.unresolved_issue_ids) }}</pre>
+      <details><summary>Revision Result</summary><pre>{{ json(record.result) }}</pre></details>
     </template>
   </section>
 </template>

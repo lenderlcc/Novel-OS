@@ -983,6 +983,14 @@ lingzhi_base_url = "https://lingzhi.agibot.com/v1"
 避免 Lingzhi 凭据被误发给 OpenAI 官方端点。后台 Worker 仍保持 Mock；这个测试设置
 不会启动 Worker，也不会自动开启真实 Planning/Writing。
 
+同一配置文件的 `[context_windows.<provider>]` 按实际 model 声明输入与输出合计的窗口上限。
+Context 预检采用 `min(Context Profile budget, model window)`，扣除 Prompt/Schema 和输出预留，
+使用现有保守 UTF-8 估算；P0 放不下会阻断，不截断原文。发送前还会检查完整 Prompt。
+真实模型缺少窗口配置时拒绝执行；Gateway 若限制更小，应降低对应配置并重启 Worker。
+窗口配置独立于生成参数，不改变历史 ModelProfile hash；ContextPackage 记录本次实际预算。
+已冻结在旧 RevisionRequest 中的 Context Profile 不随配置更新；此类预算阻断需显式重新审阅，
+再发起新修改请求。
+
 获得一次真实调用授权后，停止后台 Worker，从 `backend/` 执行：
 
 ```bash

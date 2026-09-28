@@ -239,6 +239,7 @@ class AgentRuntime:
                 CandidateBatch((task_item(context_request, profile.selectors[0], now()),)),
                 prompt_overhead=prompt_overhead(skeleton),
                 output_reservation=skeleton.profile.max_output_tokens,
+                model_context_window=self.prompts.profiles.context_window(skeleton.profile),
             )
             if built.status != ContextStatus.READY:
                 return ExecutionResult(error_code=built.error_code)

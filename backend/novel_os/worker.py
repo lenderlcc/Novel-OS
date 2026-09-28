@@ -14,6 +14,7 @@ from novel_os.core.logging import configure_logging
 from novel_os.db.session import Database
 from novel_os.domain.context import ContextStatus
 from novel_os.domain.errors import DomainError
+from novel_os.prompts.contracts import PromptConfigurationError
 from novel_os.providers.tokens import prompt_overhead
 from novel_os.runtime_factory import build_agent_runtime
 from novel_os.services.agent_queue import AgentQueue
@@ -113,6 +114,9 @@ class AgentWorker:
                     lease,
                     prompt_overhead=overhead,
                     output_reservation=skeleton.profile.max_output_tokens,
+                    model_context_window=self.runtime.prompts.profiles.context_window(
+                        skeleton.profile
+                    ),
                 )
             if built.status != ContextStatus.READY:
                 return ExecutionResult(error_code=built.error_code or "CONTEXT_MISSING")
@@ -132,6 +136,8 @@ class AgentWorker:
                 return ExecutionResult(error_code=fresh.error_code or "CONTEXT_STALE")
         except ContextConfigurationError:
             return ExecutionResult(error_code="CONTEXT_CONFIGURATION_ERROR")
+        except PromptConfigurationError:
+            return ExecutionResult(error_code="PROMPT_CONFIGURATION_ERROR")
         except DomainError as exc:
             return ExecutionResult(
                 error_code="CONTEXT_CONFIGURATION_ERROR"

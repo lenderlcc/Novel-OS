@@ -160,8 +160,15 @@ class TokenBudgetService:
         payload = ContextSerializer.payload(request, profile, items)
         return self.estimator.estimate(canonical({"trust": "UNTRUSTED_DATA_ONLY", "data": payload}))
 
-    def select(self, request, profile, items, prompt_overhead, output_reservation):
-        available = profile.token_budget - prompt_overhead - output_reservation
+    def select(
+        self, request, profile, items, prompt_overhead, output_reservation, *, token_budget=None
+    ):
+        budget = (
+            profile.token_budget
+            if token_budget is None
+            else min(profile.token_budget, token_budget)
+        )
+        available = budget - prompt_overhead - output_reservation
         ordered = ContextRanker().rank(items)
         selected = [item for item in ordered if item.priority == Priority.P0]
         cost = self.cost(request, profile, selected)

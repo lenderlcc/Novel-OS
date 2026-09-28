@@ -220,7 +220,9 @@ class ContextService:
             required_future_refs=refs,
         )
 
-    def build_for_run(self, lease, *, prompt_overhead=0, output_reservation=0):
+    def build_for_run(
+        self, lease, *, prompt_overhead=0, output_reservation=0, model_context_window=None
+    ):
         with self.session.begin():
             task, workflow, run = self._locked_run(lease)
             existing = self.repo.for_run(run.run_id)
@@ -254,6 +256,7 @@ class ContextService:
                 batch,
                 prompt_overhead=prompt_overhead,
                 output_reservation=output_reservation,
+                model_context_window=model_context_window,
             )
             if result.package is not None:
                 package = self.repo.add(run.run_id, result.package)

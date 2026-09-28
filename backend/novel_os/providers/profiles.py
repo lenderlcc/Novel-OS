@@ -1,8 +1,8 @@
 import tomllib
 from pathlib import Path
-from typing import Literal
+from typing import Annotated, Literal
 
-from pydantic import Field
+from pydantic import Field, TypeAdapter
 
 from novel_os.prompts.contracts import (
     FrozenModel,
@@ -38,8 +38,15 @@ class ModelProfileRegistry:
         try:
             with (path or Path(__file__).with_name("profiles.toml")).open("rb") as handle:
                 document = tomllib.load(handle)
-            if set(document) != {"profiles"}:
+            if "profiles" not in document or set(document) - {"profiles", "context_windows"}:
                 raise ValueError
+            # Operational capacity is separate from immutable generation-profile hashes.
+            self._context_windows = TypeAdapter(
+                dict[
+                    Literal["openai", "lingzhi"],
+                    dict[Identifier, Annotated[int, Field(strict=True, gt=0)]],
+                ]
+            ).validate_python(document.get("context_windows", {}))
             self._profiles = {}
             for entry in document["profiles"]:
                 profile = ModelProfile.model_validate(entry)
@@ -58,3 +65,11 @@ class ModelProfileRegistry:
             return self._profiles[profile_id]
         except KeyError:
             raise PromptConfigurationError("Unknown model profile") from None
+
+    def context_window(self, profile: ModelProfile) -> int | None:
+        if profile.provider == "mock":
+            return None
+        window = self._context_windows.get(profile.provider, {}).get(profile.model)
+        if window is None or window <= profile.max_output_tokens:
+            raise PromptConfigurationError("Missing or invalid model context window")
+        return window

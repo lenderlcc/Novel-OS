@@ -1,3 +1,14 @@
+# Operational input + output ceilings, keyed by the actual provider/model.
+# Keep generation-profile identity and historical lineage hashes unchanged.
+# https://developers.openai.com/api/docs/models/gpt-4o-mini
+[context_windows.openai]
+"gpt-4o-mini-2024-07-18" = 128000
+
+# Gateway ceiling may be lowered if its deployment imposes a smaller limit.
+# https://developers.openai.com/api/docs/models/gpt-5.6-sol
+[context_windows.lingzhi]
+"gpt-5.6-sol" = 1050000
+
 [[profiles]]
 profile_id = "mock-default"
 provider = "mock"

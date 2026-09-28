@@ -7,8 +7,8 @@ const copy: Record<string, [string, string]> = {
   MODEL_UNAVAILABLE: ['模型服务暂时不可用', '生成没有完成，请稍后再试。'],
   MODEL_TIMEOUT: ['生成等待超时', '模型响应时间过长，请稍后再试。'],
   MODEL_AUTH_ERROR: ['模型服务配置有误', '当前无法调用模型，请检查本机配置。'],
-  EXECUTION_SCOPE_DISABLED: ['当前阶段尚未开放', 'Writing 未开放，请调整本机执行设置后刷新。'],
-  NETWORK_ERROR: ['无法连接服务', '请确认 Backend 正在运行，然后刷新页面。'],
+  EXECUTION_SCOPE_DISABLED: ['当前阶段尚未开放', '当前操作尚未启用，请调整本机执行设置后刷新。'],
+  NETWORK_ERROR: ['无法连接服务', '请确认后台服务正在运行，然后刷新页面。'],
 }
 const message = computed(() => copy[props.error.code] ?? ['操作没有完成', props.error.message])
 </script>
