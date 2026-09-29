@@ -1,0 +1,22 @@
+{
+  "module_id": "validate-revision-fidelity",
+  "module_type": "TASK_TEMPLATE",
+  "version": 3,
+  "status": "STABLE",
+  "description": "Use server-indexed source and candidate paragraphs for exact evidence binding",
+  "content_path": "content.md",
+  "dependencies": [
+    {
+      "module_id": "novel-os-core",
+      "version": 1
+    }
+  ],
+  "compatible_agents": [
+    "A05_REVIEW"
+  ],
+  "compatible_task_types": [
+    "VALIDATE_REVISION_FIDELITY"
+  ],
+  "created_at": "2026-09-28T00:00:00Z",
+  "content_hash": "79c78aacbbca66e6419a4baa3265db64a683eba7c75b8608b975c5cbde1692d0"
+}

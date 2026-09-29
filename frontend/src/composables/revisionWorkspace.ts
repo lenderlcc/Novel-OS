@@ -11,9 +11,9 @@ export function reviewForDraft(reviews: QualityReview[], draftId?: string): Qual
 
 export function revisionOutputFailure(task?: Task) {
   const stages: Record<string, string> = { PLAN_CHAPTER_REVISION: 'Revision Planning', REVISE_CHAPTER: 'Revision Execution', VALIDATE_REVISION_FIDELITY: 'Fidelity Validation' }
-  if (!task || !['FAILED', 'BLOCKED'].includes(task.status) || !['SCHEMA_PARSE_ERROR', 'FORMAT_ERROR', 'MODEL_OUTPUT_INVALID'].includes(task.last_error_code ?? '')) return null
+  if (!task || !['FAILED', 'BLOCKED'].includes(task.status) || !['SCHEMA_PARSE_ERROR', 'FORMAT_ERROR', 'MODEL_OUTPUT_INVALID', 'REVISION_EVIDENCE_MISMATCH'].includes(task.last_error_code ?? '')) return null
   const stage = stages[task.task_type]
-  return stage ? { stage, errorCode: task.last_error_code } : null
+  return stage ? { stage, errorCode: task.last_error_code, reason: task.last_error_code === 'REVISION_EVIDENCE_MISMATCH' ? 'Evidence Binding Failed' : 'Output Validation Failed' } : null
 }
 
 export function useRevisionWorkspace(snapshot: Ref<Snapshot | null>, draft: Ref<Draft | null>) {
@@ -38,6 +38,7 @@ export function useRevisionWorkspace(snapshot: Ref<Snapshot | null>, draft: Ref<
     task.workflow_state_version === workflow.value.state_version - 1 && ['BLOCKED', 'FAILED'].includes(task.status)))
   const contextBudgetBlocked = computed(() => revising.value && workflow.value?.status === 'BLOCKED' && stoppedTask.value?.last_error_code === 'CONTEXT_BUDGET_EXCEEDED')
   const revisionPlanningFailed = computed(() => revising.value && revisionOutputFailure(stoppedTask.value)?.stage === 'Revision Planning')
+  const revisionEvidenceFailed = computed(() => revising.value && revisionOutputFailure(stoppedTask.value)?.errorCode === 'REVISION_EVIDENCE_MISMATCH')
   const revisionNeedsRereview = computed(() => workflow.value?.status === 'BLOCKED' && workflow.value.resume_state === 'C10_REVISION' && revising.value && Boolean(
     revision.value?.result || (stoppedTask.value?.status === 'BLOCKED' &&
       ['PLAN_CHAPTER_REVISION', 'REVISE_CHAPTER', 'VALIDATE_REVISION_FIDELITY'].includes(stoppedTask.value.task_type)),
@@ -58,5 +59,5 @@ export function useRevisionWorkspace(snapshot: Ref<Snapshot | null>, draft: Ref<
     return revision.value?.candidate ? 'AI 正在检查修改范围…' : revision.value?.plan ? 'AI 正在修改正文…' : 'AI 正在分析修改范围…'
   })
   return { qualityReview, revising, revision, historical, revisionMissingProfile, reviewNeedsRereview, canRevise,
-    revisionForDraft, fidelityFailed, contextBudgetBlocked, revisionPlanningFailed, revisionNeedsRereview, blockedReasons, revisionStopped, reviewPending, revisionHeading }
+    revisionForDraft, fidelityFailed, contextBudgetBlocked, revisionPlanningFailed, revisionEvidenceFailed, revisionNeedsRereview, blockedReasons, revisionStopped, reviewPending, revisionHeading }
 }

@@ -247,13 +247,14 @@ class MemoryQueryService:
             if lock:
                 provenance.append(f"lock:{lock.id}")
         payload = {name: getattr(record, name) for name in FIELDS[source]}
-        if request.task_type in QUALITY_TASKS and source == SourceType.CHAPTER_VERSION:
-            from novel_os.quality.policy import paragraphs
+        if source == SourceType.CHAPTER_VERSION and (
+            request.task_type in QUALITY_TASKS
+            or request.task_type in REVISION_TASKS
+            and selector.selector_id == "target-version"
+        ):
+            from novel_os.quality.policy import indexed_paragraphs
 
-            payload["paragraphs"] = [
-                {"paragraph_index": n, "text": text}
-                for n, text in enumerate(paragraphs(record.content), 1)
-            ]
+            payload["paragraphs"] = indexed_paragraphs(record.content)
         if source == SourceType.CHAPTER and request.task_type in {
             "PLAN_CHAPTER",
             "REVIEW_CHAPTER_PLAN",

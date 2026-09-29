@@ -24,6 +24,7 @@ const failureMessage = computed(() => {
     CONTEXT_BUDGET_EXCEEDED: '所需内容超出当前处理预算，现有正文已保留。',
     CONTEXT_STALE: '任务依据已经变化，现有正文已保留。请刷新查看。',
     SCHEMA_PARSE_ERROR: '模型返回的内容未通过格式校验，现有正文已保留。',
+    REVISION_EVIDENCE_MISMATCH: '引用证据定位失败：引文与所标段落不匹配，现有正文已保留。',
     EXTERNAL_CONDITION: '当前流程未满足继续条件，已有正文已保留。请查看下方原因。',
   }
   return copy[technicalCode.value] || '当前流程未能完成，已保留现有内容。请查看详情或使用允许的恢复操作。'

@@ -14,6 +14,10 @@ def paragraphs(content):
     return [part.strip() for part in re.split(r"\n\s*\n", content.strip()) if part.strip()]
 
 
+def indexed_paragraphs(content):
+    return [{"paragraph_index": n, "text": text} for n, text in enumerate(paragraphs(content), 1)]
+
+
 def check_evidence(evidence, content):
     indexed = paragraphs(content)
     for entry in evidence:

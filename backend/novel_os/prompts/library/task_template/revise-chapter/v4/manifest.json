@@ -1,0 +1,22 @@
+{
+  "module_id": "revise-chapter",
+  "module_type": "TASK_TEMPLATE",
+  "version": 4,
+  "status": "STABLE",
+  "description": "Use server-indexed source and candidate paragraphs for exact evidence binding",
+  "content_path": "content.md",
+  "dependencies": [
+    {
+      "module_id": "novel-os-core",
+      "version": 1
+    }
+  ],
+  "compatible_agents": [
+    "A06_REVISION"
+  ],
+  "compatible_task_types": [
+    "REVISE_CHAPTER"
+  ],
+  "created_at": "2026-09-28T00:00:00Z",
+  "content_hash": "b5630ea8f60a5378c72fa63b470a51aa87fe00313aa839b204a9a98c7d9d148a"
+}

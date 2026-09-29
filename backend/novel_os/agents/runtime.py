@@ -20,6 +20,7 @@ from novel_os.prompts.runtime import PromptRuntime
 from novel_os.providers.base import ERROR_RETRYABLE, ModelRequest, ProviderError
 from novel_os.providers.tokens import prompt_overhead
 from novel_os.revision.contracts import require_current_contract
+from novel_os.revision.evidence import RevisionEvidenceError
 
 TECHNICAL_ERRORS = frozenset(
     {
@@ -28,6 +29,7 @@ TECHNICAL_ERRORS = frozenset(
         "TEMPORARY_PROVIDER_FAILURE",
         "FORMAT_ERROR",
         "SCHEMA_PARSE_ERROR",
+        RevisionEvidenceError.code,
         "TRANSIENT_INFRASTRUCTURE_ERROR",
         "LEASE_EXPIRED",
     }
@@ -49,6 +51,8 @@ class ExecutionResult:
 
 
 def execution_failure(exc):
+    if isinstance(exc, RevisionEvidenceError):
+        return ExecutionResult(error_code=exc.code)
     if isinstance(exc, ContextConfigurationError):
         return ExecutionResult(error_code="CONTEXT_CONFIGURATION_ERROR")
     if isinstance(exc, ProviderError):

@@ -2,8 +2,9 @@
 
 from novel_os.domain.revision import FidelityCode
 from novel_os.prompts.contracts import digest
-from novel_os.quality.policy import check_evidence, check_sources, paragraphs
+from novel_os.quality.policy import check_sources, paragraphs
 from novel_os.revision.contracts import read_plan
+from novel_os.revision.evidence import check_revision_evidence
 from novel_os.revision.fidelity_schemas import REQUIRED_CHECKS
 
 
@@ -29,7 +30,7 @@ class RevisionFidelityValidator:
             + plan.preserve_relationship_elements
             + plan.preserve_effective_details
         ):
-            check_evidence(element.evidence, source)
+            check_revision_evidence(element.evidence, source)
         for zone in plan.revision_zones:
             if zone.paragraph_end is not None and zone.paragraph_end > len(paragraphs(source)):
                 raise ValueError("Revision zone extends beyond the source Draft")
@@ -82,8 +83,8 @@ class RevisionFidelityValidator:
         if {c.check_id for c in output.checks} != preservation_ids(parsed):
             raise ValueError("Fidelity must cover all protected story elements and strengths")
         for check in output.checks:
-            check_evidence(check.source_evidence, source.structured_payload["content"])
-            check_evidence(check.revised_evidence, candidate.body["content"])
+            check_revision_evidence(check.source_evidence, source.structured_payload["content"])
+            check_revision_evidence(check.revised_evidence, candidate.body["content"])
         for violation in output.violations:
             if (
                 any(i.startswith("strength:") for i in violation.check_ids)

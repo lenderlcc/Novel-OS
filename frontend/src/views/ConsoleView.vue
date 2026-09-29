@@ -39,7 +39,7 @@ const planStage = computed(() => state.value === 'C06_PLAN_APPROVAL')
 const writingStage = computed(() => state.value === 'C07_WRITING')
 const draftStage = computed(() => ['C08_DETERMINISTIC_CHECK', 'C09_INTERNAL_REVIEW', 'C10_REVISION', 'C11_INTERNAL_PASS'].includes(state.value))
 const { qualityReview, revision, revising, historical, revisionMissingProfile, reviewNeedsRereview, canRevise,
-  revisionForDraft, revisionNeedsRereview, fidelityFailed, contextBudgetBlocked, revisionPlanningFailed, blockedReasons, revisionStopped, reviewPending, revisionHeading,
+  revisionForDraft, revisionNeedsRereview, fidelityFailed, contextBudgetBlocked, revisionPlanningFailed, revisionEvidenceFailed, blockedReasons, revisionStopped, reviewPending, revisionHeading,
 } = useRevisionWorkspace(snapshot, draft)
 const overlayOpen = computed(() =>
   (profileOpen.value && Boolean(projectId.value)) ||
@@ -193,6 +193,7 @@ onMounted(initialize)
           <section v-if="revising" class="quality-review" aria-label="修改进度">
             <h2>{{ revisionHeading }}</h2>
             <p v-if="fidelityFailed" role="status">这次修改范围过大，未替换当前正文。</p>
+            <p v-else-if="revisionEvidenceFailed" role="status">引用证据定位失败：当前阶段的引文与所标段落不匹配，现有正文未替换。可在 Debug 中查看失败阶段和错误码。</p>
             <p v-else-if="revisionPlanningFailed" role="status">修改方案未通过输出校验，尚未修改正文。现有正文已保留；可在 Debug 中查看失败阶段和错误码。</p>
             <p v-else-if="contextBudgetBlocked">修改所需内容超出当前处理预算，当前阶段尚未调用模型。已有正文版本已保留；配置修复后可重新审阅，再发起修改。</p>
             <p v-else-if="revisionNeedsRereview">本次修改已停止。需要补充依据或重新审阅后，才能发起新的修改。</p>

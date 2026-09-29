@@ -6,6 +6,7 @@ from novel_os.domain.context import ContextItem, SourceType
 from novel_os.domain.enums import Authority, Status
 from novel_os.domain.revision import RevisionCandidate
 from novel_os.prompts.contracts import canonical
+from novel_os.quality.policy import indexed_paragraphs
 from novel_os.repositories.quality import QualityRepository
 from novel_os.repositories.revision import RevisionRepository
 from novel_os.repositories.workflows import WorkflowRepository
@@ -45,6 +46,8 @@ class RevisionContextReader:
             if record is None:
                 return (), {"candidate_id": None}
             payload = {**record.body, "candidate_id": str(record.id)}
+            if record.body["content"] is not None:
+                payload["paragraphs"] = indexed_paragraphs(record.body["content"])
         else:
             record = repo.evidence(revision.id)
             if record is None:

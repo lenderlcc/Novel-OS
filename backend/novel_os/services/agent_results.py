@@ -21,6 +21,7 @@ from novel_os.providers.base import ERROR_RETRYABLE
 from novel_os.repositories.agent_tasks import AgentTaskRepository
 from novel_os.repositories.core import CoreRepository
 from novel_os.repositories.workflows import WorkflowRepository
+from novel_os.revision.evidence import RevisionEvidenceError
 from novel_os.services.task_history import RELEASE_LEASE, TaskHistory, worker_context
 from novel_os.services.task_scheduling import expects_task
 from novel_os.workflow.runtime import WorkflowRuntime
@@ -185,6 +186,8 @@ class AgentResultHandler:
                             task, run, result, package, workflow
                         )
                     event, payload, terminal = self.map_result(task, result)
+                except RevisionEvidenceError as exc:
+                    error = exc.code
                 except (ValidationError, ValueError):
                     error = "SCHEMA_PARSE_ERROR"
                 except DomainError as exc:
@@ -275,7 +278,9 @@ class AgentResultHandler:
                     RunStatus.FAILED,
                     error_code=error,
                     output_metadata=metadata,
-                    error_message="Agent execution or validation failed",
+                    error_message="Revision evidence does not match the referenced paragraph"
+                    if error == RevisionEvidenceError.code
+                    else "Agent execution or validation failed",
                     disposition=disposition,
                 )
                 self.history.task(
