@@ -69,7 +69,7 @@ class RevisionRepository:
             .outerjoin(
                 RevisionCandidateModel, RevisionCandidateModel.request_id == RevisionRequestModel.id
             )
-            .join(
+            .outerjoin(
                 QualityBindingModel,
                 QualityBindingModel.id == RevisionRequestModel.source_binding_id,
             )

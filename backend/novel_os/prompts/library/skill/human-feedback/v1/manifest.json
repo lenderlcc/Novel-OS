@@ -1,0 +1,22 @@
+{
+  "module_id": "human-feedback",
+  "module_type": "SKILL",
+  "version": 1,
+  "status": "STABLE",
+  "description": "NOVEL-011 human feedback with exact source and authority boundaries",
+  "content_path": "content.md",
+  "dependencies": [
+    {
+      "module_id": "novel-os-core",
+      "version": 1
+    }
+  ],
+  "compatible_agents": [
+    "A02_REQUIREMENT"
+  ],
+  "compatible_task_types": [
+    "INTERPRET_CHAPTER_FEEDBACK"
+  ],
+  "created_at": "2026-09-29T00:00:00Z",
+  "content_hash": "6b23a816f898ee770544e9d35a1e677f5beb8927db81fa8b8560c0289ce9a19c"
+}

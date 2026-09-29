@@ -1,0 +1,22 @@
+{
+  "module_id": "validate-revision-fidelity",
+  "module_type": "TASK_TEMPLATE",
+  "version": 4,
+  "status": "STABLE",
+  "description": "NOVEL-011 human feedback with exact source and authority boundaries",
+  "content_path": "content.md",
+  "dependencies": [
+    {
+      "module_id": "novel-os-core",
+      "version": 1
+    }
+  ],
+  "compatible_agents": [
+    "A05_REVIEW"
+  ],
+  "compatible_task_types": [
+    "VALIDATE_REVISION_FIDELITY"
+  ],
+  "created_at": "2026-09-29T00:00:00Z",
+  "content_hash": "1a68b44b7dc5a8ea107b230b56ffbddcf6cc0b1d423ef9c4fbce2aebd312fa17"
+}

@@ -1,0 +1,22 @@
+{
+  "module_id": "interpret-chapter-feedback",
+  "module_type": "TASK_TEMPLATE",
+  "version": 1,
+  "status": "STABLE",
+  "description": "NOVEL-011 human feedback with exact source and authority boundaries",
+  "content_path": "content.md",
+  "dependencies": [
+    {
+      "module_id": "novel-os-core",
+      "version": 1
+    }
+  ],
+  "compatible_agents": [
+    "A02_REQUIREMENT"
+  ],
+  "compatible_task_types": [
+    "INTERPRET_CHAPTER_FEEDBACK"
+  ],
+  "created_at": "2026-09-29T00:00:00Z",
+  "content_hash": "3a67ab84f46263262ac17d197629843637ac43ac47918a21624fe44b08842dbc"
+}

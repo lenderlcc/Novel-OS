@@ -63,7 +63,8 @@ class MemoryQueryService:
                 (ITEM_ADAPTER.dump_python(item, mode="json") for item in candidates), key=canonical
             )
             if (
-                request.task_type in {"WRITE_CHAPTER", *QUALITY_TASKS, *REVISION_TASKS}
+                request.task_type
+                in {"WRITE_CHAPTER", "INTERPRET_CHAPTER_FEEDBACK", *QUALITY_TASKS, *REVISION_TASKS}
                 and selector.source_type == SourceType.CHAPTER
             ):
                 # Unapproved Plan edits increment Chapter metadata but do not change
@@ -95,6 +96,10 @@ class MemoryQueryService:
         if source == SourceType.TASK_INPUT:
             return (task_item(request, selector, task_created_at),), {}
         if source == SourceType.EXTENSION:
+            from novel_os.services.feedback_context import FEEDBACK_SELECTORS, FeedbackContextReader
+
+            if selector.selector_id in FEEDBACK_SELECTORS:
+                return FeedbackContextReader(self.session).query(request, selector)
             from novel_os.services.revision_context import REVISION_SELECTORS, RevisionContextReader
 
             if selector.selector_id in REVISION_SELECTORS:
@@ -249,7 +254,7 @@ class MemoryQueryService:
         payload = {name: getattr(record, name) for name in FIELDS[source]}
         if source == SourceType.CHAPTER_VERSION and (
             request.task_type in QUALITY_TASKS
-            or request.task_type in REVISION_TASKS
+            or request.task_type in REVISION_TASKS | {"INTERPRET_CHAPTER_FEEDBACK"}
             and selector.selector_id == "target-version"
         ):
             from novel_os.quality.policy import indexed_paragraphs
@@ -271,6 +276,7 @@ class MemoryQueryService:
             "WRITE_CHAPTER",
             *QUALITY_TASKS,
             *REVISION_TASKS,
+            "INTERPRET_CHAPTER_FEEDBACK",
         }:
             from novel_os.repositories.planning import PlanningRepository
 

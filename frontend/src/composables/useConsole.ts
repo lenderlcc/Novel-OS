@@ -2,25 +2,25 @@ import { computed, onScopeDispose, ref, shallowRef } from 'vue'
 import { api } from '../api/console'
 import { writingProfiles } from '../api/writingProfiles'
 import { ApiError, asError } from '../api/client'
-import type { Project, Chapter, Workflow, Gate, Brief, Plan, PlanningHistory, Draft, Writing, Task, Decision, ExecutionConfig, QualityReview, Revision } from '../types/models'
+import type { Project, Chapter, Workflow, Gate, Brief, Plan, PlanningHistory, Draft, Writing, Task, Decision, ExecutionConfig, QualityReview, Revision, Feedback } from '../types/models'
 import { isReviewResume, isWritingWorkflow, pollDelay } from './workflowState'
 import { reviewForDraft } from './revisionWorkspace'
 
 export interface Snapshot {
   workflow: Workflow; chapter: Chapter; gates: Gate[]; brief: Brief | null;
-  plans: Plan[]; history: PlanningHistory; drafts: Draft[]; writing: Writing[]; tasks: Task[]; qualityReviews?: QualityReview[]; revisions?: Revision[]
+  plans: Plan[]; history: PlanningHistory; drafts: Draft[]; writing: Writing[]; tasks: Task[]; qualityReviews?: QualityReview[]; revisions?: Revision[]; feedback?: Feedback[]
 }
 
 function generatedDraftVersion(s: Snapshot): number | null {
   // Reading selection follows the chapter pointer, not the workflow's source
   // version, which remains old while a revision/re-review is in progress.
-  const qualityWorkspace = s.workflow.workflow_definition_version === 3 && (s.workflow.revision_request_id || s.workflow.resume_state === 'C09_INTERNAL_REVIEW' || ['C09_INTERNAL_REVIEW', 'C10_REVISION', 'C11_INTERNAL_PASS'].includes(s.workflow.current_state))
+  const qualityWorkspace = s.workflow.workflow_definition_version === 3 && (s.workflow.revision_request_id || s.workflow.human_feedback_id || s.workflow.resume_state === 'C13_USER_FEEDBACK_DIAGNOSIS' || s.workflow.resume_state === 'C09_INTERNAL_REVIEW' || ['C09_INTERNAL_REVIEW', 'C10_REVISION', 'C11_INTERNAL_PASS', 'C13_USER_FEEDBACK_DIAGNOSIS'].includes(s.workflow.current_state))
   if (qualityWorkspace && s.drafts.some(draft => draft.version === s.chapter.current_version)) return s.chapter.current_version
   const version = s.workflow.draft_version ?? null
   if (!isWritingWorkflow(s.workflow)) return version
   const draft = s.drafts.find(d => d.version === version)
   // Review may explicitly bind a user-authored version without a Writing generation.
-  if (draft && s.workflow.workflow_definition_version === 3 && ['C09_INTERNAL_REVIEW', 'C10_REVISION', 'C11_INTERNAL_PASS'].includes(s.workflow.current_state)) return version
+  if (draft && s.workflow.workflow_definition_version === 3 && ['C09_INTERNAL_REVIEW', 'C10_REVISION', 'C11_INTERNAL_PASS', 'C13_USER_FEEDBACK_DIAGNOSIS'].includes(s.workflow.current_state)) return version
   return draft && (s.writing.some(w => w.chapter_version_id === draft.id) || s.revisions?.some(r => r.result?.chapter_version_id === draft.id)) ? version : null
 }
 
@@ -74,12 +74,13 @@ export function useConsole(client = api) {
         client.workflow(w, signal),
         manual ? client.executionConfig(signal) : Promise.resolve(executionConfig.value),
       ])
-      const [chapter, gates, brief, plans, history, drafts, writing, tasks, qualityReviews, revisions] = await Promise.all([
+      const [chapter, gates, brief, plans, history, drafts, writing, tasks, qualityReviews, revisions, feedback] = await Promise.all([
         client.chapter(p, c, signal), client.gates(w, signal), current.simulation ? null : client.brief(w, signal), client.plans(p, c, signal),
         current.simulation ? { briefs: [], plans: [], reviews: [] } : client.history(w, signal),
         client.drafts(p, c, signal), client.writing(w, signal), client.tasks(w, signal),
         current.workflow_definition_version === 3 && !current.simulation ? client.qualityReviews(p, c, signal) : [],
         current.workflow_definition_version === 3 && !current.simulation ? client.revisions(w, signal) : [],
+        current.workflow_definition_version === 3 && !current.simulation ? client.feedback(w, signal) : [],
       ])
       // Do not publish a mixed snapshot if the worker advanced while reading artifacts.
       const after = await client.workflow(w, signal)
@@ -89,7 +90,7 @@ export function useConsole(client = api) {
         timer = setTimeout(() => { void refresh(manual) }, 300)
         return
       }
-      const next: Snapshot = { workflow: current, chapter, gates, brief, plans, history, drafts, writing, tasks, qualityReviews, revisions }
+      const next: Snapshot = { workflow: current, chapter, gates, brief, plans, history, drafts, writing, tasks, qualityReviews, revisions, feedback }
       const previous = snapshot.value
       if (!previous || selectedPlan.value === previous.workflow.plan_version) selectedPlan.value = current.plan_version
       // Explicit reading selection is pinned, even if it was current when a
@@ -242,9 +243,43 @@ export function useConsole(client = api) {
     if (selectionAtRequest === selectionRevision) followCurrentDraft = true
     await refresh()
   })
+  let feedbackCommand: { key: string; id: string } | null = null
+  const sendFeedback = (raw: string, replyTo?: string) => mutate(async () => {
+    const w = workflow.value, source = draft.value, s = snapshot.value
+    const selectionAtRequest = selectionRevision
+    if (!w || !source || !raw.trim() || source.version !== s?.chapter.current_version || w.status !== 'WAITING_HUMAN' || !['C10_REVISION', 'C11_INTERNAL_PASS'].includes(w.current_state) || w.revision_request_id || w.human_feedback_id) throw new ApiError('STALE_VIEW', '请在当前正文的空闲状态提交修改要求。')
+    const config = await client.executionConfig(controller.signal)
+    if (disposed || workflow.value?.id !== w.id) return
+    executionConfig.value = config
+    if (config.task_types && ['INTERPRET_CHAPTER_FEEDBACK', 'PLAN_CHAPTER_REVISION', 'REVISE_CHAPTER', 'VALIDATE_REVISION_FIDELITY', 'REVIEW_CHAPTER_COMPLIANCE', 'REVIEW_CHAPTER_NARRATIVE'].some(t => !config.task_types!.includes(t))) throw new ApiError('EXECUTION_SCOPE_DISABLED', '本机尚未启用反馈修改与重新审阅。')
+    const key = JSON.stringify([w.id, w.state_version, source.id, raw, replyTo])
+    if (feedbackCommand?.key !== key) feedbackCommand = { key, id: crypto.randomUUID() }
+    const result = await client.sendFeedback(w, source.id, raw, feedbackCommand.id, replyTo)
+    if (disposed || workflow.value?.id !== w.id) return
+    if (result.error_code) throw new ApiError(result.error_code, '反馈未能提交，请刷新检查。')
+    feedbackCommand = null
+    if (selectionAtRequest === selectionRevision) followCurrentDraft = true
+    await refresh()
+  })
+  const discardFeedback = () => mutate(async () => {
+    const w = workflow.value
+    if (!w?.human_feedback_id) throw new ApiError('STALE_VIEW', '请刷新查看当前反馈。')
+    const result = await client.discardFeedback(w, w.human_feedback_id, crypto.randomUUID())
+    if (disposed || workflow.value?.id !== w.id) return
+    if (result.error_code) throw new ApiError(result.error_code, '未能放弃本次反馈，请刷新检查。')
+    followCurrentDraft = true
+    await refresh()
+  })
+  const replan = (raw: string) => mutate(async () => {
+    const w = workflow.value, brief = snapshot.value?.brief
+    if (!w || !brief || w.status !== 'WAITING_HUMAN' || draft.value?.version !== currentBackendVersion.value || !raw.trim()) throw new ApiError('STALE_VIEW', '请先返回当前正文。')
+    const result = await client.replan(w, brief, raw, crypto.randomUUID())
+    if (result.error_code) throw new ApiError(result.error_code, '返回方案流程失败，请刷新检查。')
+    await refresh()
+  })
   const rereviewRevision = () => mutate(async () => {
     const w = workflow.value, version = snapshot.value?.chapter.current_version
-    const completed = w?.status === 'WAITING_HUMAN' && ['C10_REVISION', 'C11_INTERNAL_PASS'].includes(w.current_state)
+    const completed = w?.status === 'WAITING_HUMAN' && ['C10_REVISION', 'C11_INTERNAL_PASS', 'C13_USER_FEEDBACK_DIAGNOSIS'].includes(w.current_state)
     if (!w || !version || !(completed || (w.revision_request_id && w.status === 'BLOCKED'))) throw new ApiError('STALE_VIEW', '请刷新当前正文后再重新审阅。')
     if (completed) {
       const profile = await writingProfiles.state(w.project_id, controller.signal)
@@ -266,5 +301,5 @@ export function useConsole(client = api) {
   return { projects, chapters, workflows, executionConfig, projectId, chapterId, workflowId, snapshot, workflow,
     selectedPlan, selectedDraft, currentBackendVersion, plan, generation, review, draft, writing, gate, formal,
     error, busy, loading, conflict, loadProjects, selectProject, selectChapter, selectWorkflow,
-    refresh, createProject, createChapter, start, submit, decide, control, revise, rereviewRevision }
+    refresh, createProject, createChapter, start, submit, decide, control, revise, rereviewRevision, sendFeedback, discardFeedback, replan }
 }

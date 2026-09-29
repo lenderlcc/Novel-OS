@@ -1,0 +1,22 @@
+{
+  "module_id": "feedback-quality",
+  "module_type": "QUALITY_PROFILE",
+  "version": 1,
+  "status": "STABLE",
+  "description": "NOVEL-011 human feedback with exact source and authority boundaries",
+  "content_path": "content.md",
+  "dependencies": [
+    {
+      "module_id": "novel-os-core",
+      "version": 1
+    }
+  ],
+  "compatible_agents": [
+    "A02_REQUIREMENT"
+  ],
+  "compatible_task_types": [
+    "INTERPRET_CHAPTER_FEEDBACK"
+  ],
+  "created_at": "2026-09-29T00:00:00Z",
+  "content_hash": "de982b4ea38ab7ef81fe5edc1f0222b5cf108768f8bfc92a05e5086586403b64"
+}

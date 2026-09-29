@@ -1,0 +1,22 @@
+{
+  "module_id": "plan-chapter-revision",
+  "module_type": "TASK_TEMPLATE",
+  "version": 5,
+  "status": "STABLE",
+  "description": "NOVEL-011 human feedback with exact source and authority boundaries",
+  "content_path": "content.md",
+  "dependencies": [
+    {
+      "module_id": "novel-os-core",
+      "version": 1
+    }
+  ],
+  "compatible_agents": [
+    "A06_REVISION"
+  ],
+  "compatible_task_types": [
+    "PLAN_CHAPTER_REVISION"
+  ],
+  "created_at": "2026-09-29T00:00:00Z",
+  "content_hash": "039426e75a7e06d93d716bef38646901c9a384b45d78de582c3f46cd4c7caad2"
+}

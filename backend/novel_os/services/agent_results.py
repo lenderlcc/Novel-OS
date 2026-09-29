@@ -73,7 +73,7 @@ class AgentResultHandler:
         if (
             task.task_type in BUSINESS_RESULTS
             or task.task_type in QUALITY_TASKS | REVISION_TASKS
-            or task.task_type == "WRITE_CHAPTER"
+            or task.task_type in {"WRITE_CHAPTER", "INTERPRET_CHAPTER_FEEDBACK"}
         ):
             return definition.success_event, {}, TaskStatus.SUCCEEDED
         if (
@@ -183,6 +183,14 @@ class AgentResultHandler:
                         from novel_os.services.revision_results import RevisionResultService
 
                         RevisionResultService(self.session).validate(
+                            task, run, result, package, workflow
+                        )
+                    if task.task_type == "INTERPRET_CHAPTER_FEEDBACK" and expects_task(
+                        workflow, task
+                    ):
+                        from novel_os.services.feedback_results import FeedbackResultService
+
+                        FeedbackResultService(self.session).validate(
                             task, run, result, package, workflow
                         )
                     event, payload, terminal = self.map_result(task, result)
@@ -348,6 +356,13 @@ class AgentResultHandler:
                 from novel_os.services.revision_results import RevisionResultService
 
                 event, payload, terminal = RevisionResultService(self.session).persist(
+                    task, run, result, package, workflow
+                )
+                metadata["escalation_required"] = terminal == TaskStatus.BLOCKED
+            if task.task_type == "INTERPRET_CHAPTER_FEEDBACK":
+                from novel_os.services.feedback_results import FeedbackResultService
+
+                event, payload, terminal = FeedbackResultService(self.session).persist(
                     task, run, result, package, workflow
                 )
                 metadata["escalation_required"] = terminal == TaskStatus.BLOCKED

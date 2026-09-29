@@ -34,6 +34,16 @@ class RevisionBindingService:
         chapter = self.core.repo.get_chapter(workflow.project_id, workflow.chapter_id)
         self.core.check_record_lock(chapter)
         self.core.check_lock(workflow.project_id, ObjectRef(ObjectType.CHAPTER_VERSION, chapter.id))
+        if request.source_feedback_id is not None:
+            from novel_os.services.feedback_binding import FeedbackBindingService
+
+            feedback_service = FeedbackBindingService(self.session)
+            feedback_service.check(feedback_service.repo.get(request.source_feedback_id), workflow)
+            profile = ContextProfile.model_validate_json(request.profile_json)
+            ContextProfileRegistry().resolve(
+                profile.profile_id, profile.version, expected_hash=profile.profile_hash
+            )
+            return request
         latest = self.quality.history(workflow.project_id, chapter.id, 1)
         binding = self.quality.binding_by_id(request.source_binding_id)
         if not all((binding.profile_record_id, binding.profile_version, binding.profile_hash)):

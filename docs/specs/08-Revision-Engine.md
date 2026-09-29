@@ -116,3 +116,9 @@ plan-chapter-revision / revise-chapter 使用新增 v2，targeted-revision skill
 ### 重审证据协议澄清
 
 新增 A05 `quality-evidence` skill v3，明确单个 evidence 必须完整引用其 paragraph_index 对应段落中的连续原文。分析跨段对话模式时使用多个独立条目；不得拼接两段、改写或用省略号拼合。保留 v2 和历史 pin；现有确定性校验、Schema、严重程度、Verdict 与 A06 策略均不变。该修正对齐模型输入说明与已有校验，不接受不合法引用或自动改写模型结果。
+
+## NOVEL-011：Human Directed Revision
+
+保留同一 A06 Plan/Execute 与 A05 Fidelity/Review 引擎。新增 revision_source=AI_REVIEW/HUMAN_FEEDBACK/BOTH 和 source_feedback_id，人工模式的 Review/QualityBinding 可空。用户 requested_changes 是唯一修改目标；Review只提供相关诊断及保留优点，不能增加范围或覆盖显式 preserve。
+
+独立 HumanFeedback/Interpretation 进入 context，preserve_requests→KEEP，do_not_change→DO_NOT_CHANGE，target_regions→语义 zones。Fidelity 新增 HUMAN_SCOPE 和所有显式保留/边界检查，仍验证实际原稿/候选精确证据；失败不替换 current。CHAPTER_WIDE 仅允许获授权的 prose-wide修复，不意味着重写故事。输出版本4/3/3，Prompt版本5/6/4；旧文件不覆盖。详见 [Human Feedback](09-Human-Feedback.md)。

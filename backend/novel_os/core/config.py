@@ -71,6 +71,7 @@ class Settings(BaseSettings):
                 "PLAN_CHAPTER_REVISION",
                 "REVISE_CHAPTER",
                 "VALIDATE_REVISION_FIDELITY",
+                "INTERPRET_CHAPTER_FEEDBACK",
             ),
             "chapter-writing": (
                 "PARSE_CHAPTER_REQUIREMENT",

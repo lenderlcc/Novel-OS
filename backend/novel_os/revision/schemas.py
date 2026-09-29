@@ -78,14 +78,14 @@ class RevisionAgentResult(AgentResult):
 
 
 def revision_results():
-    from novel_os.revision.contracts import (
-        FidelityResultV2,
-        RevisionPlanResultV3,
-        RevisionResultV2,
+    from novel_os.revision.directed_contracts import (
+        DirectedFidelityResult,
+        DirectedPlanResult,
+        DirectedRevisionResult,
     )
 
     return {
-        "PLAN_CHAPTER_REVISION": ("chapter-revision-plan", RevisionPlanResultV3),
-        "REVISE_CHAPTER": ("chapter-revision-result", RevisionResultV2),
-        "VALIDATE_REVISION_FIDELITY": ("revision-fidelity-result", FidelityResultV2),
+        "PLAN_CHAPTER_REVISION": ("chapter-revision-plan", DirectedPlanResult),
+        "REVISE_CHAPTER": ("chapter-revision-result", DirectedRevisionResult),
+        "VALIDATE_REVISION_FIDELITY": ("revision-fidelity-result", DirectedFidelityResult),
     }

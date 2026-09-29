@@ -1,0 +1,22 @@
+{
+  "module_id": "feedback-interpreter",
+  "module_type": "AGENT_ROLE",
+  "version": 1,
+  "status": "STABLE",
+  "description": "NOVEL-011 human feedback with exact source and authority boundaries",
+  "content_path": "content.md",
+  "dependencies": [
+    {
+      "module_id": "novel-os-core",
+      "version": 1
+    }
+  ],
+  "compatible_agents": [
+    "A02_REQUIREMENT"
+  ],
+  "compatible_task_types": [
+    "INTERPRET_CHAPTER_FEEDBACK"
+  ],
+  "created_at": "2026-09-29T00:00:00Z",
+  "content_hash": "40d9288fd08e122fd4c60839b807f2678c8c06a7adb0438f335c252ae8265eb3"
+}

@@ -96,17 +96,18 @@ NOVEL-001
 ## Current Status
 
 - Product / Architecture Specification: Frozen for Prototype v0.1
-- Actual Implementation: `NOVEL-006 — Context Engine & Memory Query Foundation`，实现、验证和独立审查完成，等待用户 Review
-- NOVEL-001 / 002 / 003 / 004 / 005: 已通过 Review，沿用 TOML 配置和现有基础设施
-- Next Action: Review NOVEL-006；不自动进入 NOVEL-007
+- Actual Implementation: `NOVEL-011 — Human Feedback & Directed Revision`，等待用户 Review 与正文人工验收
+- 已实现 NOVEL-001～010B、STYLE-001/002 和 Personal Creative Workspace；沿用 TOML 配置和现有基础设施
+- Next Action: Review NOVEL-011；不自动进入 NOVEL-012
 
 具体规格见 `docs/specs/`，开发任务见 `docs/tickets/`。
 
 ## Backend Development
 
 当前实现工程基础设施、Core Domain、deterministic Chapter Workflow、异步 Agent Runtime、
-版本化 Prompt、可替换模型 Provider 和结构化 Context Engine。默认使用 Mock；真实 Provider 通过 TOML 显式启用。
-尚未实现真实业务 Agent、Memory/Canon 或前端。
+版本化 Prompt、可替换模型 Provider 和结构化 Context Engine，以及需求理解、方案、写作、质量审阅、
+定向修改与人工反馈链路。Vue 工作台提供个人创作入口；Memory/Canon 写入尚未实现。
+默认使用 Mock；真实 Provider 通过 TOML 显式启用。
 
 需要 Python 3.13（声明支持 3.12–3.14）、uv、Docker Engine 与 Docker Compose 插件（v2 或更新版本）。
 依赖的精确版本记录在 `backend/uv.lock`；Docker 构建使用 uv 0.9.30。
@@ -1155,3 +1156,15 @@ Case 01 原始证据和受控人工 A/B 步骤见
 在本机 TOML 中设置 `agent_execution_scope = "chapter-quality"` 才允许执行两个新审阅任务。离线验证使用 `agent_model_profile = "mock-default"`。真实 Provider 扩大执行范围会允许付费调用，应仅用于用户明确授权的运行；本次开发和测试没有修改现有付费 Worker 的本机配置。配置继续使用文件，不需要环境变量。
 
 历史 Case 01～05 评估与显式真实调用步骤见 [evals/quality](evals/quality/README.md)。设计与 API 见 [Quality Engine](docs/specs/07-Quality-Engine.md)，验证结果见 [009 实施报告](docs/reports/NOVEL-009-quality-review-engine.md)。
+
+### NOVEL-011：用自然语言修改当前正文
+
+在当前 Draft 页面点击 **我想修改**，描述不满意之处和需要保留的内容，点击 **发送并修改**。系统理解反馈后执行一次局部修改、Fidelity 检查与重新审阅，然后停止。可在历史版本中查看原稿和反馈；人工评价保持独立。
+
+修改已批准故事方向会要求显式返回方案流程；持续写作偏好会打开已有 Profile 编辑/审批路径；锁定或矛盾指令不会被静默覆盖。历史版本只读，当前版本变化时需要重新阅读后提交。
+
+更新后先执行 `alembic upgrade head`（当前 0015），重建/重启 Backend 和 Worker。`chapter-quality` 执行范围新增 `INTERPRET_CHAPTER_FEEDBACK`。仍只使用 `config.toml`；真实 Provider 会消费 API，按本机配置的单任务尝试上限执行。数据库已有反馈记录时，0014 downgrade 会拒绝删除不可变历史；0015 在已有澄清关联时也拒绝降级。
+
+“补充修改要求”会结合原反馈和问题处理，保留原有范围与保留要求。如果等待解读时正文或批准的写作依据发生变化，可点击“放弃本次反馈，返回当前正文”，再针对当前版本重新提交；放弃不会修改正文或删除历史，也不会调用模型。
+
+设计与接口见 [Human Feedback](docs/specs/09-Human-Feedback.md)。未实现 NOVEL-012。

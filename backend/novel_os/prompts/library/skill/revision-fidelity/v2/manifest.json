@@ -1,0 +1,22 @@
+{
+  "module_id": "revision-fidelity",
+  "module_type": "SKILL",
+  "version": 2,
+  "status": "STABLE",
+  "description": "NOVEL-011 primary human direction and preservation within existing authority",
+  "content_path": "content.md",
+  "dependencies": [
+    {
+      "module_id": "novel-os-core",
+      "version": 1
+    }
+  ],
+  "compatible_agents": [
+    "A05_REVIEW"
+  ],
+  "compatible_task_types": [
+    "VALIDATE_REVISION_FIDELITY"
+  ],
+  "created_at": "2026-09-29T00:00:00Z",
+  "content_hash": "6592c9710f4fa7aa68c5177af4882a66ab0a5bfba1f29982e22d451cf370c203"
+}

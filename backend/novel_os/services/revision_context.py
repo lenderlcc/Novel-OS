@@ -35,10 +35,14 @@ class RevisionContextReader:
                 {
                     **revision.contract,
                     "source_chapter_version_id": str(revision.source_chapter_version_id),
-                    "source_review_id": str(revision.source_review_id),
+                    "source_review_id": str(revision.source_review_id)
+                    if revision.source_review_id
+                    else None,
                 },
             )
         elif selector.selector_id == "source-quality-review":
+            if revision.source_review_id is None:
+                return (), {"review_id": None}
             record = QualityRepository(self.session).get(revision.source_review_id)
             payload = record.body
         elif selector.selector_id == "revision-candidate":

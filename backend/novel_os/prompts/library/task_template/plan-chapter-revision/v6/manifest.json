@@ -1,0 +1,22 @@
+{
+  "module_id": "plan-chapter-revision",
+  "module_type": "TASK_TEMPLATE",
+  "version": 6,
+  "status": "STABLE",
+  "description": "NOVEL-011 feedback clarification and explicit user priority",
+  "content_path": "content.md",
+  "dependencies": [
+    {
+      "module_id": "novel-os-core",
+      "version": 1
+    }
+  ],
+  "compatible_agents": [
+    "A06_REVISION"
+  ],
+  "compatible_task_types": [
+    "PLAN_CHAPTER_REVISION"
+  ],
+  "created_at": "2026-09-29T00:00:00Z",
+  "content_hash": "d5168db1ce56a3c1fdd0f74ff9fd21ff0e0c3d73aad297fcd8101ba29a2c1cfe"
+}

@@ -31,6 +31,9 @@ class RevisionFidelityValidator:
             + plan.preserve_effective_details
         ):
             check_revision_evidence(element.evidence, source)
+        from novel_os.feedback.policy import check_directed_plan
+
+        check_directed_plan(plan, request.contract)
         for zone in plan.revision_zones:
             if zone.paragraph_end is not None and zone.paragraph_end > len(paragraphs(source)):
                 raise ValueError("Revision zone extends beyond the source Draft")
@@ -80,7 +83,15 @@ class RevisionFidelityValidator:
             request,
             source.structured_payload["content"],
         )
-        if {c.check_id for c in output.checks} != preservation_ids(parsed):
+        from novel_os.feedback.policy import human_fidelity_checks
+
+        if getattr(output, "source_feedback_id", None) != request.source_feedback_id or getattr(
+            output, "revision_source", "AI_REVIEW"
+        ) != request.contract.get("revision_source", "AI_REVIEW"):
+            raise ValueError("Fidelity must bind the exact revision source")
+        if {c.check_id for c in output.checks} != preservation_ids(parsed) | human_fidelity_checks(
+            request.contract
+        ):
             raise ValueError("Fidelity must cover all protected story elements and strengths")
         for check in output.checks:
             check_revision_evidence(check.source_evidence, source.structured_payload["content"])

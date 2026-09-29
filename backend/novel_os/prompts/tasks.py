@@ -172,6 +172,24 @@ class TaskDefinitionRegistry:
                         schema_id, int(schema.rsplit(".v", 1)[1]), legacy_model
                     ),
                 )
+        from novel_os.feedback.schemas import FeedbackAgentResult
+
+        self.register(
+            TaskDefinition(
+                task_type="INTERPRET_CHAPTER_FEEDBACK",
+                agent_id=AgentId.A02_REQUIREMENT,
+                system_policy=ref("novel-os-core"),
+                agent_role=ref("feedback-interpreter"),
+                task_template=ref("interpret-chapter-feedback"),
+                skills=(ref("human-feedback"),),
+                quality_profile=ref("feedback-quality"),
+                output_schema=OutputContractGenerator.generate(
+                    "chapter-feedback-result", 1, FeedbackAgentResult
+                ),
+                model_profile=model_profile,
+                capabilities=frozenset({Capability.REPORT_RESULT}),
+            )
+        )
         from novel_os.agents.writing_schemas import WritingAgentResult
 
         self.register(

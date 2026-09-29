@@ -2,6 +2,7 @@
 .env
 .env.*
 backend/config.toml
+/.runtime/
 backend/.runtime/
 frontend/.runtime/
 .venv/

@@ -272,3 +272,7 @@ A06_REVISION 通过 PLAN_CHAPTER_REVISION → REVISE_CHAPTER 两阶段提出受�
 ## NOVEL-010A Revision Fidelity
 
 A06 仍拥有 PLAN_CHAPTER_REVISION / REVISE_CHAPTER，输出分别为 locality Plan 与 immutable Candidate。A05 新增薄任务 VALIDATE_REVISION_FIDELITY，仅拥有 REVIEW 能力，独立核对场景、关系、strengths、隐式保护区域和结构授权。候选稿通过此门禁后，application 才创建新 Draft 并接回原 009 A05 两轮质量审阅。失败保持源稿 current 并停止。Source 为 EDIT_BASE，使用 CP-007 v4；详见 [Revision Engine](08-Revision-Engine.md)。
+
+## NOVEL-011：A02 Human Feedback
+
+现有 A02 新增 INTERPRET_CHAPTER_FEEDBACK，使用 CP-008 与版本化 interpret-chapter-feedback，不新增 Agent。输出独立 HumanFeedbackInterpretation；原需求解析和 CreativeBrief 不受反馈隐式覆盖。普通局部表达意见自主推断，真实方向/偏好/锁定冲突走明确 action。A06/A05 接入同一 Revision/Fidelity 路径，详见 [Human Feedback](09-Human-Feedback.md)。

@@ -14,6 +14,11 @@ def response(request, scenario):
         source_refs=[ref],
         confidence=0.8,
     )
+    if contract.get("source_feedback_id"):
+        common.update(
+            source_feedback_id=contract["source_feedback_id"],
+            revision_source=contract["revision_source"],
+        )
     if request.output_kind == "revision_plan":
         output = dict(
             **common,
@@ -31,7 +36,7 @@ def response(request, scenario):
                     issue_code=i["code"],
                     priority=i["severity"],
                     problem=i["description"],
-                    revision_direction=i["revision_direction"],
+                    revision_direction=i.get("revision_direction", i["description"]),
                     evidence_refs=i["evidence"],
                 )
                 for id, i in contract["target_issues"].items()
@@ -118,7 +123,9 @@ def locality_fields(output, contract, source):
         revision_zones=[
             dict(
                 issue_ids=[t["issue_id"]],
-                semantic_range="审阅证据所指向的段落",
+                semantic_range=contract["target_issues"][t["issue_id"]].get(
+                    "target_regions", ["审阅证据所指向的段落"]
+                )[0],
                 paragraph_start=None,
                 paragraph_end=None,
             )
@@ -138,6 +145,11 @@ def fidelity_output(common, items, scenario):
     candidate = items["revision-candidate"].structured_payload
     source = items["target-version"].structured_payload["content"]
     model = read_plan({k: v for k, v in plan.items() if k != "revision_plan_id"})
+    from novel_os.feedback.policy import human_fidelity_checks
+
+    required = preservation_ids(model) | human_fidelity_checks(
+        items["revision-contract"].structured_payload
+    )
     failed = scenario == "QUALITY_FAIL"
     return dict(
         **common,
@@ -153,7 +165,7 @@ def fidelity_output(common, items, scenario):
                 source_evidence=[excerpt(source)],
                 revised_evidence=[excerpt(candidate["content"])],
             )
-            for k in sorted(preservation_ids(model))
+            for k in sorted(required)
         ],
         violations=[
             dict(

@@ -175,22 +175,22 @@ REVISION_STAGE_TASKS = {
         legacy_result_schema="chapter-revision-plan.v2"
         if task == "PLAN_CHAPTER_REVISION"
         else "chapter-revision-result.v1",
-        additional_legacy_schemas=("chapter-revision-plan.v1",)
+        additional_legacy_schemas=("chapter-revision-plan.v1", "chapter-revision-plan.v3")
         if task == "PLAN_CHAPTER_REVISION"
-        else (),
+        else ("chapter-revision-result.v2",),
     )
     for task, kind, event, schema in (
         (
             "PLAN_CHAPTER_REVISION",
             "revision_plan",
             "REVISION_PLAN_READY",
-            "chapter-revision-plan.v3",
+            "chapter-revision-plan.v4",
         ),
         (
             "REVISE_CHAPTER",
             "revision_result",
             "REVISION_CANDIDATE_READY",
-            "chapter-revision-result.v2",
+            "chapter-revision-result.v3",
         ),
     )
 }
@@ -201,9 +201,20 @@ REVISION_STAGE_TASKS["VALIDATE_REVISION_FIDELITY"] = StageTaskMapping(
     "revision_fidelity",
     Capability.REVIEW,
     "REVISION_READY",
-    result_schema="revision-fidelity-result.v2",
+    result_schema="revision-fidelity-result.v3",
+    additional_legacy_schemas=("revision-fidelity-result.v2",),
     legacy_result_schema="revision-fidelity-result.v1",
 )
+FEEDBACK_STAGE_TASK = StageTaskMapping(
+    "INTERPRET_CHAPTER_FEEDBACK",
+    State.C13_USER_FEEDBACK_DIAGNOSIS,
+    AgentId.A02_REQUIREMENT,
+    "human_feedback_interpretation",
+    Capability.REPORT_RESULT,
+    "FEEDBACK_READY",
+    result_schema="chapter-feedback-result.v1",
+)
+TASKS[FEEDBACK_STAGE_TASK.task_type] = FEEDBACK_STAGE_TASK
 TASKS.update(REVISION_STAGE_TASKS)
 TASKS.update(QUALITY_STAGE_TASKS)
 TASKS[WRITING_TASK.task_type] = WRITING_TASK

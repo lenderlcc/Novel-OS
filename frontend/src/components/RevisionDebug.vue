@@ -13,6 +13,7 @@ const json = (value: unknown) => JSON.stringify(value, null, 2)
   <section class="debug-section" aria-label="Revision Fidelity">
     <dl class="values">
       <dt>Source Draft Version</dt><dd>v{{ record.source_binding?.draft_version }} · {{ record.request.source_chapter_version_id }}</dd>
+      <dt>Revision Source</dt><dd>{{ record.request.contract?.revision_source ?? 'AI_REVIEW' }}</dd><dt>Human Feedback</dt><dd>{{ record.request.source_feedback_id ?? '无' }}</dd>
       <dt>Source Review</dt><dd>{{ record.request.source_review_id }}</dd>
     </dl>
     <h3>Source Fidelity: {{ fidelity?.verdict ?? '尚无结果' }}</h3>

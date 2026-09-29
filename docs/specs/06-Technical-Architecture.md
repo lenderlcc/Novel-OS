@@ -327,3 +327,9 @@ Agent → Tool → Service → Repository → Database
 在现有 API → Service → Repository → Database 和 Agent Runtime 上扩展 A06；无第二套队列/状态机。0012 添加 append-only revision_requests/plans/results 与 workflow active request FK。事务边界仍在 WorkflowRuntime / AgentResultHandler，Repository 仅 flush。新增 Draft 与 RevisionResult、Audit、工作流事件、下一 A05 task 原子提交；唯一约束、项目锁、乐观 token、lease fencing 共同防止重复写入。
 
 CP-007 v3 重用正式 Quality 源选择并加入 exact Review、authority contract、RevisionPlan；既有 QualityBinding 冻结 source fingerprints，运行时两次校验，继承 approved/current 分离。history 使用分页联合查询。Domain 无 FastAPI/ORM 依赖；所有 Prompt/Context/Model 通过原 Runtime 追溯。详见 [Revision Engine](08-Revision-Engine.md)。
+
+## NOVEL-011：反馈接入
+
+API → Workflow/Application Service → Flush-only Repository → Database。Domain feedback values 不依赖 FastAPI/ORM。新增 immutable HumanFeedback / HumanFeedbackInterpretation，不引入另一个 Agent/Revision engine。Context 复用结构化 MemoryQueryService extension reader；来源快照冻结 approved 输入，模型前和结果写入重查。
+
+Feedback source 与 RevisionRequest 使用不同逻辑 UUID，避免 EXTENSION authority resolver 将不同证据误判为同一对象冲突。RevisionRequest source matrix 和所有执行 lineage由0014数据库触发器保护；Service控制同一事务中的 Interpretation、RevisionRequest、transition、task和audit。取消和迟到结果沿用现有机制。详见 [Human Feedback](09-Human-Feedback.md)。

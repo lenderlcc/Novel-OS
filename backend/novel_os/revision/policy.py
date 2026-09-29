@@ -8,7 +8,7 @@ from novel_os.quality.policy import check_sources
 from novel_os.quality.schemas import read_review
 
 
-def contract_for(review, package):
+def review_targets(review):
     body = read_review(review.body)
     issues = body.hard_gate_issues + body.quality_issues
     priority = {p.issue_code: n for n, p in enumerate(body.revision_priorities)}
@@ -17,7 +17,17 @@ def contract_for(review, package):
         key=lambda pair: (pair[1].severity, priority.get(pair[1].code, 100), pair[0]),
     )
     targets = {str(uuid5(review.id, f"issue:{n}")): i.model_dump(mode="json") for n, i in ordered}
-    keep = {f"strength:{n}": s.model_dump(mode="json") for n, s in enumerate(body.strengths)}
+    return targets
+
+
+def contract_for(review, package, *, source_id=None):
+    body = read_review(review.body) if review else None
+    targets = review_targets(review) if review else {}
+    keep = (
+        {f"strength:{n}": s.model_dump(mode="json") for n, s in enumerate(body.strengths)}
+        if body
+        else {}
+    )
     boundaries = {}
     for item in package.items:
         payload = item.structured_payload
@@ -62,7 +72,7 @@ def contract_for(review, package):
         fidelity_version=1,
         edit_base={
             "role": "EDIT_BASE",
-            "source_id": str(review.chapter_version_id),
+            "source_id": str(source_id or review.chapter_version_id),
             "selector_id": "target-version",
             "full_text_required": True,
         },
@@ -78,6 +88,10 @@ def validate_plan(output, request, package):
     ):
         raise ValueError("Revision Plan source identity mismatch")
     contract = request.contract
+    if getattr(output, "source_feedback_id", None) != request.source_feedback_id or getattr(
+        output, "revision_source", "AI_REVIEW"
+    ) != contract.get("revision_source", "AI_REVIEW"):
+        raise ValueError("Revision source must match its frozen request")
     if set(map(str, output.target_issue_ids)) != set(contract["target_issues"]):
         raise ValueError("Revision target issues must belong to the exact source Review")
     if set(output.preserve_items) != set(contract["preserve_items"]) or len(
@@ -106,6 +120,10 @@ def validate_result(output, request, plan, package):
         plan.id,
     ):
         raise ValueError("Revision execution source identity mismatch")
+    if getattr(output, "source_feedback_id", None) != request.source_feedback_id or getattr(
+        output, "revision_source", "AI_REVIEW"
+    ) != request.contract.get("revision_source", "AI_REVIEW"):
+        raise ValueError("Revision result source mismatch")
     addressed, unresolved = (
         list(map(str, output.addressed_issue_ids)),
         list(map(str, output.unresolved_issue_ids)),

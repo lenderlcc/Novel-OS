@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { Workflow, Task, ExecutionConfig } from '../types/models'
-import { currentTask, isReviewResume, progressLabel, resumeCallsModel } from '../composables/workflowState'
+import { currentTask, isReviewResume, isStaleFeedback, progressLabel, resumeCallsModel } from '../composables/workflowState'
 const props = defineProps<{ workflow: Workflow; tasks: Task[]; config?: ExecutionConfig | null; canResume?: boolean; hideResume?: boolean; currentDraftVersion?: number | null }>()
 defineEmits<{ resume: [] }>()
 const task = computed(() => currentTask(props.workflow, props.tasks))
@@ -17,6 +17,9 @@ const reviewResume = computed(() => isReviewResume(props.workflow, props.tasks))
 const stages = computed(() => props.workflow.workflow_definition_version === 3 && !props.workflow.simulation ? ['需求', '方案', '正文', '审阅', '修改'] : ['需求', '方案', '正文'])
 const technicalCode = computed(() => failedTask.value?.last_error_code || props.workflow.block_reason || props.workflow.blocked_guard || props.workflow.current_state)
 const failureMessage = computed(() => {
+  if (isStaleFeedback(props.workflow, props.tasks)) return '正文或写作依据已变化。请放弃本次反馈，再根据当前正文提交修改要求。'
+  if (failedTask.value?.task_type === 'INTERPRET_CHAPTER_FEEDBACK') return '暂时无法理解这条修改要求。现有正文已保留。'
+  if (failedTask.value?.task_type === 'REVISE_CHAPTER') return '正文修改失败。现有正文已保留。'
   const copy: Record<string, string> = {
     MODEL_AUTH_ERROR: '模型服务配置有误，请检查本机配置后重试。',
     MODEL_UNAVAILABLE: '模型服务暂时不可用，请稍后再试。',
@@ -38,7 +41,7 @@ const failureMessage = computed(() => {
       <h3>{{ workflow.current_state === 'C90_BLOCKED' ? '当前流程暂停' : workflow.current_state === 'C91_FAILED' ? '生成失败' : '流程已停止' }}</h3>
       <p>{{ failureMessage }}</p>
       <details><summary>查看技术详情</summary><p><code>{{ technicalCode }}</code></p><p v-if="workflow.block_reason">{{ workflow.block_reason }}</p><p>关联运行记录可在 Debug 中查看。</p></details>
-      <button v-if="workflow.current_state === 'C90_BLOCKED' && !hideResume" :disabled="!canResume" @click="$emit('resume')">{{ reviewResume && currentDraftVersion ? `重新审阅正文 v${currentDraftVersion}` : '重试本阶段' }}（会调用模型）</button>
+      <button v-if="workflow.current_state === 'C90_BLOCKED' && !hideResume && !isStaleFeedback(workflow, tasks)" :disabled="!canResume" @click="$emit('resume')">{{ reviewResume && currentDraftVersion ? `重新审阅正文 v${currentDraftVersion}` : '重试本阶段' }}（会调用模型）</button>
     </div>
     <div v-else-if="workflow.status === 'PAUSED'" class="paused"><p>已保留当前内容，可以继续这个流程。</p><button :disabled="!canResume" @click="$emit('resume')">{{ reviewResume && currentDraftVersion ? `重新审阅正文 v${currentDraftVersion}` : requirementOnly && workflow.current_state === 'C01_REQUIREMENT_INTAKE' ? '继续理解需求' : '继续' }}{{ resumeCallsModel(workflow, config, tasks) ? '（会调用模型）' : '' }}</button></div>
     <p v-else-if="workflow.current_state === 'C06_PLAN_APPROVAL'">方案已经准备好，请确认下一步。</p>

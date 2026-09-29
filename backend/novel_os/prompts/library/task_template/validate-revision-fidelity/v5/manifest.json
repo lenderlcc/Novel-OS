@@ -1,0 +1,22 @@
+{
+  "module_id": "validate-revision-fidelity",
+  "module_type": "TASK_TEMPLATE",
+  "version": 5,
+  "status": "STABLE",
+  "description": "NOVEL-011 feedback clarification and explicit user priority",
+  "content_path": "content.md",
+  "dependencies": [
+    {
+      "module_id": "novel-os-core",
+      "version": 1
+    }
+  ],
+  "compatible_agents": [
+    "A05_REVIEW"
+  ],
+  "compatible_task_types": [
+    "VALIDATE_REVISION_FIDELITY"
+  ],
+  "created_at": "2026-09-29T00:00:00Z",
+  "content_hash": "bdfe5b930d198b007e152da1969185d93dd75ade2da16e24a04639c90a4305d8"
+}

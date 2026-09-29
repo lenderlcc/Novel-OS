@@ -38,6 +38,41 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/workflows/{workflow_id}/feedback": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** History */
+        get: operations["history_api_v1_workflows__workflow_id__feedback_get"];
+        put?: never;
+        /** Submit */
+        post: operations["submit_api_v1_workflows__workflow_id__feedback_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/workflows/{workflow_id}/feedback/discard": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Discard */
+        post: operations["discard_api_v1_workflows__workflow_id__feedback_discard_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/workflows/chapter-quality": {
         parameters: {
             query?: never;
@@ -2338,6 +2373,148 @@ export interface components {
          * @enum {string}
          */
         DeviationSeverity: "LOCAL" | "MODERATE" | "MAJOR";
+        /** DirectedFidelityOutput */
+        DirectedFidelityOutput: {
+            /**
+             * Kind
+             * @constant
+             */
+            kind: "revision_fidelity";
+            /**
+             * Source Chapter Version Id
+             * Format: uuid
+             */
+            source_chapter_version_id: string;
+            /** Source Review Id */
+            source_review_id: string | null;
+            /**
+             * Revision Plan Id
+             * Format: uuid
+             */
+            revision_plan_id: string;
+            /**
+             * Candidate Id
+             * Format: uuid
+             */
+            candidate_id: string;
+            /** Candidate Content Hash */
+            candidate_content_hash: string;
+            /**
+             * Verdict
+             * @enum {string}
+             */
+            verdict: "PASS" | "FAIL";
+            /** Checks */
+            checks: components["schemas"]["FidelityCheck"][];
+            /** Violations */
+            violations: components["schemas"]["FidelityViolation"][];
+            /** Source Refs */
+            source_refs: components["schemas"]["ReviewSource"][];
+            /** Confidence */
+            confidence: number;
+            /** @default AI_REVIEW */
+            revision_source: components["schemas"]["RevisionSource"];
+            /** Source Feedback Id */
+            source_feedback_id?: string | null;
+        };
+        /** DirectedRevisionPlan */
+        DirectedRevisionPlan: {
+            /**
+             * Kind
+             * @constant
+             */
+            kind: "revision_plan";
+            /**
+             * Chapter Id
+             * Format: uuid
+             */
+            chapter_id: string;
+            /**
+             * Source Chapter Version Id
+             * Format: uuid
+             */
+            source_chapter_version_id: string;
+            /** Source Review Id */
+            source_review_id: string | null;
+            /** Target Issue Ids */
+            target_issue_ids: string[];
+            /** Preserve Items */
+            preserve_items: string[];
+            /** Revision Targets */
+            revision_targets: components["schemas"]["DirectedTarget"][];
+            /** Do Not Change */
+            do_not_change: string[];
+            /** Revision Strategy */
+            revision_strategy: string;
+            /** @default TARGETED */
+            scope: components["schemas"]["RevisionScope"];
+            /** Blocked Reasons */
+            blocked_reasons: components["schemas"]["BlockedReason"][];
+            /** Source Refs */
+            source_refs: components["schemas"]["ReviewSource"][];
+            /** Confidence */
+            confidence: number;
+            /** Preserve Scene Elements */
+            preserve_scene_elements: components["schemas"]["PreservationElement"][];
+            /** Preserve Relationship Elements */
+            preserve_relationship_elements: components["schemas"]["PreservationElement"][];
+            /** Preserve Effective Details */
+            preserve_effective_details: components["schemas"]["PreservationElement"][];
+            /** Strength Preservation */
+            strength_preservation: components["schemas"]["StrengthPreservation"][];
+            /** Strength Regression Risks */
+            strength_regression_risks: components["schemas"]["StrengthRegressionRisk"][];
+            /** Revision Zones */
+            revision_zones: components["schemas"]["RevisionZone"][];
+            /** @default LOCAL */
+            allowed_structural_change: components["schemas"]["StructuralChange"];
+            structural_authorization?: components["schemas"]["StructuralAuthorization"] | null;
+            /** @default MINIMAL */
+            change_budget: components["schemas"]["ChangeBudget"];
+            /** Unresolved Issue Ids */
+            unresolved_issue_ids: string[];
+            /** @default AI_REVIEW */
+            revision_source: components["schemas"]["RevisionSource"];
+            /** Source Feedback Id */
+            source_feedback_id?: string | null;
+        };
+        /** DirectedTarget */
+        DirectedTarget: {
+            /**
+             * Issue Id
+             * Format: uuid
+             */
+            issue_id: string;
+            /** Issue Code */
+            issue_code: components["schemas"]["QualityCode"] | "HUMAN_FEEDBACK";
+            priority: components["schemas"]["Severity"];
+            /** Problem */
+            problem: string;
+            /** Revision Direction */
+            revision_direction: string;
+            /** Evidence Refs */
+            evidence_refs: components["schemas"]["ParagraphEvidence"][];
+        };
+        /** DiscardFeedback */
+        DiscardFeedback: {
+            /**
+             * Event Id
+             * Format: uuid
+             */
+            event_id: string;
+            /** Expected State Version */
+            expected_state_version: number;
+            /**
+             * Reason
+             * @default User command
+             */
+            reason: string;
+            /**
+             * Feedback Id
+             * Format: uuid
+             */
+            feedback_id: string;
+        };
         /** DispatchView */
         DispatchView: {
             workflow: components["schemas"]["WorkflowView"];
@@ -2441,6 +2618,139 @@ export interface components {
              * @enum {string}
              */
             outcome: "success" | "review_failure" | "technical_failure" | "fatal_failure" | "replan";
+        };
+        /**
+         * FeedbackAction
+         * @enum {string}
+         */
+        FeedbackAction: "REVISION" | "REPLAN_REQUIRED" | "PROFILE_CHANGE_REQUIRED" | "USER_DECISION_REQUIRED" | "NO_CHANGE";
+        /** FeedbackConflict */
+        FeedbackConflict: {
+            /**
+             * Boundary
+             * @enum {string}
+             */
+            boundary: "LOCK" | "CANON" | "APPROVED_PLAN" | "PROJECT_PROFILE" | "USER_INSTRUCTIONS";
+            /** Explanation */
+            explanation: string;
+        };
+        /** FeedbackHistoryView */
+        FeedbackHistoryView: {
+            feedback: components["schemas"]["FeedbackView"];
+            interpretation: components["schemas"]["InterpretationView"] | null;
+        };
+        /** FeedbackInterpretationOutput */
+        FeedbackInterpretationOutput: {
+            /**
+             * Kind
+             * @constant
+             */
+            kind: "human_feedback_interpretation";
+            /**
+             * Feedback Id
+             * Format: uuid
+             */
+            feedback_id: string;
+            /**
+             * Source Chapter Version Id
+             * Format: uuid
+             */
+            source_chapter_version_id: string;
+            /** Intent Summary */
+            intent_summary: string;
+            /** Requested Changes */
+            requested_changes: components["schemas"]["RequestedChange"][];
+            /** Preserve Requests */
+            preserve_requests: string[];
+            /** Do Not Change */
+            do_not_change: string[];
+            /** Target Regions */
+            target_regions: string[];
+            /** Quality Concerns */
+            quality_concerns: string[];
+            scope: components["schemas"]["FeedbackScope"];
+            /** Safe Inferences */
+            safe_inferences: string[];
+            /** Ambiguities */
+            ambiguities: string[];
+            /** Conflicts */
+            conflicts: components["schemas"]["FeedbackConflict"][];
+            /**
+             * Change Impact
+             * @enum {string}
+             */
+            change_impact: "PROSE_ONLY" | "STORY_DIRECTION" | "PROJECT_PREFERENCE" | "NONE";
+            action: components["schemas"]["FeedbackAction"];
+            /** User Message */
+            user_message: string;
+            /** Decision Question */
+            decision_question: string | null;
+            /** Feedback Evidence */
+            feedback_evidence: string[];
+            /** Supporting Review Issue Ids */
+            supporting_review_issue_ids: string[];
+            /** Source Refs */
+            source_refs: components["schemas"]["ReviewSource"][];
+            /** Confidence */
+            confidence: number;
+        };
+        /**
+         * FeedbackScope
+         * @enum {string}
+         */
+        FeedbackScope: "LOCAL" | "SECTION" | "CHAPTER_WIDE";
+        /** FeedbackView */
+        FeedbackView: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Project Id
+             * Format: uuid
+             */
+            project_id: string;
+            /**
+             * Chapter Id
+             * Format: uuid
+             */
+            chapter_id: string;
+            /**
+             * Workflow Id
+             * Format: uuid
+             */
+            workflow_id: string;
+            /**
+             * Source Chapter Version Id
+             * Format: uuid
+             */
+            source_chapter_version_id: string;
+            /** Source Draft Version */
+            source_draft_version: number;
+            /** Source State Version */
+            source_state_version: number;
+            /** Source Review Id */
+            source_review_id: string | null;
+            /** Raw Feedback */
+            raw_feedback: string;
+            /** Reply To Feedback Id */
+            reply_to_feedback_id: string | null;
+            /** Source */
+            source: string;
+            /** Status */
+            status: string;
+            /** Return State */
+            return_state: string;
+            /** Authority Snapshot */
+            authority_snapshot: {
+                [key: string]: unknown;
+            };
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
         };
         /** FidelityCheck */
         FidelityCheck: {
@@ -2702,6 +3012,45 @@ export interface components {
          * @enum {string}
          */
         Intensity: "VERY_LOW" | "LOW" | "LOW_MEDIUM" | "MEDIUM" | "MEDIUM_HIGH" | "HIGH" | "VERY_HIGH";
+        /** InterpretationView */
+        InterpretationView: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Feedback Id
+             * Format: uuid
+             */
+            feedback_id: string;
+            /**
+             * Task Id
+             * Format: uuid
+             */
+            task_id: string;
+            /**
+             * Run Id
+             * Format: uuid
+             */
+            run_id: string;
+            /**
+             * Prompt Lineage Id
+             * Format: uuid
+             */
+            prompt_lineage_id: string;
+            /**
+             * Context Package Id
+             * Format: uuid
+             */
+            context_package_id: string;
+            body: components["schemas"]["FeedbackInterpretationOutput"];
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+        };
         /** IntroducedElement */
         IntroducedElement: {
             /** Description */
@@ -3487,6 +3836,13 @@ export interface components {
             /** Expected Draft Version */
             expected_draft_version: number;
         };
+        /** RequestedChange */
+        RequestedChange: {
+            /** Description */
+            description: string;
+            /** Target Regions */
+            target_regions: string[];
+        };
         /** RequirementInput */
         RequirementInput: {
             /** Tags */
@@ -3752,11 +4108,8 @@ export interface components {
              * Format: uuid
              */
             revision_plan_id: string;
-            /**
-             * Source Review Id
-             * Format: uuid
-             */
-            source_review_id: string;
+            /** Source Review Id */
+            source_review_id: string | null;
             /** Addressed Issue Ids */
             addressed_issue_ids: string[];
             /** Preserved Items */
@@ -3773,6 +4126,10 @@ export interface components {
             confidence: number;
             /** Content */
             content: string | null;
+            /** @default AI_REVIEW */
+            revision_source: components["schemas"]["RevisionSource"];
+            /** Source Feedback Id */
+            source_feedback_id?: string | null;
             /** Content Hash */
             content_hash: string | null;
         };
@@ -3880,11 +4237,8 @@ export interface components {
              * Format: uuid
              */
             revision_plan_id: string;
-            /**
-             * Source Review Id
-             * Format: uuid
-             */
-            source_review_id: string;
+            /** Source Review Id */
+            source_review_id: string | null;
             /** Addressed Issue Ids */
             addressed_issue_ids: string[];
             /** Preserved Items */
@@ -3899,11 +4253,19 @@ export interface components {
             source_refs: components["schemas"]["ReviewSource"][];
             /** Confidence */
             confidence: number;
+            /** Source Feedback Id */
+            source_feedback_id?: string | null;
+            /**
+             * Revision Source
+             * @default AI_REVIEW
+             */
+            revision_source: string;
             /** Content Hash */
             content_hash: string | null;
             /** Candidate Id */
             candidate_id?: string | null;
-            fidelity?: components["schemas"]["RevisionFidelityOutput"] | null;
+            /** Fidelity */
+            fidelity?: components["schemas"]["DirectedFidelityOutput"] | components["schemas"]["RevisionFidelityOutput"] | null;
             /** Accepted */
             accepted?: boolean | null;
         };
@@ -4046,7 +4408,7 @@ export interface components {
              */
             created_at: string;
             /** Body */
-            body: components["schemas"]["RevisionPlanV3"] | components["schemas"]["FidelityRevisionPlan"] | components["schemas"]["RevisionPlanOutput"];
+            body: components["schemas"]["DirectedRevisionPlan"] | components["schemas"]["RevisionPlanV3"] | components["schemas"]["FidelityRevisionPlan"] | components["schemas"]["RevisionPlanOutput"];
         };
         /** RevisionPriority */
         RevisionPriority: {
@@ -4083,16 +4445,12 @@ export interface components {
              * Format: uuid
              */
             source_chapter_version_id: string;
-            /**
-             * Source Review Id
-             * Format: uuid
-             */
-            source_review_id: string;
-            /**
-             * Source Binding Id
-             * Format: uuid
-             */
-            source_binding_id: string;
+            /** Source Review Id */
+            source_review_id: string | null;
+            /** Source Binding Id */
+            source_binding_id: string | null;
+            /** Source Feedback Id */
+            source_feedback_id?: string | null;
             /**
              * Source Context Package Id
              * Format: uuid
@@ -4159,6 +4517,11 @@ export interface components {
          * @enum {string}
          */
         RevisionScope: "TARGETED" | "FULL_PASS";
+        /**
+         * RevisionSource
+         * @enum {string}
+         */
+        RevisionSource: "AI_REVIEW" | "HUMAN_FEEDBACK" | "BOTH";
         /** RevisionTarget */
         RevisionTarget: {
             /**
@@ -4178,7 +4541,7 @@ export interface components {
         /** RevisionView */
         RevisionView: {
             request: components["schemas"]["RevisionRequestView"];
-            source_binding: components["schemas"]["QualityBindingView"];
+            source_binding: components["schemas"]["QualityBindingView"] | null;
             plan: components["schemas"]["RevisionPlanView"] | null;
             result: components["schemas"]["RevisionResultView"] | null;
             candidate?: components["schemas"]["RevisionCandidateView"] | null;
@@ -4328,6 +4691,30 @@ export interface components {
          * @enum {string}
          */
         StructuralChange: "NONE" | "LOCAL" | "CHAPTER_WIDE";
+        /** SubmitFeedback */
+        SubmitFeedback: {
+            /**
+             * Event Id
+             * Format: uuid
+             */
+            event_id: string;
+            /** Expected State Version */
+            expected_state_version: number;
+            /**
+             * Reason
+             * @default User command
+             */
+            reason: string;
+            /**
+             * Source Chapter Version Id
+             * Format: uuid
+             */
+            source_chapter_version_id: string;
+            /** Raw Feedback */
+            raw_feedback: string;
+            /** Reply To Feedback Id */
+            reply_to_feedback_id?: string | null;
+        };
         /**
          * TaskStatus
          * @enum {string}
@@ -4432,6 +4819,8 @@ export interface components {
             draft_version: number | null;
             /** Revision Request Id */
             revision_request_id?: string | null;
+            /** Human Feedback Id */
+            human_feedback_id?: string | null;
             resume_state: components["schemas"]["ChapterState"] | null;
             resume_status: components["schemas"]["WorkflowStatus"] | null;
             /** Block Reason */
@@ -4801,6 +5190,245 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["RevisionView"][];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Method Not Allowed */
+            405: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unprocessable Content */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    history_api_v1_workflows__workflow_id__feedback_get: {
+        parameters: {
+            query?: {
+                limit?: number;
+                offset?: number;
+            };
+            header?: never;
+            path: {
+                workflow_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FeedbackHistoryView"][];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Method Not Allowed */
+            405: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unprocessable Content */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    submit_api_v1_workflows__workflow_id__feedback_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                workflow_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SubmitFeedback"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DispatchView"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Method Not Allowed */
+            405: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unprocessable Content */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    discard_api_v1_workflows__workflow_id__feedback_discard_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                workflow_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DiscardFeedback"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DispatchView"];
                 };
             };
             /** @description Forbidden */

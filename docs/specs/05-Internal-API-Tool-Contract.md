@@ -291,3 +291,9 @@ POST `/workflows/{id}/revision` 复用 `event_id + expected_state_version + expe
 新增 CP-007 v5 仅提高本地保守预算至 240000，容纳完整 source/review/authority、RevisionPlan、candidate 及 Fidelity Schema；不截断 P0、不改变选择策略。v4 与已冻结请求保持不变，新请求绑定 v5。该预算不是计费 token 或 Provider 窗口声明。
 
 A05 Compliance/Narrative 的 evidence 仍是单个 paragraph_index 加该段的精确连续 excerpt。`quality-evidence` skill v3 明确跨段论证必须拆成独立引用条目；JSON Schema、API、校验规则和历史 v2 pin 均保持兼容。
+
+## NOVEL-011：Human Feedback API
+
+POST `/api/v1/workflows/{workflow_id}/feedback`：event_id、expected_state_version、source_chapter_version_id、raw_feedback、可选 reason。禁止客户端注入 source/status/action/authority；当前正文 UUID 和工作流状态不匹配返回 conflict。重复 event_id 相同 payload 返回原结果，不创建第二条反馈。
+
+GET 同一路径：limit/offset 分页返回反馈与可选 Interpretation（exact Draft、task/run/prompt/context lineage、typed body）。Revision history 增加 nullable source_feedback_id/source_review_id/source_binding；人工来源通过 Interpretation绑定，不伪造 Review。Structured Output 以 Pydantic FeedbackAgentResult 为准，Proposal/Memory arrays必须为空。参见 [Human Feedback](09-Human-Feedback.md)。

@@ -102,6 +102,7 @@ class WorkflowInstance:
     plan_version: int | None = None
     draft_version: int | None = None
     revision_request_id: UUID | None = None
+    human_feedback_id: UUID | None = None
     resume_state: ChapterState | None = None
     resume_status: WorkflowStatus | None = None
     resume_new_stage: bool = False

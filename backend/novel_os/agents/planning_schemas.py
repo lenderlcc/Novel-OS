@@ -282,6 +282,10 @@ def result_model(task_type, output_schema=None):
     from novel_os.revision.contracts import LEGACY_CONTRACTS
     from novel_os.revision.schemas import revision_results
 
+    if task_type == "INTERPRET_CHAPTER_FEEDBACK":
+        from novel_os.feedback.schemas import FeedbackAgentResult
+
+        return FeedbackAgentResult
     REVISION_RESULTS = revision_results()
 
     if task_type in REVISION_RESULTS:

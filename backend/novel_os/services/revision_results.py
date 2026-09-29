@@ -104,8 +104,11 @@ class RevisionResultService:
                     request.chapter_id,
                     {
                         "content": candidate.body["content"],
-                        "change_reason": "Targeted revision from Review "
-                        + str(request.source_review_id),
+                        "change_reason": (
+                            "Directed revision from feedback " + str(request.source_feedback_id)
+                            if request.source_feedback_id
+                            else "Targeted revision from Review " + str(request.source_review_id)
+                        ),
                     },
                     workflow.draft_version,
                     CommandContext(str(run.run_id), task.agent_id.value, ActorType.AGENT),
@@ -190,7 +193,7 @@ class RevisionResultService:
             values.append(
                 dict(
                     request=asdict(request),
-                    source_binding=asdict(binding),
+                    source_binding=asdict(binding) if binding else None,
                     plan=asdict(plan) if plan else None,
                     result=asdict(result) if result else None,
                     candidate=asdict(candidate) if candidate else None,

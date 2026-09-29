@@ -17,10 +17,13 @@ class RevisionRequestModel(Base):
     chapter_id: Mapped[UUID]
     workflow_id: Mapped[UUID]
     source_chapter_version_id: Mapped[UUID] = mapped_column(ForeignKey("chapter_versions.id"))
-    source_review_id: Mapped[UUID] = mapped_column(ForeignKey("chapter_quality_reviews.id"))
-    source_binding_id: Mapped[UUID] = mapped_column(ForeignKey("quality_review_bindings.id"))
+    source_review_id: Mapped[UUID | None] = mapped_column(ForeignKey("chapter_quality_reviews.id"))
+    source_binding_id: Mapped[UUID | None] = mapped_column(ForeignKey("quality_review_bindings.id"))
     source_context_package_id: Mapped[UUID] = mapped_column(
         ForeignKey("context_packages.context_package_id")
+    )
+    source_feedback_id: Mapped[UUID | None] = mapped_column(
+        ForeignKey("human_feedback.id"), unique=True
     )
     profile_json: Mapped[str] = mapped_column(Text)
     contract: Mapped[dict] = mapped_column(JSONB)

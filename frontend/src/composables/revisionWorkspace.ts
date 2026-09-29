@@ -10,7 +10,7 @@ export function reviewForDraft(reviews: QualityReview[], draftId?: string): Qual
 }
 
 export function revisionOutputFailure(task?: Task) {
-  const stages: Record<string, string> = { PLAN_CHAPTER_REVISION: 'Revision Planning', REVISE_CHAPTER: 'Revision Execution', VALIDATE_REVISION_FIDELITY: 'Fidelity Validation' }
+  const stages: Record<string, string> = { INTERPRET_CHAPTER_FEEDBACK: 'Feedback Interpretation', PLAN_CHAPTER_REVISION: 'Revision Planning', REVISE_CHAPTER: 'Revision Execution', VALIDATE_REVISION_FIDELITY: 'Fidelity Validation' }
   if (!task || !['FAILED', 'BLOCKED'].includes(task.status) || !['SCHEMA_PARSE_ERROR', 'FORMAT_ERROR', 'MODEL_OUTPUT_INVALID', 'REVISION_EVIDENCE_MISMATCH'].includes(task.last_error_code ?? '')) return null
   const stage = stages[task.task_type]
   return stage ? { stage, errorCode: task.last_error_code, reason: task.last_error_code === 'REVISION_EVIDENCE_MISMATCH' ? 'Evidence Binding Failed' : 'Output Validation Failed' } : null

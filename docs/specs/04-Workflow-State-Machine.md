@@ -281,3 +281,9 @@ C10 内顺序改为 PLAN_CHAPTER_REVISION → REVISE_CHAPTER → VALIDATE_REVISI
 工作区通过既有 REQUEST_REVISION 命令触发上述完整链路，不直接创建 Task、Chapter 或更新 current。界面显示分析范围 → 修改正文 → 检查范围 → 重新审阅；阶段来自 Workflow，不能随历史正文选择改变。新 Draft 在重审期间即可阅读，Review Ready、BLOCKED、FAILED 时停止轮询。刷新只恢复状态，不产生新命令。
 
 currentBackendVersion 与 viewingVersion 分离：默认跟随同章新 Draft，手动选择历史后固定阅读版本；返回章节或浏览器重新加载默认读 current。历史选择不修改数据库。每次显式请求最多一个 successor，重审 FAIL 也停在 WAITING_HUMAN。再次修改必须再次点击并绑定新的 Review/state/Draft tokens。旧 v2/C08 不自动升级，界面明确说明尚未接入审阅与修改。
+
+## NOVEL-011：用户反馈控制
+
+正式 chapter-planning v3 空闲 C10/C11 通过 USER REQUEST_FEEDBACK 原子保存 exact-current 反馈、转既有 C13 并调度 A02。系统 FEEDBACK_READY 必须绑定已持久化 Interpretation/run；REVISION 转既有 C10，其他 action 返回记录的 return_state / WAITING_HUMAN。沿用 application 扩展事件，不改写历史定义 YAML。
+
+反馈 revision 同样走 candidate → Fidelity → successor → C08/C09 Review → STOP。复用 event idempotency、project/workflow locks、state version、lease fencing、PAUSE/RESUME/CANCEL。恢复必须重新校验冻结 source；不允许将过期反馈改绑到新正文。[完整边界](09-Human-Feedback.md)。

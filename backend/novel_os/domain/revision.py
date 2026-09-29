@@ -24,11 +24,12 @@ class RevisionRequest:
     chapter_id: UUID
     workflow_id: UUID
     source_chapter_version_id: UUID
-    source_review_id: UUID
-    source_binding_id: UUID
+    source_review_id: UUID | None
+    source_binding_id: UUID | None
     source_context_package_id: UUID
     profile_json: str
     contract: dict
+    source_feedback_id: UUID | None = None
     created_at: datetime = field(default_factory=now)
 
 

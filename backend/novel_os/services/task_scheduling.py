@@ -95,6 +95,14 @@ class TaskScheduler:
                 if plan
                 else "PLAN_CHAPTER_REVISION"
             ]
+        if (
+            supports_quality(workflow)
+            and workflow.current_state == "C13_USER_FEEDBACK_DIAGNOSIS"
+            and workflow.human_feedback_id
+        ):
+            from novel_os.agents.registry import FEEDBACK_STAGE_TASK
+
+            definition = FEEDBACK_STAGE_TASK
         if definition is None:
             return None  # Deterministic controls and versioned handoff boundaries have no agent.
 
@@ -137,6 +145,13 @@ class TaskScheduler:
             requirements.append(
                 WritingProfileContext(self.session).scheduling_input(workflow.project_id)
             )
+        if definition.task_type == "INTERPRET_CHAPTER_FEEDBACK":
+            from novel_os.repositories.feedback import FeedbackRepository
+
+            objective = (
+                FeedbackRepository(self.session).get(workflow.human_feedback_id).raw_feedback
+            )
+            requirements = []
         task = self.repo.add(
             AgentTask(
                 project_id=workflow.project_id,
@@ -161,6 +176,8 @@ class TaskScheduler:
                         "Review advice cannot override them"
                     )
                     if definition.task_type in REVISION_TASKS
+                    else "Interpret human feedback; no Brief, Profile or authority mutation"
+                    if definition.task_type == "INTERPRET_CHAPTER_FEEDBACK"
                     else "Planning only; no chapter prose",
                     "No approval, lock, canon commit or direct database access",
                 ],
@@ -182,5 +199,9 @@ class TaskScheduler:
             from novel_os.services.revision_binding import RevisionBindingService
 
             RevisionBindingService(self.session).check(task, workflow)
+        if task.task_type == "INTERPRET_CHAPTER_FEEDBACK":
+            from novel_os.services.feedback_binding import FeedbackBindingService
+
+            FeedbackBindingService(self.session).for_task(task, workflow)
         self.history.audit(task, None, task, context, "Workflow scheduled agent task")
         return task

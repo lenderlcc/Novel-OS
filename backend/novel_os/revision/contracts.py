@@ -43,6 +43,10 @@ class RevisionPlanResultV3(RevisionEnvelope):
 
 
 def read_plan(body):
+    if "revision_source" in body:
+        from novel_os.revision.directed_contracts import DirectedRevisionPlan
+
+        return DirectedRevisionPlan.model_validate(body)
     model = RevisionPlanV3 if "unresolved_issue_ids" in body else FidelityRevisionPlan
     return model.model_validate(body)
 
@@ -56,9 +60,9 @@ class FidelityResultV2(RevisionEnvelope):
 
 
 SCHEMA_VERSIONS = {
-    "PLAN_CHAPTER_REVISION": 3,
-    "REVISE_CHAPTER": 2,
-    "VALIDATE_REVISION_FIDELITY": 2,
+    "PLAN_CHAPTER_REVISION": 4,
+    "REVISE_CHAPTER": 3,
+    "VALIDATE_REVISION_FIDELITY": 3,
 }
 
 # Model, task prompt and skill versions for historical replay only.
@@ -70,8 +74,18 @@ LEGACY_CONTRACTS = {
 }
 
 
+READ_ONLY_CONTRACTS = frozenset(LEGACY_CONTRACTS)
+LEGACY_CONTRACTS.update(
+    {
+        ("PLAN_CHAPTER_REVISION", "chapter-revision-plan.v3"): (RevisionPlanResultV3, 4, 2),
+        ("REVISE_CHAPTER", "chapter-revision-result.v2"): (RevisionResultV2, 4, 2),
+        ("VALIDATE_REVISION_FIDELITY", "revision-fidelity-result.v2"): (FidelityResultV2, 3, 1),
+    }
+)
+
+
 def require_current_contract(task_type, schema):
-    if (task_type, schema) in LEGACY_CONTRACTS:
+    if (task_type, schema) in READ_ONLY_CONTRACTS:
         raise PromptConfigurationError(
             "Historical Revision contracts are read-only; start a new current-contract task"
         )

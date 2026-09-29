@@ -1,0 +1,22 @@
+{
+  "module_id": "revise-chapter",
+  "module_type": "TASK_TEMPLATE",
+  "version": 6,
+  "status": "STABLE",
+  "description": "Directed revision with exact KEEP bookkeeping separate from semantic DO_NOT_CHANGE",
+  "content_path": "content.md",
+  "dependencies": [
+    {
+      "module_id": "novel-os-core",
+      "version": 1
+    }
+  ],
+  "compatible_agents": [
+    "A06_REVISION"
+  ],
+  "compatible_task_types": [
+    "REVISE_CHAPTER"
+  ],
+  "created_at": "2026-09-29T00:00:00Z",
+  "content_hash": "27524b6fbd386b69f0b5801e3fb4553de790e7dc968d1fab60845d4cdb904b0e"
+}

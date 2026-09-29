@@ -331,6 +331,10 @@ class WorkflowRuntime:
 
     def _advance(self, workflow, command, context, dispatcher):
         event = command.event_type
+        from novel_os.services.feedback_workflow import FEEDBACK_EVENTS, advance_feedback
+
+        if event in FEEDBACK_EVENTS and not workflow.simulation:
+            return advance_feedback(self, workflow, command, context)
         from novel_os.services.revision_workflow import REVISION_EVENTS, advance_revision
 
         if event in REVISION_EVENTS and not workflow.simulation:
@@ -493,6 +497,9 @@ class WorkflowRuntime:
             from novel_os.services.revision_workflow import check_resume
 
             check_resume(self.session, workflow)
+            from novel_os.services.feedback_workflow import check_resume as check_feedback_resume
+
+            check_feedback_resume(self.session, workflow)
             from novel_os.services.quality_workflow import QualityReviewControl
 
             if workflow.resume_state != State.C10_REVISION and QualityReviewControl(

@@ -6,6 +6,7 @@ from novel_os.db.session import Database
 from novel_os.models import (  # noqa: F401 -- register ORM metadata
     agents,
     core,
+    feedback,
     planning,  # noqa: F401 -- register ORM metadata
     prompts,
     quality,

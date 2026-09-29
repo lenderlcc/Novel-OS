@@ -10,8 +10,13 @@ from novel_os.api.workflow_routes import response
 from novel_os.api.workflow_schemas import CommandInput, DispatchView
 from novel_os.domain.workflow import EventCommand
 from novel_os.revision.contracts import RevisionPlanV3
+from novel_os.revision.directed_contracts import (
+    DirectedFidelityOutput,
+    DirectedRevisionOutput,
+    DirectedRevisionPlan,
+)
 from novel_os.revision.fidelity_schemas import FidelityRevisionPlan, RevisionFidelityOutput
-from novel_os.revision.schemas import RevisionMetadata, RevisionPlanOutput, RevisionResultOutput
+from novel_os.revision.schemas import RevisionMetadata, RevisionPlanOutput
 from novel_os.services.revision_results import RevisionResultService
 from novel_os.workflow.runtime import WorkflowRuntime
 
@@ -29,8 +34,9 @@ class RevisionRequestView(BaseModel):
     chapter_id: UUID
     workflow_id: UUID
     source_chapter_version_id: UUID
-    source_review_id: UUID
-    source_binding_id: UUID
+    source_review_id: UUID | None
+    source_binding_id: UUID | None
+    source_feedback_id: UUID | None = None
     source_context_package_id: UUID
     contract: dict
     created_at: datetime
@@ -47,13 +53,16 @@ class RevisionEvidenceView(BaseModel):
 
 
 class RevisionPlanView(RevisionEvidenceView):
-    body: RevisionPlanV3 | FidelityRevisionPlan | RevisionPlanOutput
+    body: DirectedRevisionPlan | RevisionPlanV3 | FidelityRevisionPlan | RevisionPlanOutput
 
 
 class RevisionMetadataView(RevisionMetadata):
+    source_review_id: UUID | None
+    source_feedback_id: UUID | None = None
+    revision_source: str = "AI_REVIEW"
     content_hash: str | None
     candidate_id: UUID | None = None
-    fidelity: RevisionFidelityOutput | None = None
+    fidelity: DirectedFidelityOutput | RevisionFidelityOutput | None = None
     accepted: bool | None = None
 
 
@@ -63,7 +72,7 @@ class RevisionResultView(RevisionEvidenceView):
     body: RevisionMetadataView
 
 
-class RevisionCandidateBody(RevisionResultOutput):
+class RevisionCandidateBody(DirectedRevisionOutput):
     content_hash: str | None
 
 
@@ -74,7 +83,7 @@ class RevisionCandidateView(RevisionEvidenceView):
 
 class RevisionView(BaseModel):
     request: RevisionRequestView
-    source_binding: QualityBindingView
+    source_binding: QualityBindingView | None
     plan: RevisionPlanView | None
     result: RevisionResultView | None
     candidate: RevisionCandidateView | None = None

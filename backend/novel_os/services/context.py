@@ -67,6 +67,14 @@ class ContextService:
         return task, workflow, run
 
     def task_profile(self, task):
+        if task.task_type == "INTERPRET_CHAPTER_FEEDBACK":
+            from novel_os.repositories.feedback import FeedbackRepository
+            from novel_os.repositories.workflows import WorkflowRepository
+
+            workflow = WorkflowRepository(self.session).get(task.workflow_instance_id)
+            return ContextProfile.model_validate_json(
+                FeedbackRepository(self.session).get(workflow.human_feedback_id).profile_json
+            )
         if task.task_type in REVISION_TASKS:
             from novel_os.repositories.revision import RevisionRepository
             from novel_os.repositories.workflows import WorkflowRepository
@@ -93,6 +101,10 @@ class ContextService:
         return self.registry.for_task(task.task_type)
 
     def check_writing(self, task, workflow):
+        if task.task_type == "INTERPRET_CHAPTER_FEEDBACK":
+            from novel_os.services.feedback_binding import FeedbackBindingService
+
+            FeedbackBindingService(self.session).for_task(task, workflow)
         if task.task_type in REVISION_TASKS:
             from novel_os.services.revision_binding import RevisionBindingService
 
@@ -152,7 +164,9 @@ class ContextService:
                     )
                 else:
                     missing.append(f"locked_dependency:{kind}:{target}")
-        if task.task_type == "WRITE_CHAPTER" or task.task_type in QUALITY_TASKS | REVISION_TASKS:
+        if task.task_type == "WRITE_CHAPTER" or task.task_type in QUALITY_TASKS | REVISION_TASKS | {
+            "INTERPRET_CHAPTER_FEEDBACK"
+        }:
             from novel_os.agents.planning_schemas import ChapterPlanOutput
             from novel_os.repositories.planning import PlanningRepository
 
@@ -175,7 +189,7 @@ class ContextService:
                     lock = self.sources.lock(task.project_id, ref.source_type, ref.logical_id)
                     if lock is None or lock.target_version != ref.version:
                         missing.append("writing.exact_locked_dependency")
-        if task.task_type in QUALITY_TASKS | REVISION_TASKS:
+        if task.task_type in QUALITY_TASKS | REVISION_TASKS | {"INTERPRET_CHAPTER_FEEDBACK"}:
             from novel_os.repositories.planning import PlanningRepository
 
             brief = PlanningRepository(self.session).brief(workflow.id)
