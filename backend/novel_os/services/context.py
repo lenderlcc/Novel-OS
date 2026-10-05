@@ -67,6 +67,17 @@ class ContextService:
         return task, workflow, run
 
     def task_profile(self, task):
+        if task.task_type == "EXTRACT_CHAPTER_MEMORY":
+            from novel_os.domain.memory import MemoryRequest
+            from novel_os.repositories.memory import MemoryRepository
+            from novel_os.repositories.workflows import WorkflowRepository
+
+            workflow = WorkflowRepository(self.session).get(task.workflow_instance_id)
+            return ContextProfile.model_validate_json(
+                MemoryRepository(self.session)
+                .get(MemoryRequest, workflow.memory_request_id)
+                .profile_json
+            )
         if task.task_type == "INTERPRET_CHAPTER_FEEDBACK":
             from novel_os.repositories.feedback import FeedbackRepository
             from novel_os.repositories.workflows import WorkflowRepository
@@ -101,6 +112,10 @@ class ContextService:
         return self.registry.for_task(task.task_type)
 
     def check_writing(self, task, workflow):
+        if task.task_type == "EXTRACT_CHAPTER_MEMORY":
+            from novel_os.services.memory_commit import MemoryCommitService
+
+            MemoryCommitService(self.session).for_task(task, workflow)
         if task.task_type == "INTERPRET_CHAPTER_FEEDBACK":
             from novel_os.services.feedback_binding import FeedbackBindingService
 
@@ -165,7 +180,8 @@ class ContextService:
                 else:
                     missing.append(f"locked_dependency:{kind}:{target}")
         if task.task_type == "WRITE_CHAPTER" or task.task_type in QUALITY_TASKS | REVISION_TASKS | {
-            "INTERPRET_CHAPTER_FEEDBACK"
+            "INTERPRET_CHAPTER_FEEDBACK",
+            "EXTRACT_CHAPTER_MEMORY",
         }:
             from novel_os.agents.planning_schemas import ChapterPlanOutput
             from novel_os.repositories.planning import PlanningRepository
@@ -189,7 +205,10 @@ class ContextService:
                     lock = self.sources.lock(task.project_id, ref.source_type, ref.logical_id)
                     if lock is None or lock.target_version != ref.version:
                         missing.append("writing.exact_locked_dependency")
-        if task.task_type in QUALITY_TASKS | REVISION_TASKS | {"INTERPRET_CHAPTER_FEEDBACK"}:
+        if task.task_type in QUALITY_TASKS | REVISION_TASKS | {
+            "INTERPRET_CHAPTER_FEEDBACK",
+            "EXTRACT_CHAPTER_MEMORY",
+        }:
             from novel_os.repositories.planning import PlanningRepository
 
             brief = PlanningRepository(self.session).brief(workflow.id)
@@ -214,7 +233,19 @@ class ContextService:
             missing.extend(business_missing)
         from novel_os.services.writing_profile_context import model_requirements
 
+        pov_character_id = None
+        if task.task_type == "WRITE_CHAPTER" and plan is not None:
+            from novel_os.repositories.planning import PlanningRepository
+
+            generation = PlanningRepository(self.session).generation(workflow.id, plan.id)
+            if generation:
+                from novel_os.agents.planning_schemas import ChapterPlanOutput
+
+                pov_character_id = ChapterPlanOutput.model_validate(
+                    generation.body
+                ).pov_character_id
         return ContextRequest(
+            character_id=pov_character_id,
             project_id=task.project_id,
             task_id=task.task_id,
             task_type=task.task_type,
@@ -230,7 +261,16 @@ class ContextService:
             requirements=model_requirements(task.requirements),
             constraints=tuple(task.constraints),
             explicit_refs=refs,
-            required_refs=refs,
+            # Locked chapter prose stays an exact-version execution dependency, but
+            # is not exposed to Writer as content across character knowledge boundaries.
+            required_refs=tuple(
+                ref
+                for ref in refs
+                if not (
+                    task.task_type == "WRITE_CHAPTER"
+                    and ref.source_type == SourceType.CHAPTER_VERSION
+                )
+            ),
             required_future_refs=refs,
         )
 

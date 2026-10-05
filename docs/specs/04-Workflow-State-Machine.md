@@ -287,3 +287,7 @@ currentBackendVersion 与 viewingVersion 分离：默认跟随同章新 Draft，
 正式 chapter-planning v3 空闲 C10/C11 通过 USER REQUEST_FEEDBACK 原子保存 exact-current 反馈、转既有 C13 并调度 A02。系统 FEEDBACK_READY 必须绑定已持久化 Interpretation/run；REVISION 转既有 C10，其他 action 返回记录的 return_state / WAITING_HUMAN。沿用 application 扩展事件，不改写历史定义 YAML。
 
 反馈 revision 同样走 candidate → Fidelity → successor → C08/C09 Review → STOP。复用 event idempotency、project/workflow locks、state version、lease fencing、PAUSE/RESUME/CANCEL。恢复必须重新校验冻结 source；不允许将过期反馈改绑到新正文。[完整边界](09-Human-Feedback.md)。
+
+## NOVEL-012：正式章节完成路径
+
+正式 v3 的 C10/C11 WAITING_HUMAN 经 REQUEST_COMPLETION → C14_MEMORY_PREPARATION；A07 的 MEMORY_PROPOSAL_READY → C15_MEMORY_COMMIT / WAITING_HUMAN；用户 CONFIRM_MEMORY 的原子事务 → C16_COMPLETED。DISCARD_MEMORY 返回原空闲正文阶段，保留历史，不写 Canon。提取失败 BLOCKED，可显式返回/重试；既有 simulation 的旧事件不变。没有额外创建平行状态机。完成后 Revision/Feedback/Plan/正文修改均拒绝，见 [Memory Commit](10-Memory-Canon-Commit.md)。

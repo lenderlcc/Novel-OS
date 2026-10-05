@@ -38,6 +38,91 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/workflows/{workflow_id}/completion": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Complete */
+        post: operations["complete_api_v1_workflows__workflow_id__completion_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/workflows/{workflow_id}/memory/confirm": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Confirm */
+        post: operations["confirm_api_v1_workflows__workflow_id__memory_confirm_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/workflows/{workflow_id}/memory/discard": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Discard */
+        post: operations["discard_api_v1_workflows__workflow_id__memory_discard_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/workflows/{workflow_id}/memory": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** History */
+        get: operations["history_api_v1_workflows__workflow_id__memory_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/projects/{project_id}/memory": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Memories */
+        get: operations["memories_api_v1_projects__project_id__memory_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/workflows/{workflow_id}/feedback": {
         parameters: {
             query?: never;
@@ -1461,6 +1546,17 @@ export interface components {
             /** Reason */
             reason: string;
         };
+        /** BoundaryCheck */
+        BoundaryCheck: {
+            source_ref: components["schemas"]["EvidenceRef"];
+            /**
+             * Outcome
+             * @enum {string}
+             */
+            outcome: "COMPATIBLE" | "CONFLICT" | "UNCERTAIN";
+            /** Reason */
+            reason: string;
+        };
         /**
          * BriefStatus
          * @enum {string}
@@ -1590,6 +1686,8 @@ export interface components {
             requirement_coverage: components["schemas"]["Coverage"][];
             /** Source Refs */
             source_refs: components["schemas"]["EvidenceRef"][];
+            /** Pov Character Id */
+            pov_character_id?: string | null;
         };
         /** ChapterReviewResult */
         ChapterReviewResult: {
@@ -1870,6 +1968,90 @@ export interface components {
              * @default User command
              */
             reason: string;
+        };
+        /** CommittedMemory */
+        CommittedMemory: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id?: string;
+            /**
+             * Project Id
+             * Format: uuid
+             */
+            project_id: string;
+            /**
+             * Chapter Id
+             * Format: uuid
+             */
+            chapter_id: string;
+            /**
+             * Chapter Version Id
+             * Format: uuid
+             */
+            chapter_version_id: string;
+            /**
+             * Batch Id
+             * Format: uuid
+             */
+            batch_id: string;
+            /** Candidate Id */
+            candidate_id: string;
+            /**
+             * Logical Id
+             * Format: uuid
+             */
+            logical_id: string;
+            /** Version */
+            version: number;
+            /** Supersedes Id */
+            supersedes_id: string | null;
+            /** Subject Id */
+            subject_id: string | null;
+            /** Memory Type */
+            memory_type: string;
+            /** Slot */
+            slot: string;
+            /** Value */
+            value: string;
+            /** Statement */
+            statement: string;
+            /** Epistemic Status */
+            epistemic_status: string | null;
+            /** Authority Level */
+            authority_level: string;
+            /** Body */
+            body: {
+                [key: string]: unknown;
+            };
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at?: string;
+        };
+        /** ConfirmMemory */
+        ConfirmMemory: {
+            /**
+             * Event Id
+             * Format: uuid
+             */
+            event_id: string;
+            /** Expected State Version */
+            expected_state_version: number;
+            /**
+             * Reason
+             * @default User command
+             */
+            reason: string;
+            /**
+             * Proposal Id
+             * Format: uuid
+             */
+            proposal_id: string;
+            /** Selected Candidate Ids */
+            selected_candidate_ids: string[];
         };
         /** ContextInspection */
         ContextInspection: {
@@ -2515,6 +2697,26 @@ export interface components {
              */
             feedback_id: string;
         };
+        /** DiscardMemory */
+        DiscardMemory: {
+            /**
+             * Event Id
+             * Format: uuid
+             */
+            event_id: string;
+            /** Expected State Version */
+            expected_state_version: number;
+            /**
+             * Reason
+             * @default User command
+             */
+            reason: string;
+            /**
+             * Request Id
+             * Format: uuid
+             */
+            request_id: string;
+        };
         /** DispatchView */
         DispatchView: {
             workflow: components["schemas"]["WorkflowView"];
@@ -2530,6 +2732,11 @@ export interface components {
          * @enum {string}
          */
         DraftCheckStatus: "PASS" | "BLOCKED";
+        /**
+         * EpistemicStatus
+         * @enum {string}
+         */
+        EpistemicStatus: "KNOWS" | "BELIEVES" | "SUSPECTS" | "DOUBTS";
         /** ErrorBody */
         ErrorBody: {
             /** Code */
@@ -3187,6 +3394,189 @@ export interface components {
              */
             disposition: "PROPOSAL_ONLY";
         };
+        /** MemoryCommitBatch */
+        MemoryCommitBatch: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Project Id
+             * Format: uuid
+             */
+            project_id: string;
+            /**
+             * Chapter Id
+             * Format: uuid
+             */
+            chapter_id: string;
+            /**
+             * Workflow Id
+             * Format: uuid
+             */
+            workflow_id: string;
+            /**
+             * Chapter Version Id
+             * Format: uuid
+             */
+            chapter_version_id: string;
+            /**
+             * Proposal Id
+             * Format: uuid
+             */
+            proposal_id: string;
+            /** Canon Revision */
+            canon_revision: number;
+            /** Selected Candidate Ids */
+            selected_candidate_ids: string[];
+            /** Skipped Candidate Ids */
+            skipped_candidate_ids: string[];
+            /** Expected Source Versions */
+            expected_source_versions: {
+                [key: string]: unknown;
+            };
+            /** Confirmed By */
+            confirmed_by: string;
+            /**
+             * Status
+             * @default COMMITTED
+             */
+            status: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at?: string;
+            /**
+             * Committed At
+             * Format: date-time
+             */
+            committed_at?: string;
+        };
+        /**
+         * MemoryConflict
+         * @enum {string}
+         */
+        MemoryConflict: "NONE" | "DUPLICATE" | "STATE_TRANSITION" | "CONTRADICTION" | "AUTHORITY_CONFLICT" | "AMBIGUOUS";
+        /** MemoryEvidence */
+        MemoryEvidence: {
+            /** Paragraph Index */
+            paragraph_index: number;
+            /** Short Excerpt */
+            short_excerpt: string;
+            /** Reason */
+            reason: string;
+        };
+        /** MemoryHistoryView */
+        MemoryHistoryView: {
+            request: components["schemas"]["MemoryRequest"];
+            proposal: components["schemas"]["MemoryProposalView"] | null;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "EXTRACTING" | "PROPOSED" | "STALE" | "CANCELLED" | "COMMITTED";
+            batch: components["schemas"]["MemoryCommitBatch"] | null;
+            /** Entries */
+            entries: components["schemas"]["CommittedMemory"][];
+        };
+        /** MemoryProposalView */
+        MemoryProposalView: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Request Id
+             * Format: uuid
+             */
+            request_id: string;
+            /**
+             * Task Id
+             * Format: uuid
+             */
+            task_id: string;
+            /**
+             * Agent Run Id
+             * Format: uuid
+             */
+            agent_run_id: string;
+            /**
+             * Prompt Lineage Id
+             * Format: uuid
+             */
+            prompt_lineage_id: string;
+            /**
+             * Context Package Id
+             * Format: uuid
+             */
+            context_package_id: string;
+            /** Raw Output */
+            raw_output: {
+                [key: string]: unknown;
+            };
+            /** Candidates */
+            candidates: components["schemas"]["NormalizedMemoryCandidate"][];
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+        };
+        /** MemoryRequest */
+        MemoryRequest: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Project Id
+             * Format: uuid
+             */
+            project_id: string;
+            /**
+             * Chapter Id
+             * Format: uuid
+             */
+            chapter_id: string;
+            /**
+             * Workflow Id
+             * Format: uuid
+             */
+            workflow_id: string;
+            /**
+             * Chapter Version Id
+             * Format: uuid
+             */
+            chapter_version_id: string;
+            /** Draft Version */
+            draft_version: number;
+            /** Return State */
+            return_state: string;
+            /** Profile Json */
+            profile_json: string;
+            /** Authority Snapshot */
+            authority_snapshot: {
+                [key: string]: unknown;
+            };
+            /** Canon Revision */
+            canon_revision: number;
+            /** Accepted By */
+            accepted_by: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at?: string;
+        };
+        /**
+         * MemoryType
+         * @enum {string}
+         */
+        MemoryType: "CANON_FACT" | "CHARACTER_STATE" | "CHARACTER_KNOWLEDGE" | "RELATIONSHIP_STATE" | "OPEN_THREAD" | "DERIVED_CHAPTER_SUMMARY";
         /** MetricsView */
         MetricsView: {
             /**
@@ -3260,6 +3650,62 @@ export interface components {
          * @enum {string}
          */
         NarrativePerspective: "FIRST_PERSON" | "THIRD_PERSON";
+        /** NormalizedMemoryCandidate */
+        NormalizedMemoryCandidate: {
+            /** Id */
+            id: string;
+            candidate_type: components["schemas"]["MemoryType"];
+            subject_ref: components["schemas"]["SubjectRef"] | null;
+            /** Statement */
+            statement: string;
+            /** Slot */
+            slot: string;
+            /** Value */
+            value: string;
+            /** State Before */
+            state_before: string | null;
+            /** State After */
+            state_after: string | null;
+            epistemic_status: components["schemas"]["EpistemicStatus"] | null;
+            /**
+             * Importance
+             * @enum {string}
+             */
+            importance: "CONTINUITY" | "DERIVED_HINT";
+            /** Evidence */
+            evidence: components["schemas"]["MemoryEvidence"][];
+            /**
+             * Target Layer
+             * @enum {string}
+             */
+            target_layer: "CANON" | "DERIVED";
+            /** Source Refs */
+            source_refs: components["schemas"]["EvidenceRef"][];
+            /** Confidence */
+            confidence: number;
+            /** Existing Entry Id */
+            existing_entry_id: string | null;
+            /** Known Fact Id */
+            known_fact_id?: string | null;
+            /** Authority Checks */
+            authority_checks: components["schemas"]["BoundaryCheck"][];
+            /** Uncertainty */
+            uncertainty: string | null;
+            /** Subject Id */
+            subject_id: string | null;
+            /** Normalized Subject */
+            normalized_subject: {
+                [key: string]: unknown;
+            } | null;
+            conflict_status: components["schemas"]["MemoryConflict"];
+            /** Conflict Reason */
+            conflict_reason: string;
+            authority_level: components["schemas"]["Authority"];
+            /** Previous Entry Id */
+            previous_entry_id: string | null;
+            /** Previous Statement */
+            previous_statement: string | null;
+        };
         /**
          * ObjectType
          * @enum {string}
@@ -3796,6 +4242,26 @@ export interface components {
             reason: string;
             /** Expected Draft Version */
             expected_draft_version: number;
+        };
+        /** RequestCompletion */
+        RequestCompletion: {
+            /**
+             * Event Id
+             * Format: uuid
+             */
+            event_id: string;
+            /** Expected State Version */
+            expected_state_version: number;
+            /**
+             * Reason
+             * @default User command
+             */
+            reason: string;
+            /**
+             * Chapter Version Id
+             * Format: uuid
+             */
+            chapter_version_id: string;
         };
         /** RequestReview */
         RequestReview: {
@@ -4641,7 +5107,7 @@ export interface components {
          * Status
          * @enum {string}
          */
-        Status: "DRAFT" | "PROPOSED" | "APPROVED" | "LOCKED" | "ACTIVE" | "STALE" | "SUPERSEDED" | "DEPRECATED" | "CANCELLED" | "EXECUTED" | "ARCHIVED";
+        Status: "DRAFT" | "PROPOSED" | "APPROVED" | "LOCKED" | "ACTIVE" | "STALE" | "SUPERSEDED" | "DEPRECATED" | "CANCELLED" | "EXECUTED" | "ARCHIVED" | "COMPLETED";
         /** Strength */
         Strength: {
             /** Description */
@@ -4691,6 +5157,25 @@ export interface components {
          * @enum {string}
          */
         StructuralChange: "NONE" | "LOCAL" | "CHAPTER_WIDE";
+        /** SubjectRef */
+        SubjectRef: {
+            /** Name */
+            name: string;
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "CHARACTER" | "OBJECT" | "LOCATION" | "EVENT" | "GROUP";
+            /** Logical Id */
+            logical_id: string | null;
+            /** Aliases */
+            aliases: string[];
+            /**
+             * Resolution
+             * @enum {string}
+             */
+            resolution: "EXISTING" | "NEW" | "AMBIGUOUS";
+        };
         /** SubmitFeedback */
         SubmitFeedback: {
             /**
@@ -4821,6 +5306,8 @@ export interface components {
             revision_request_id?: string | null;
             /** Human Feedback Id */
             human_feedback_id?: string | null;
+            /** Memory Request Id */
+            memory_request_id?: string | null;
             resume_state: components["schemas"]["ChapterState"] | null;
             resume_status: components["schemas"]["WorkflowStatus"] | null;
             /** Block Reason */
@@ -5190,6 +5677,407 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["RevisionView"][];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Method Not Allowed */
+            405: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unprocessable Content */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    complete_api_v1_workflows__workflow_id__completion_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                workflow_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RequestCompletion"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DispatchView"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Method Not Allowed */
+            405: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unprocessable Content */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    confirm_api_v1_workflows__workflow_id__memory_confirm_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                workflow_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ConfirmMemory"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DispatchView"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Method Not Allowed */
+            405: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unprocessable Content */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    discard_api_v1_workflows__workflow_id__memory_discard_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                workflow_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DiscardMemory"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DispatchView"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Method Not Allowed */
+            405: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unprocessable Content */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    history_api_v1_workflows__workflow_id__memory_get: {
+        parameters: {
+            query?: {
+                limit?: number;
+                offset?: number;
+            };
+            header?: never;
+            path: {
+                workflow_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MemoryHistoryView"][];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Method Not Allowed */
+            405: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unprocessable Content */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    memories_api_v1_projects__project_id__memory_get: {
+        parameters: {
+            query?: {
+                subject_id?: string | null;
+                memory_type?: components["schemas"]["MemoryType"] | null;
+                historical?: boolean;
+                limit?: number;
+                offset?: number;
+            };
+            header?: never;
+            path: {
+                project_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CommittedMemory"][];
                 };
             };
             /** @description Forbidden */

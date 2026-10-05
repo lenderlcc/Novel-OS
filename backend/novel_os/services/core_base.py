@@ -99,6 +99,8 @@ class CoreService:
             raise DomainError("LOCKED_OBJECT", "The object or its parent is locked")
 
     def check_record_lock(self, record: Record) -> None:
+        if record.status == Status.COMPLETED:
+            raise DomainError("INVALID_STATE", "Completed chapter cannot be changed")
         target_id = getattr(record, "logical_id", record.id)
         self.check_lock(record.project_id, ObjectRef(record.object_type, target_id))
         self.check_parent_locks(record)
@@ -108,6 +110,8 @@ class CoreService:
         if getattr(record, "scope_type", None) == ScopeType.CHAPTER:
             chapter_id = record.scope_id
         if chapter_id is not None:
+            if self.repo.get_chapter(record.project_id, chapter_id).status == Status.COMPLETED:
+                raise DomainError("INVALID_STATE", "Completed chapter cannot be changed")
             self.check_lock(record.project_id, ObjectRef(ObjectType.CHAPTER, chapter_id))
 
     def audit(

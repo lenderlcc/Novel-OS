@@ -333,3 +333,7 @@ CP-007 v3 重用正式 Quality 源选择并加入 exact Review、authority contr
 API → Workflow/Application Service → Flush-only Repository → Database。Domain feedback values 不依赖 FastAPI/ORM。新增 immutable HumanFeedback / HumanFeedbackInterpretation，不引入另一个 Agent/Revision engine。Context 复用结构化 MemoryQueryService extension reader；来源快照冻结 approved 输入，模型前和结果写入重查。
 
 Feedback source 与 RevisionRequest 使用不同逻辑 UUID，避免 EXTENSION authority resolver 将不同证据误判为同一对象冲突。RevisionRequest source matrix 和所有执行 lineage由0014数据库触发器保护；Service控制同一事务中的 Interpretation、RevisionRequest、transition、task和audit。取消和迟到结果沿用现有机制。详见 [Human Feedback](09-Human-Feedback.md)。
+
+## NOVEL-012：Memory commit boundary
+
+API → WorkflowRuntime / MemoryCommitService → MemoryRepository → PostgreSQL。Repository 不 commit，A07 不执行写工具。复用项目事务锁、AgentWorker、ContextEngine、Prompt registry、Audit 和 C14/C15/C16。五张追加式表、SQL constraints/triggers 和事务内索引完成持久化，不增加 Vector DB / Redis / graph / scheduler。Writer 经批准的 POV ID 读取人物所有的认知，Planning 可读取相关全局事实；旧章原文不再绕过 Writer firewall。历史 Prompt/Context profile 不覆盖。见 [Memory Commit](10-Memory-Canon-Commit.md)。

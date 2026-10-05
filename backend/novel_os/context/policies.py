@@ -75,7 +75,19 @@ class ContextFilter:
             ):
                 return ExclusionReason.CHARACTER_KNOWLEDGE
         elif item.knowledge_scope == KnowledgeScope.CHARACTER_KNOWLEDGE:
-            return ExclusionReason.CHARACTER_KNOWLEDGE
+            memory = (
+                item.source_type == SourceType.EXTENSION
+                and item.selector_id == "committed-memory"
+                and "committed_memory" in item.provenance
+            )
+            authorized = memory and (
+                request.task_type in {"PLAN_CHAPTER", "EXTRACT_CHAPTER_MEMORY"}
+                or request.task_type == "WRITE_CHAPTER"
+                and request.character_id is not None
+                and request.character_id == item.character_id
+            )
+            if not authorized:
+                return ExclusionReason.CHARACTER_KNOWLEDGE
         future = item.future_knowledge or (
             item.chapter_sequence is not None and item.chapter_sequence > request.chapter_sequence
         )

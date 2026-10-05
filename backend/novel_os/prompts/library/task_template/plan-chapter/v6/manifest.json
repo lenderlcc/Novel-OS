@@ -1,0 +1,22 @@
+{
+  "module_id": "plan-chapter",
+  "module_type": "TASK_TEMPLATE",
+  "version": 6,
+  "status": "STABLE",
+  "description": "NOVEL-012 memory contract",
+  "content_path": "content.md",
+  "dependencies": [
+    {
+      "module_id": "novel-os-core",
+      "version": 1
+    }
+  ],
+  "compatible_agents": [
+    "A03_PLANNING"
+  ],
+  "compatible_task_types": [
+    "PLAN_CHAPTER"
+  ],
+  "created_at": "2026-09-30T00:00:00Z",
+  "content_hash": "2b1117ee00887efec25623e91c98ab09854a78d8ef5cdde46f6fc940ffaac37a"
+}

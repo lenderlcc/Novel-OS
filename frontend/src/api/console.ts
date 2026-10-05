@@ -1,5 +1,5 @@
 import { optional, pages, request } from './client'
-import type { Project, Chapter, Workflow, Gate, Brief, Plan, Planning, PlanningHistory, Draft, Writing, Task, Run, Transition, Context, Lineage, Dispatch, Decision, ExecutionConfig, QualityReview, Revision, Feedback } from '../types/models'
+import type { Project, Chapter, Workflow, Gate, Brief, Plan, Planning, PlanningHistory, Draft, Writing, Task, Run, Transition, Context, Lineage, Dispatch, Decision, ExecutionConfig, QualityReview, Revision, Feedback, MemoryHistory } from '../types/models'
 
 const chapterPath = (p: string, c: string) => `/projects/${p}/chapters/${c}`
 const workflowPath = (w: string) => `/workflows/${w}`
@@ -26,6 +26,10 @@ export const api = {
   },
   drafts: (p: string, c: string, signal?: AbortSignal) => pages<Draft>(`${chapterPath(p, c)}/versions`, signal),
   qualityReviews: (p: string, c: string, signal?: AbortSignal) => pages<QualityReview>(`${chapterPath(p, c)}/quality-reviews`, signal),
+  memory: (w: string, signal?: AbortSignal) => pages<MemoryHistory>(`${workflowPath(w)}/memory`, signal),
+  completeChapter: (w: Workflow, chapter_version_id: string, event_id: string) => request<Dispatch>(`${workflowPath(w.id)}/completion`, { body: { event_id, expected_state_version: w.state_version, chapter_version_id, reason: '用户确认完成本章，提取长期记忆' } }),
+  confirmMemory: (w: Workflow, proposal_id: string, selected_candidate_ids: string[], event_id: string) => request<Dispatch>(`${workflowPath(w.id)}/memory/confirm`, { body: { event_id, expected_state_version: w.state_version, proposal_id, selected_candidate_ids, reason: '用户确认本章长期记忆并完成章节' } }),
+  discardMemory: (w: Workflow, request_id: string, event_id: string) => request<Dispatch>(`${workflowPath(w.id)}/memory/discard`, { body: { event_id, expected_state_version: w.state_version, request_id, reason: '返回正文，候选不写入长期记忆' } }),
   feedback: (w: string, signal?: AbortSignal) => pages<Feedback>(`${workflowPath(w)}/feedback`, signal),
   sendFeedback: (w: Workflow, source_chapter_version_id: string, raw_feedback: string, event_id: string, reply_to_feedback_id?: string) => request<Dispatch>(`${workflowPath(w.id)}/feedback`, { body: { event_id, expected_state_version: w.state_version, source_chapter_version_id, raw_feedback, reply_to_feedback_id, reason: '根据用户反馈进行一次修改并重新审阅' } }),
   discardFeedback: (w: Workflow, feedback_id: string, event_id: string) => request<Dispatch>(`${workflowPath(w.id)}/feedback/discard`, { body: { event_id, expected_state_version: w.state_version, feedback_id, reason: '放弃本次反馈，返回当前正文' } }),

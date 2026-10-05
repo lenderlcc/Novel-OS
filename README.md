@@ -1167,4 +1167,10 @@ Case 01 原始证据和受控人工 A/B 步骤见
 
 “补充修改要求”会结合原反馈和问题处理，保留原有范围与保留要求。如果等待解读时正文或批准的写作依据发生变化，可点击“放弃本次反馈，返回当前正文”，再针对当前版本重新提交；放弃不会修改正文或删除历史，也不会调用模型。
 
-设计与接口见 [Human Feedback](docs/specs/09-Human-Feedback.md)。未实现 NOVEL-012。
+设计与接口见 [Human Feedback](docs/specs/09-Human-Feedback.md)。章节完成与长期记忆见下方 NOVEL-012。
+
+### NOVEL-012：完成本章并确认长期记忆
+
+更新后执行 `alembic upgrade head`（0016），重建并重启 Backend/Worker；配置继续使用 TOML。`chapter-quality` 范围包含 `EXTRACT_CHAPTER_MEMORY`，只在用户点击 **完成本章** 后调度一次提取。UI 展示候选，勾选后点击 **确认并完成** 才提交长期记忆。空候选也需确认；冲突可取消勾选或返回正文修改。完成后的章节不能直接修订。
+
+原有章节不会自动回填。真实模型调用按本机 Profile 消费 API。隔离测试数据库可执行 upgrade/downgrade/upgrade/check；已有 MemoryRequest 的数据库禁止降级删除历史。设计见 [Memory / Canon Commit](docs/specs/10-Memory-Canon-Commit.md)，验证见 [NOVEL-012 报告](docs/reports/NOVEL-012-memory-canon-commit.md)。

@@ -1,0 +1,1 @@
+Prioritize accuracy, authority, relevance and traceability, not coverage. A short high-signal proposal or empty list is preferable to a transcript. Derived summaries do not override Canon. Respect the Pydantic output contract exactly. Proposals require later human confirmation and deterministic service validation.

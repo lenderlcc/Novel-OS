@@ -73,7 +73,8 @@ class AgentResultHandler:
         if (
             task.task_type in BUSINESS_RESULTS
             or task.task_type in QUALITY_TASKS | REVISION_TASKS
-            or task.task_type in {"WRITE_CHAPTER", "INTERPRET_CHAPTER_FEEDBACK"}
+            or task.task_type
+            in {"WRITE_CHAPTER", "INTERPRET_CHAPTER_FEEDBACK", "EXTRACT_CHAPTER_MEMORY"}
         ):
             return definition.success_event, {}, TaskStatus.SUCCEEDED
         if (
@@ -193,6 +194,12 @@ class AgentResultHandler:
                         FeedbackResultService(self.session).validate(
                             task, run, result, package, workflow
                         )
+                    if task.task_type == "EXTRACT_CHAPTER_MEMORY" and expects_task(workflow, task):
+                        from novel_os.services.memory_results import MemoryResultService
+
+                        MemoryResultService(self.session).validate(
+                            task, run, result, package, workflow
+                        )
                     event, payload, terminal = self.map_result(task, result)
                 except RevisionEvidenceError as exc:
                     error = exc.code
@@ -271,11 +278,12 @@ class AgentResultHandler:
                 limit = attempt_limit(task, run)
                 retry = error in TECHNICAL_ERRORS and task.attempt_count < limit
                 manual_retry = error in TECHNICAL_ERRORS and not retry and limit < task.max_attempts
+                memory_pause = task.task_type == "EXTRACT_CHAPTER_MEMORY" and not retry
                 if authority_block:
                     disposition, terminal = "BLOCKED", TaskStatus.BLOCKED
                 elif retry:
                     disposition, terminal = "RETRY_SCHEDULED", TaskStatus.PENDING
-                elif manual_retry:
+                elif manual_retry or memory_pause:
                     disposition, terminal = "MANUAL_RETRY_REQUIRED", TaskStatus.FAILED
                 else:
                     disposition, terminal = "REJECTED", TaskStatus.FAILED
@@ -306,7 +314,7 @@ class AgentResultHandler:
                     result_ref=run.run_id,
                     result_metadata={
                         "disposition": disposition,
-                        "escalation_required": authority_block or manual_retry,
+                        "escalation_required": authority_block or manual_retry or memory_pause,
                     },
                     **RELEASE_LEASE,
                 )
@@ -317,12 +325,16 @@ class AgentResultHandler:
                         "BLOCK",
                         {"reason": "Agent authority/context requires human attention"},
                     )
-                elif manual_retry:
+                elif manual_retry or memory_pause:
                     self.emit(
                         task,
                         run,
                         "BLOCK",
-                        {"reason": "Automatic model attempt limit reached; user retry required"},
+                        {
+                            "reason": "Memory extraction failed; retry or return to Draft"
+                            if memory_pause
+                            else "Automatic model attempt limit reached; user retry required"
+                        },
                     )
                 elif not retry:
                     self.emit(
@@ -356,6 +368,13 @@ class AgentResultHandler:
                 from novel_os.services.revision_results import RevisionResultService
 
                 event, payload, terminal = RevisionResultService(self.session).persist(
+                    task, run, result, package, workflow
+                )
+                metadata["escalation_required"] = terminal == TaskStatus.BLOCKED
+            if task.task_type == "EXTRACT_CHAPTER_MEMORY":
+                from novel_os.services.memory_results import MemoryResultService
+
+                event, payload, terminal = MemoryResultService(self.session).persist(
                     task, run, result, package, workflow
                 )
                 metadata["escalation_required"] = terminal == TaskStatus.BLOCKED

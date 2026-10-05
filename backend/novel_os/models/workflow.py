@@ -102,6 +102,9 @@ class WorkflowInstanceModel(Base):
     revision_request_id: Mapped[UUID | None] = mapped_column(
         ForeignKey("revision_requests.id", use_alter=True)
     )
+    memory_request_id: Mapped[UUID | None] = mapped_column(
+        ForeignKey("memory_requests.id", use_alter=True)
+    )
     human_feedback_id: Mapped[UUID | None] = mapped_column(
         ForeignKey("human_feedback.id", use_alter=True)
     )

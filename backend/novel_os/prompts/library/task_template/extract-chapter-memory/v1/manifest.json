@@ -1,0 +1,22 @@
+{
+  "module_id": "extract-chapter-memory",
+  "module_type": "TASK_TEMPLATE",
+  "version": 1,
+  "status": "STABLE",
+  "description": "NOVEL-012 memory contract",
+  "content_path": "content.md",
+  "dependencies": [
+    {
+      "module_id": "novel-os-core",
+      "version": 1
+    }
+  ],
+  "compatible_agents": [
+    "A07_MEMORY"
+  ],
+  "compatible_task_types": [
+    "EXTRACT_CHAPTER_MEMORY"
+  ],
+  "created_at": "2026-09-30T00:00:00Z",
+  "content_hash": "399ab2101749e29ad771db396be7dbd3410e4a1c3eff5e9f3e50096de2cd5f80"
+}

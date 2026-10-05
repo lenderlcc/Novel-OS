@@ -1,0 +1,22 @@
+{
+  "module_id": "memory-quality",
+  "module_type": "QUALITY_PROFILE",
+  "version": 1,
+  "status": "STABLE",
+  "description": "NOVEL-012 memory contract",
+  "content_path": "content.md",
+  "dependencies": [
+    {
+      "module_id": "novel-os-core",
+      "version": 1
+    }
+  ],
+  "compatible_agents": [
+    "A07_MEMORY"
+  ],
+  "compatible_task_types": [
+    "EXTRACT_CHAPTER_MEMORY"
+  ],
+  "created_at": "2026-09-30T00:00:00Z",
+  "content_hash": "e1ead6989e427628953b1f706f30485565cd374d805b0b452d437aa00e1fbd0d"
+}

@@ -38,6 +38,20 @@ class MockModelProvider(ModelProvider):
             from novel_os.quality.mock import response
 
             return json.dumps(response(request, scenario), ensure_ascii=False)
+        if request.output_kind == "chapter_memory":
+            return json.dumps(
+                {
+                    "task_id": str(request.task_id),
+                    "status": "SUCCESS",
+                    "result": {"kind": "chapter_memory", "candidates": []},
+                    "confidence": 1.0,
+                    "assumptions": [],
+                    "issues": [],
+                    "proposed_changes": [],
+                    "memory_proposals": [],
+                    "escalation": None,
+                }
+            )
         if request.output_kind == "human_feedback_interpretation":
             from novel_os.feedback.mock import response
 

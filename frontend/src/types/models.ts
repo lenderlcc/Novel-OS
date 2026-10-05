@@ -23,3 +23,5 @@ export type Decision = 'APPROVE' | 'REJECT' | 'REQUEST_ALTERNATIVE' | 'MODIFY'
 export type QualityReview = S['QualityReviewView']
 export type Revision = S['RevisionView']
 export type Feedback = S['FeedbackHistoryView']
+
+export type MemoryHistory = S['MemoryHistoryView']

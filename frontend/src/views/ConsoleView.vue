@@ -13,6 +13,7 @@ import ErrorNotice from '../components/ErrorNotice.vue'
 import WritingProfile from '../components/WritingProfile.vue'
 import WorkspaceSidebar from '../components/WorkspaceSidebar.vue'
 import ManualCaseLoader from '../components/ManualCaseLoader.vue'
+import MemoryCompletion from '../components/MemoryCompletion.vue'
 import HumanFeedback from '../components/HumanFeedback.vue'
 import HumanEvaluation from '../components/HumanEvaluation.vue'
 import { manualCases, type ManualCase } from '../data/manualCases'
@@ -21,7 +22,7 @@ const {
   projects, chapters, workflows, executionConfig, projectId, chapterId, workflowId, snapshot, workflow,
   selectedPlan, selectedDraft, currentBackendVersion, plan, generation, review, draft, gate, formal, error, busy, loading, conflict,
   loadProjects, selectProject, selectChapter, refresh, createProject, createChapter,
-  start, submit, decide, control, revise, rereviewRevision, sendFeedback, discardFeedback, replan,
+  start, submit, decide, control, revise, rereviewRevision, sendFeedback, discardFeedback, replan, completeChapter, confirmMemory, discardMemory,
 } = useConsole()
 const manualTestAvailable = import.meta.env.DEV
 const storage = window.localStorage
@@ -38,7 +39,7 @@ const requirementStage = computed(() => !workflow.value || state.value === 'C00_
 const processingStage = computed(() => /^C0[1-5]_/.test(state.value))
 const planStage = computed(() => state.value === 'C06_PLAN_APPROVAL')
 const writingStage = computed(() => state.value === 'C07_WRITING')
-const draftStage = computed(() => ['C08_DETERMINISTIC_CHECK', 'C09_INTERNAL_REVIEW', 'C10_REVISION', 'C11_INTERNAL_PASS', 'C13_USER_FEEDBACK_DIAGNOSIS'].includes(state.value))
+const draftStage = computed(() => ['C08_DETERMINISTIC_CHECK', 'C09_INTERNAL_REVIEW', 'C10_REVISION', 'C11_INTERNAL_PASS', 'C13_USER_FEEDBACK_DIAGNOSIS', 'C14_MEMORY_PREPARATION', 'C15_MEMORY_COMMIT', 'C16_COMPLETED'].includes(state.value))
 const { qualityReview, revision, revising, historical, revisionMissingProfile, reviewNeedsRereview, canRevise,
   revisionForDraft, revisionNeedsRereview, fidelityFailed, contextBudgetBlocked, revisionPlanningFailed, revisionEvidenceFailed, blockedReasons, revisionStopped, reviewPending, revisionHeading,
 } = useRevisionWorkspace(snapshot, draft)
@@ -206,17 +207,18 @@ onMounted(initialize)
           </section>
           <DraftView :draft="draft" :chapter-number="currentChapter.sequence" :versions="snapshot?.drafts" :current-version="currentBackendVersion" :review-href="qualityReview ? '#quality-heading' : undefined" @select-version="selectedDraft = $event" @evaluate="openEvaluation">
             <template #before-prose>
-              <HumanFeedback v-if="snapshot && workflow?.workflow_definition_version === 3" :key="workflow.id" :snapshot="snapshot" :draft="draft" :disabled="disabled || conflict" @send="sendFeedback" @discard="discardFeedback" @open-profile="profileOpen = true" @replan="replan" @cancel="control('cancel', '用户取消本次反馈修改流程')" />
+              <MemoryCompletion v-if="workflow && snapshot && workflow.workflow_definition_version === 3" :workflow="workflow" :draft="draft" :current-version="snapshot.chapter.current_version" :memory="snapshot.memory?.find(m => m.request.id === workflow?.memory_request_id)" :disabled="disabled || conflict" @request="completeChapter" @confirm="confirmMemory" @discard="discardMemory" />
+              <HumanFeedback v-if="snapshot && workflow?.workflow_definition_version === 3 && !workflow.memory_request_id && workflow.status !== 'COMPLETED'" :key="workflow.id" :snapshot="snapshot" :draft="draft" :disabled="disabled || conflict" @send="sendFeedback" @discard="discardFeedback" @open-profile="profileOpen = true" @replan="replan" @cancel="control('cancel', '用户取消本次反馈修改流程')" />
               <section v-if="revisionForDraft?.result" class="quality-review"><h2>此版本的修改内容</h2><ul><li v-for="(change, index) in revisionForDraft.result.body.declared_changes" :key="index">{{ change }}</li></ul><p>是否改善请结合重新审阅结果和正文判断。</p></section>
               <QualityReview :review="qualityReview" :pending="reviewPending" :rereviewing="revising" />
               <p v-if="workflow?.workflow_definition_version !== 3" class="notice">此章节使用旧版创作流程，尚未接入正文审阅与修改。原稿可以继续阅读和人工评价。</p>
-              <div v-if="reviewNeedsRereview" class="reader-actions">
+              <div v-if="reviewNeedsRereview && !workflow?.memory_request_id && workflow?.status !== 'COMPLETED'" class="reader-actions">
                 <p v-if="revisionMissingProfile">这份审阅没有绑定已批准的写作偏好。请先创建并批准写作偏好，再重新审阅当前正文。</p>
                 <p v-else>审阅依据已变化。请重新审阅当前正文，再根据最新结果决定是否修改。</p>
                 <button v-if="revisionMissingProfile" :disabled="disabled" @click="profileOpen = true">设置写作偏好</button>
                 <button :disabled="disabled || conflict" @click="rereviewRevision">重新审阅正文 v{{ currentBackendVersion }}（会调用模型）</button>
               </div>
-              <div v-if="canRevise || (revising && !revisionStopped && !historical)" class="reader-actions"><button class="primary" :disabled="disabled || conflict || revising" @click="revise">{{ revising ? '修改进行中…' : '根据审阅修改' }}</button><p>进行一次修改并重新审阅，完成后停止。真实模型会消耗 API 额度。</p></div>
+              <div v-if="!workflow?.memory_request_id && workflow?.status !== 'COMPLETED' && (canRevise || (revising && !revisionStopped && !historical))" class="reader-actions"><button class="primary" :disabled="disabled || conflict || revising" @click="revise">{{ revising ? '修改进行中…' : '根据审阅修改' }}</button><p>进行一次修改并重新审阅，完成后停止。真实模型会消耗 API 额度。</p></div>
             </template>
           </DraftView>
         </section>

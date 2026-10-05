@@ -172,6 +172,33 @@ class TaskDefinitionRegistry:
                         schema_id, int(schema.rsplit(".v", 1)[1]), legacy_model
                     ),
                 )
+        from novel_os.memory.schemas import MemoryAgentResult
+
+        self.register(
+            TaskDefinition(
+                task_type="EXTRACT_CHAPTER_MEMORY",
+                agent_id=AgentId.A07_MEMORY,
+                system_policy=ref("novel-os-core"),
+                agent_role=ref("memory-extractor"),
+                task_template=ref("extract-chapter-memory"),
+                skills=(ref("memory-evidence"),),
+                quality_profile=ref("memory-quality"),
+                output_schema=OutputContractGenerator.generate(
+                    "chapter-memory-result", 1, MemoryAgentResult
+                ),
+                model_profile=model_profile,
+                capabilities=frozenset({Capability.REPORT_RESULT}),
+            )
+        )
+        from novel_os.agents.planning_schemas import LegacyPlanningAgentResult
+
+        self._historical_definitions[("PLAN_CHAPTER", "chapter-planning-result.v1")] = replace(
+            self._definitions["PLAN_CHAPTER"],
+            task_template=ModuleRef(module_id="plan-chapter", version=5),
+            output_schema=OutputContractGenerator.generate(
+                "chapter-planning-result", 1, LegacyPlanningAgentResult
+            ),
+        )
         from novel_os.feedback.schemas import FeedbackAgentResult
 
         self.register(

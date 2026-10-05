@@ -7,14 +7,14 @@ defineEmits<{ resume: [] }>()
 const task = computed(() => currentTask(props.workflow, props.tasks))
 const requirementOnly = computed(() => props.config?.task_types?.length === 1 && props.config.task_types[0] === 'PARSE_CHAPTER_REQUIREMENT')
 const stateNumber = computed(() => Number(props.workflow.current_state.slice(1, 3)))
-const phase = computed(() => props.workflow.revision_request_id || props.workflow.revision_count > 0 ? 4 : stateNumber.value <= 3 ? 0 : stateNumber.value <= 6 ? 1 : stateNumber.value <= 8 ? 2 : 3)
+const phase = computed(() => props.workflow.memory_request_id || stateNumber.value === 16 ? 5 : props.workflow.revision_request_id || props.workflow.revision_count > 0 ? 4 : stateNumber.value <= 3 ? 0 : stateNumber.value <= 6 ? 1 : stateNumber.value <= 8 ? 2 : 3)
 // A terminal workflow transition advances the state version once. Errors from
 // earlier review/revision attempts must not describe the current stop reason.
 const failedTask = computed(() => props.tasks.find(t => t.workflow_instance_id === props.workflow.id &&
   t.workflow_state_version === props.workflow.state_version - 1 && ['FAILED', 'BLOCKED'].includes(t.status) && t.last_error_code))
 const stopped = computed(() => stateNumber.value >= 90)
 const reviewResume = computed(() => isReviewResume(props.workflow, props.tasks))
-const stages = computed(() => props.workflow.workflow_definition_version === 3 && !props.workflow.simulation ? ['需求', '方案', '正文', '审阅', '修改'] : ['需求', '方案', '正文'])
+const stages = computed(() => props.workflow.workflow_definition_version === 3 && !props.workflow.simulation ? ['需求', '方案', '正文', '审阅', '修改', '完成'] : ['需求', '方案', '正文'])
 const technicalCode = computed(() => failedTask.value?.last_error_code || props.workflow.block_reason || props.workflow.blocked_guard || props.workflow.current_state)
 const failureMessage = computed(() => {
   if (isStaleFeedback(props.workflow, props.tasks)) return '正文或写作依据已变化。请放弃本次反馈，再根据当前正文提交修改要求。'

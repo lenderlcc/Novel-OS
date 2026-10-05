@@ -276,3 +276,7 @@ A06 仍拥有 PLAN_CHAPTER_REVISION / REVISE_CHAPTER，输出分别为 locality 
 ## NOVEL-011：A02 Human Feedback
 
 现有 A02 新增 INTERPRET_CHAPTER_FEEDBACK，使用 CP-008 与版本化 interpret-chapter-feedback，不新增 Agent。输出独立 HumanFeedbackInterpretation；原需求解析和 CreativeBrief 不受反馈隐式覆盖。普通局部表达意见自主推断，真实方向/偏好/锁定冲突走明确 action。A06/A05 接入同一 Revision/Fidelity 路径，详见 [Human Feedback](09-Human-Feedback.md)。
+
+## NOVEL-012：A07 Memory extraction
+
+A07_MEMORY / EXTRACT_CHAPTER_MEMORY 只拥有 REPORT_RESULT。输出 chapter-memory-result.v1 的六类可验证候选，不能直接写 Canon、Profile 或改变批准依据。模型调用发生于用户完成当前正文之后；另一次用户确认才触发 deterministic commit。精确证据、人物认知与 conflict 规则见 [Memory Commit](10-Memory-Canon-Commit.md)。

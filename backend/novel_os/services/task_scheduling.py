@@ -103,6 +103,14 @@ class TaskScheduler:
             from novel_os.agents.registry import FEEDBACK_STAGE_TASK
 
             definition = FEEDBACK_STAGE_TASK
+        if (
+            supports_quality(workflow)
+            and workflow.current_state == "C14_MEMORY_PREPARATION"
+            and workflow.memory_request_id
+        ):
+            from novel_os.agents.registry import MEMORY_STAGE_TASK
+
+            definition = MEMORY_STAGE_TASK
         if definition is None:
             return None  # Deterministic controls and versioned handoff boundaries have no agent.
 
@@ -152,6 +160,9 @@ class TaskScheduler:
                 FeedbackRepository(self.session).get(workflow.human_feedback_id).raw_feedback
             )
             requirements = []
+        if definition.task_type == "EXTRACT_CHAPTER_MEMORY":
+            objective = "Extract only future-relevant information from the accepted chapter"
+            requirements = []
         task = self.repo.add(
             AgentTask(
                 project_id=workflow.project_id,
@@ -178,6 +189,8 @@ class TaskScheduler:
                     if definition.task_type in REVISION_TASKS
                     else "Interpret human feedback; no Brief, Profile or authority mutation"
                     if definition.task_type == "INTERPRET_CHAPTER_FEEDBACK"
+                    else "Extract memory proposals only; no commit or authority mutation"
+                    if definition.task_type == "EXTRACT_CHAPTER_MEMORY"
                     else "Planning only; no chapter prose",
                     "No approval, lock, canon commit or direct database access",
                 ],
@@ -203,5 +216,9 @@ class TaskScheduler:
             from novel_os.services.feedback_binding import FeedbackBindingService
 
             FeedbackBindingService(self.session).for_task(task, workflow)
+        if task.task_type == "EXTRACT_CHAPTER_MEMORY":
+            from novel_os.services.memory_commit import MemoryCommitService
+
+            MemoryCommitService(self.session).for_task(task, workflow)
         self.history.audit(task, None, task, context, "Workflow scheduled agent task")
         return task

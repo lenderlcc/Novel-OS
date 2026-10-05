@@ -72,6 +72,7 @@ class Settings(BaseSettings):
                 "REVISE_CHAPTER",
                 "VALIDATE_REVISION_FIDELITY",
                 "INTERPRET_CHAPTER_FEEDBACK",
+                "EXTRACT_CHAPTER_MEMORY",
             ),
             "chapter-writing": (
                 "PARSE_CHAPTER_REQUIREMENT",

@@ -70,6 +70,7 @@ class WorkflowView(BaseModel):
     draft_version: int | None
     revision_request_id: UUID | None = None
     human_feedback_id: UUID | None = None
+    memory_request_id: UUID | None = None
     resume_state: ChapterState | None
     resume_status: WorkflowStatus | None
     block_reason: str | None

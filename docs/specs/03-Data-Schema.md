@@ -314,3 +314,7 @@ Approved 历史版本 immutable。
 - ARCHIVED
 
 保留历史引用。
+
+## NOVEL-012：Memory persistence
+
+0016 添加 memory_requests、memory_commit_proposals、memory_commit_batches、memory_subjects、committed_memory；Workflow 添加 nullable memory_request_id，Chapter 添加 COMPLETED 生命周期。六种 Memory 共用追加式 typed records，通过 logical_id/version/supersedes_id 保留历史。Source ChapterVersion、Task/Run/Prompt/Context、human-confirmation event 与 commit batch 精确绑定。Canon revision 按项目 batch 序号递增；不是正文的第三个版本指针。完整定义见 [Memory Commit](10-Memory-Canon-Commit.md)。

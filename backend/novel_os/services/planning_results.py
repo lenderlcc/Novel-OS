@@ -116,6 +116,14 @@ class PlanningResultService:
         chapter = self.core.repo.get_chapter(workflow.project_id, workflow.chapter_id)
         VersionToken(workflow.plan_version or 0).check(chapter.current_plan_version or 0)
         if task.task_type == "PLAN_CHAPTER":
+            pov = getattr(output, "pov_character_id", None)
+            if pov is not None and not any(
+                i.selector_id == "memory-subjects"
+                and i.source_id == pov
+                and i.structured_payload["subject"]["kind"] == "CHARACTER"
+                for i in package.items
+            ):
+                raise ValueError("Planning POV must identify a supplied Character subject")
             canonical_plan_constraints(output, parsed_brief)
             freedom = output.creative_freedom
             baseline = parsed_brief.creative_freedom

@@ -136,7 +136,7 @@ class MajorChangeProposal(StrictOutput):
     disposition: Literal["PROPOSAL_ONLY"]
 
 
-class ChapterPlanOutput(StrictOutput):
+class LegacyChapterPlanOutput(StrictOutput):
     kind: Literal["chapter_plan"]
     objective: Text
     required_outcome: Text
@@ -171,6 +171,11 @@ class ChapterPlanOutput(StrictOutput):
         ):
             raise ValueError("Duplicate coverage entry")
         return self
+
+
+class ChapterPlanOutput(LegacyChapterPlanOutput):
+    # One explicitly approved POV owner. Null/multiple perspectives fail closed in Writer retrieval.
+    pov_character_id: UUID | None = None
 
 
 HardGateCode = Literal[
@@ -266,6 +271,10 @@ class PlanningAgentResult(AgentResult):
     result: ChapterPlanOutput
 
 
+class LegacyPlanningAgentResult(AgentResult):
+    result: LegacyChapterPlanOutput
+
+
 class PlanReviewAgentResult(AgentResult):
     result: PlanReviewOutput
 
@@ -282,6 +291,12 @@ def result_model(task_type, output_schema=None):
     from novel_os.revision.contracts import LEGACY_CONTRACTS
     from novel_os.revision.schemas import revision_results
 
+    if task_type == "PLAN_CHAPTER" and output_schema == "chapter-planning-result.v1":
+        return LegacyPlanningAgentResult
+    if task_type == "EXTRACT_CHAPTER_MEMORY":
+        from novel_os.memory.schemas import MemoryAgentResult
+
+        return MemoryAgentResult
     if task_type == "INTERPRET_CHAPTER_FEEDBACK":
         from novel_os.feedback.schemas import FeedbackAgentResult
 
@@ -307,4 +322,4 @@ def result_model(task_type, output_schema=None):
 
 
 # New review calls use a versioned cross-field contract; persisted v1 reports stay untouched.
-BUSINESS_SCHEMA_VERSIONS = {"REVIEW_CHAPTER_PLAN": 2}
+BUSINESS_SCHEMA_VERSIONS = {"REVIEW_CHAPTER_PLAN": 2, "PLAN_CHAPTER": 2}

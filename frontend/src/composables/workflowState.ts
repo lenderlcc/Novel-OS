@@ -8,6 +8,7 @@ const names: Record<string, string> = {
   C08_DETERMINISTIC_CHECK: 'Draft 已生成，本次测试流程结束',
   C09_INTERNAL_REVIEW: '正在审阅正文', C10_REVISION: '审阅完成，建议修改', C11_INTERNAL_PASS: '审阅完成',
   C13_USER_FEEDBACK_DIAGNOSIS: '正在理解你的反馈',
+  C14_MEMORY_PREPARATION: '正在整理本章记忆', C15_MEMORY_COMMIT: '等待确认本章记忆', C16_COMPLETED: '章节已完成',
   C90_BLOCKED: '流程受阻', C91_FAILED: '流程失败', C92_CANCELLED: '流程已取消',
 }
 export const stateLabel = (state: string) => names[state] ?? `当前阶段暂不提供操作（${state}）`
@@ -19,7 +20,7 @@ export const isReviewResume = (w: Workflow, tasks: Task[]) => !w.simulation && w
   (w.resume_state === 'C09_INTERNAL_REVIEW' || (w.resume_state === 'C08_DETERMINISTIC_CHECK' && tasks.some(t => t.workflow_instance_id === w.id && ['REVIEW_CHAPTER_COMPLIANCE', 'REVIEW_CHAPTER_NARRATIVE'].includes(t.task_type))))
 export function resumeCallsModel(w: Workflow, config?: ExecutionConfig | null, tasks: Task[] = []): boolean {
   if (!config || config.provider === 'mock' || w.simulation) return false
-  const taskTypes: Record<string, string> = { C01_REQUIREMENT_INTAKE: 'PARSE_CHAPTER_REQUIREMENT', C04_CHAPTER_PLANNING: 'PLAN_CHAPTER', C05_PLAN_REVIEW: 'REVIEW_CHAPTER_PLAN', C07_WRITING: 'WRITE_CHAPTER', C09_INTERNAL_REVIEW: 'REVIEW_CHAPTER_COMPLIANCE', C10_REVISION: 'PLAN_CHAPTER_REVISION', C13_USER_FEEDBACK_DIAGNOSIS: 'INTERPRET_CHAPTER_FEEDBACK' }
+  const taskTypes: Record<string, string> = { C01_REQUIREMENT_INTAKE: 'PARSE_CHAPTER_REQUIREMENT', C04_CHAPTER_PLANNING: 'PLAN_CHAPTER', C05_PLAN_REVIEW: 'REVIEW_CHAPTER_PLAN', C07_WRITING: 'WRITE_CHAPTER', C09_INTERNAL_REVIEW: 'REVIEW_CHAPTER_COMPLIANCE', C10_REVISION: 'PLAN_CHAPTER_REVISION', C13_USER_FEEDBACK_DIAGNOSIS: 'INTERPRET_CHAPTER_FEEDBACK', C14_MEMORY_PREPARATION: 'EXTRACT_CHAPTER_MEMORY' }
   const type = isReviewResume(w, tasks) ? 'REVIEW_CHAPTER_COMPLIANCE' : taskTypes[w.resume_state ?? w.current_state]
   return Boolean(type && (!config.task_types || config.task_types.includes(type)))
 }
@@ -53,7 +54,7 @@ export function pollDelay(w: Workflow | null, tasks: Task[] = [], config?: Execu
   if (['C06_PLAN_APPROVAL', 'C10_REVISION', 'C11_INTERNAL_PASS'].includes(w.current_state)) return null
   const task = currentTask(w, tasks)
   if (task?.status === 'PENDING' && config?.task_types && !config.task_types.includes(task.task_type)) return null
-  return (/^C0[1-7]_/.test(w.current_state) || (w.workflow_definition_version === 3 && ['C09_INTERNAL_REVIEW', 'C13_USER_FEEDBACK_DIAGNOSIS'].includes(w.current_state))) ? 1500 : null
+  return (/^C0[1-7]_/.test(w.current_state) || (w.workflow_definition_version === 3 && ['C09_INTERNAL_REVIEW', 'C13_USER_FEEDBACK_DIAGNOSIS', 'C14_MEMORY_PREPARATION'].includes(w.current_state))) ? 1500 : null
 }
 export const stages = [
   ['需求', 1], ['Context', 2], ['Planning', 4], ['Plan Review', 5], ['人工审批', 6], ['Writing', 7], ['Draft', 8],

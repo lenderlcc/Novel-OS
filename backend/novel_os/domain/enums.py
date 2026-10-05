@@ -13,6 +13,7 @@ class Status(StrEnum):
     CANCELLED = "CANCELLED"
     EXECUTED = "EXECUTED"
     ARCHIVED = "ARCHIVED"
+    COMPLETED = "COMPLETED"
 
 
 class Authority(StrEnum):

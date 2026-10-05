@@ -124,7 +124,8 @@ BUSINESS_STAGE_TASKS = {
         "chapter_plan",
         Capability.PROPOSE_PLAN,
         "PLAN_READY",
-        result_schema="chapter-planning-result.v1",
+        result_schema="chapter-planning-result.v2",
+        legacy_result_schema="chapter-planning-result.v1",
     ),
     State.C05_PLAN_REVIEW: StageTaskMapping(
         "REVIEW_CHAPTER_PLAN",
@@ -214,6 +215,16 @@ FEEDBACK_STAGE_TASK = StageTaskMapping(
     "FEEDBACK_READY",
     result_schema="chapter-feedback-result.v1",
 )
+MEMORY_STAGE_TASK = StageTaskMapping(
+    "EXTRACT_CHAPTER_MEMORY",
+    State.C14_MEMORY_PREPARATION,
+    AgentId.A07_MEMORY,
+    "chapter_memory",
+    Capability.REPORT_RESULT,
+    "MEMORY_PROPOSAL_READY",
+    result_schema="chapter-memory-result.v1",
+)
+TASKS[MEMORY_STAGE_TASK.task_type] = MEMORY_STAGE_TASK
 TASKS[FEEDBACK_STAGE_TASK.task_type] = FEEDBACK_STAGE_TASK
 TASKS.update(REVISION_STAGE_TASKS)
 TASKS.update(QUALITY_STAGE_TASKS)

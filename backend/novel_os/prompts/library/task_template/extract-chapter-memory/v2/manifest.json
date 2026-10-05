@@ -1,0 +1,22 @@
+{
+  "module_id": "extract-chapter-memory",
+  "module_type": "TASK_TEMPLATE",
+  "version": 2,
+  "status": "STABLE",
+  "description": "Exact minimal evidence quotations without invented quote endings",
+  "content_path": "content.md",
+  "dependencies": [
+    {
+      "module_id": "novel-os-core",
+      "version": 1
+    }
+  ],
+  "compatible_agents": [
+    "A07_MEMORY"
+  ],
+  "compatible_task_types": [
+    "EXTRACT_CHAPTER_MEMORY"
+  ],
+  "created_at": "2026-09-30T00:00:00Z",
+  "content_hash": "6e29a35b6ed8933faaa691a3f390bd8d0aa8b3a8db686eb8e75074f6e8ef9316"
+}

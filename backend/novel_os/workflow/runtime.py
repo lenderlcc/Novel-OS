@@ -55,7 +55,7 @@ def state_status(state: State, workflow=None) -> RunStatus:
     if (
         workflow is not None
         and supports_quality(workflow)
-        and state in {State.C10_REVISION, State.C11_INTERNAL_PASS}
+        and state in {State.C10_REVISION, State.C11_INTERNAL_PASS, State.C15_MEMORY_COMMIT}
     ):
         if state == State.C10_REVISION and workflow.revision_request_id is not None:
             return RunStatus.WAITING_AGENT
@@ -331,6 +331,10 @@ class WorkflowRuntime:
 
     def _advance(self, workflow, command, context, dispatcher):
         event = command.event_type
+        from novel_os.services.memory_workflow import MEMORY_EVENTS, advance_memory
+
+        if event in MEMORY_EVENTS and not workflow.simulation:
+            return advance_memory(self, workflow, command, context)
         from novel_os.services.feedback_workflow import FEEDBACK_EVENTS, advance_feedback
 
         if event in FEEDBACK_EVENTS and not workflow.simulation:
@@ -812,6 +816,7 @@ class WorkflowRuntime:
             if (
                 workflow.simulation
                 or workflow.current_state in TERMINAL_STATES
+                or workflow.memory_request_id is not None
                 or workflow.current_state in {State.C07_WRITING, State.C08_DETERMINISTIC_CHECK}
             ):
                 raise DomainError(
