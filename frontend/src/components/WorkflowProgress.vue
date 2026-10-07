@@ -14,7 +14,7 @@ const failedTask = computed(() => props.tasks.find(t => t.workflow_instance_id =
   t.workflow_state_version === props.workflow.state_version - 1 && ['FAILED', 'BLOCKED'].includes(t.status) && t.last_error_code))
 const stopped = computed(() => stateNumber.value >= 90)
 const reviewResume = computed(() => isReviewResume(props.workflow, props.tasks))
-const stages = computed(() => props.workflow.workflow_definition_version === 3 && !props.workflow.simulation ? ['需求', '方案', '正文', '审阅', '修改', '完成'] : ['需求', '方案', '正文'])
+const stages = computed(() => [3, 4].includes(props.workflow.workflow_definition_version) && !props.workflow.simulation ? ['需求', '方案', '正文', '审阅', '修改', '完成'] : ['需求', '方案', '正文'])
 const technicalCode = computed(() => failedTask.value?.last_error_code || props.workflow.block_reason || props.workflow.blocked_guard || props.workflow.current_state)
 const failureMessage = computed(() => {
   if (isStaleFeedback(props.workflow, props.tasks)) return '正文或写作依据已变化。请放弃本次反馈，再根据当前正文提交修改要求。'

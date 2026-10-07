@@ -97,6 +97,24 @@ class TaskDefinitionRegistry:
                     capabilities=frozenset({mapping.capability}),
                 )
             )
+        from novel_os.agents.exploration_schemas import ExplorationAgentResult
+
+        self.register(
+            TaskDefinition(
+                task_type="EXPLORE_CHAPTER_CONCEPTS",
+                agent_id=AgentId.A03_PLANNING,
+                system_policy=ref("novel-os-core"),
+                agent_role=ref("planning-agent"),
+                task_template=ref("explore-chapter-concepts"),
+                skills=(ModuleRef(module_id="creative-exploration", version=2),),
+                quality_profile=ref("planning-quality"),
+                output_schema=OutputContractGenerator.generate(
+                    "creative-exploration-result", 1, ExplorationAgentResult
+                ),
+                model_profile=model_profile,
+                capabilities=frozenset({Capability.PROPOSE_PLAN}),
+            )
+        )
         from novel_os.quality.schemas import (
             QUALITY_RESULTS,
             QUALITY_SCHEMA_VERSIONS,
@@ -184,10 +202,19 @@ class TaskDefinitionRegistry:
                 skills=(ref("memory-evidence"),),
                 quality_profile=ref("memory-quality"),
                 output_schema=OutputContractGenerator.generate(
-                    "chapter-memory-result", 1, MemoryAgentResult
+                    "chapter-memory-result", 2, MemoryAgentResult
                 ),
                 model_profile=model_profile,
                 capabilities=frozenset({Capability.REPORT_RESULT}),
+            )
+        )
+        self._historical_definitions[("EXTRACT_CHAPTER_MEMORY", "chapter-memory-result.v1")] = (
+            replace(
+                self._definitions["EXTRACT_CHAPTER_MEMORY"],
+                task_template=ModuleRef(module_id="extract-chapter-memory", version=2),
+                output_schema=OutputContractGenerator.generate(
+                    "chapter-memory-result", 1, MemoryAgentResult
+                ),
             )
         )
         from novel_os.agents.planning_schemas import LegacyPlanningAgentResult
@@ -257,6 +284,24 @@ class TaskDefinitionRegistry:
                 (ref("structured-reporting"),),
                 ref("runtime-quality"),
                 OutputContractGenerator.generate("requirement-smoke-result", 1, SmokeAgentResult),
+                model_profile,
+                frozenset({Capability.REPORT_RESULT}),
+            )
+        )
+        from novel_os.characters.interpretation import CharacterProfileAgentResult
+
+        self.register(
+            TaskDefinition(
+                "INTERPRET_CHARACTER_PROFILE",
+                AgentId.A02_REQUIREMENT,
+                ref("novel-os-core"),
+                ref("character-profile-interpreter"),
+                ref("interpret-character-profile"),
+                (ref("structured-reporting"),),
+                ref("runtime-quality"),
+                OutputContractGenerator.generate(
+                    "character-profile-draft", 1, CharacterProfileAgentResult
+                ),
                 model_profile,
                 frozenset({Capability.REPORT_RESULT}),
             )

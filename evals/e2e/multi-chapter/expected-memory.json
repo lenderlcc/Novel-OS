@@ -1,0 +1,43 @@
+{
+  "assertion_identity": "Resolve fixture candidate IDs to actual subject_id/logical_id/entry UUIDs after formal commits; display names are inputs, never assertion identity.",
+  "after_chapter_1": {
+    "A.location": "L1",
+    "B.location": "L2",
+    "X": "CANON_EXISTS",
+    "A.X": "KNOWS",
+    "B.X": "ABSENT",
+    "K.condition": "INTACT",
+    "T": "OPEN",
+    "A.relationship.B": "COOPERATING",
+    "A.task": "PENDING"
+  },
+  "after_chapter_2": {
+    "A.location": "L2",
+    "A.location.old": "SUPERSEDED_WITH_HISTORY",
+    "A.responsible_Y": "SUSPECTS",
+    "B.responsible_Y.canon": "ABSENT",
+    "K.condition": "INTACT",
+    "duplicate_unchanged_K": "SKIPPED"
+  },
+  "after_chapter_3": {
+    "B.responsible_Y.canon": "FALSE",
+    "A.responsible_Y.history": "SUSPECTS",
+    "K.condition": "DESTROYED",
+    "K.condition.old": "SUPERSEDED_WITH_HISTORY",
+    "T": "OPEN",
+    "A.responsible_Y.current": "KNOWS_NOT_RESPONSIBLE"
+  },
+  "after_chapter_4": {
+    "Z": "ABSENT_FROM_ALL_MEMORY_TYPES",
+    "source_chapter_version": "FINALIZED_V2_ONLY",
+    "T": "SAME_LOGICAL_ID_NEW_VERSION_OPEN"
+  },
+  "after_chapter_5": {
+    "A.location": "L2",
+    "K.condition": "DESTROYED",
+    "B.X": "ABSENT",
+    "T": "OPEN",
+    "source": "CONFIRMED_COMMITTED_PRIOR_CHAPTER_MEMORY_ONLY",
+    "A.responsible_Y.current": "KNOWS_NOT_RESPONSIBLE"
+  }
+}

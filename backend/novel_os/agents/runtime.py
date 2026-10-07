@@ -208,32 +208,52 @@ class AgentRuntime:
 
     def execute_smoke(self, user_text: str) -> ExecutionResult:
         """Isolated A02 demo. No AgentTask persistence, scheduling, result handler or workflow."""
+        return self.execute_report("INTERNAL_SMOKE_TEST", user_text)
+
+    def prepare_report(
+        self,
+        task_type: str,
+        user_text: str,
+        *,
+        task_id=None,
+        project_id=None,
+        target_ref=None,
+        requirements=(),
+    ) -> ModelRequest | ExecutionResult:
+        """Prepare explicit A02 reports without persistence or Provider IO."""
         from uuid import uuid4
 
-        task_id = uuid4()
+        task_id = task_id or uuid4()
         try:
             from novel_os.context.engine import ContextEngine
             from novel_os.context.inputs import task_item
             from novel_os.domain.context import CandidateBatch, ContextRequest
             from novel_os.domain.core import now
 
-            profile = ContextProfileRegistry().resolve("CP-000")
+            if task_type not in {"INTERNAL_SMOKE_TEST", "INTERPRET_CHARACTER_PROFILE"}:
+                raise DomainError("AUTHORITY_DENIED", "Only explicit A02 reports are allowed")
+            target_ref = target_ref or task_id
+            profile = ContextProfileRegistry().for_task(task_type)
             context_request = ContextRequest(
-                project_id=task_id,
+                project_id=project_id or task_id,
                 task_id=task_id,
-                task_type="INTERNAL_SMOKE_TEST",
-                chapter_id=task_id,
+                task_type=task_type,
+                chapter_id=target_ref,
+                attempt_number=1,
                 objective=user_text,
+                requirements=tuple(requirements),
             )
 
             def compile_context(payload):
                 return self.prompts.prepare(
                     task_id=task_id,
-                    task_type="INTERNAL_SMOKE_TEST",
+                    task_type=task_type,
                     agent_id=AgentId.A02_REQUIREMENT,
                     attempt=1,
-                    target_ref=task_id,
-                    output_kind="requirement_demo",
+                    target_ref=target_ref,
+                    output_kind="character_profile_draft"
+                    if task_type == "INTERPRET_CHARACTER_PROFILE"
+                    else "requirement_demo",
                     capabilities=[Capability.REPORT_RESULT],
                     constraints=[],
                     context_payload=payload,
@@ -250,16 +270,101 @@ class AgentRuntime:
             )
             if built.status != ContextStatus.READY:
                 return ExecutionResult(error_code=built.error_code)
-            request = replace(
+            return replace(
                 compile_context(ContextSerializer.serialize(built.package)),
                 context_package=built.package,
             )
-            response = self.prompts.generate(request)
-            result = request.prompt.output.parse(response.content)
-            if result.task_id != task_id or result.proposed_changes or result.memory_proposals:
-                raise DomainError("AUTHORITY_DENIED", "Smoke tasks may only report results")
-            if result.status == ResultStatus.SUCCESS and result.result is None:
-                return ExecutionResult(error_code="SCHEMA_PARSE_ERROR")
-            return ExecutionResult(result=result, model_metadata=response.safe_summary())
         except Exception as exc:
             return execution_failure(exc)
+
+    def execute_report(
+        self,
+        task_type: str,
+        user_text: str,
+        *,
+        task_id=None,
+        project_id=None,
+        target_ref=None,
+        requirements=(),
+        prepared=None,
+    ) -> ExecutionResult:
+        """Execute the exact prepared A02 report; the application owns its persistence."""
+        request = (
+            prepared
+            if prepared is not None
+            else self.prepare_report(
+                task_type,
+                user_text,
+                task_id=task_id,
+                project_id=project_id,
+                target_ref=target_ref,
+                requirements=requirements,
+            )
+        )
+        if isinstance(request, ExecutionResult):
+            return request
+        package = request.context_package
+
+        def finished(**values):
+            return ExecutionResult(
+                **values,
+                context_package_id=package.context_package_id if package else None,
+                context_package_hash=package.package_hash if package else None,
+            )
+
+        response = None
+        try:
+            if task_type not in {"INTERNAL_SMOKE_TEST", "INTERPRET_CHARACTER_PROFILE"}:
+                raise DomainError("AUTHORITY_DENIED", "Only explicit A02 reports are allowed")
+            if (
+                request.task_type != task_type
+                or request.attempt_number != 1
+                or (task_id is not None and request.task_id != task_id)
+                or (target_ref is not None and request.target_ref != target_ref)
+                or package is None
+                or package.build_status != ContextStatus.READY
+                or package.task_id != request.task_id
+                or package.request.task_type != task_type
+                or package.request.chapter_id != request.target_ref
+                or package.request.attempt_number != 1
+                or package.workflow_id is not None
+                or package.request.workflow_state_version is not None
+                or (project_id is not None and package.project_id != project_id)
+                or package.request.objective != user_text
+                or package.request.requirements != tuple(requirements)
+                or ContextSerializer.hash(package) != package.package_hash
+            ):
+                return finished(error_code="CONTEXT_STALE")
+            profile = ContextProfileRegistry().resolve(
+                package.profile_id, package.profile_version, expected_hash=package.profile_hash
+            )
+            if task_type not in profile.allowed_task_types:
+                return finished(error_code="CONTEXT_PROFILE_MISMATCH")
+            data = canonical(
+                {"trust": "UNTRUSTED_DATA_ONLY", "data": ContextSerializer.serialize(package)}
+            )
+            if [
+                message.content
+                for message in request.prompt.messages
+                if message.layer == "CONTEXT_DATA"
+            ] != [data]:
+                raise PromptConfigurationError("Context/prompt binding mismatch")
+            response = self.prompts.generate(request)
+            result = request.prompt.output.parse(response.content)
+            if (
+                result.task_id != request.task_id
+                or result.proposed_changes
+                or result.memory_proposals
+            ):
+                raise DomainError("AUTHORITY_DENIED", "A02 reports cannot mutate authority")
+            if result.status == ResultStatus.SUCCESS and result.result is None:
+                return finished(
+                    error_code="SCHEMA_PARSE_ERROR", model_metadata=response.safe_summary()
+                )
+            return finished(result=result, model_metadata=response.safe_summary())
+        except Exception as exc:
+            failure = execution_failure(exc)
+            return finished(
+                error_code=failure.error_code,
+                model_metadata=response.safe_summary() if response else None,
+            )

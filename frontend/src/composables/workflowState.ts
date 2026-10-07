@@ -16,7 +16,7 @@ export const currentTask = (w: Workflow, tasks: Task[]) => tasks.find(t =>
   t.workflow_instance_id === w.id && t.workflow_state === w.current_state && t.workflow_state_version === w.state_version && !['SUCCEEDED', 'CANCELLED'].includes(t.status))
 export const isStaleFeedback = (w: Workflow, tasks: Task[]) => Boolean(w.human_feedback_id && w.status === 'BLOCKED' &&
   (w.block_reason === 'CONTEXT_STALE' || tasks.some(t => t.workflow_instance_id === w.id && t.workflow_state_version === w.state_version - 1 && t.task_type === 'INTERPRET_CHAPTER_FEEDBACK' && t.last_error_code === 'CONTEXT_STALE')))
-export const isReviewResume = (w: Workflow, tasks: Task[]) => !w.simulation && w.workflow_definition_id === 'chapter-planning' && w.workflow_definition_version === 3 && ['PAUSED', 'BLOCKED'].includes(w.status) &&
+export const isReviewResume = (w: Workflow, tasks: Task[]) => !w.simulation && w.workflow_definition_id === 'chapter-planning' && [3, 4].includes(w.workflow_definition_version) && ['PAUSED', 'BLOCKED'].includes(w.status) &&
   (w.resume_state === 'C09_INTERNAL_REVIEW' || (w.resume_state === 'C08_DETERMINISTIC_CHECK' && tasks.some(t => t.workflow_instance_id === w.id && ['REVIEW_CHAPTER_COMPLIANCE', 'REVIEW_CHAPTER_NARRATIVE'].includes(t.task_type))))
 export function resumeCallsModel(w: Workflow, config?: ExecutionConfig | null, tasks: Task[] = []): boolean {
   if (!config || config.provider === 'mock' || w.simulation) return false
@@ -43,7 +43,7 @@ export function progressLabel(w: Workflow, tasks: Task[], config?: ExecutionConf
   if (task.status === 'RUNNING') return stateLabel(w.current_state)
   return '任务已结束，正在同步流程状态'
 }
-export const isWritingWorkflow = (w: Workflow) => !w.simulation && w.workflow_definition_id === 'chapter-planning' && [2, 3].includes(w.workflow_definition_version)
+export const isWritingWorkflow = (w: Workflow) => !w.simulation && w.workflow_definition_id === 'chapter-planning' && [2, 3, 4].includes(w.workflow_definition_version)
 export function pollDelay(w: Workflow | null, tasks: Task[] = [], config?: ExecutionConfig | null): number | null {
   if (!w || !isWritingWorkflow(w) || w.current_state === 'C00_CREATED' || w.current_state === 'C08_DETERMINISTIC_CHECK' ||
     /^C9/.test(w.current_state) || ['PAUSED', 'COMPLETED', 'FAILED', 'CANCELLED', 'BLOCKED'].includes(w.status)) return null
@@ -54,7 +54,7 @@ export function pollDelay(w: Workflow | null, tasks: Task[] = [], config?: Execu
   if (['C06_PLAN_APPROVAL', 'C10_REVISION', 'C11_INTERNAL_PASS'].includes(w.current_state)) return null
   const task = currentTask(w, tasks)
   if (task?.status === 'PENDING' && config?.task_types && !config.task_types.includes(task.task_type)) return null
-  return (/^C0[1-7]_/.test(w.current_state) || (w.workflow_definition_version === 3 && ['C09_INTERNAL_REVIEW', 'C13_USER_FEEDBACK_DIAGNOSIS', 'C14_MEMORY_PREPARATION'].includes(w.current_state))) ? 1500 : null
+  return (/^C0[1-7]_/.test(w.current_state) || ([3, 4].includes(w.workflow_definition_version) && ['C09_INTERNAL_REVIEW', 'C13_USER_FEEDBACK_DIAGNOSIS', 'C14_MEMORY_PREPARATION'].includes(w.current_state))) ? 1500 : null
 }
 export const stages = [
   ['需求', 1], ['Context', 2], ['Planning', 4], ['Plan Review', 5], ['人工审批', 6], ['Writing', 7], ['Draft', 8],

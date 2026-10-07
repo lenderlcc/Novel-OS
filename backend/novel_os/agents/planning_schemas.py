@@ -287,6 +287,10 @@ BUSINESS_RESULTS = {
 
 
 def result_model(task_type, output_schema=None):
+    if task_type == "EXPLORE_CHAPTER_CONCEPTS":
+        from novel_os.agents.exploration_schemas import ExplorationAgentResult
+
+        return ExplorationAgentResult
     from novel_os.quality.schemas import QUALITY_RESULTS, NarrativeAgentResult
     from novel_os.revision.contracts import LEGACY_CONTRACTS
     from novel_os.revision.schemas import revision_results

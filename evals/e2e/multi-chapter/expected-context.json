@@ -1,0 +1,46 @@
+{
+  "planning": {
+    "chapter_2_to_5": [
+      "RELEVANT_COMMITTED_PRIOR_MEMORY",
+      "CURRENT_STATES",
+      "DERIVED_SUMMARY_IS_HINT_ONLY"
+    ],
+    "chapter_5": [
+      "A_CURRENT_LOCATION",
+      "K_DESTROYED",
+      "T_OPEN_WITH_NEW_EVIDENCE",
+      "A_CURRENT_KNOWLEDGE_WITH_OWNER_HISTORICAL_SUSPICION_RETAINED",
+      "B_NOT_RESPONSIBLE_TRUTH",
+      "RELEVANT_RELATIONSHIP_OR_TASK"
+    ],
+    "exclude": [
+      "UNCOMMITTED_PROPOSAL",
+      "SUPERSEDED_CURRENT_STATE",
+      "ALL_HISTORY_BODY_DUMP",
+      "UNRELATED_PROJECT_MEMORY"
+    ]
+  },
+  "writing": {
+    "chapter_2_and_5": [
+      "BOUND_B_POV",
+      "B_CURRENT_STATE",
+      "NO_A_ONLY_X_AS_B_KNOWN"
+    ],
+    "all": [
+      "EXACT_APPROVED_PLAN",
+      "A5_PROFILE",
+      "NO_RAW_PREVIOUS_BODY",
+      "NO_FUTURE_WITHOUT_REQUIRED_APPROVED_DEPENDENCY"
+    ],
+    "state_handoff": "Non-POV Object/Thread are selected for Planning; explicit approved Plan handoff must preserve relevant current facts. Do not claim they are direct Writer memory items when excluded by knowledge policy."
+  },
+  "human_checks": [
+    "KNOWLEDGE_LEAK",
+    "REQUIREMENT_VISIBILITY_BIAS",
+    "SUSPICION_PROMOTED_TO_TRUTH",
+    "MEMORY_NOISE",
+    "IRRELEVANT_CONTEXT",
+    "MISSING_CONTEXT",
+    "DERIVED_AUTHORITY_OVERRIDE"
+  ]
+}

@@ -6,6 +6,7 @@ from enum import StrEnum
 from uuid import UUID, uuid4
 
 from novel_os.domain.core import now
+from novel_os.domain.enums import Authority
 
 
 class BriefStatus(StrEnum):
@@ -18,6 +19,11 @@ class ReviewVerdict(StrEnum):
     PASS = "PASS"
     PASS_WITH_WARNINGS = "PASS_WITH_WARNINGS"
     FAIL = "FAIL"
+
+
+class ExplorationStatus(StrEnum):
+    READY = "READY"
+    BLOCKED = "BLOCKED"
 
 
 @dataclass(frozen=True, kw_only=True)
@@ -49,6 +55,19 @@ class PlanGeneration(PlanningEvidence):
     brief_id: UUID
     planning_iteration: int
     body: dict
+    creative_exploration_id: UUID | None = None
+    selected_candidate_id: str | None = None
+
+
+@dataclass(frozen=True, kw_only=True)
+class CreativeExploration(PlanningEvidence):
+    brief_id: UUID
+    body: dict
+    status: ExplorationStatus
+
+    @property
+    def authority_level(self):
+        return Authority.A7_AI_INFERENCE
 
 
 @dataclass(frozen=True, kw_only=True)

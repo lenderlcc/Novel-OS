@@ -14,13 +14,13 @@ export interface Snapshot {
 function generatedDraftVersion(s: Snapshot): number | null {
   // Reading selection follows the chapter pointer, not the workflow's source
   // version, which remains old while a revision/re-review is in progress.
-  const qualityWorkspace = s.workflow.workflow_definition_version === 3 && (s.workflow.revision_request_id || s.workflow.human_feedback_id || s.workflow.resume_state === 'C13_USER_FEEDBACK_DIAGNOSIS' || s.workflow.resume_state === 'C09_INTERNAL_REVIEW' || ['C09_INTERNAL_REVIEW', 'C10_REVISION', 'C11_INTERNAL_PASS', 'C13_USER_FEEDBACK_DIAGNOSIS', 'C14_MEMORY_PREPARATION', 'C15_MEMORY_COMMIT', 'C16_COMPLETED'].includes(s.workflow.current_state))
+  const qualityWorkspace = [3, 4].includes(s.workflow.workflow_definition_version) && (s.workflow.revision_request_id || s.workflow.human_feedback_id || s.workflow.resume_state === 'C13_USER_FEEDBACK_DIAGNOSIS' || s.workflow.resume_state === 'C09_INTERNAL_REVIEW' || ['C09_INTERNAL_REVIEW', 'C10_REVISION', 'C11_INTERNAL_PASS', 'C13_USER_FEEDBACK_DIAGNOSIS', 'C14_MEMORY_PREPARATION', 'C15_MEMORY_COMMIT', 'C16_COMPLETED'].includes(s.workflow.current_state))
   if (qualityWorkspace && s.drafts.some(draft => draft.version === s.chapter.current_version)) return s.chapter.current_version
   const version = s.workflow.draft_version ?? null
   if (!isWritingWorkflow(s.workflow)) return version
   const draft = s.drafts.find(d => d.version === version)
   // Review may explicitly bind a user-authored version without a Writing generation.
-  if (draft && s.workflow.workflow_definition_version === 3 && ['C09_INTERNAL_REVIEW', 'C10_REVISION', 'C11_INTERNAL_PASS', 'C13_USER_FEEDBACK_DIAGNOSIS', 'C14_MEMORY_PREPARATION', 'C15_MEMORY_COMMIT', 'C16_COMPLETED'].includes(s.workflow.current_state)) return version
+  if (draft && [3, 4].includes(s.workflow.workflow_definition_version) && ['C09_INTERNAL_REVIEW', 'C10_REVISION', 'C11_INTERNAL_PASS', 'C13_USER_FEEDBACK_DIAGNOSIS', 'C14_MEMORY_PREPARATION', 'C15_MEMORY_COMMIT', 'C16_COMPLETED'].includes(s.workflow.current_state)) return version
   return draft && (s.writing.some(w => w.chapter_version_id === draft.id) || s.revisions?.some(r => r.result?.chapter_version_id === draft.id)) ? version : null
 }
 
@@ -78,9 +78,9 @@ export function useConsole(client = api) {
         client.chapter(p, c, signal), client.gates(w, signal), current.simulation ? null : client.brief(w, signal), client.plans(p, c, signal),
         current.simulation ? { briefs: [], plans: [], reviews: [] } : client.history(w, signal),
         client.drafts(p, c, signal), client.writing(w, signal), client.tasks(w, signal),
-        current.workflow_definition_version === 3 && !current.simulation ? client.qualityReviews(p, c, signal) : [],
-        current.workflow_definition_version === 3 && !current.simulation ? client.revisions(w, signal) : [],
-        current.workflow_definition_version === 3 && !current.simulation ? client.feedback(w, signal) : [],
+        [3, 4].includes(current.workflow_definition_version) && !current.simulation ? client.qualityReviews(p, c, signal) : [],
+        [3, 4].includes(current.workflow_definition_version) && !current.simulation ? client.revisions(w, signal) : [],
+        [3, 4].includes(current.workflow_definition_version) && !current.simulation ? client.feedback(w, signal) : [],
         current.memory_request_id || snapshot.value?.memory?.length ? client.memory(w, signal) : [],
       ])
       // Do not publish a mixed snapshot if the worker advanced while reading artifacts.

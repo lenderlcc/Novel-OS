@@ -1,0 +1,22 @@
+{
+  "module_id": "extract-chapter-memory",
+  "module_type": "TASK_TEMPLATE",
+  "version": 3,
+  "status": "STABLE",
+  "description": "Explicit object state transitions and same-identity thread updates",
+  "content_path": "content.md",
+  "dependencies": [
+    {
+      "module_id": "novel-os-core",
+      "version": 1
+    }
+  ],
+  "compatible_agents": [
+    "A07_MEMORY"
+  ],
+  "compatible_task_types": [
+    "EXTRACT_CHAPTER_MEMORY"
+  ],
+  "created_at": "2026-10-05T00:00:00Z",
+  "content_hash": "4dcaeb4a553dc7c5e520744589fd4f355a6e66eada7112d25e02c918dc03e1c5"
+}

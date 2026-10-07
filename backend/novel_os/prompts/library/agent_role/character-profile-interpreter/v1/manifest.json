@@ -1,0 +1,22 @@
+{
+  "module_id": "character-profile-interpreter",
+  "module_type": "AGENT_ROLE",
+  "version": 1,
+  "status": "STABLE",
+  "description": "NOVEL-014: explicit A02 character profile draft interpretation",
+  "content_path": "content.md",
+  "dependencies": [
+    {
+      "module_id": "novel-os-core",
+      "version": 1
+    }
+  ],
+  "compatible_agents": [
+    "A02_REQUIREMENT"
+  ],
+  "compatible_task_types": [
+    "INTERPRET_CHARACTER_PROFILE"
+  ],
+  "created_at": "2026-10-06T00:00:00Z",
+  "content_hash": "d27c9d3e0c4287b0a9bb16d9b2b3c1451665ffad5811587f0ba504b792110c5a"
+}

@@ -1,0 +1,28 @@
+{
+  "id": "W006",
+  "suite_version": "0.1",
+  "title": "technical retry without duplicate draft",
+  "category": "boundary",
+  "provider_mode": "mock",
+  "fixture": "backend/tests/core/writing/conftest.py; existing isolated PostgreSQL pytest fixtures",
+  "input": {
+    "faults": [
+      "FORMAT_ERROR_ONCE",
+      "MODEL_ERROR_ONCE"
+    ]
+  },
+  "automated_tests": [
+    "tests/core/writing/test_lifecycle.py::test_technical_retry_same_task_new_runs_one_version",
+    "tests/core/writing/test_lifecycle.py::test_two_concurrent_deliveries_create_one_draft"
+  ],
+  "engineering_oracle": [
+    "失败尝试不生成 Draft；同 Task 的下一 Run 成功后仅一个版本",
+    "并发重复交付 APPLIED + DUPLICATE；只有一个 Draft"
+  ],
+  "ai_behavior_oracle": [
+    "技术恢复不证明语义质量；无自动重复付费评测"
+  ],
+  "human_evaluation": "../templates/human-prose-evaluation.md",
+  "expected_lineage": "Every AGENT Draft must have exactly one PASS WritingResult with all seven linked sources. BLOCKED outputs must have no Draft.",
+  "limitation": "Mock/structured fault injection only; no semantic model grader or quality verdict."
+}

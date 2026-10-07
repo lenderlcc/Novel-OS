@@ -1,0 +1,37 @@
+{
+  "id": "recent-mechanism-repetition",
+  "kind": "synthetic_context_fixture",
+  "real_provider_status": "NOT_RUN",
+  "authorization": "USER_EXPLICIT_TRIGGER_REQUIRED",
+  "raw_requirement": "让主角遇到一个可以自行化解的小挫折，具体事件由你决定，不改变当前主线或既定人物关系。",
+  "creative_freedom": "HIGH",
+  "recent_approved_history": [
+    {
+      "chapter_sequence": 1,
+      "approved_plan_version": 1,
+      "mechanism_summary": "物件交付受阻，双方核对经手记录后解决，代价是错过便利时段。",
+      "role": "APPROVED_PLAN_DIAGNOSTIC_NOT_CANON"
+    },
+    {
+      "chapter_sequence": 2,
+      "approved_plan_version": 2,
+      "mechanism_summary": "资格核验出现普通信息差，主角补充可验证依据后继续原行程。",
+      "role": "APPROVED_PLAN_DIAGNOSTIC_NOT_CANON"
+    },
+    {
+      "chapter_sequence": 3,
+      "approved_plan_version": 1,
+      "mechanism_summary": "流程中的局部事故造成短时等待，双方分工查清后恢复办理。",
+      "role": "APPROVED_PLAN_DIAGNOSTIC_NOT_CANON"
+    }
+  ],
+  "evaluation_questions": [
+    "是否对重复的冲突机制做了定性 Similarity Risk 说明，而非仅更换场地？",
+    "是否存在其他机制候选，而非所有候选均为同一事件换皮？",
+    "选择理由是否结合人物、当前故事和连续性，而非自动选择首个安全候选？",
+    "普通事务是否仍可因故事适配被合理选择，而未变成关键词禁用类型？"
+  ],
+  "no_exact_story_answer": true,
+  "human_result": "NOT_EVALUATED",
+  "failure_tags": []
+}

@@ -1,0 +1,26 @@
+{
+  "id": "W008",
+  "suite_version": "0.1",
+  "title": "current versus approved body",
+  "category": "positive",
+  "provider_mode": "mock",
+  "fixture": "backend/tests/core/writing/conftest.py; existing isolated PostgreSQL pytest fixtures",
+  "input": {
+    "existing_approved_body_version": 1,
+    "new_writing_version": 2,
+    "regenerated_version": 3
+  },
+  "automated_tests": [
+    "tests/core/writing/test_lifecycle.py::test_e2e_b_new_draft_preserves_approved_body_then_regeneration"
+  ],
+  "engineering_oracle": [
+    "Writing v2 与用户再生成 v3 不改变 approved_version=1",
+    "v1/v2 均保留，重复再生成 event 幂等；新业务生成新 Task"
+  ],
+  "ai_behavior_oracle": [
+    "逐个评估新 Draft；工程 PASS 不等于用户批准正文"
+  ],
+  "human_evaluation": "../templates/human-prose-evaluation.md",
+  "expected_lineage": "Every AGENT Draft must have exactly one PASS WritingResult with all seven linked sources. BLOCKED outputs must have no Draft.",
+  "limitation": "Mock/structured fault injection only; no semantic model grader or quality verdict."
+}

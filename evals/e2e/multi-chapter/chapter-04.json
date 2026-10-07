@@ -1,0 +1,14 @@
+{
+  "sequence": 4,
+  "title": "去掉错误事实",
+  "raw_requirement": "以 Lin Lan 的第三人称限知视角继续 Missing Courier 线索，在 Clock Tower 发现一张新的投递单；Missing Courier 仍未找到。保持已有事实，不新增重大能力。正文验收要检查并删除“Gu Che owns a universal key”这一错误草稿事实，最终只确认正确版本。",
+  "pov": "A",
+  "recorded_draft": "Lin Lan and Gu Che spread the new delivery slip across the table at Clock Tower. It bore the Missing Courier's mark, but it gave no final destination. The search was still open.\n\nThey compared the slip with the station log. Gu Che was not responsible for the Station Alarm, and the split pieces of the Sealed Copper Box stayed in the tray. Neither result changed while they read.\n\nGu Che owns a universal key. He placed the delivery slip under the lamp so that Lin Lan could read its faded line. She copied the address carefully, leaving a blank where the ink had washed away.\n\nLin Lan stayed at Clock Tower. She and Gu Che agreed to ask at the listed office in the morning. The new evidence narrowed their search for the Missing Courier without claiming that they had found him.",
+  "capabilities": [
+    "REVISION_POLLUTION",
+    "FINALIZED_VERSION",
+    "THREAD_IDENTITY"
+  ],
+  "revised_draft": "Lin Lan and Gu Che spread the new delivery slip across the table at Clock Tower. It bore the Missing Courier's mark, but it gave no final destination. The search was still open.\n\nThey compared the slip with the station log. Gu Che was not responsible for the Station Alarm, and the split pieces of the Sealed Copper Box stayed in the tray. Neither result changed while they read.\n\nGu Che placed the delivery slip under the lamp so that Lin Lan could read its faded line. She copied the address carefully, leaving a blank where the ink had washed away.\n\nLin Lan stayed at Clock Tower. She and Gu Che agreed to ask at the listed office in the morning. The new evidence narrowed their search for the Missing Courier without claiming that they had found him.",
+  "human_feedback": "删除第三段中 Gu Che owns a universal key 的错误重大事实。只修改这一句，保留投递单动作、人物视角、地点与其他段落。"
+}

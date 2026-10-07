@@ -29,6 +29,12 @@ class AgentTaskModel(Base):
         ),
         ForeignKeyConstraint(["target_ref", "project_id"], ["chapters.id", "chapters.project_id"]),
         ForeignKeyConstraint(
+            ["report_character_id", "project_id"],
+            ["memory_subjects.id", "memory_subjects.project_id"],
+            name="fk_agent_tasks_report_character_id_memory_subjects",
+            use_alter=True,
+        ),
+        ForeignKeyConstraint(
             ["result_ref", "task_id"],
             ["agent_runs.run_id", "agent_runs.task_id"],
             name="fk_agent_tasks_result_run",
@@ -43,6 +49,17 @@ class AgentTaskModel(Base):
             name="uq_agent_tasks_logical_stage",
         ),
         CheckConstraint("version > 0 AND workflow_state_version > 0", name="positive_versions"),
+        CheckConstraint(
+            "(workflow_instance_id IS NOT NULL AND workflow_state IS NOT NULL "
+            "AND workflow_state_version IS NOT NULL AND target_ref IS NOT NULL "
+            "AND report_character_id IS NULL AND task_type <> 'INTERPRET_CHARACTER_PROFILE') "
+            "OR (workflow_instance_id IS NULL AND workflow_state IS NULL "
+            "AND workflow_state_version IS NULL AND target_ref IS NULL "
+            "AND report_character_id IS NOT NULL AND task_type = 'INTERPRET_CHARACTER_PROFILE' "
+            "AND agent_id = 'A02_REQUIREMENT' AND capabilities = '[\"REPORT_RESULT\"]'::jsonb "
+            "AND expected_output_schema = 'character-profile-draft.v1' AND max_attempts = 1)",
+            name="execution_scope",
+        ),
         CheckConstraint(
             "attempt_count >= 0 AND attempt_count <= max_attempts "
             "AND max_attempts BETWEEN 1 AND 10",
@@ -59,13 +76,14 @@ class AgentTaskModel(Base):
     )
     task_id: Mapped[UUID] = mapped_column(primary_key=True)
     project_id: Mapped[UUID] = mapped_column(ForeignKey("projects.id"))
-    workflow_instance_id: Mapped[UUID] = mapped_column(index=True)
-    workflow_state: Mapped[ChapterState] = mapped_column(enum_type(ChapterState))
-    workflow_state_version: Mapped[int]
+    workflow_instance_id: Mapped[UUID | None] = mapped_column(index=True)
+    workflow_state: Mapped[ChapterState | None] = mapped_column(enum_type(ChapterState))
+    workflow_state_version: Mapped[int | None]
     agent_id: Mapped[AgentId] = mapped_column(enum_type(AgentId))
     task_type: Mapped[str] = mapped_column(String(80))
     objective: Mapped[str] = mapped_column(Text)
-    target_ref: Mapped[UUID]
+    target_ref: Mapped[UUID | None]
+    report_character_id: Mapped[UUID | None]
     requirements: Mapped[list] = mapped_column(JSONB)
     constraints: Mapped[list] = mapped_column(JSONB)
     capabilities: Mapped[list] = mapped_column(JSONB)

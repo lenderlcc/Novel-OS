@@ -23,6 +23,10 @@ def planning_refs(session, task_type, workflow):
                 source_type=SourceType.CREATIVE_BRIEF, logical_id=workflow.id, version=brief.version
             )
         )
+    if task_type == "EXPLORE_CHAPTER_CONCEPTS":
+        # Re-exploration is concept-level. An existing proposed Plan is neither
+        # an authority source nor a required input to this internal A03 step.
+        return tuple(refs), missing
     if workflow.plan_version is not None:
         plan = CoreRepository(session).get_version(
             ObjectType.CHAPTER_PLAN, workflow.project_id, workflow.chapter_id, workflow.plan_version

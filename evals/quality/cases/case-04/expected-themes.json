@@ -1,0 +1,14 @@
+{
+  "case_id": "case-04",
+  "human_expected_themes": [
+    "OVER_SYMMETRICAL_CONFLICT",
+    "CHARACTERS_AS_ARGUMENTS",
+    "FUNCTIONAL_DIALOGUE",
+    "UNSELECTIVE_DETAIL",
+    "EXCESSIVE_CLOSURE"
+  ],
+  "interpretation": "人物是否成为观点载体；对称本身不构成错误。",
+  "acceptance": "Compare supported themes and false positives manually; exact code matching is not a pass criterion.",
+  "input_snapshot": null,
+  "real_evaluation": "NOT_RUN"
+}

@@ -1,0 +1,321 @@
+{
+  "source": "persisted_runtime_review",
+  "reviews": [
+    {
+      "id": "55bad299-a861-4a62-89db-f7003d310ea3",
+      "body": {
+        "kind": "chapter_quality_review",
+        "strengths": [
+          {
+            "evidence": [
+              {
+                "reason": "主角承认替代方向的吸引力，同时明确拒绝改选。",
+                "excerpt": "“现在看，它确实可能更好。”他停了一下，“但不是我要选的。”",
+                "paragraph_index": 62
+              },
+              {
+                "reason": "章末直接确认继续原计划，决定无歧义。",
+                "excerpt": "“那也照原计划。”",
+                "paragraph_index": 74
+              },
+              {
+                "reason": "明确决定随后转化为继续行动，未暂停或撤销原计划。",
+                "excerpt": "说完，他向下一步走去。",
+                "paragraph_index": 75
+              }
+            ],
+            "description": "章末明确维持继续原计划的既定决定，符合Brief的MUST、FORBIDDEN边界及批准Plan的required_outcome。",
+            "preservation_direction": "保留章末明确表态与实际迈向下一步的组合，避免将决定弱化为暗示。"
+          },
+          {
+            "evidence": [
+              {
+                "reason": "开场清楚建立原计划仍在推进的基线。",
+                "excerpt": "接下来仍按原定的步骤走——这一点直到刚才都不需要再想。",
+                "paragraph_index": 2
+              },
+              {
+                "reason": "未获确认的信息形成继续原计划的具体代价与不确定性。",
+                "excerpt": "原本应该在此刻得到确认的事落了空。再往前，意味着他要带着这块空白走下去。",
+                "paragraph_index": 11
+              },
+              {
+                "reason": "最终权衡指出继续原计划的有效理由，并承接明确决定。",
+                "excerpt": "可原计划里还有没有完成的部分，而等待不会替他完成，也不会替他承担最后必须作出的判断。",
+                "paragraph_index": 64
+              }
+            ],
+            "description": "选择链符合批准Plan：先建立原计划基线，再让信息缺失构成现实压力，最后完成权衡。",
+            "preservation_direction": "保留“基线—现实诱因—明确权衡—继续行动”的因果顺序。"
+          },
+          {
+            "evidence": [
+              {
+                "reason": "替代方案具备具体收益：规避信息不全时的风险并保留退路。",
+                "excerpt": "“先停下。”对方说，“已经做到的不会消失，没确认的部分也不用由你硬扛。等事情清楚，再决定还要不要继续。”",
+                "paragraph_index": 15
+              },
+              {
+                "reason": "主角明显承认替代选择可能更优，动摇达到可辨识程度。",
+                "excerpt": "“这确实是更好的选择。”他说。",
+                "paragraph_index": 43
+              },
+              {
+                "reason": "短暂趋向替代方向后及时止步，没有形成实际改选。",
+                "excerpt": "鞋底落下时，他却没有把另一只脚跟过去。",
+                "paragraph_index": 51
+              }
+            ],
+            "description": "替代选择获得真实吸引力，但没有演变成实际改选，符合Plan允许动摇而禁止改结局的边界。",
+            "preservation_direction": "保留替代选择的现实利益、主角的明确承认以及止步回转三者，使动摇真实且不越过固定结局。"
+          },
+          {
+            "evidence": [
+              {
+                "reason": "极短动作把短暂倾向替代方向落实为身体选择。",
+                "excerpt": "他迈出半步。",
+                "paragraph_index": 50
+              },
+              {
+                "reason": "未完成的步伐自然形成决定反转点，没有依赖突发外力。",
+                "excerpt": "鞋底落下时，他却没有把另一只脚跟过去。",
+                "paragraph_index": 51
+              },
+              {
+                "reason": "结尾保留退路的存在和情感余波，而非把另一选择贬低或抹除。",
+                "excerpt": "身后的门没有立刻合上，退路暂时仍在，风从那道缝隙里追出来，又在他身后慢慢弱下去。",
+                "paragraph_index": 75
+              }
+            ],
+            "description": "门、空白纸张和风构成连贯的场景意象，把“继续或停下”的心理选择转化为可见动作。",
+            "preservation_direction": "保留这组物理意象及其动作因果，不要用额外心理标签取代半步、拿纸、跨门等行为。"
+          },
+          {
+            "evidence": [
+              {
+                "reason": "主角明确承认替代方向的优势，使动摇达到可辨识的强度。",
+                "excerpt": "“这确实是更好的选择。”他说。",
+                "paragraph_index": 43
+              },
+              {
+                "reason": "最终决定区分了“更有利”与“自己选择”，保留人物取舍的复杂性。",
+                "excerpt": "“现在看，它确实可能更好。”他停了一下，“但不是我要选的。”",
+                "paragraph_index": 62
+              },
+              {
+                "reason": "决定之后仍承认余留吸引力，避免廉价否定此前冲突。",
+                "excerpt": "那条退路的吸引力没有因为决定而消失，他也没有把刚才的动摇说成一时软弱。",
+                "paragraph_index": 64
+              }
+            ],
+            "description": "替代选择获得了真实分量，主角最终坚持原计划时没有否认它可能更好，因而犹豫不是虚设。",
+            "preservation_direction": "保留主角对替代选择的诚实承认，以及决定后仍存在的吸引力；压缩解释时不要削弱这一层复杂性。"
+          },
+          {
+            "evidence": [
+              {
+                "reason": "简洁建立原计划有效且主角起初依惯性执行的基线。",
+                "excerpt": "接下来仍按原定的步骤走——这一点直到刚才都不需要再想。",
+                "paragraph_index": 2
+              },
+              {
+                "reason": "在“仍然没有消息”的条件下明确确认决定，结尾方向无歧义。",
+                "excerpt": "“那也照原计划。”",
+                "paragraph_index": 74
+              },
+              {
+                "reason": "用行动收住本章局部选择，形成可承接后续行动的状态。",
+                "excerpt": "他没有再回头。",
+                "paragraph_index": 76
+              }
+            ],
+            "description": "开头迅速建立原计划仍在执行，结尾以明确回答和行动完成方向确认，整体选择链易于理解。",
+            "preservation_direction": "保留清楚的基线、真实动摇与明确决定三段变化，不因减少解释而模糊最终行动方向。"
+          }
+        ],
+        "chapter_id": "23208bf8-ecc7-4054-8ae9-46cf4bc15181",
+        "confidence": 0.87,
+        "created_at": "2026-09-24T07:40:49.346633Z",
+        "source_refs": [
+          {
+            "field": "content",
+            "source_id": "e3e88aaf-ae0b-48fe-a230-9893b79761cb",
+            "source_type": "CHAPTER_VERSION",
+            "source_version": 1
+          },
+          {
+            "field": "must.must_follow_fixed_direction",
+            "source_id": "9cc5112b-0261-4a51-b762-8f6f11feee7b",
+            "source_type": "CREATIVE_BRIEF",
+            "source_version": 1
+          },
+          {
+            "field": "forbidden.forbid_ending_change",
+            "source_id": "9cc5112b-0261-4a51-b762-8f6f11feee7b",
+            "source_type": "CREATIVE_BRIEF",
+            "source_version": 1
+          },
+          {
+            "field": "forbidden.forbid_direct_alternative",
+            "source_id": "9cc5112b-0261-4a51-b762-8f6f11feee7b",
+            "source_type": "CREATIVE_BRIEF",
+            "source_version": 1
+          },
+          {
+            "field": "required_outcome",
+            "source_id": "afe1da2a-67d0-4b12-b000-ac4c20a6d8e9",
+            "source_type": "CHAPTER_PLAN",
+            "source_version": 1
+          },
+          {
+            "field": "plot_progression",
+            "source_id": "afe1da2a-67d0-4b12-b000-ac4c20a6d8e9",
+            "source_type": "CHAPTER_PLAN",
+            "source_version": 1
+          },
+          {
+            "field": "risks",
+            "source_id": "afe1da2a-67d0-4b12-b000-ac4c20a6d8e9",
+            "source_type": "CHAPTER_PLAN",
+            "source_version": 1
+          },
+          {
+            "field": "scenes.S2_Temptation",
+            "source_id": "afe1da2a-67d0-4b12-b000-ac4c20a6d8e9",
+            "source_type": "CHAPTER_PLAN",
+            "source_version": 1
+          },
+          {
+            "field": "scenes.S3_Resolution",
+            "source_id": "afe1da2a-67d0-4b12-b000-ac4c20a6d8e9",
+            "source_type": "CHAPTER_PLAN",
+            "source_version": 1
+          },
+          {
+            "field": "desired_reader_effect",
+            "source_id": "9cc5112b-0261-4a51-b762-8f6f11feee7b",
+            "source_type": "CREATIVE_BRIEF",
+            "source_version": 1
+          }
+        ],
+        "quality_issues": [
+          {
+            "code": "ABSTRACT_STAKES",
+            "title": "选择后果过于抽象",
+            "impact": "选择链条清楚，但更像对一个选择模型的演示；主角、计划与风险缺少具体抓力，限制沉浸和决定的情感重量。",
+            "category": "NARRATIVE",
+            "evidence": [
+              {
+                "reason": "建立了信息缺口，但“确认的事”和继续后的后果都没有可感知的具体落点。",
+                "excerpt": "原本应该在此刻得到确认的事落了空。再往前，意味着他要带着这块空白走下去。",
+                "paragraph_index": 11
+              },
+              {
+                "reason": "决定依据仍以“没有完成的部分”“判断”等抽象概念呈现，读者难以衡量其个人或现实代价。",
+                "excerpt": "可原计划里还有没有完成的部分，而等待不会替他完成，也不会替他承担最后必须作出的判断。",
+                "paragraph_index": 64
+              }
+            ],
+            "severity": "P2",
+            "confidence": 0.94,
+            "description": "关键答复、后果和未完成事项始终停留在概称层面。读者能理解选择结构，却难以具体感受主角继续前进究竟会失去什么、承担什么，削弱了事件层面的紧迫感。",
+            "source_refs": [
+              {
+                "field": "content",
+                "source_id": "e3e88aaf-ae0b-48fe-a230-9893b79761cb",
+                "source_type": "CHAPTER_VERSION",
+                "source_version": 1
+              },
+              {
+                "field": "risks",
+                "source_id": "afe1da2a-67d0-4b12-b000-ac4c20a6d8e9",
+                "source_type": "CHAPTER_PLAN",
+                "source_version": 1
+              }
+            ],
+            "requires_revision": false,
+            "revision_direction": "在允许的局部细节范围内，让缺失答复、继续行动的即时风险或未完成责任获得一个可观察的具体后果；不要另行定义原计划，也应保留纸张空白这一有效意象和章末继续原计划的决定。"
+          },
+          {
+            "code": "OVER_EXPLAINED_REASONING",
+            "title": "权衡过程被重复解释",
+            "impact": "读者较少自行体会人物的摇摆，场景张力被重复解释稀释，门前转身与半步停下等有效动作的表现力也受到挤压。",
+            "category": "NARRATIVE",
+            "evidence": [
+              {
+                "reason": "叙述直接总结两种选择的意义和优劣，替动作与对话完成了解读。",
+                "excerpt": "停下，不是失败；保留退路，也未必是逃避。在眼下这个时候，它甚至比继续更稳妥。原计划要求他在空白处作出判断，而另一条路允许他不必判断。",
+                "paragraph_index": 30
+              },
+              {
+                "reason": "再次列举暂停的优势，与此前对“退路”和“不用承担”的说明高度重合。",
+                "excerpt": "困难的是，那份好处就在眼前：不必冒险，不必立刻付出更多，也不必为尚未清楚的部分负责。",
+                "paragraph_index": 45
+              },
+              {
+                "reason": "半步动作前继续展开同一套理性分析，延缓了已经成立的行动转折。",
+                "excerpt": "他不用再说服谁，也不用证明自己原来的决定正确。等到条件变好再继续，听上去足够明智；如果条件一直没有变好，他也有充分理由不再回来。",
+                "paragraph_index": 49
+              },
+              {
+                "reason": "决定已由对话明确后，叙述又完整归纳双方利弊与最终依据。",
+                "excerpt": "若只比较眼前的利弊，停下仍然占优。可原计划里还有没有完成的部分，而等待不会替他完成，也不会替他承担最后必须作出的判断。",
+                "paragraph_index": 64
+              }
+            ],
+            "severity": "P2",
+            "confidence": 0.91,
+            "description": "中后段多次用叙述完整复述“停下更安全、继续需承担不确定性”的同一利弊。动作和对话已经传达犹豫后，解释仍反复归纳，使节奏趋于论证化。",
+            "source_refs": [
+              {
+                "field": "content",
+                "source_id": "e3e88aaf-ae0b-48fe-a230-9893b79761cb",
+                "source_type": "CHAPTER_VERSION",
+                "source_version": 1
+              },
+              {
+                "field": "scenes.S2_Temptation",
+                "source_id": "afe1da2a-67d0-4b12-b000-ac4c20a6d8e9",
+                "source_type": "CHAPTER_PLAN",
+                "source_version": 1
+              },
+              {
+                "field": "scenes.S3_Resolution",
+                "source_id": "afe1da2a-67d0-4b12-b000-ac4c20a6d8e9",
+                "source_type": "CHAPTER_PLAN",
+                "source_version": 1
+              }
+            ],
+            "requires_revision": false,
+            "revision_direction": "减少对同一利弊的重复归纳，让纸、门、半步停顿和人物回答承担更多心理变化；保留替代选择的可信吸引力、主角对其价值的承认及最终不改方向的清晰度。"
+          }
+        ],
+        "overall_verdict": "PASS_WITH_WARNINGS",
+        "hard_gate_issues": [],
+        "reviewer_version": "A05-quality.v1",
+        "narrative_verdict": "PASS_WITH_WARNINGS",
+        "prompt_lineage_id": "6ccc506b-d724-405e-92ce-ee6ed885bc87",
+        "chapter_version_id": "e3e88aaf-ae0b-48fe-a230-9893b79761cb",
+        "compliance_verdict": "PASS",
+        "context_package_id": "dae3e201-e379-4fd6-8910-2eb7f6bc9f13",
+        "revision_priorities": [
+          {
+            "preserve": "保留缺失答复、纸张空白与开放门形成的统一意象，以及替代选择确有现实吸引力的设定。",
+            "direction": "优先让风险或责任出现一个具体、可观察的即时落点，同时不擅自补定义原计划。",
+            "issue_code": "ABSTRACT_STAKES"
+          },
+          {
+            "preserve": "保留“迈出半步却未跟进”、重新拿起纸以及明确说出“那也照原计划”的关键转折。",
+            "direction": "压缩重复的利弊归纳，让既有动作、停顿和简短回答承担权衡过程。",
+            "issue_code": "OVER_EXPLAINED_REASONING"
+          }
+        ],
+        "audience_fit_verdict": "PASS",
+        "compliance_prompt_lineage_id": "3f63af5d-e53c-4953-a218-4a60b4e8085b",
+        "compliance_context_package_id": "577bbf44-cd03-4dbb-9cbd-2d3397631b72"
+      },
+      "created_at": "2026-09-24 07:40:49.348088+00:00"
+    }
+  ],
+  "status": "AVAILABLE"
+}

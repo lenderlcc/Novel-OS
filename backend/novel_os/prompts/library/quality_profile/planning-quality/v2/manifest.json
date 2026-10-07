@@ -1,0 +1,25 @@
+{
+  "module_id": "planning-quality",
+  "module_type": "QUALITY_PROFILE",
+  "version": 2,
+  "status": "STABLE",
+  "description": "NOVEL-013 same A03 boundary, exploration task compatibility",
+  "content_path": "content.md",
+  "dependencies": [
+    {
+      "module_id": "novel-os-core",
+      "version": 1
+    }
+  ],
+  "compatible_agents": [
+    "*"
+  ],
+  "compatible_task_types": [
+    "PARSE_CHAPTER_REQUIREMENT",
+    "PLAN_CHAPTER",
+    "REVIEW_CHAPTER_PLAN",
+    "EXPLORE_CHAPTER_CONCEPTS"
+  ],
+  "created_at": "2026-10-05T00:00:00Z",
+  "content_hash": "6ca45373e3c1e78fe52754d0e6829a2cef45d5cdecf67526e39ebb5949050c11"
+}

@@ -12,6 +12,21 @@ from novel_os.workflow.runtime import WorkflowRuntime
 router = APIRouter(tags=["chapter-planning"])
 
 
+@router.post("/workflows/chapter-exploration", response_model=DispatchView, status_code=201)
+def create_exploration(body: dto.CreatePlanningWorkflow, session: DbSession, context: Context):
+    return response(
+        WorkflowRuntime(session).create(
+            body.project_id,
+            body.chapter_id,
+            body.event_id,
+            context,
+            "chapter-planning",
+            4,
+            raw_requirement=body.raw_requirement,
+        )
+    )
+
+
 @router.post("/workflows/chapter-planning", response_model=DispatchView, status_code=201)
 def create(body: dto.CreatePlanningWorkflow, session: DbSession, context: Context):
     return response(
@@ -83,6 +98,19 @@ def plan_version(workflow_id: UUID, version: int, session: DbSession):
 @router.get("/workflows/{workflow_id}/planning/review", response_model=dto.ReviewView)
 def current_review(workflow_id: UUID, session: DbSession):
     return PlanningQueries(session).review(workflow_id)
+
+
+@router.get("/workflows/{workflow_id}/planning/exploration", response_model=dto.ExplorationView)
+def current_exploration(workflow_id: UUID, session: DbSession):
+    return PlanningQueries(session).exploration(workflow_id)
+
+
+@router.get(
+    "/workflows/{workflow_id}/planning/explorations/{exploration_id}",
+    response_model=dto.ExplorationView,
+)
+def exploration(workflow_id: UUID, exploration_id: UUID, session: DbSession):
+    return PlanningQueries(session).exploration(workflow_id, exploration_id)
 
 
 @router.get("/workflows/{workflow_id}/planning/history", response_model=dto.HistoryView)

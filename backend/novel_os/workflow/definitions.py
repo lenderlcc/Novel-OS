@@ -78,7 +78,7 @@ class DefinitionBody(BaseModel):
                 raise ValueError("Artifact effects require executor results")
             if rule.effect == "bind_draft" and (
                 self.simulation
-                or self.version not in {2, 3}
+                or self.version not in {2, 3, 4}
                 or (rule.source, rule.event, rule.target)
                 != (ChapterState.C07_WRITING, "DRAFT_READY", ChapterState.C08_DETERMINISTIC_CHECK)
             ):
@@ -102,9 +102,12 @@ class DefinitionBody(BaseModel):
             ChapterState.C92_CANCELLED,
         }
         if not self.simulation:
-            boundary = {1: "C07_WRITING", 2: "C08_DETERMINISTIC_CHECK", 3: "C11_INTERNAL_PASS"}.get(
-                self.version
-            )
+            boundary = {
+                1: "C07_WRITING",
+                2: "C08_DETERMINISTIC_CHECK",
+                3: "C11_INTERNAL_PASS",
+                4: "C11_INTERNAL_PASS",
+            }.get(self.version)
             if boundary is None:
                 raise ValueError("Unknown formal workflow version")
             required_states = {state for state in ChapterState if state.value <= boundary}
@@ -145,7 +148,7 @@ class DefinitionBody(BaseModel):
                     (r.source, r.event, r.target, r.actor, r.effect) for r in writing_edges
                 } != expected or any("plan_approved" not in r.guards for r in writing_edges):
                     raise ValueError("Writing v2 stops at C08 with explicit user regeneration")
-            if self.version == 3:
+            if self.version in {3, 4}:
                 review_edges = {
                     (r.source, r.event, r.target, r.actor)
                     for r in self.transitions
@@ -260,6 +263,9 @@ class WorkflowDefinitionRegistry:
                 ),
                 WorkflowDefinitionLoader().load(
                     Path(__file__).parent / "definitions/chapter-planning.v3.yaml"
+                ),
+                WorkflowDefinitionLoader().load(
+                    Path(__file__).parent / "definitions/chapter-planning.v4.yaml"
                 ),
             ]
         ):

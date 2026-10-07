@@ -1,0 +1,201 @@
+{
+  "id": "E2E-001",
+  "kind": "engineering_coverage_map",
+  "note": "Node IDs are collected and executed by pytest. Recorded Provider PASS does not establish real model or human behavior acceptance. Current domain has no REJECTED status; discarded/unaccepted draft is the applicable negative lifecycle.",
+  "targets": [
+    {
+      "id": 1,
+      "expected": "finalized version only memory source",
+      "tests": [
+        "tests/core/quality/test_multi_chapter_continuity.py::test_five_chapter_formal_continuity_and_finalized_revision_isolation",
+        "tests/test_memory_contracts.py::test_exact_source_and_minimal_quote_evidence"
+      ]
+    },
+    {
+      "id": 2,
+      "expected": "unaccepted draft excluded",
+      "tests": [
+        "tests/core/quality/test_multi_chapter_continuity.py::test_five_chapter_formal_continuity_and_finalized_revision_isolation",
+        "tests/context/test_context.py::test_invalid_statuses_never_enter_context"
+      ]
+    },
+    {
+      "id": 3,
+      "expected": "superseded draft excluded",
+      "tests": [
+        "tests/core/quality/test_multi_chapter_continuity.py::test_five_chapter_formal_continuity_and_finalized_revision_isolation"
+      ]
+    },
+    {
+      "id": 4,
+      "expected": "A KNOWS X",
+      "tests": [
+        "tests/core/quality/test_multi_chapter_continuity.py::test_five_chapter_formal_continuity_and_finalized_revision_isolation"
+      ]
+    },
+    {
+      "id": 5,
+      "expected": "B does not know X",
+      "tests": [
+        "tests/core/quality/test_multi_chapter_continuity.py::test_five_chapter_formal_continuity_and_finalized_revision_isolation"
+      ]
+    },
+    {
+      "id": 6,
+      "expected": "suspicion is not canon",
+      "tests": [
+        "tests/core/quality/test_multi_chapter_continuity.py::test_five_chapter_formal_continuity_and_finalized_revision_isolation",
+        "tests/test_memory_contracts.py::test_knowledge_has_owner_and_preserves_epistemic_status"
+      ]
+    },
+    {
+      "id": 7,
+      "expected": "belief is not canon",
+      "tests": [
+        "tests/test_memory_contracts.py::test_illegal_candidate_rejected",
+        "tests/test_memory_contracts.py::test_knowledge_has_owner_and_preserves_epistemic_status"
+      ]
+    },
+    {
+      "id": 8,
+      "expected": "state transition supersedes old",
+      "tests": [
+        "tests/core/quality/test_multi_chapter_continuity.py::test_five_chapter_formal_continuity_and_finalized_revision_isolation",
+        "tests/core/quality/test_memory_commit.py::test_temporal_versions_aliases_future_subjects_and_duplicate_commit"
+      ]
+    },
+    {
+      "id": 9,
+      "expected": "destroyed object current",
+      "tests": [
+        "tests/core/quality/test_multi_chapter_continuity.py::test_five_chapter_formal_continuity_and_finalized_revision_isolation",
+        "tests/core/quality/test_memory_transitions.py::test_object_and_thread_keep_identity_history_and_survive_an_omitted_chapter"
+      ]
+    },
+    {
+      "id": 10,
+      "expected": "thread survives skipped chapters",
+      "tests": [
+        "tests/core/quality/test_multi_chapter_continuity.py::test_five_chapter_formal_continuity_and_finalized_revision_isolation"
+      ]
+    },
+    {
+      "id": 11,
+      "expected": "duplicate skipped",
+      "tests": [
+        "tests/core/quality/test_multi_chapter_continuity.py::test_five_chapter_formal_continuity_and_finalized_revision_isolation",
+        "tests/core/quality/test_memory_transitions.py::test_unchanged_memory_is_skipped_even_with_new_chapter_evidence"
+      ]
+    },
+    {
+      "id": 12,
+      "expected": "contradiction blocks commit",
+      "tests": [
+        "tests/core/quality/test_memory_commit.py::test_intrabatch_conflicting_state_group_cannot_complete_chapter"
+      ]
+    },
+    {
+      "id": 13,
+      "expected": "locked authority blocks commit",
+      "tests": [
+        "tests/core/quality/test_memory_transitions.py::test_object_state_transition_cannot_override_a_locked_decision"
+      ]
+    },
+    {
+      "id": 14,
+      "expected": "stale proposal blocks commit",
+      "tests": [
+        "tests/core/quality/test_memory_commit.py::test_stale_draft_cannot_confirm",
+        "tests/core/quality/test_memory_commit.py::test_canon_change_invalidates_other_prepared_proposal",
+        "tests/core/quality/test_memory_commit.py::test_lock_after_extraction_invalidates_proposal"
+      ]
+    },
+    {
+      "id": 15,
+      "expected": "commit atomicity",
+      "tests": [
+        "tests/core/quality/test_memory_commit.py::test_commit_failure_rolls_back_all_rows"
+      ]
+    },
+    {
+      "id": 16,
+      "expected": "derived cannot override canon",
+      "tests": [
+        "tests/context/test_context.py::test_higher_authority_wins",
+        "tests/test_memory_contracts.py::test_illegal_candidate_rejected"
+      ]
+    },
+    {
+      "id": 17,
+      "expected": "current excludes superseded state",
+      "tests": [
+        "tests/core/quality/test_multi_chapter_continuity.py::test_five_chapter_formal_continuity_and_finalized_revision_isolation"
+      ]
+    },
+    {
+      "id": 18,
+      "expected": "historical state retained",
+      "tests": [
+        "tests/core/quality/test_multi_chapter_continuity.py::test_five_chapter_formal_continuity_and_finalized_revision_isolation"
+      ]
+    },
+    {
+      "id": 19,
+      "expected": "Planning gets relevant thread",
+      "tests": [
+        "tests/core/quality/test_multi_chapter_continuity.py::test_five_chapter_formal_continuity_and_finalized_revision_isolation"
+      ]
+    },
+    {
+      "id": 20,
+      "expected": "Planning does not get all memory",
+      "tests": [
+        "tests/core/quality/test_memory_context_isolation.py"
+      ]
+    },
+    {
+      "id": 21,
+      "expected": "Writer gets current POV state",
+      "tests": [
+        "tests/core/quality/test_multi_chapter_continuity.py::test_five_chapter_formal_continuity_and_finalized_revision_isolation"
+      ]
+    },
+    {
+      "id": 22,
+      "expected": "Writer gets correct knowledge owner",
+      "tests": [
+        "tests/core/quality/test_memory_context_isolation.py"
+      ]
+    },
+    {
+      "id": 23,
+      "expected": "B-only knowledge not leaked to A",
+      "tests": [
+        "tests/core/quality/test_memory_context_isolation.py"
+      ]
+    },
+    {
+      "id": 24,
+      "expected": "future REQUIRED_ONLY",
+      "tests": [
+        "tests/core/writing/test_context_and_prompt.py::test_even_explicit_locked_future_plan_requires_approval",
+        "tests/core/workflow/test_context_engine.py::test_future_information_requires_explicit_approved_plan_dependency"
+      ]
+    },
+    {
+      "id": 25,
+      "expected": "uncommitted proposal excluded",
+      "tests": [
+        "tests/core/quality/test_memory_context_isolation.py"
+      ]
+    },
+    {
+      "id": 26,
+      "expected": "unaccepted raw draft excluded from context",
+      "tests": [
+        "tests/core/quality/test_multi_chapter_continuity.py::test_five_chapter_formal_continuity_and_finalized_revision_isolation",
+        "tests/test_memory_contracts.py::test_current_writer_profile_has_no_raw_previous_chapter_leak"
+      ]
+    }
+  ]
+}

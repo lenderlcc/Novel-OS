@@ -318,3 +318,11 @@ Approved 历史版本 immutable。
 ## NOVEL-012：Memory persistence
 
 0016 添加 memory_requests、memory_commit_proposals、memory_commit_batches、memory_subjects、committed_memory；Workflow 添加 nullable memory_request_id，Chapter 添加 COMPLETED 生命周期。六种 Memory 共用追加式 typed records，通过 logical_id/version/supersedes_id 保留历史。Source ChapterVersion、Task/Run/Prompt/Context、human-confirmation event 与 commit batch 精确绑定。Canon revision 按项目 batch 序号递增；不是正文的第三个版本指针。完整定义见 [Memory Commit](10-Memory-Canon-Commit.md)。
+
+## NOVEL-014: CharacterBehaviorProfile persistence
+
+0019_character_behavior_profile reuses memory_subjects of kind CHARACTER as identity and adds character_behavior_profiles. Profile columns: id, project_id, character_id, version, supersedes_id, status, source, authority_level, body JSONB, optional source_text, created_at/by and approved_at/by. The stable logical profile_id is uuid5(character_id, "character-behavior-profile"), distinct from the character identity and immutable record IDs. Unique (character_id, version) and a partial unique APPROVED index separate latest/current from approved. Only DRAFT → APPROVED → SUPERSEDED lifecycle metadata changes; body, raw source and historical identity are immutable. No hard-delete API.
+
+Body is defined by CharacterBehaviorProfileBody: optional decision_tendency, risk_tolerance LOW/MEDIUM/HIGH, conflict_response, emotional_defense, communication_style, attention_bias, self_image, vulnerability; sparse default_assumptions, avoids_saying_directly, behavioral_tells, relationship_modifiers, guidance and avoid_tendencies. Relationship modifiers are embedded in the same version, same-project and non-self; no new relationship matrix/table. Their trust_expression is a tendency, not Relationship State. Hash covers logical ID, version and canonical body.
+
+Manual identities allow batch_id=null and immutable created_at/by; old identities backfill provenance from their commit batch. This neither creates committed Canon facts nor replaces Character State/Knowledge. See [Character Depth & Voice](12-Character-Depth-Voice.md) for retrieval, authority and downgrade constraints.

@@ -1,0 +1,12 @@
+{
+  "sequence": 1,
+  "title": "独享的暗号",
+  "raw_requirement": "Lin Lan 在 River Station 亲眼读到 Midnight Code：the box opens at midnight。Gu Che 不在现场、没有听说这条信息。Sealed Copper Box 完好。Missing Courier 尚未找到。两人合作调查，但不要扩写世界观。",
+  "pov": "A",
+  "recorded_draft": "Lin Lan waited at River Station beside the Sealed Copper Box. Its seal was intact. The Missing Courier had not returned, and no one had closed that investigation.\n\nInside a folded note, Lin Lan read the Midnight Code: the box opens at midnight. She read the words herself and kept the note. Gu Che was at Clock Tower, absent from the station; he neither saw nor heard the code.\n\nLin Lan and Gu Che had agreed to cooperate in finding the Missing Courier. The search remained pending. Lin Lan left a short message asking him to meet later, without including the code.",
+  "capabilities": [
+    "KNOWLEDGE_OWNERSHIP",
+    "INITIAL_STATE",
+    "OPEN_THREAD"
+  ]
+}

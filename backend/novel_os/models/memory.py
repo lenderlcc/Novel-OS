@@ -77,14 +77,19 @@ class MemoryBatchModel(Base):
 
 class MemorySubjectModel(Base):
     __tablename__ = "memory_subjects"
-    __table_args__ = (UniqueConstraint("project_id", "kind", "normalized_name"),)
+    __table_args__ = (
+        UniqueConstraint("project_id", "kind", "normalized_name"),
+        UniqueConstraint("id", "project_id", name="uq_memory_subjects_id_project"),
+    )
     id: Mapped[UUID] = mapped_column(primary_key=True)
     project_id: Mapped[UUID] = mapped_column(ForeignKey("projects.id"))
     name: Mapped[str] = mapped_column(Text)
     normalized_name: Mapped[str] = mapped_column(Text)
     kind: Mapped[str] = mapped_column(Text)
     aliases: Mapped[list] = mapped_column(JSONB)
-    batch_id: Mapped[UUID] = mapped_column(ForeignKey("memory_commit_batches.id"))
+    batch_id: Mapped[UUID | None] = mapped_column(ForeignKey("memory_commit_batches.id"))
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    created_by: Mapped[str] = mapped_column(Text)
 
 
 class MemoryEntryModel(Base):

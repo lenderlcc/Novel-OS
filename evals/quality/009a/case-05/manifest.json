@@ -1,0 +1,14 @@
+{
+  "case_id": "case-05",
+  "project_id": "14c99102-f5b0-4a0f-82b6-be829fae15b5",
+  "chapter_id": "23208bf8-ecc7-4054-8ae9-46cf4bc15181",
+  "draft_version": 1,
+  "chapter_version_id": "e3e88aaf-ae0b-48fe-a230-9893b79761cb",
+  "draft_sha256": "f9b2957d6785af1adee9cb79860ca4833d6afa08eec7f86582eb28774cf4b6cf",
+  "input_sha256": "179aaa77c84c52a30046b19203d77cb8133a2402a4b8885a396196e75eeaaad2",
+  "profile_refs": [],
+  "before_review_ids": [
+    "55bad299-a861-4a62-89db-f7003d310ea3"
+  ],
+  "after_real_status": "NOT_RUN"
+}

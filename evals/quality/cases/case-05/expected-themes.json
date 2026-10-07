@@ -1,0 +1,16 @@
+{
+  "case_id": "case-05",
+  "human_expected_themes": [
+    "LOW_IMMERSION",
+    "OVER_STRUCTURED_DIALOGUE",
+    "LOW_RELATIONAL_SPECIFICITY",
+    "ABSTRACT_STAKES",
+    "OVER_EXPLAINED_EMOTIONAL_MEANING",
+    "EXCESSIVE_CLOSURE",
+    "REQUIREMENT_VISIBILITY_BIAS"
+  ],
+  "interpretation": "应同时保留 major direction / human sovereignty 的优点。LOW_RELATIONAL_SPECIFICITY 是人工观察主题，可由对白、人物声音与抽象代价诊断解释，不要求同名 code。",
+  "acceptance": "Compare supported themes and false positives manually; exact code matching is not a pass criterion.",
+  "input_snapshot": null,
+  "real_evaluation": "NOT_RUN"
+}

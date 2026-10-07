@@ -1,0 +1,108 @@
+{
+  "id": "NOVEL-014-character-fixtures",
+  "project_id": "82beec7d-2f88-5324-b1ab-e015bf5ad4dc",
+  "kind": "OFFLINE_SYNTHETIC_FIXTURE",
+  "body_schema": "novel_os.characters.schemas.CharacterBehaviorProfileBody",
+  "runtime_objects_created": false,
+  "note": "这些固定 UUID 只标识评估材料。运行时映射为实际角色 ID，并通过现有 DRAFT -> APPROVED API 创建 Profile；不得直接插入 APPROVED 行。",
+  "characters": [
+    {
+      "id": "e3339fa1-b1bb-5b32-9d5d-5d56fa3902a1",
+      "label": "A",
+      "name": "林遥",
+      "static_identity": {
+        "role": "临时负责取回交接材料的人",
+        "aliases": []
+      },
+      "behavior_profile": {
+        "version": 1,
+        "status": "APPROVED",
+        "authority_level": "A3_CANON",
+        "body": {
+          "decision_tendency": "习惯先动手尝试，再根据眼前结果修正；通常不愿让讨论占满可行动的时间。",
+          "risk_tolerance": "MEDIUM",
+          "conflict_response": "常用具体行动争取空间，被追问时容易先顶一句；并非不能接受别人的检查。",
+          "emotional_defense": "真正没把握时更容易开玩笑，把害怕藏在轻松语气或催促里。",
+          "communication_style": "通常直接、简短，涉及自己的害怕时反而绕开说；不依靠固定口头禅。",
+          "attention_bias": "敏锐地留意还能行动的出口、剩余时间和眼前障碍，可能略过别人脸上的迟疑。",
+          "self_image": "觉得自己是能把事情先接住的人，承认没有把握会伤到这份自我认知。",
+          "avoids_saying_directly": [
+            "自己害怕失去同伴的信任",
+            "自己还没有想好退路"
+          ],
+          "behavioral_tells": [
+            "不想继续争论时可能先伸手做事，但不应每个场景都重复。"
+          ],
+          "relationship_modifiers": [
+            {
+              "other_character_id": "df1bc87e-6f8a-5d5a-baeb-0f87af1d981c",
+              "interaction_tendency": "面对沈知更愿意解释具体打算，也更容易嘴硬。",
+              "trust_expression": "会把需要别人确认的细节递过去，不一定直接说自己依赖对方。",
+              "conflict_pattern": "容易用玩笑挡住追问，但对方指出实际漏洞时可能让步。",
+              "things_left_unsaid": [
+                "这次其实想听对方说有把握。"
+              ]
+            },
+            {
+              "other_character_id": "02411e99-3344-5ec9-abfe-d24ab0739d0e",
+              "interaction_tendency": "面对周衡通常更正式、少解释，不愿露出自己的慌张。",
+              "trust_expression": "更可能通过执行安排表达合作。",
+              "conflict_pattern": "会把异议压成具体问题，未必立刻顶回去。",
+              "things_left_unsaid": [
+                "不愿让对方发现自己尚未准备好。"
+              ]
+            }
+          ],
+          "guidance": [
+            "风险方向可理解为中等偏高，取决于代价与动机；没有数值评分。",
+            "这些都是通常倾向；明确状态、知识、Lock 和批准 Plan 仍然有效。"
+          ],
+          "avoid_tendencies": [
+            "不要把每次害怕都写成同一个笑话或固定动作。"
+          ]
+        }
+      }
+    },
+    {
+      "id": "df1bc87e-6f8a-5d5a-baeb-0f87af1d981c",
+      "label": "B",
+      "name": "沈知",
+      "static_identity": {
+        "role": "临时负责取回交接材料的人",
+        "aliases": []
+      },
+      "behavior_profile": {
+        "version": 1,
+        "status": "APPROVED",
+        "authority_level": "A3_CANON",
+        "body": {
+          "decision_tendency": "通常先确认关键事实和可撤回的步骤，再决定；时间紧迫时会缩小检查范围。",
+          "risk_tolerance": "LOW",
+          "conflict_response": "倾向追问容易被忽略的细节，提出能验证的问题；不总是把讨论做成完整辩论。",
+          "emotional_defense": "受压时容易把感受转换成分析和核对，借此暂时控制不安。",
+          "communication_style": "表达较精确，常先问一个具体问题；不需要每次把逻辑链说完。",
+          "attention_bias": "先注意装置是否稳定、哪些判断还没证实，以及谁会承担失误的后果。",
+          "self_image": "认为自己应该可靠，容易把没有查清的问题看成自己的疏漏。",
+          "vulnerability": "别人催促跳过关键核实、而事后又可能归责于自己时容易失衡。",
+          "default_assumptions": [
+            "暂时顺利不等于下一步也稳定。"
+          ],
+          "guidance": [
+            "风险方向可理解为低到中等；特殊代价或充分动机可以支持一次例外。",
+            "分析是防御倾向，不意味着全知、永远冷静或必须讲道理。"
+          ]
+        }
+      }
+    },
+    {
+      "id": "02411e99-3344-5ec9-abfe-d24ab0739d0e",
+      "label": "C",
+      "name": "周衡",
+      "static_identity": {
+        "role": "临时协助取回交接材料的人",
+        "aliases": []
+      },
+      "behavior_profile": null
+    }
+  ]
+}

@@ -116,6 +116,14 @@ class PlanningResultService:
         chapter = self.core.repo.get_chapter(workflow.project_id, workflow.chapter_id)
         VersionToken(workflow.plan_version or 0).check(chapter.current_plan_version or 0)
         if task.task_type == "PLAN_CHAPTER":
+            from novel_os.services.exploration_policy import ExplorationPolicy
+
+            exploration = ExplorationPolicy(self.session).check_scheduled(task, workflow)
+            if (
+                exploration is not None
+                and (SourceType.EXTENSION, exploration.id, 1) not in source_keys
+            ):
+                denied("Plan must cite its exact selected creative inference")
             pov = getattr(output, "pov_character_id", None)
             if pov is not None and not any(
                 i.selector_id == "memory-subjects"
@@ -218,6 +226,9 @@ class PlanningResultService:
                 event, terminal = "BLOCK", TaskStatus.BLOCKED
                 payload = {"reason": "User decision required; inspect CreativeBrief ambiguities"}
         elif task.task_type == "PLAN_CHAPTER":
+            from novel_os.services.exploration_policy import ExplorationPolicy
+
+            exploration = ExplorationPolicy(self.session).check_scheduled(task, workflow)
             brief = self.current_brief(workflow)
             output = canonical_plan_constraints(
                 output, CreativeBriefOutput.model_validate(brief.body)
@@ -253,6 +264,10 @@ class PlanningResultService:
                     brief_id=brief.id,
                     planning_iteration=workflow.planning_iteration_count,
                     body=body,
+                    creative_exploration_id=exploration.id if exploration else None,
+                    selected_candidate_id=exploration.body["selected_candidate_id"]
+                    if exploration
+                    else None,
                 )
             )
             event, payload = "PLAN_READY", {"plan_id": str(plan.id), "plan_version": plan.version}

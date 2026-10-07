@@ -20,7 +20,11 @@ def model_requirements(requirements):
             value = json.loads(entry)
         except ValueError:
             value = None
-        if isinstance(value, dict) and value.get("type") == BINDING_TYPE:
+        if isinstance(value, dict) and value.get("type") in {
+            BINDING_TYPE,
+            "CREATIVE_EXPLORATION_BINDING",
+            "CHARACTER_PROFILE_BINDING",
+        }:
             continue
         visible.append(entry)
     return tuple(visible)
@@ -39,7 +43,11 @@ class WritingProfileContext:
         return canonical({"type": BINDING_TYPE, "binding": self.binding(project_id)})
 
     def check_scheduled(self, task):
-        if task.task_type not in {"PLAN_CHAPTER", "REVIEW_CHAPTER_PLAN"}:
+        if task.task_type not in {
+            "PLAN_CHAPTER",
+            "EXPLORE_CHAPTER_CONCEPTS",
+            "REVIEW_CHAPTER_PLAN",
+        }:
             return
         for entry in task.requirements:
             try:

@@ -74,7 +74,12 @@ class AgentResultHandler:
             task.task_type in BUSINESS_RESULTS
             or task.task_type in QUALITY_TASKS | REVISION_TASKS
             or task.task_type
-            in {"WRITE_CHAPTER", "INTERPRET_CHAPTER_FEEDBACK", "EXTRACT_CHAPTER_MEMORY"}
+            in {
+                "WRITE_CHAPTER",
+                "INTERPRET_CHAPTER_FEEDBACK",
+                "EXTRACT_CHAPTER_MEMORY",
+                "EXPLORE_CHAPTER_CONCEPTS",
+            }
         ):
             return definition.success_event, {}, TaskStatus.SUCCEEDED
         if (
@@ -162,6 +167,14 @@ class AgentResultHandler:
                         task.task_type, task.expected_output_schema
                     ).model_validate(result.model_dump())
                     self.authority.validate(task, result)
+                    if task.task_type == "EXPLORE_CHAPTER_CONCEPTS" and expects_task(
+                        workflow, task
+                    ):
+                        from novel_os.services.exploration_results import ExplorationResultService
+
+                        ExplorationResultService(self.session).validate(
+                            task, run, result, package, workflow
+                        )
                     if task.task_type in BUSINESS_RESULTS and expects_task(workflow, task):
                         from novel_os.services.planning_results import PlanningResultService
 
@@ -348,6 +361,13 @@ class AgentResultHandler:
                 from novel_os.services.planning_results import PlanningResultService
 
                 event, payload, terminal = PlanningResultService(self.session).persist(
+                    task, run, result, package, workflow
+                )
+                metadata["escalation_required"] = terminal == TaskStatus.BLOCKED
+            if task.task_type == "EXPLORE_CHAPTER_CONCEPTS":
+                from novel_os.services.exploration_results import ExplorationResultService
+
+                event, payload, terminal = ExplorationResultService(self.session).persist(
                     task, run, result, package, workflow
                 )
                 metadata["escalation_required"] = terminal == TaskStatus.BLOCKED

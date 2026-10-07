@@ -96,9 +96,12 @@ NOVEL-001
 ## Current Status
 
 - Product / Architecture Specification: Frozen for Prototype v0.1
-- Actual Implementation: `NOVEL-011 — Human Feedback & Directed Revision`，等待用户 Review 与正文人工验收
-- 已实现 NOVEL-001～010B、STYLE-001/002 和 Personal Creative Workspace；沿用 TOML 配置和现有基础设施
-- Next Action: Review NOVEL-011；不自动进入 NOVEL-012
+- Phase 1: NOVEL-001～012 Engineering Complete；E2E-001 = PASS_WITH_BLOCKERS_RESOLVED
+- Real Provider / Human Multi-Chapter Acceptance: E2E-001R = PENDING
+- Phase 2: NOVEL-013 Creative Exploration、NOVEL-014 Character Depth & Voice Engineering Complete；真实验收 PENDING
+- 已实现 NOVEL-001～014、STYLE-001/002 和 Personal Creative Workspace；沿用 TOML 配置和现有基础设施
+- CHECKPOINT-001: PASS_WITH_BLOCKERS_RESOLVED；后续验收队列隔离与 Writing Profile 版本绑定修复已通过针对性回归
+- Next Action: 用户显式触发真实模型与人工验收；NOVEL-015/016/017 延后，详见 `docs/PROJECT-STATUS.md`
 
 具体规格见 `docs/specs/`，开发任务见 `docs/tickets/`。
 
@@ -106,7 +109,7 @@ NOVEL-001
 
 当前实现工程基础设施、Core Domain、deterministic Chapter Workflow、异步 Agent Runtime、
 版本化 Prompt、可替换模型 Provider 和结构化 Context Engine，以及需求理解、方案、写作、质量审阅、
-定向修改与人工反馈链路。Vue 工作台提供个人创作入口；Memory/Canon 写入尚未实现。
+定向修改、人工反馈与 Memory/Canon Commit 链路。Vue 工作台提供个人创作入口。
 默认使用 Mock；真实 Provider 通过 TOML 显式启用。
 
 需要 Python 3.13（声明支持 3.12–3.14）、uv、Docker Engine 与 Docker Compose 插件（v2 或更新版本）。
@@ -1174,3 +1177,23 @@ Case 01 原始证据和受控人工 A/B 步骤见
 更新后执行 `alembic upgrade head`（0016），重建并重启 Backend/Worker；配置继续使用 TOML。`chapter-quality` 范围包含 `EXTRACT_CHAPTER_MEMORY`，只在用户点击 **完成本章** 后调度一次提取。UI 展示候选，勾选后点击 **确认并完成** 才提交长期记忆。空候选也需确认；冲突可取消勾选或返回正文修改。完成后的章节不能直接修订。
 
 原有章节不会自动回填。真实模型调用按本机 Profile 消费 API。隔离测试数据库可执行 upgrade/downgrade/upgrade/check；已有 MemoryRequest 的数据库禁止降级删除历史。设计见 [Memory / Canon Commit](docs/specs/10-Memory-Canon-Commit.md)，验证见 [NOVEL-012 报告](docs/reports/NOVEL-012-memory-canon-commit.md)。
+
+
+### E2E-001 五章连续性验收
+
+Fixture、26 项覆盖映射、逐阶段人工 Runner 和验收模板位于
+[evals/e2e/multi-chapter](evals/e2e/multi-chapter/README.md)。离线测试复用正式
+API / Workflow / Agent Runtime，使用 Recorded Provider，不消耗模型 API。
+
+人工测试前，先停止现有 Worker，执行 `alembic upgrade head` 到
+`0017_memory_state_transitions`，再启动当前版本 Backend。Runner 每次只允许一个
+明确授权的阶段，保留 Plan Approval、Draft Acceptance 和 Memory Confirmation；
+不要在其他 Worker 运行时使用它。配置继续读取 `backend/config.toml`，无环境变量。
+
+0017 复用既有 Memory 版本链支持有证据的对象状态与同一 Thread 更新。若已有该类
+转换历史，downgrade 会拒绝，避免把确认后的历史退回不支持它的旧 Contract。
+迁移 round-trip 请使用独立测试库，不对开发数据降级。
+
+## NOVEL-013 Creative Exploration
+
+新 Workspace 创作使用 chapter-planning v4：A03 内部探索一次，再生成一个正式 Plan；候选仅在 Debug 查看。旧流程版本保留。详情见 [规格](docs/specs/11-Creative-Exploration.md) 和 [实现报告](docs/reports/NOVEL-013-creative-exploration.md)。部署新版前执行 `alembic upgrade head`；现有启动方式与 TOML 配置不变，Worker scope 中增加 EXPLORE_CHAPTER_CONCEPTS。没有自动真实 Provider 调用；Case 03 A/B 与五章人工验收仍待执行。

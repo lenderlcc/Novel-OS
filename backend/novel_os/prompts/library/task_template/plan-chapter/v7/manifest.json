@@ -1,0 +1,22 @@
+{
+  "module_id": "plan-chapter",
+  "module_type": "TASK_TEMPLATE",
+  "version": 7,
+  "status": "STABLE",
+  "description": "NOVEL-013 formal Planning from selected concept",
+  "content_path": "content.md",
+  "dependencies": [
+    {
+      "module_id": "novel-os-core",
+      "version": 1
+    }
+  ],
+  "compatible_agents": [
+    "A03_PLANNING"
+  ],
+  "compatible_task_types": [
+    "PLAN_CHAPTER"
+  ],
+  "created_at": "2026-10-05T00:00:00Z",
+  "content_hash": "158e41793efca9a9d5e72107dd6874df70bce30493ca69486238ee02934628fd"
+}

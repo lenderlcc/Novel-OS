@@ -1,0 +1,12 @@
+{
+  "case_id": "case-03",
+  "human_expected_themes": [
+    "UNSELECTIVE_DETAIL",
+    "LOW_IMMERSION",
+    "SAFE_GENERIC_CREATIVE_CHOICE"
+  ],
+  "interpretation": "历史 POV 判断必须使用当时已批准的 Profile；重复保守选择需要近期证据，否则不应报。",
+  "acceptance": "Compare supported themes and false positives manually; exact code matching is not a pass criterion.",
+  "input_snapshot": null,
+  "real_evaluation": "NOT_RUN"
+}

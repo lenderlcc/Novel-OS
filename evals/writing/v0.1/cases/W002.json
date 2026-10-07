@@ -1,0 +1,30 @@
+{
+  "id": "W002",
+  "suite_version": "0.1",
+  "title": "approved versus current plan",
+  "category": "boundary",
+  "provider_mode": "mock",
+  "fixture": "backend/tests/core/writing/conftest.py; existing isolated PostgreSQL pytest fixtures",
+  "input": {
+    "approved_plan_version": 1,
+    "current_plan_version": 2,
+    "draft_v2_marker": "UNAPPROVED_PLAN_V2_SECRET",
+    "timings": [
+      "before model",
+      "during model"
+    ]
+  },
+  "automated_tests": [
+    "tests/core/writing/test_lifecycle.py::test_exact_approved_plan_survives_new_current_draft"
+  ],
+  "engineering_oracle": [
+    "CP approved-plan=具体 v1 ID；v2 marker 不进入 Context",
+    "Chapter.current_plan_version=2，approved_plan_version=1"
+  ],
+  "ai_behavior_oracle": [
+    "正文遵守批准的 v1，而非尚未批准的 v2"
+  ],
+  "human_evaluation": "../templates/human-prose-evaluation.md",
+  "expected_lineage": "Every AGENT Draft must have exactly one PASS WritingResult with all seven linked sources. BLOCKED outputs must have no Draft.",
+  "limitation": "Mock/structured fault injection only; no semantic model grader or quality verdict."
+}

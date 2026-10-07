@@ -102,6 +102,20 @@ class MemoryQueryService:
         if source == SourceType.TASK_INPUT:
             return (task_item(request, selector, task_created_at),), {}
         if source == SourceType.EXTENSION:
+            from novel_os.services.character_profile_context import (
+                PROFILE_SELECTOR,
+                CharacterProfileContext,
+            )
+
+            if selector.selector_id == PROFILE_SELECTOR:
+                return CharacterProfileContext(self.session).query(request, selector)
+            from novel_os.services.exploration_context import (
+                EXPLORATION_SELECTORS,
+                ExplorationContextReader,
+            )
+
+            if selector.selector_id in EXPLORATION_SELECTORS:
+                return ExplorationContextReader(self.session).query(request, selector)
             from novel_os.services.canon_context import MEMORY_SELECTORS, CanonContextReader
 
             if selector.selector_id in MEMORY_SELECTORS:
@@ -154,18 +168,24 @@ class MemoryQueryService:
             ), {}
         if selector.scope == ContextScope.RECENT_APPROVED_CHAPTERS:
             if (
-                source != SourceType.CHAPTER_VERSION
+                source not in {SourceType.CHAPTER_VERSION, SourceType.CHAPTER_PLAN}
                 or selector.version_policy != VersionPolicy.APPROVED
             ):
                 raise ContextConfigurationError("Recent review context requires approved chapters")
             records, observed = [], []
             for chapter in self.repo.recent_approved(
-                request.project_id, request.chapter_sequence, selector.max_items
+                request.project_id,
+                request.chapter_sequence,
+                selector.max_items,
+                source_type=source,
             ):
-                observed.append((str(chapter.id), chapter.approved_version))
-                record = self.repo.artifact(
-                    source, request.project_id, chapter.id, chapter.approved_version
+                version = (
+                    chapter.approved_plan_version
+                    if source == SourceType.CHAPTER_PLAN
+                    else chapter.approved_version
                 )
+                observed.append((str(chapter.id), version))
+                record = self.repo.artifact(source, request.project_id, chapter.id, version)
                 if (
                     record
                     and record.approved_at
@@ -262,6 +282,19 @@ class MemoryQueryService:
             if lock:
                 provenance.append(f"lock:{lock.id}")
         payload = {name: getattr(record, name) for name in FIELDS[source]}
+        if selector.selector_id == "recent-approved-plans":
+            payload = {
+                name: payload[name]
+                for name in (
+                    "objective",
+                    "required_outcome",
+                    "character_progression",
+                    "plot_progression",
+                    "ending_state",
+                    "risks",
+                )
+            }
+            payload["role"] = "APPROVED_PLAN_NOT_FACT"
         if source == SourceType.CHAPTER_VERSION and (
             request.task_type in QUALITY_TASKS
             or request.task_type
@@ -281,15 +314,20 @@ class MemoryQueryService:
         if source == SourceType.CHAPTER and request.task_type == "WRITE_CHAPTER":
             payload["approved_plan_version"] = record.approved_plan_version
             payload["current_version"] = record.current_version
-        if source == SourceType.CHAPTER_PLAN and request.task_type in {
-            "PLAN_CHAPTER",
-            "REVIEW_CHAPTER_PLAN",
-            "WRITE_CHAPTER",
-            *QUALITY_TASKS,
-            *REVISION_TASKS,
-            "INTERPRET_CHAPTER_FEEDBACK",
-            "EXTRACT_CHAPTER_MEMORY",
-        }:
+        if (
+            source == SourceType.CHAPTER_PLAN
+            and selector.selector_id != "recent-approved-plans"
+            and request.task_type
+            in {
+                "PLAN_CHAPTER",
+                "REVIEW_CHAPTER_PLAN",
+                "WRITE_CHAPTER",
+                *QUALITY_TASKS,
+                *REVISION_TASKS,
+                "INTERPRET_CHAPTER_FEEDBACK",
+                "EXTRACT_CHAPTER_MEMORY",
+            }
+        ):
             from novel_os.repositories.planning import PlanningRepository
 
             generation = PlanningRepository(self.session).generation(request.workflow_id, record.id)

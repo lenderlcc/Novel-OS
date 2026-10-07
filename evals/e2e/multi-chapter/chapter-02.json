@@ -1,0 +1,12 @@
+{
+  "sequence": 2,
+  "title": "没有证据的怀疑",
+  "raw_requirement": "以 Gu Che 的第三人称限知视角推进 Missing Courier 调查。Gu Che 只知道自己的所见。Lin Lan 从 River Station 到达 Clock Tower，并怀疑 Gu Che 与 Station Alarm 有关；这是怀疑，不是结论。Sealed Copper Box 没有变化。",
+  "pov": "B",
+  "recorded_draft": "Gu Che stood at Clock Tower and counted the empty steps. He was still waiting for news of the Missing Courier. The investigation gave him no reason to claim knowledge he had not acquired.\n\nLin Lan arrived at Clock Tower after leaving River Station. She kept the Sealed Copper Box with her; its seal remained intact. Gu Che saw her set it on the table but did not learn its private code.\n\nLin Lan suspected that Gu Che was responsible for the Station Alarm. She had no proof, and she did not tell him her suspicion. Their agreement to search together remained in force.",
+  "capabilities": [
+    "KNOWLEDGE_FIREWALL",
+    "SUSPICION",
+    "STATE_TRANSITION"
+  ]
+}

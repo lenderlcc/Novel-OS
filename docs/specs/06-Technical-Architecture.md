@@ -337,3 +337,13 @@ Feedback source 与 RevisionRequest 使用不同逻辑 UUID，避免 EXTENSION a
 ## NOVEL-012：Memory commit boundary
 
 API → WorkflowRuntime / MemoryCommitService → MemoryRepository → PostgreSQL。Repository 不 commit，A07 不执行写工具。复用项目事务锁、AgentWorker、ContextEngine、Prompt registry、Audit 和 C14/C15/C16。五张追加式表、SQL constraints/triggers 和事务内索引完成持久化，不增加 Vector DB / Redis / graph / scheduler。Writer 经批准的 POV ID 读取人物所有的认知，Planning 可读取相关全局事实；旧章原文不再绕过 Writer firewall。历史 Prompt/Context profile 不覆盖。见 [Memory Commit](10-Memory-Canon-Commit.md)。
+
+## NOVEL-013: bounded A03 exploration
+
+Reuse AgentWorker, runtime/provider/prompt/context, TaskScheduler and transactional result handling. One immutable creative_explorations table plus PlanGeneration selection lineage; no parallel scheduler/workflow/Agent. CP-004E and versioned CP-004 v7 retrieve exact approved inputs plus recent compact approved history; only selected inference crosses into formal Planning. Existing Writer/Quality version guards admit v4 without behavioral changes. Knowledge/Memory models and retrieval strategy remain unchanged. See [Creative Exploration](11-Creative-Exploration.md).
+
+## NOVEL-014: character profile integration
+
+Reuse MemorySubject identity, CoreService project transaction lock, Audit, existing A02 runtime/provider/parser and ContextPackage/SourceVersions/PromptLineage. Add one profile table and one approved-profile Context adapter, not a new Character/relationship engine or learning path. Repositories flush without commit; Service controls user mutations. Domain stays independent of FastAPI/ORM. Explicit natural-language interpretation uses the shared pure report entry point, releasing its short preflight DB transaction before model IO, then rechecking under the ordinary draft transaction.
+
+Character relevance derives from content values in the exact task/Brief/selected concept or approved Plan/target Draft, plus an explicitly approved POV. It excludes serialization metadata, unrelated identities and modifiers. The approved selector records empty as well as populated snapshots; scheduling and before/after execution checks invalidate relevant changed approval bindings. Historical Context/Prompt pins remain immutable. New profile selectors do not alter epistemic categories, POV ownership, future horizon or memory commit authority. See [Character Depth & Voice](12-Character-Depth-Voice.md).

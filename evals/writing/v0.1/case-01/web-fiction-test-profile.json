@@ -1,0 +1,40 @@
+{
+  "target_audience": "主流中文网络小说读者",
+  "pacing": "MEDIUM_FAST",
+  "narrative_density": "HIGH",
+  "description_density": "LOW_MEDIUM",
+  "dialogue_density": "MEDIUM_HIGH",
+  "emotional_explicitness": "MEDIUM",
+  "subtext_level": "MEDIUM",
+  "literary_ornamentation": "LOW",
+  "scene_hook_strength": "HIGH",
+  "chapter_ending_hook": "MEDIUM_HIGH",
+  "relationship_payoff_visibility": "MEDIUM_HIGH",
+  "exposition_density": "LOW",
+  "naturalness": "HIGH",
+  "reading_experience": [
+    "快速进入当前场景核心矛盾",
+    "每个场景尽量同时推进事件和人物关系",
+    "持续给读者新的信息、冲突或情绪收益",
+    "人物互动具有较高存在感",
+    "情绪变化可感知，但不依赖旁白解释",
+    "阅读阻力较低"
+  ],
+  "guidance": [
+    "环境和物件描写服务于剧情，不连续占用大量篇幅",
+    "尽量更早进入人物互动和矛盾",
+    "对话需要体现人物性格和关系张力",
+    "关系推进需要有读者可以明确感受到的 payoff",
+    "保留自然感，但不要为了自然刻意追求散文化、留白或文学腔",
+    "事件规模可以小，但每个事件应具有较高叙事效率"
+  ],
+  "avoid_tendencies": [
+    "大量连续环境细描",
+    "过度生活流而缺少推进",
+    "过分克制导致情绪奖励太弱",
+    "为追求含蓄而降低事件强度",
+    "所有人物对白声音趋同",
+    "散文化段落连续堆叠",
+    "每个情绪变化都只依赖微小动作表现"
+  ]
+}

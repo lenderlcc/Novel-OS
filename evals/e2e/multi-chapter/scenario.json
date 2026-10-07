@@ -1,0 +1,90 @@
+{
+  "id": "E2E-001",
+  "version": 1,
+  "project": {
+    "name": "E2E-001 Multi-Chapter Continuity Acceptance",
+    "description": "独立五章验收项目。Lin Lan 与 Gu Che 追查 Missing Courier；人物知识独立，已确认事实及状态由正式 Memory Commit 维护。",
+    "tags": [
+      "E2E-001"
+    ],
+    "metadata": {
+      "eval_id": "E2E-001"
+    }
+  },
+  "entities": {
+    "A": {
+      "name": "Lin Lan",
+      "kind": "CHARACTER"
+    },
+    "B": {
+      "name": "Gu Che",
+      "kind": "CHARACTER"
+    },
+    "L1": {
+      "name": "River Station",
+      "kind": "LOCATION"
+    },
+    "L2": {
+      "name": "Clock Tower",
+      "kind": "LOCATION"
+    },
+    "X": {
+      "name": "Midnight Code",
+      "kind": "EVENT",
+      "value": "the box opens at midnight"
+    },
+    "K": {
+      "name": "Sealed Copper Box",
+      "kind": "OBJECT"
+    },
+    "T": {
+      "name": "Missing Courier",
+      "kind": "EVENT"
+    },
+    "Y": {
+      "name": "Station Alarm",
+      "kind": "EVENT"
+    },
+    "Z": {
+      "name": "Universal Key",
+      "kind": "OBJECT",
+      "value": "Gu Che owns a universal key"
+    }
+  },
+  "writing_profile": {
+    "target_audience": "短篇悬疑连续性测试读者",
+    "narrative_perspective": "THIRD_PERSON",
+    "pacing": "MEDIUM",
+    "exposition_density": "LOW",
+    "naturalness": "HIGH",
+    "guidance": [
+      "遵守当前章限定视角，不把全局事实当作视角人物已知事实。",
+      "连续性事实只在剧情需要时自然使用，不逐条展示记忆。"
+    ],
+    "avoid_tendencies": [
+      "无根据的知识泄漏",
+      "把怀疑升级为真相"
+    ]
+  },
+  "human_gates": [
+    "PLAN_APPROVAL",
+    "DRAFT_ACCEPTANCE",
+    "MEMORY_CONFIRMATION"
+  ],
+  "failure_tags": [
+    "CANON_DRIFT",
+    "STATE_DRIFT",
+    "KNOWLEDGE_LEAK",
+    "BELIEF_PROMOTED_TO_TRUTH",
+    "OPEN_THREAD_LOST",
+    "DUPLICATE_MEMORY",
+    "MEMORY_NOISE",
+    "REJECTED_DRAFT_LEAK",
+    "STALE_MEMORY_COMMIT",
+    "AUTHORITY_OVERRIDE",
+    "CONTEXT_OVERLOAD",
+    "CONTEXT_MISSING_REQUIRED",
+    "DERIVED_MEMORY_OVERRIDE"
+  ],
+  "provider_policy": "Offline recorded outputs verify engineering only. Real provider requires explicit per-stage opt-in; never run five chapters unattended."
+}

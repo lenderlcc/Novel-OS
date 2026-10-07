@@ -138,6 +138,16 @@ BUSINESS_STAGE_TASKS = {
         "chapter-plan-review-result.v2",
     ),
 }
+EXPLORATION_TASK = StageTaskMapping(
+    "EXPLORE_CHAPTER_CONCEPTS",
+    State.C04_CHAPTER_PLANNING,
+    AgentId.A03_PLANNING,
+    "creative_exploration",
+    Capability.PROPOSE_PLAN,
+    "PLAN_READY",  # Completion schedules formal Planning without emitting this event.
+    result_schema="creative-exploration-result.v1",
+)
+TASKS[EXPLORATION_TASK.task_type] = EXPLORATION_TASK
 WRITING_TASK = StageTaskMapping(
     "WRITE_CHAPTER",
     State.C07_WRITING,
@@ -222,7 +232,8 @@ MEMORY_STAGE_TASK = StageTaskMapping(
     "chapter_memory",
     Capability.REPORT_RESULT,
     "MEMORY_PROPOSAL_READY",
-    result_schema="chapter-memory-result.v1",
+    result_schema="chapter-memory-result.v2",
+    legacy_result_schema="chapter-memory-result.v1",
 )
 TASKS[MEMORY_STAGE_TASK.task_type] = MEMORY_STAGE_TASK
 TASKS[FEEDBACK_STAGE_TASK.task_type] = FEEDBACK_STAGE_TASK

@@ -1,0 +1,30 @@
+{
+  "id": "W003",
+  "suite_version": "0.1",
+  "title": "previous approved chapter isolation",
+  "category": "boundary",
+  "provider_mode": "mock",
+  "fixture": "backend/tests/core/writing/conftest.py; existing isolated PostgreSQL pytest fixtures",
+  "input": {
+    "previous_chapter": {
+      "approved_version": 2,
+      "current_version": 3,
+      "approved_content": "PREVIOUS_APPROVED",
+      "draft_marker": "BODY_SECRET_3"
+    },
+    "target_chapter_sequence": 2
+  },
+  "automated_tests": [
+    "tests/core/writing/test_context_and_prompt.py::test_previous_approved_body_not_latest_and_no_future_or_foreign_leak"
+  ],
+  "engineering_oracle": [
+    "CP 仅包含上一章已批准 v2 正文",
+    "不包含旧/新 Draft 标记、跨项目信息、未批准 Requirement"
+  ],
+  "ai_behavior_oracle": [
+    "正文承接批准版本，不承接 Draft 或外部项目信息"
+  ],
+  "human_evaluation": "../templates/human-prose-evaluation.md",
+  "expected_lineage": "Every AGENT Draft must have exactly one PASS WritingResult with all seven linked sources. BLOCKED outputs must have no Draft.",
+  "limitation": "Mock/structured fault injection only; no semantic model grader or quality verdict."
+}

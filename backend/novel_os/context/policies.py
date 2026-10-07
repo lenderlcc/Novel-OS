@@ -81,7 +81,8 @@ class ContextFilter:
                 and "committed_memory" in item.provenance
             )
             authorized = memory and (
-                request.task_type in {"PLAN_CHAPTER", "EXTRACT_CHAPTER_MEMORY"}
+                request.task_type
+                in {"PLAN_CHAPTER", "EXPLORE_CHAPTER_CONCEPTS", "EXTRACT_CHAPTER_MEMORY"}
                 or request.task_type == "WRITE_CHAPTER"
                 and request.character_id is not None
                 and request.character_id == item.character_id

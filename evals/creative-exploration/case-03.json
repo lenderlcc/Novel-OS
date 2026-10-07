@@ -1,0 +1,46 @@
+{
+  "id": "case-03-historical-small-setback",
+  "kind": "manual_ab_evaluation",
+  "real_provider_status": "NOT_RUN",
+  "authorization": "USER_EXPLICIT_TRIGGER_REQUIRED",
+  "raw_requirement": "这一章我要的结果只有一个：让主角经历一次原本没有预料到的小挫折，但这个挫折不能真正改变主线方向。\n\n我希望这一章本身读起来有趣，不要只是为了完成剧情任务而存在。\n\n具体发生什么、在哪里发生、主角和谁互动、挫折是怎么产生的，都由你自己决定。\n\n不需要向我确认普通细节。只要不引入会明显影响后续剧情的重大设定、不改变主角已经确定的重要方向即可。\n\n挫折解决以后可以留下一个小的影响或者余波，但不要升级成重大转折。",
+  "requirement_provenance": {
+    "workflow_id": "97391163-da93-4d9e-902f-32642ff1c31e",
+    "input_event_id": "6af05887-c4db-4c98-bd79-662aedea16cd",
+    "event_type": "CREATE",
+    "verified_by": "read-only query of the original persisted workflow input",
+    "distinct_from": "evals/manual/case-03.json"
+  },
+  "A": {
+    "source": "historical existing result; no new paid A call",
+    "project_id": "23c028ee-cd94-4965-af85-731e560c9633",
+    "chapter_id": "2ad1d3b7-afca-445b-9841-76e0e0e0bc6c",
+    "plan_id": "0a3f3992-005e-4ac4-8f9b-24fe0676427d",
+    "plan_generation_id": "afc54628-159a-4668-87e3-23fc4118e07e",
+    "brief_id": "70cf94d4-993b-4dd8-a07f-16c33e0a53e9",
+    "context_package_id": "dae29f6c-b7c8-496b-8ad5-36e2e7ac0b9c",
+    "prompt_lineage_id": "82451c23-5841-4b02-831c-d0cdec603294",
+    "mechanism_evidence": "例行交接受阻，普通标记或记录不匹配，核验补救失败，协作回溯经手偏差，承担有限时间损失。"
+  },
+  "comparable_inputs": {
+    "writing_profile_version": 1,
+    "writing_profile_hash": "4a65f88c4e78c362435ce02d5e7a75e5b729c7f0fc8420ceeb4fada07f8236e1",
+    "profile_source": "exact approved A5 item in A ContextPackage",
+    "narrative_perspective_in_historical_profile": "ABSENT",
+    "context_source": "freeze authoritative items from A ContextPackage; record any necessary differences",
+    "baseline_plan_is_agent_input": false
+  },
+  "B": {
+    "path": "NOVEL-013 chapter-exploration v4",
+    "status": "NOT_RUN",
+    "creative_exploration_id": null,
+    "selected_candidate_id": null,
+    "plan_id": null,
+    "prompt_lineage_id": null,
+    "context_package_id": null,
+    "agent_run_id": null
+  },
+  "human_result": "NOT_EVALUATED",
+  "allowed_results": ["A_BETTER", "B_BETTER", "TIE"],
+  "failure_tags": []
+}

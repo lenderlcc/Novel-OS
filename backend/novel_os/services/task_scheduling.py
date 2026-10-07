@@ -1,5 +1,6 @@
 """Workflow-side task factory. Called inside the workflow transition transaction."""
 
+from dataclasses import replace
 from datetime import timedelta
 
 from novel_os.agents.registry import BUSINESS_STAGE_TASKS, STAGE_TASKS
@@ -59,6 +60,25 @@ class TaskScheduler:
         definition = (STAGE_TASKS if workflow.simulation else BUSINESS_STAGE_TASKS).get(
             workflow.current_state
         )
+        from novel_os.services.exploration_policy import (
+            ExplorationPolicy,
+            should_explore,
+            supports_exploration,
+        )
+
+        if supports_exploration(workflow) and workflow.current_state == "C04_CHAPTER_PLANNING":
+            from novel_os.agents.registry import EXPLORATION_TASK
+            from novel_os.repositories.planning import PlanningRepository
+
+            planning = PlanningRepository(self.session)
+            brief = planning.brief(workflow.id)
+            if ExplorationPolicy(self.session).needs_exploration(
+                workflow, brief, refresh_stale=bool(command and command.event_type == "RESUME")
+            ):
+                definition = EXPLORATION_TASK
+            elif should_explore(brief):
+                # BLOCKED or changed evidence must never silently select a fallback.
+                ExplorationPolicy(self.session).selected(workflow)
         from novel_os.agents.registry import WRITING_TASK
         from novel_os.services.writing_binding import supports_writing
 
@@ -147,12 +167,18 @@ class TaskScheduler:
                         }
                     )
                 ]
-        if definition.task_type in {"PLAN_CHAPTER", "REVIEW_CHAPTER_PLAN"}:
+        if definition.task_type in {
+            "PLAN_CHAPTER",
+            "EXPLORE_CHAPTER_CONCEPTS",
+            "REVIEW_CHAPTER_PLAN",
+        }:
             from novel_os.services.writing_profile_context import WritingProfileContext
 
             requirements.append(
                 WritingProfileContext(self.session).scheduling_input(workflow.project_id)
             )
+        if definition.task_type == "PLAN_CHAPTER" and supports_exploration(workflow):
+            requirements.append(ExplorationPolicy(self.session).scheduling_input(workflow))
         if definition.task_type == "INTERPRET_CHAPTER_FEEDBACK":
             from novel_os.repositories.feedback import FeedbackRepository
 
@@ -163,43 +189,52 @@ class TaskScheduler:
         if definition.task_type == "EXTRACT_CHAPTER_MEMORY":
             objective = "Extract only future-relevant information from the accepted chapter"
             requirements = []
-        task = self.repo.add(
-            AgentTask(
-                project_id=workflow.project_id,
-                workflow_instance_id=workflow.id,
-                workflow_state=workflow.current_state,
-                workflow_state_version=workflow.state_version,
-                agent_id=definition.agent_id,
-                task_type=definition.task_type,
-                target_ref=workflow.chapter_id,
-                objective=objective,
-                requirements=requirements,
-                expected_output_schema=definition.result_schema,
-                constraints=[
-                    "Simulation only"
-                    if workflow.simulation
-                    else "Write from the exact approved Plan; local creativity only"
-                    if definition.task_type == "WRITE_CHAPTER"
-                    else "Review the exact Draft; evidence only, no rewriting or authority changes"
-                    if definition.task_type in QUALITY_TASKS
-                    else (
-                        "Targeted revision; preserve strengths and exact authority boundaries, "
-                        "Review advice cannot override them"
-                    )
-                    if definition.task_type in REVISION_TASKS
-                    else "Interpret human feedback; no Brief, Profile or authority mutation"
-                    if definition.task_type == "INTERPRET_CHAPTER_FEEDBACK"
-                    else "Extract memory proposals only; no commit or authority mutation"
-                    if definition.task_type == "EXTRACT_CHAPTER_MEMORY"
-                    else "Planning only; no chapter prose",
-                    "No approval, lock, canon commit or direct database access",
-                ],
-                capabilities=[definition.capability.value],
-                created_at=timestamp,
-                available_at=timestamp + timedelta(seconds=delay_seconds),
-                priority=priority,
-            )
+        task = AgentTask(
+            project_id=workflow.project_id,
+            workflow_instance_id=workflow.id,
+            workflow_state=workflow.current_state,
+            workflow_state_version=workflow.state_version,
+            agent_id=definition.agent_id,
+            task_type=definition.task_type,
+            target_ref=workflow.chapter_id,
+            objective=objective,
+            requirements=requirements,
+            expected_output_schema=definition.result_schema,
+            constraints=[
+                "Simulation only"
+                if workflow.simulation
+                else "Write from the exact approved Plan; local creativity only"
+                if definition.task_type == "WRITE_CHAPTER"
+                else "Review the exact Draft; evidence only, no rewriting or authority changes"
+                if definition.task_type in QUALITY_TASKS
+                else (
+                    "Targeted revision; preserve strengths and exact authority boundaries, "
+                    "Review advice cannot override them"
+                )
+                if definition.task_type in REVISION_TASKS
+                else "Interpret human feedback; no Brief, Profile or authority mutation"
+                if definition.task_type == "INTERPRET_CHAPTER_FEEDBACK"
+                else "Extract memory proposals only; no commit or authority mutation"
+                if definition.task_type == "EXTRACT_CHAPTER_MEMORY"
+                else "Planning only; no chapter prose",
+                "No approval, lock, canon commit or direct database access",
+            ],
+            capabilities=[definition.capability.value],
+            created_at=timestamp,
+            available_at=timestamp + timedelta(seconds=delay_seconds),
+            priority=priority,
         )
+        if task.task_type in {"PLAN_CHAPTER", "EXPLORE_CHAPTER_CONCEPTS", "REVIEW_CHAPTER_PLAN"}:
+            from novel_os.services.character_profile_context import CharacterProfileContext
+
+            task = replace(
+                task,
+                requirements=[
+                    *task.requirements,
+                    CharacterProfileContext(self.session).scheduling_input(task, workflow),
+                ],
+            )
+        task = self.repo.add(task)
         if task.task_type == "WRITE_CHAPTER":
             from novel_os.services.writing_binding import WritingBindingService
 

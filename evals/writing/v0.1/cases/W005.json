@@ -1,0 +1,26 @@
+{
+  "id": "W005",
+  "suite_version": "0.1",
+  "title": "major plan deviation",
+  "category": "negative",
+  "provider_mode": "mock",
+  "fixture": "backend/tests/core/writing/conftest.py; existing isolated PostgreSQL pytest fixtures",
+  "input": {
+    "provider_fault": "WRITING_MAJOR_DEVIATION",
+    "adversarial_variant": "把 REQUIRED_OUTCOME 等核心改变声明为 LOCAL"
+  },
+  "automated_tests": [
+    "tests/core/writing/test_output_policy.py::test_deviation_and_proposal_policy",
+    "tests/core/writing/test_output_policy.py::test_major_change_cannot_hide_behind_local_label"
+  ],
+  "engineering_oracle": [
+    "MAJOR 返回 BLOCKED 和 MAJOR_PLAN_DEVIATION；不生成正常 Draft",
+    "LOCAL/MODERATE 可以保留元数据；minor facts 仅为提案"
+  ],
+  "ai_behavior_oracle": [
+    "人工对照正文核验未上报的重大偏离，不相信模型自报完成度"
+  ],
+  "human_evaluation": "../templates/human-prose-evaluation.md",
+  "expected_lineage": "Every AGENT Draft must have exactly one PASS WritingResult with all seven linked sources. BLOCKED outputs must have no Draft.",
+  "limitation": "Mock/structured fault injection only; no semantic model grader or quality verdict."
+}

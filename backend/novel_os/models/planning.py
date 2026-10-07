@@ -65,10 +65,38 @@ class PlanGenerationModel(EvidenceColumns, Base):
     __table_args__ = (
         *evidence_constraints(),
         CheckConstraint("planning_iteration > 0", name="positive_iteration"),
+        CheckConstraint(
+            "(creative_exploration_id IS NULL) = (selected_candidate_id IS NULL)",
+            name="exploration_binding_pair",
+        ),
     )
     plan_id: Mapped[UUID] = mapped_column(ForeignKey("chapter_plans.id"), unique=True)
     brief_id: Mapped[UUID] = mapped_column(ForeignKey("creative_briefs.id"))
     planning_iteration: Mapped[int]
+    creative_exploration_id: Mapped[UUID | None] = mapped_column(
+        ForeignKey("creative_explorations.id", name="fk_plan_generations_exploration")
+    )
+    selected_candidate_id: Mapped[str | None] = mapped_column(String(40))
+
+
+class CreativeExplorationModel(EvidenceColumns, Base):
+    __tablename__ = "creative_explorations"
+    __table_args__ = (
+        *evidence_constraints(),
+        CheckConstraint("status IN ('READY', 'BLOCKED')", name="exploration_status"),
+        CheckConstraint(
+            "body->>'kind' IS NOT DISTINCT FROM 'creative_exploration' "
+            "AND body->>'brief_id' IS NOT DISTINCT FROM brief_id::text "
+            "AND COALESCE(jsonb_typeof(body->'candidates') = 'array', false) "
+            "AND jsonb_array_length(body->'candidates') BETWEEN 1 AND 4 "
+            "AND ((status = 'READY' AND body->>'selected_candidate_id' IS NOT NULL "
+            "AND body->>'blocked_reason' IS NULL) OR (status = 'BLOCKED' "
+            "AND body->>'selected_candidate_id' IS NULL AND body->>'blocked_reason' IS NOT NULL))",
+            name="exploration_shape",
+        ),
+    )
+    brief_id: Mapped[UUID] = mapped_column(ForeignKey("creative_briefs.id"))
+    status: Mapped[str] = mapped_column(String(20))
 
 
 class PlanReviewReportModel(EvidenceColumns, Base):

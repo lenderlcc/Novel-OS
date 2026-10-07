@@ -291,3 +291,7 @@ currentBackendVersion 与 viewingVersion 分离：默认跟随同章新 Draft，
 ## NOVEL-012：正式章节完成路径
 
 正式 v3 的 C10/C11 WAITING_HUMAN 经 REQUEST_COMPLETION → C14_MEMORY_PREPARATION；A07 的 MEMORY_PROPOSAL_READY → C15_MEMORY_COMMIT / WAITING_HUMAN；用户 CONFIRM_MEMORY 的原子事务 → C16_COMPLETED。DISCARD_MEMORY 返回原空闲正文阶段，保留历史，不写 Canon。提取失败 BLOCKED，可显式返回/重试；既有 simulation 的旧事件不变。没有额外创建平行状态机。完成后 Revision/Feedback/Plan/正文修改均拒绝，见 [Memory Commit](10-Memory-Canon-Commit.md)。
+
+## NOVEL-013: chapter-planning v4
+
+Version 4 retains v3 states/transitions/gates. C04 schedules internal A03 exploration then formal Planning without an exploration event/state. Only formal Planning emits PLAN_READY. Existing A05 repair budget counts formal Plans only; ordinary repair reuses selection, explicit human alternative starts one new exploration. Freshness blocks use existing recovery/RESUME semantics. Historical v1–3 instances are not upgraded. See [Creative Exploration](11-Creative-Exploration.md).

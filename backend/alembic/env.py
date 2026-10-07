@@ -5,6 +5,7 @@ from novel_os.db.base import Base
 from novel_os.db.session import Database
 from novel_os.models import (  # noqa: F401 -- register ORM metadata
     agents,
+    character_profile,
     core,
     feedback,
     memory,

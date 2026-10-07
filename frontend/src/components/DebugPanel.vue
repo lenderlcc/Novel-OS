@@ -16,6 +16,7 @@ const closeButton = ref<HTMLButtonElement | null>(null)
 const error = shallowRef<ApiError | null>(null), context = shallowRef<Context | null>(null), lineage = shallowRef<Lineage | null>(null)
 const runs = ref<Run[]>([]), transitions = ref<Transition[]>([])
 const profileVersions = ref<Profile[]>([])
+const characterContextOnly = ref(false)
 let controller = new AbortController(), epoch = 0
 const reset = () => { controller.abort(); controller = new AbortController(); return ++epoch }
 async function inspect(id: string) {
@@ -50,6 +51,18 @@ onScopeDispose(reset)
 const pins = computed(() => lineage.value ? [lineage.value.system_policy, lineage.value.agent_role, lineage.value.task_template, ...lineage.value.skills, lineage.value.quality_profile].filter(p => p !== null) : [])
 const version = (v: number | null | undefined) => v ? `v${v}` : '无'
 const json = (value: unknown) => JSON.stringify(value, null, 2)
+type ContextItem = Context['package']['items'][number]
+function characterKind(item: ContextItem) {
+  if (item.selector_id === 'approved-character-behavior-profiles') return '人物表现'
+  if (item.selector_id === 'memory-subjects') return '静态身份'
+  try {
+    const payload = JSON.parse(item.payload_json)
+    const labels: Record<string, string> = { CHARACTER_STATE: '动态状态', CHARACTER_KNOWLEDGE: '人物知识', RELATIONSHIP_STATE: '当前关系状态' }
+    return labels[payload.memory_type] ?? ''
+  } catch { return '' }
+}
+const includedItems = computed(() => (context.value?.package.items ?? []).filter(item => !characterContextOnly.value || characterKind(item)))
+const excludedItems = computed(() => (context.value?.package.excluded_items ?? []).filter(item => !characterContextOnly.value || ['approved-character-behavior-profiles', 'memory-subjects', 'committed-memory'].includes(item.selector_id)))
 </script>
 <template>
   <div v-if="open" class="drawer-backdrop" @click.self="emit('close')" @keydown.esc="emit('close')">
@@ -66,6 +79,29 @@ const json = (value: unknown) => JSON.stringify(value, null, 2)
         <h3>Agent Tasks</h3><table><thead><tr><th>Agent / Task</th><th>Type</th><th>Status</th><th>Attempts</th><th>Error</th></tr></thead><tbody><tr v-for="task in snapshot.tasks" :key="task.task_id"><td>{{ task.agent_id }}<br><code>{{ task.task_id }}</code></td><td>{{ task.task_type }}<template v-if="revisionOutputFailure(task)"><br>{{ revisionOutputFailure(task)?.stage }}<br>{{ revisionOutputFailure(task)?.reason }}</template></td><td>{{ task.status }}</td><td>{{ task.attempt_count }} / {{ task.max_attempts }}</td><td>{{ task.last_error_code }} {{ task.last_error_message }}</td></tr></tbody></table>
         <h3>Agent Runs</h3><table><thead><tr><th>Run / Attempt</th><th>Status</th><th>Provider / Model</th><th>Duration</th><th>Error / Disposition</th></tr></thead><tbody><tr v-for="run in runs" :key="run.run_id"><td><button @click="inspect(run.run_id)">Attempt {{ run.attempt_number }}</button><br><code>{{ run.run_id }}</code></td><td>{{ run.status }}</td><td>{{ run.provider || '未调用' }} / {{ run.model || '—' }}</td><td>{{ run.duration_ms ?? '—' }} ms</td><td>{{ run.error_code }} {{ run.error_message }} {{ run.disposition }}</td></tr></tbody></table>
       </div></details>
+      <details><summary>A03 Creative Exploration</summary>
+        <p v-if="!snapshot.history.explorations?.length">此流程尚无探索记录，或其 Creative Freedom 跳过探索。</p>
+        <div v-for="record in snapshot.history.explorations ?? []" :key="record.id" class="debug-section">
+          <h3>{{ record.status }} · {{ record.freshness }} · {{ record.authority_level }}</h3>
+          <dl class="values">
+            <dt>Exploration / Brief</dt><dd><code>{{ record.id }} / {{ record.brief_id }}</code></dd>
+            <dt>Selected Candidate</dt><dd>{{ record.body.selected_candidate_id ?? '无安全候选' }}</dd>
+            <dt>Selection Reason</dt><dd>{{ record.body.selection_reason }}</dd>
+            <dt v-if="record.body.blocked_reason">Blocked</dt><dd v-if="record.body.blocked_reason">{{ record.body.blocked_reason }}</dd>
+            <dt>AgentRun</dt><dd><button @click="inspect(record.agent_run_id)">查看 Run</button> <code>{{ record.agent_run_id }}</code></dd>
+            <dt>ContextPackage / PromptLineage</dt><dd><code>{{ record.context_package_id }} / {{ record.prompt_lineage_id }}</code></dd>
+          </dl>
+          <table><thead><tr><th>Candidate / Event</th><th>Conflict / Character Pressure</th><th>Progression / Reader Interest</th><th>Risks / Selection</th></tr></thead><tbody>
+            <tr v-for="candidate in record.body.candidates" :key="candidate.id">
+              <td>{{ candidate.id }}<br>{{ candidate.core_event }}<details><summary>Concept / Fit</summary><pre>{{ json(candidate) }}</pre></details></td>
+              <td>{{ candidate.conflict_engine }}<br>{{ candidate.character_pressure }}</td>
+              <td>{{ candidate.story_progression }}<br>{{ candidate.reader_interest }}</td>
+              <td>Major: {{ candidate.major_change_risk }}<br>{{ candidate.major_change_reason }}<br>Similarity: {{ candidate.similarity_risk }}<br>{{ candidate.similarity_reason }}<br>{{ candidate.id === record.body.selected_candidate_id ? 'Selected' : record.body.rejected_reasons.find(r => r.candidate_id === candidate.id)?.reason }}</td>
+            </tr>
+          </tbody></table>
+          <details><summary>Input Brief / Frozen Source Versions / Full Exploration JSON</summary><pre>{{ json({ brief: snapshot.history.briefs.find(b => b.id === record.brief_id), exploration: record }) }}</pre></details>
+        </div>
+      </details>
       <details><summary>Context / Prompt</summary><div class="debug-section">
       <label for="debug-run">查看具体 Run 的 Context / Prompt</label>
       <select id="debug-run" :value="selectedRun" @change="inspect(($event.target as HTMLSelectElement).value)"><option value="">请选择 Run</option><option v-for="run in runs" :key="run.run_id" :value="run.run_id">{{ snapshot.tasks.find(t => t.task_id === run.task_id)?.agent_id }} · Attempt {{ run.attempt_number }} · {{ run.run_id }}</option></select>
@@ -78,11 +114,12 @@ const json = (value: unknown) => JSON.stringify(value, null, 2)
           <dt>Token Budget / Estimated</dt><dd>{{ context.package.token_budget }} / {{ context.package.estimated_tokens }}</dd>
         </dl>
         <p class="muted">Freshness 是当前时刻的校验。历史运行完成后可能变为 STALE；快照仍对应上方选定的 Run。</p>
+        <label for="debug-character-context"><input id="debug-character-context" v-model="characterContextOnly" type="checkbox"> 只查看人物档案与记忆</label>
         <h4>Included Items</h4>
-        <table><thead><tr><th>Source / Version</th><th>Priority</th><th>Authority / Status</th><th>Selected Reason</th><th>Payload</th></tr></thead><tbody>
-          <tr v-for="item in context.package.items" :key="item.context_item_id"><td>{{ item.source_type }}<br><code>{{ item.source_id }}</code> v{{ item.source_version }}</td><td>{{ item.priority }}</td><td>{{ item.authority_level }} / {{ item.status }}</td><td>{{ item.selected_reason }}</td><td><details><summary>查看内容</summary><pre>{{ item.payload_json }}</pre></details></td></tr>
+        <table data-testid="context-included-items"><thead><tr><th>Source / Version</th><th>Priority</th><th>Authority / Status</th><th>Selected Reason</th><th>Payload</th></tr></thead><tbody>
+          <tr v-for="item in includedItems" :key="item.context_item_id"><td>{{ item.source_type }}<template v-if="characterKind(item)"><br>{{ characterKind(item) }}</template><br><code>{{ item.source_id }}</code> v{{ item.source_version }}</td><td>{{ item.priority }}</td><td>{{ item.authority_level }} / {{ item.status }}</td><td>{{ item.selected_reason }}</td><td><details><summary>查看内容</summary><pre>{{ item.payload_json }}</pre></details></td></tr>
         </tbody></table>
-        <h4>Excluded Items</h4><table><thead><tr><th>Source</th><th>Reason</th></tr></thead><tbody><tr v-for="(item, index) in context.package.excluded_items" :key="index"><td>{{ item.source_type }} {{ item.source_id }} v{{ item.source_version }}</td><td>{{ item.reason }}</td></tr></tbody></table>
+        <h4>Excluded Items</h4><table data-testid="context-excluded-items"><thead><tr><th>Source</th><th>Reason</th></tr></thead><tbody><tr v-for="(item, index) in excludedItems" :key="index"><td>{{ item.source_type }} {{ item.source_id }} v{{ item.source_version }}</td><td>{{ item.reason }}</td></tr></tbody></table>
         <details><summary>Missing / Conflicts / Full Context JSON</summary><pre>{{ json(context) }}</pre></details>
       </template>
       <p v-else-if="!loading">此 Run 尚无 ContextPackage，或未选择 Run。</p>
@@ -102,3 +139,7 @@ const json = (value: unknown) => JSON.stringify(value, null, 2)
     </aside>
   </div>
 </template>
+<style scoped>
+label[for="debug-character-context"] { display: flex; align-items: center; gap: 8px; }
+#debug-character-context { width: auto; }
+</style>

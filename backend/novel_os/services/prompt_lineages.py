@@ -35,65 +35,75 @@ class PromptLineageService:
                 or not valid_lease(task, lease, self.tasks.clock())
             ):
                 return False
-            if (request.task_id, request.attempt_number, request.task_type, request.target_ref) != (
-                task.task_id,
-                task.attempt_count,
-                task.task_type,
-                task.target_ref,
-            ):
-                raise DomainError("VALIDATION_ERROR", "Prompt execution binding mismatch")
-            if (run.provider, run.model) != (request.profile.provider, request.profile.model):
-                raise DomainError(
-                    "VERSION_CONFLICT", "Claimed model does not match prepared request"
-                )
-            existing = self.repo.for_run(run.run_id)
-            if existing:
-                if (
-                    existing.compiled_prompt_hash != request.prompt.compiled_hash
-                    or existing.model_profile_hash != request.profile.profile_hash
-                ):
-                    raise DomainError(
-                        "VERSION_CONFLICT", "Run already has a different prompt binding"
-                    )
-                return True
-            pins = [item.module.pin().model_dump() for item in request.prompt.modules]
-            if not self.repo.matches_historical_pins(pins):
-                raise DomainError(
-                    "VERSION_CONFLICT", "Prompt version conflicts with recorded history"
-                )
-            layers = {
-                kind: [
-                    item.module.pin().model_dump()
-                    for item in request.prompt.modules
-                    if item.module.module_type == kind
-                ]
-                for kind in ModuleType
-            }
-            lineage = self.repo.add(
-                PromptLineage(
-                    agent_run_id=run.run_id,
-                    task_id=task.task_id,
-                    system_policy=layers[ModuleType.SYSTEM_POLICY][0],
-                    agent_role=layers[ModuleType.AGENT_ROLE][0],
-                    task_template=layers[ModuleType.TASK_TEMPLATE][0],
-                    skills=layers[ModuleType.SKILL],
-                    quality_profile=layers[ModuleType.QUALITY_PROFILE][0],
-                    output_schema_id=request.prompt.output.schema_id,
-                    output_schema_version=request.prompt.output.version,
-                    output_schema_hash=request.prompt.output.schema_hash,
-                    model_profile_id=request.profile.profile_id,
-                    model_profile_hash=request.profile.profile_hash,
-                    model_profile=request.profile.model_dump(mode="json"),
-                    compiled_prompt_hash=request.prompt.compiled_hash,
-                    compiler_version=request.prompt.compiler_version,
-                    created_at=self.tasks.clock(),
-                )
-            )
-            TaskHistory(self.session).audit(
-                task,
-                None,
-                lineage,
-                worker_context(lease.worker_id, run.run_id),
-                "Exact prompt configuration bound to run",
+            self.record_in_transaction(
+                task, run, request, worker_context(lease.worker_id, run.run_id)
             )
             return True
+
+    def record_in_transaction(self, task, run, request, context):
+        """Share exact prompt pins for fenced workers and explicit application reports."""
+        if not self.session.in_transaction():
+            raise RuntimeError("An application transaction is required")
+        if (
+            task.status != TaskStatus.RUNNING
+            or run.status != RunStatus.RUNNING
+            or run.task_id != task.task_id
+            or run.attempt_number != task.attempt_count
+        ):
+            raise DomainError("VALIDATION_ERROR", "Prompt run binding mismatch")
+        if (request.task_id, request.attempt_number, request.task_type, request.target_ref) != (
+            task.task_id,
+            task.attempt_count,
+            task.task_type,
+            task.report_character_id or task.target_ref,
+        ):
+            raise DomainError("VALIDATION_ERROR", "Prompt execution binding mismatch")
+        if (run.provider, run.model) != (request.profile.provider, request.profile.model):
+            raise DomainError("VERSION_CONFLICT", "Claimed model does not match prepared request")
+        existing = self.repo.for_run(run.run_id)
+        if existing:
+            if (
+                existing.compiled_prompt_hash != request.prompt.compiled_hash
+                or existing.model_profile_hash != request.profile.profile_hash
+            ):
+                raise DomainError("VERSION_CONFLICT", "Run already has a different prompt binding")
+            return existing
+        pins = [item.module.pin().model_dump() for item in request.prompt.modules]
+        if not self.repo.matches_historical_pins(pins):
+            raise DomainError("VERSION_CONFLICT", "Prompt version conflicts with recorded history")
+        layers = {
+            kind: [
+                item.module.pin().model_dump()
+                for item in request.prompt.modules
+                if item.module.module_type == kind
+            ]
+            for kind in ModuleType
+        }
+        lineage = self.repo.add(
+            PromptLineage(
+                agent_run_id=run.run_id,
+                task_id=task.task_id,
+                system_policy=layers[ModuleType.SYSTEM_POLICY][0],
+                agent_role=layers[ModuleType.AGENT_ROLE][0],
+                task_template=layers[ModuleType.TASK_TEMPLATE][0],
+                skills=layers[ModuleType.SKILL],
+                quality_profile=layers[ModuleType.QUALITY_PROFILE][0],
+                output_schema_id=request.prompt.output.schema_id,
+                output_schema_version=request.prompt.output.version,
+                output_schema_hash=request.prompt.output.schema_hash,
+                model_profile_id=request.profile.profile_id,
+                model_profile_hash=request.profile.profile_hash,
+                model_profile=request.profile.model_dump(mode="json"),
+                compiled_prompt_hash=request.prompt.compiled_hash,
+                compiler_version=request.prompt.compiler_version,
+                created_at=self.tasks.clock(),
+            )
+        )
+        TaskHistory(self.session).audit(
+            task,
+            None,
+            lineage,
+            context,
+            "Exact prompt configuration bound to run",
+        )
+        return lineage

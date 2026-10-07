@@ -103,7 +103,9 @@ class MemorySubject:
     normalized_name: str
     kind: str
     aliases: list[str]
-    batch_id: UUID
+    batch_id: UUID | None
+    created_at: datetime = field(default_factory=now)
+    created_by: str = "memory-commit"
 
 
 @dataclass(frozen=True, kw_only=True)

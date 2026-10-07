@@ -1,0 +1,25 @@
+{
+  "id": "W001",
+  "suite_version": "0.1",
+  "title": "normal approved-plan writing",
+  "category": "positive",
+  "provider_mode": "mock",
+  "fixture": "backend/tests/core/writing/conftest.py; existing isolated PostgreSQL pytest fixtures",
+  "input": {
+    "raw_requirement": "两人在雨夜会合，约定沿河寻找失落的信件。不要新增核心能力。",
+    "plan": "完成 Mock 规划及 Review，经精确 version Human Gate 批准 v1"
+  },
+  "automated_tests": [
+    "tests/core/writing/test_vertical_slice.py::test_e2e_a_writing_creates_draft_and_stops_at_c08"
+  ],
+  "engineering_oracle": [
+    "恰好一个 AGENT DRAFT；一条 PASS WritingResult；停止 C08",
+    "current_version=1，approved_version=null；Worker 无后续任务"
+  ],
+  "ai_behavior_oracle": [
+    "按场景意图写作，不逐行扩写 Plan；结尾实现 required_outcome"
+  ],
+  "human_evaluation": "../templates/human-prose-evaluation.md",
+  "expected_lineage": "Every AGENT Draft must have exactly one PASS WritingResult with all seven linked sources. BLOCKED outputs must have no Draft.",
+  "limitation": "Mock/structured fault injection only; no semantic model grader or quality verdict."
+}

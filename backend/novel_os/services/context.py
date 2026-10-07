@@ -67,6 +67,12 @@ class ContextService:
         return task, workflow, run
 
     def task_profile(self, task):
+        if task.task_type == "PLAN_CHAPTER":
+            from novel_os.repositories.workflows import WorkflowRepository
+            from novel_os.services.exploration_policy import supports_exploration
+
+            workflow = WorkflowRepository(self.session).get(task.workflow_instance_id)
+            return self.registry.resolve("CP-004", 9 if supports_exploration(workflow) else 8)
         if task.task_type == "EXTRACT_CHAPTER_MEMORY":
             from novel_os.domain.memory import MemoryRequest
             from novel_os.repositories.memory import MemoryRepository
@@ -112,6 +118,12 @@ class ContextService:
         return self.registry.for_task(task.task_type)
 
     def check_writing(self, task, workflow):
+        from novel_os.services.character_profile_context import CharacterProfileContext
+
+        CharacterProfileContext(self.session).check_scheduled(task, workflow)
+        from novel_os.services.exploration_policy import ExplorationPolicy
+
+        ExplorationPolicy(self.session).check_scheduled(task, workflow)
         if task.task_type == "EXTRACT_CHAPTER_MEMORY":
             from novel_os.services.memory_commit import MemoryCommitService
 
@@ -145,6 +157,7 @@ class ContextService:
         )
         plan_version = workflow.plan_version if needs_plan else None
         refs, missing = [], []
+        generation = None
         if needs_plan and plan_version is None:
             missing.append("workflow.approved_plan_version")
         plan = self.sources.artifact(
@@ -223,7 +236,11 @@ class ContextService:
                     )
                 )
         refs = tuple(sorted(set(refs), key=lambda r: (r.source_type, str(r.logical_id), r.version)))
-        if task.task_type in {"PLAN_CHAPTER", "REVIEW_CHAPTER_PLAN"}:
+        if task.task_type in {
+            "PLAN_CHAPTER",
+            "EXPLORE_CHAPTER_CONCEPTS",
+            "REVIEW_CHAPTER_PLAN",
+        }:
             from novel_os.services.planning_context import planning_refs
 
             business_refs, business_missing = planning_refs(
@@ -231,19 +248,39 @@ class ContextService:
             )
             refs = tuple(set(refs) | set(business_refs))
             missing.extend(business_missing)
+        from novel_os.services.exploration_context import (
+            SELECTED_CONCEPT_SELECTOR,
+            selected_concept_refs,
+        )
+
+        if any(s.selector_id == SELECTED_CONCEPT_SELECTOR for s in profile.selectors):
+            selected_refs, selected_missing = selected_concept_refs(self.session, workflow)
+            refs = tuple(set(refs) | set(selected_refs))
+            missing.extend(selected_missing)
         from novel_os.services.writing_profile_context import model_requirements
 
         pov_character_id = None
-        if task.task_type == "WRITE_CHAPTER" and plan is not None:
+        if task.task_type == "REVIEW_CHAPTER_PLAN":
             from novel_os.repositories.planning import PlanningRepository
 
-            generation = PlanningRepository(self.session).generation(workflow.id, plan.id)
-            if generation:
-                from novel_os.agents.planning_schemas import ChapterPlanOutput
+            # Review always targets this workflow's exact proposal, even when its
+            # Context Profile does not have a required Plan selector.
+            reviewed_plan = plan or self.sources.artifact(
+                SourceType.CHAPTER_PLAN, task.project_id, chapter.id, workflow.plan_version
+            )
+            generation = (
+                PlanningRepository(self.session).generation(workflow.id, reviewed_plan.id)
+                if reviewed_plan
+                else None
+            )
+        if generation is not None and task.task_type in QUALITY_TASKS | REVISION_TASKS | {
+            "WRITE_CHAPTER",
+            "REVIEW_CHAPTER_PLAN",
+            "INTERPRET_CHAPTER_FEEDBACK",
+        }:
+            from novel_os.agents.planning_schemas import ChapterPlanOutput
 
-                pov_character_id = ChapterPlanOutput.model_validate(
-                    generation.body
-                ).pov_character_id
+            pov_character_id = ChapterPlanOutput.model_validate(generation.body).pov_character_id
         return ContextRequest(
             character_id=pov_character_id,
             project_id=task.project_id,
@@ -284,7 +321,11 @@ class ContextService:
                 return self.validate_in_transaction(existing, task, workflow)
             if not expects_task(workflow, task):
                 return ContextBuildResult(status=ContextStatus.STALE, error_code="CONTEXT_STALE")
-            if task.task_type in {"PLAN_CHAPTER", "REVIEW_CHAPTER_PLAN"}:
+            if task.task_type in {
+                "PLAN_CHAPTER",
+                "EXPLORE_CHAPTER_CONCEPTS",
+                "REVIEW_CHAPTER_PLAN",
+            }:
                 from novel_os.services.planning_freshness import (
                     PlanningContextStale,
                     PlanningFreshness,
@@ -411,6 +452,40 @@ class ContextService:
             if task_id is None:
                 package = self.repo.get(package_id)
                 task_id = package.task_id
+            task = self.tasks.get(task_id)
+            if task.workflow_instance_id is None:
+                self.core.get_project(task.project_id, for_update=True)
+                task = self.tasks.get(task_id, for_update=True)
+                package = self.repo.get(package_id) if package_id else self.repo.for_task(task_id)
+                if package is None:
+                    raise DomainError("NOT_FOUND", "This task has no context snapshot")
+                stale = (
+                    task.task_type != "INTERPRET_CHARACTER_PROFILE"
+                    or task.report_character_id is None
+                    or package.task_id != task.task_id
+                    or package.project_id != task.project_id
+                    or package.workflow_id is not None
+                    or package.request.task_id != task.task_id
+                    or package.request.chapter_id != task.report_character_id
+                    or package.request.task_type != task.task_type
+                    or package.request.objective != task.objective
+                    or package.request.requirements != tuple(task.requirements)
+                    or ContextSerializer.hash(package) != package.package_hash
+                    or task.last_error_code in {"VERSION_CONFLICT", "CONTEXT_STALE"}
+                )
+                try:
+                    self.registry.resolve(
+                        package.profile_id,
+                        package.profile_version,
+                        expected_hash=package.profile_hash,
+                    )
+                except ContextConfigurationError:
+                    stale = True
+                return {
+                    "package": ContextSerializer.snapshot(package),
+                    "freshness": ContextStatus.STALE if stale else package.build_status,
+                    "error_code": "CONTEXT_STALE" if stale else package.error_code,
+                }
             task, workflow = AgentResultHandler(self.session).lock_task(task_id)
             package = self.repo.get(package_id) if package_id else self.repo.for_task(task_id)
             if package is None:

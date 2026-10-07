@@ -11,6 +11,7 @@ import WorkflowProgress from '../components/WorkflowProgress.vue'
 import DebugPanel from '../components/DebugPanel.vue'
 import ErrorNotice from '../components/ErrorNotice.vue'
 import WritingProfile from '../components/WritingProfile.vue'
+import CharacterProfile from '../components/CharacterProfile.vue'
 import WorkspaceSidebar from '../components/WorkspaceSidebar.vue'
 import ManualCaseLoader from '../components/ManualCaseLoader.vue'
 import MemoryCompletion from '../components/MemoryCompletion.vue'
@@ -28,6 +29,7 @@ const manualTestAvailable = import.meta.env.DEV
 const storage = window.localStorage
 const requirement = ref(''), loadedCase = ref<ManualCase | null>(null)
 const profileOpen = ref(false), testsOpen = ref(manualTestAvailable && storage.getItem('novel-os.test-mode') === 'true')
+const charactersOpen = ref(false)
 const evaluation = ref<{ draftId: string; projectId: string; chapterId: string; workflowId: string; draftVersion: number; caseId: string | null } | null>(null)
 const debugOpen = ref(storage.getItem('novel-os.debug-open') === 'true')
 const currentChapter = computed(() => chapters.value.find(item => item.id === chapterId.value) ?? null)
@@ -45,6 +47,7 @@ const { qualityReview, revision, revising, historical, revisionMissingProfile, r
 } = useRevisionWorkspace(snapshot, draft)
 const overlayOpen = computed(() =>
   (profileOpen.value && Boolean(projectId.value)) ||
+  (charactersOpen.value && Boolean(projectId.value)) ||
   (testsOpen.value && manualTestAvailable) ||
   Boolean(evaluation.value) ||
   (debugOpen.value && Boolean(snapshot.value)),
@@ -144,7 +147,7 @@ onMounted(initialize)
   <div class="workspace-shell">
     <WorkspaceSidebar :inert="overlayOpen || undefined" :projects="projects" :chapters="chapters" :project-id="projectId" :chapter-id="chapterId" :disabled="disabled" :test-disabled="Boolean(workflow)" :test-available="manualTestAvailable"
       @select-project="chooseProject" @select-chapter="chooseChapter" @create-project="addProject" @create-chapter="addChapter"
-      @open-profile="profileOpen = true" @open-tests="toggleTests" />
+      @open-profile="profileOpen = true" @open-characters="charactersOpen = true" @open-tests="toggleTests" />
 
     <main class="workspace-main" :inert="overlayOpen || undefined">
       <header class="workspace-header">
@@ -161,7 +164,7 @@ onMounted(initialize)
       <section v-if="!currentChapter && !loading" class="empty-workspace"><h2>开始创作</h2><p>选择左侧章节后，可以用自然语言描述这一章。</p></section>
 
       <template v-else-if="currentChapter">
-        <WorkflowProgress v-if="workflow && (!draftStage || workflow.workflow_definition_version === 3)" :workflow="workflow" :tasks="snapshot?.tasks ?? []" :config="executionConfig" :current-draft-version="snapshot?.chapter.current_version" :hide-resume="revisionNeedsRereview" :can-resume="formal && !disabled && !conflict && !revisionNeedsRereview" @resume="control('resume', '人工继续当前创作流程')" />
+        <WorkflowProgress v-if="workflow && (!draftStage || [3, 4].includes(workflow.workflow_definition_version))" :workflow="workflow" :tasks="snapshot?.tasks ?? []" :config="executionConfig" :current-draft-version="snapshot?.chapter.current_version" :hide-resume="revisionNeedsRereview" :can-resume="formal && !disabled && !conflict && !revisionNeedsRereview" @resume="control('resume', '人工继续当前创作流程')" />
 
         <section v-if="requirementStage" class="requirement-workspace">
           <div class="section-heading"><h2>章节需求</h2><p>说说这一章你希望发生什么。具体结构和细节交给 AI 理解。</p></div>
@@ -207,11 +210,11 @@ onMounted(initialize)
           </section>
           <DraftView :draft="draft" :chapter-number="currentChapter.sequence" :versions="snapshot?.drafts" :current-version="currentBackendVersion" :review-href="qualityReview ? '#quality-heading' : undefined" @select-version="selectedDraft = $event" @evaluate="openEvaluation">
             <template #before-prose>
-              <MemoryCompletion v-if="workflow && snapshot && workflow.workflow_definition_version === 3" :workflow="workflow" :draft="draft" :current-version="snapshot.chapter.current_version" :memory="snapshot.memory?.find(m => m.request.id === workflow?.memory_request_id)" :disabled="disabled || conflict" @request="completeChapter" @confirm="confirmMemory" @discard="discardMemory" />
-              <HumanFeedback v-if="snapshot && workflow?.workflow_definition_version === 3 && !workflow.memory_request_id && workflow.status !== 'COMPLETED'" :key="workflow.id" :snapshot="snapshot" :draft="draft" :disabled="disabled || conflict" @send="sendFeedback" @discard="discardFeedback" @open-profile="profileOpen = true" @replan="replan" @cancel="control('cancel', '用户取消本次反馈修改流程')" />
+              <MemoryCompletion v-if="workflow && snapshot && [3, 4].includes(workflow.workflow_definition_version)" :workflow="workflow" :draft="draft" :current-version="snapshot.chapter.current_version" :memory="snapshot.memory?.find(m => m.request.id === workflow?.memory_request_id)" :disabled="disabled || conflict" @request="completeChapter" @confirm="confirmMemory" @discard="discardMemory" />
+              <HumanFeedback v-if="snapshot && workflow && [3, 4].includes(workflow.workflow_definition_version) && !workflow.memory_request_id && workflow.status !== 'COMPLETED'" :key="workflow.id" :snapshot="snapshot" :draft="draft" :disabled="disabled || conflict" @send="sendFeedback" @discard="discardFeedback" @open-profile="profileOpen = true" @replan="replan" @cancel="control('cancel', '用户取消本次反馈修改流程')" />
               <section v-if="revisionForDraft?.result" class="quality-review"><h2>此版本的修改内容</h2><ul><li v-for="(change, index) in revisionForDraft.result.body.declared_changes" :key="index">{{ change }}</li></ul><p>是否改善请结合重新审阅结果和正文判断。</p></section>
               <QualityReview :review="qualityReview" :pending="reviewPending" :rereviewing="revising" />
-              <p v-if="workflow?.workflow_definition_version !== 3" class="notice">此章节使用旧版创作流程，尚未接入正文审阅与修改。原稿可以继续阅读和人工评价。</p>
+              <p v-if="!workflow || ![3, 4].includes(workflow.workflow_definition_version)" class="notice">此章节使用旧版创作流程，尚未接入正文审阅与修改。原稿可以继续阅读和人工评价。</p>
               <div v-if="reviewNeedsRereview && !workflow?.memory_request_id && workflow?.status !== 'COMPLETED'" class="reader-actions">
                 <p v-if="revisionMissingProfile">这份审阅没有绑定已批准的写作偏好。请先创建并批准写作偏好，再重新审阅当前正文。</p>
                 <p v-else>审阅依据已变化。请重新审阅当前正文，再根据最新结果决定是否修改。</p>
@@ -227,6 +230,7 @@ onMounted(initialize)
     </main>
 
     <WritingProfile v-if="profileOpen && projectId" :key="projectId" :project-id="projectId" :disabled="disabled" @close="profileOpen = false" />
+    <CharacterProfile v-if="charactersOpen && projectId" :key="projectId" :project-id="projectId" :disabled="disabled" @close="charactersOpen = false" />
     <ManualCaseLoader v-if="testsOpen && manualTestAvailable" :cases="manualCases" :selected-id="loadedCase?.id" :can-load="Boolean(currentChapter && !workflow)" @load="loadCase" @close="closeTests" />
     <HumanEvaluation v-if="evaluation" :key="evaluation.draftId" :project-id="evaluation.projectId" :chapter-id="evaluation.chapterId" :workflow-id="evaluation.workflowId" :draft-version="evaluation.draftVersion" :case-id="evaluation.caseId" @close="evaluation = null" />
     <DebugPanel v-if="snapshot" :snapshot="snapshot" :open="debugOpen" @close="toggleDebug" />

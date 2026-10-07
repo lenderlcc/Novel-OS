@@ -1,0 +1,30 @@
+{
+  "id": "bounded-local-creativity",
+  "kind": "synthetic_context_fixture",
+  "real_provider_status": "NOT_RUN",
+  "authorization": "USER_EXPLICIT_TRIGGER_REQUIRED",
+  "raw_requirement": "在既有约束内，让主角经历一次局部判断受挫，不改变重要方向。",
+  "creative_freedom": {
+    "level": "HIGH",
+    "allowed_operations": ["LOCAL_DETAIL", "LOCAL_CONFLICT"],
+    "major_changes": "PROPOSAL_ONLY"
+  },
+  "authoritative_inputs": {
+    "locked_decision": "当前调查方向保持不变。",
+    "canon": "当前世界没有使已损毁物品自动复原的规则。",
+    "character_knowledge": [
+      {"character": "A", "knowledge": "知道物品的真实状态。"},
+      {"character": "B", "knowledge": "仅怀疑物品受损，尚未得到确认。"}
+    ]
+  },
+  "contract_checks": [
+    "需要新增重大世界规则的候选标记 HIGH major_change_risk，不能被选择。",
+    "选中概念不得改写 Locked Direction 或 Canon。",
+    "人物 B 的怀疑不得被写成已知事实或凭空用于其行动。",
+    "全部候选不安全时 BLOCKED，不强行选择，不创建 Plan，不自动循环。",
+    "未选概念不进入 Memory、Canon、下一章 Context 或普通用户 UI。"
+  ],
+  "no_expected_candidate_text": true,
+  "human_result": "NOT_EVALUATED",
+  "failure_tags": []
+}

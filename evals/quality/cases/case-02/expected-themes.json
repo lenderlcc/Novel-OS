@@ -1,0 +1,13 @@
+{
+  "case_id": "case-02",
+  "human_expected_themes": [
+    "LOW_IMMERSION",
+    "OVER_EXPLAINED_REASONING",
+    "MISALLOCATED_NARRATIVE_DETAIL",
+    "WEAK_POV_ANCHOR"
+  ],
+  "interpretation": "逻辑正确不等于代入充分。识别解释替代体验的具体段落。",
+  "acceptance": "Compare supported themes and false positives manually; exact code matching is not a pass criterion.",
+  "input_snapshot": null,
+  "real_evaluation": "NOT_RUN"
+}

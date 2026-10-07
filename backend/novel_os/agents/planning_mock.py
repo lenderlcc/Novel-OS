@@ -81,6 +81,49 @@ def response(request, scenario):
                     }
                 )
                 output["source_refs"].append(source_ref(item))
+    elif kind == "creative_exploration":
+        brief_item = next(item for item in items if item.source_type == "CREATIVE_BRIEF")
+        label = "Mock contract fixture; creative quality and semantic fit are not evaluated"
+        candidate = {
+            name: label
+            for name in (
+                "concept_summary",
+                "core_event",
+                "conflict_engine",
+                "character_pressure",
+                "story_progression",
+                "reader_interest",
+                "continuity_fit",
+                "requirement_fit",
+                "creative_freedom_fit",
+                "audience_fit",
+                "execution_feasibility",
+                "major_change_reason",
+                "similarity_reason",
+                "authority_reason",
+            )
+        }
+        candidate.update(
+            id="MOCK",
+            required_new_elements=[],
+            major_change_risk="LOW",
+            similarity_risk="LOW",
+            authority_fit="WITHIN_BOUNDS",
+            strengths=[label],
+            risks=[],
+        )
+        output = {
+            "kind": kind,
+            "brief_id": str(brief_item.source_id),
+            "mode": "FOCUSED",
+            "focused_reason": "Fixed Mock fixture; exploration quality is not evaluated",
+            "candidates": [candidate],
+            "selected_candidate_id": "MOCK",
+            "selection_reason": label,
+            "rejected_reasons": [],
+            "source_refs": [source_ref(item) for item in items],
+            "blocked_reason": None,
+        }
     elif kind == "chapter_plan":
         brief_item = next(item for item in items if item.source_type == "CREATIVE_BRIEF")
         brief = brief_item.structured_payload
@@ -133,7 +176,13 @@ def response(request, scenario):
                 }
                 for c in constraints
             ],
-            "source_refs": [source_ref(brief_item)] + [source_ref(item) for item in locks],
+            "source_refs": [source_ref(brief_item)]
+            + [source_ref(item) for item in locks]
+            + [
+                source_ref(item)
+                for item in items
+                if getattr(item, "selector_id", None) == "selected-creative-concept"
+            ],
         }
     else:
         brief_item = next(item for item in items if item.source_type == "CREATIVE_BRIEF")

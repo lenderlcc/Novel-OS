@@ -1,0 +1,22 @@
+{
+  "module_id": "write-chapter",
+  "module_type": "TASK_TEMPLATE",
+  "version": 5,
+  "status": "STABLE",
+  "description": "NOVEL-014: supplied approved character tendencies and existing authority boundaries",
+  "content_path": "content.md",
+  "dependencies": [
+    {
+      "module_id": "novel-os-core",
+      "version": 1
+    }
+  ],
+  "compatible_agents": [
+    "A04_WRITING"
+  ],
+  "compatible_task_types": [
+    "WRITE_CHAPTER"
+  ],
+  "created_at": "2026-10-06T00:00:00Z",
+  "content_hash": "aefea72da011dcd38f438c19d80270a87ddebaa068932afdb7a005c5ca1bcf92"
+}

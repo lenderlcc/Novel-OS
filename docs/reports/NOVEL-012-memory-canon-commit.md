@@ -182,4 +182,18 @@ Independent Review 已完成两轮及最终窄复审，前10项及 locked depend
 
 修复后全量验证收集1450项，四个分片分别381/375/363/327 PASS，总计1446 PASS、4项付费opt-in SKIP，无失败。Frontend全量149 PASS；Backend Ruff check/format（391 files）、Frontend lint/typecheck/build、git diff --check全部通过。隔离测试库执行upgrade head → downgrade -1 → upgrade head → alembic check全部通过，未对用户数据降级。独立复审确认3项修复闭环，没有新增必修问题。
 
+## 34. E2E Prerequisite Fix — 2026-10-05
+
+E2E-001 前置审计发现对象状态与同一 Open Thread 无法合法更新。用户授权后，修复复用现有六种 Memory、JSON 状态字段、logical_id/version/supersedes、人工确认、项目事务锁与查询，不增加表、MemoryType 或检索路径。
+
+- CANON_FACT + OBJECT 只有新旧条目明确 `state_after=value`、新 `state_before` 精确绑定旧 value，才允许对象状态追加版本。旧静态 Canon、非 OBJECT Canon、锁与 Authority 冲突仍拒绝替代。
+- OPEN_THREAD 的值或规范化描述发生变化时可追加同一 logical_id 的版本，保留 A6。只是更换章节或 evidence、值与描述均不变，继续跳过。新证据应写入更新描述，不能靠重复出处增加 Memory 噪声。
+- 同批冲突比较增加 Thread 描述和对象静态/状态标记，防止任意选择第一条丢掉不同候选。
+- 新 A07 Task Schema v2 / Prompt v3 与调度 mapping 同步；历史 v1 Task / Prompt 保留。Context 只透传已选条目的 state_after，模型可以判断旧对象是状态还是静态事实；不改变 knowledge owner 或查询范围。
+- 新0017仅更新 supersession guard，并在有对象/Thread转换历史时拒绝 downgrade。用户数据未降级，历史 proposal 未改写。
+
+新增27项 Contract 测试与9项正式 API 集成回归通过；正式 lineage 已确认实际新任务使用 v2/v3，Context marker 与含数据 downgrade 防护也通过。独立 Review 发现并关闭了一处 StageTaskMapping 的旧版本遗漏，最终无必修问题或过度设计。
+
+完整回归、Docker与迁移结果见 [E2E-001报告第31节](E2E-001-multi-chapter-continuity.md)。本轮没有真实Provider调用；当前仍未完成五章连续性或人工Memory质量验收，不将这两项修复升级为整体 E2E PASS。运行中的用户服务尚未重启或应用0017，测试代码继续只保留本地。
+
 本轮没有调用真实模型或写入用户Canon，Case05真实行为与人工确认仍按第28～32节保持待验收。

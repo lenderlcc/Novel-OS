@@ -74,16 +74,16 @@ class MemoryRepository:
             or 0
         )
 
-    def subjects(self, project_id, *, kind=None, limit=501):
+    def subjects(self, project_id, *, kind=None, limit=501, offset=0):
         query = select(MemorySubjectModel).where(MemorySubjectModel.project_id == project_id)
         if kind:
             query = query.where(MemorySubjectModel.kind == kind)
         return [
             RevisionRepository.entity(row, MemorySubject)
             for row in self.session.scalars(
-                query.order_by(MemorySubjectModel.normalized_name, MemorySubjectModel.id).limit(
-                    limit
-                )
+                query.order_by(MemorySubjectModel.normalized_name, MemorySubjectModel.id)
+                .limit(limit)
+                .offset(offset)
             )
         ]
 
@@ -131,8 +131,12 @@ class MemoryRepository:
             RevisionRepository.entity(row, CommittedMemory) for row in self.session.scalars(query)
         ]
 
-    def subjects_in_text(self, project_id, text, limit=50, before_sequence=None):
+    def subjects_in_text(
+        self, project_id, text, limit=50, before_sequence=None, *, explicit_ids=()
+    ):
         # A project-scoped name lookup, not retrieval of every memory or a vector search.
+        # Structured story leaves stay separate; their boundary cannot invent a name.
+        search_text = "\n".join(normalized(part) for part in text.splitlines())
         alias = (
             func.jsonb_array_elements_text(MemorySubjectModel.aliases)
             .table_valued("value")
@@ -143,17 +147,21 @@ class MemoryRepository:
             .where(
                 MemorySubjectModel.project_id == project_id,
                 or_(
-                    func.strpos(normalized(text), MemorySubjectModel.normalized_name) > 0,
+                    MemorySubjectModel.id.in_(explicit_ids),
+                    func.strpos(search_text, MemorySubjectModel.normalized_name) > 0,
                     exists(
                         select(1)
                         .select_from(alias)
-                        .where(func.strpos(normalized(text), alias.c.value) > 0)
+                        .where(func.strpos(search_text, alias.c.value) > 0)
                     ),
                 ),
-                MemorySubjectModel.batch_id.in_(
-                    select(MemoryBatchModel.id)
-                    .join(ChapterModel, ChapterModel.id == MemoryBatchModel.chapter_id)
-                    .where(ChapterModel.sequence < before_sequence)
+                or_(
+                    MemorySubjectModel.batch_id.is_(None),
+                    MemorySubjectModel.batch_id.in_(
+                        select(MemoryBatchModel.id)
+                        .join(ChapterModel, ChapterModel.id == MemoryBatchModel.chapter_id)
+                        .where(ChapterModel.sequence < before_sequence)
+                    ),
                 )
                 if before_sequence is not None
                 else True,

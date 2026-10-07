@@ -986,6 +986,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/workflows/chapter-exploration": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Create Exploration */
+        post: operations["create_exploration_api_v1_workflows_chapter_exploration_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/workflows/chapter-planning": {
         parameters: {
             query?: never;
@@ -1114,6 +1131,40 @@ export interface paths {
         };
         /** Current Review */
         get: operations["current_review_api_v1_workflows__workflow_id__planning_review_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/workflows/{workflow_id}/planning/exploration": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Current Exploration */
+        get: operations["current_exploration_api_v1_workflows__workflow_id__planning_exploration_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/workflows/{workflow_id}/planning/explorations/{exploration_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Exploration */
+        get: operations["exploration_api_v1_workflows__workflow_id__planning_explorations__exploration_id__get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1275,6 +1326,143 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/projects/{project_id}/characters": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Characters */
+        get: operations["characters_api_v1_projects__project_id__characters_get"];
+        put?: never;
+        /** Create Character */
+        post: operations["create_character_api_v1_projects__project_id__characters_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/projects/{project_id}/characters/{character_id}/behavior-profile": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** State */
+        get: operations["state_api_v1_projects__project_id__characters__character_id__behavior_profile_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/projects/{project_id}/characters/{character_id}/behavior-profile/approved": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Approved */
+        get: operations["approved_api_v1_projects__project_id__characters__character_id__behavior_profile_approved_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/projects/{project_id}/characters/{character_id}/behavior-profile/versions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Versions */
+        get: operations["versions_api_v1_projects__project_id__characters__character_id__behavior_profile_versions_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/projects/{project_id}/characters/{character_id}/behavior-profile/drafts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Create */
+        post: operations["create_api_v1_projects__project_id__characters__character_id__behavior_profile_drafts_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/projects/{project_id}/characters/{character_id}/behavior-profile/approve": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Approve */
+        post: operations["approve_api_v1_projects__project_id__characters__character_id__behavior_profile_approve_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/projects/{project_id}/characters/{character_id}/behavior-profile/interpret": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Interpret */
+        post: operations["interpret_api_v1_projects__project_id__characters__character_id__behavior_profile_interpret_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/projects/{project_id}/characters/{character_id}/behavior-profile/interpretations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Interpretations */
+        get: operations["interpretations_api_v1_projects__project_id__characters__character_id__behavior_profile_interpretations_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -1362,24 +1550,20 @@ export interface components {
              * Format: uuid
              */
             project_id: string;
-            /**
-             * Workflow Instance Id
-             * Format: uuid
-             */
-            workflow_instance_id: string;
-            workflow_state: components["schemas"]["ChapterState"];
+            /** Workflow Instance Id */
+            workflow_instance_id: string | null;
+            workflow_state: components["schemas"]["ChapterState"] | null;
             /** Workflow State Version */
-            workflow_state_version: number;
+            workflow_state_version: number | null;
             agent_id: components["schemas"]["AgentId"];
             /** Task Type */
             task_type: string;
             /** Objective */
             objective: string;
-            /**
-             * Target Ref
-             * Format: uuid
-             */
-            target_ref: string;
+            /** Target Ref */
+            target_ref: string | null;
+            /** Report Character Id */
+            report_character_id: string | null;
             /** Requirements */
             requirements: string[];
             /** Constraints */
@@ -1954,6 +2138,207 @@ export interface components {
             /** Approved Plan Version */
             approved_plan_version: number | null;
         };
+        /** CharacterBehaviorProfileBody */
+        CharacterBehaviorProfileBody: {
+            /** Decision Tendency */
+            decision_tendency?: string | null;
+            risk_tolerance?: components["schemas"]["RiskTolerance"] | null;
+            /** Conflict Response */
+            conflict_response?: string | null;
+            /** Emotional Defense */
+            emotional_defense?: string | null;
+            /** Communication Style */
+            communication_style?: string | null;
+            /** Attention Bias */
+            attention_bias?: string | null;
+            /** Self Image */
+            self_image?: string | null;
+            /** Vulnerability */
+            vulnerability?: string | null;
+            /** Default Assumptions */
+            default_assumptions?: string[];
+            /** Avoids Saying Directly */
+            avoids_saying_directly?: string[];
+            /** Behavioral Tells */
+            behavioral_tells?: string[];
+            /** Relationship Modifiers */
+            relationship_modifiers?: components["schemas"]["RelationshipModifier"][];
+            /** Guidance */
+            guidance?: string[];
+            /** Avoid Tendencies */
+            avoid_tendencies?: string[];
+        };
+        /** CharacterProfileApprove */
+        CharacterProfileApprove: {
+            /**
+             * Reason
+             * @default Approve character behavior profile
+             */
+            reason: string;
+            /** Expected Version */
+            expected_version: number;
+        };
+        /** CharacterProfileCreate */
+        CharacterProfileCreate: {
+            /**
+             * Reason
+             * @default Save character behavior profile
+             */
+            reason: string;
+            /** Expected Version */
+            expected_version: number;
+            profile: components["schemas"]["CharacterBehaviorProfileBody"];
+        };
+        /** CharacterProfileInterpret */
+        CharacterProfileInterpret: {
+            /** Expected Version */
+            expected_version: number;
+            /** Text */
+            text: string;
+        };
+        /** CharacterProfileState */
+        CharacterProfileState: {
+            /** Current Profile Version */
+            current_profile_version: number | null;
+            /** Approved Profile Version */
+            approved_profile_version: number | null;
+            current: components["schemas"]["CharacterProfileView"] | null;
+            approved: components["schemas"]["CharacterProfileView"] | null;
+        };
+        /** CharacterProfileView */
+        CharacterProfileView: {
+            /** Decision Tendency */
+            decision_tendency?: string | null;
+            risk_tolerance?: components["schemas"]["RiskTolerance"] | null;
+            /** Conflict Response */
+            conflict_response?: string | null;
+            /** Emotional Defense */
+            emotional_defense?: string | null;
+            /** Communication Style */
+            communication_style?: string | null;
+            /** Attention Bias */
+            attention_bias?: string | null;
+            /** Self Image */
+            self_image?: string | null;
+            /** Vulnerability */
+            vulnerability?: string | null;
+            /** Default Assumptions */
+            default_assumptions?: string[];
+            /** Avoids Saying Directly */
+            avoids_saying_directly?: string[];
+            /** Behavioral Tells */
+            behavioral_tells?: string[];
+            /** Relationship Modifiers */
+            relationship_modifiers?: components["schemas"]["RelationshipModifier"][];
+            /** Guidance */
+            guidance?: string[];
+            /** Avoid Tendencies */
+            avoid_tendencies?: string[];
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Logical Id
+             * Format: uuid
+             */
+            logical_id: string;
+            /**
+             * Profile Id
+             * Format: uuid
+             */
+            profile_id: string;
+            /**
+             * Project Id
+             * Format: uuid
+             */
+            project_id: string;
+            /**
+             * Character Id
+             * Format: uuid
+             */
+            character_id: string;
+            /** Version */
+            version: number;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "DRAFT" | "APPROVED" | "SUPERSEDED";
+            /**
+             * Authority Level
+             * @enum {string}
+             */
+            authority_level: "A7_AI_INFERENCE" | "A3_CANON";
+            /**
+             * Source
+             * @constant
+             */
+            source: "USER";
+            /** Profile Hash */
+            profile_hash: string;
+            /** Supersedes Id */
+            supersedes_id: string | null;
+            /** Source Text */
+            source_text: string | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Created By */
+            created_by: string;
+            /** Approved At */
+            approved_at: string | null;
+            /** Approved By */
+            approved_by: string | null;
+        };
+        /** CharacterSubjectInput */
+        CharacterSubjectInput: {
+            /** Name */
+            name: string;
+            /** Aliases */
+            aliases?: string[];
+            /**
+             * Reason
+             * @default Create character identity
+             */
+            reason: string;
+        };
+        /** CharacterSubjectView */
+        CharacterSubjectView: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Project Id
+             * Format: uuid
+             */
+            project_id: string;
+            /** Name */
+            name: string;
+            /** Normalized Name */
+            normalized_name: string;
+            /**
+             * Kind
+             * @constant
+             */
+            kind: "CHARACTER";
+            /** Aliases */
+            aliases: string[];
+            /** Batch Id */
+            batch_id: string | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Created By */
+            created_by: string;
+        };
         /** CommandInput */
         CommandInput: {
             /**
@@ -2410,6 +2795,38 @@ export interface components {
             /** Confidence */
             confidence: number;
         };
+        /** CreativeExplorationOutput */
+        CreativeExplorationOutput: {
+            /**
+             * Kind
+             * @constant
+             */
+            kind: "creative_exploration";
+            /**
+             * Brief Id
+             * Format: uuid
+             */
+            brief_id: string;
+            /**
+             * Mode
+             * @enum {string}
+             */
+            mode: "FOCUSED" | "DIVERGENT";
+            /** Focused Reason */
+            focused_reason: string | null;
+            /** Candidates */
+            candidates: components["schemas"]["StoryConceptCandidate"][];
+            /** Selected Candidate Id */
+            selected_candidate_id: string | null;
+            /** Selection Reason */
+            selection_reason: string;
+            /** Rejected Reasons */
+            rejected_reasons: components["schemas"]["RejectedConcept"][];
+            /** Source Refs */
+            source_refs: components["schemas"]["EvidenceRef"][];
+            /** Blocked Reason */
+            blocked_reason: string | null;
+        };
         /** CreativeFreedom */
         CreativeFreedom: {
             /**
@@ -2809,6 +3226,68 @@ export interface components {
          * @enum {string}
          */
         ExclusionReason: "TOKEN_BUDGET" | "LOW_PRIORITY" | "STATUS_FILTERED" | "AUTHORITY_SUPERSEDED" | "FUTURE_KNOWLEDGE" | "OUT_OF_SCOPE" | "DUPLICATE" | "VERSION_FILTERED" | "CHARACTER_KNOWLEDGE";
+        /**
+         * ExplorationStatus
+         * @enum {string}
+         */
+        ExplorationStatus: "READY" | "BLOCKED";
+        /** ExplorationView */
+        ExplorationView: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Project Id
+             * Format: uuid
+             */
+            project_id: string;
+            /**
+             * Chapter Id
+             * Format: uuid
+             */
+            chapter_id: string;
+            /**
+             * Workflow Id
+             * Format: uuid
+             */
+            workflow_id: string;
+            /**
+             * Agent Run Id
+             * Format: uuid
+             */
+            agent_run_id: string;
+            /**
+             * Prompt Lineage Id
+             * Format: uuid
+             */
+            prompt_lineage_id: string;
+            /**
+             * Context Package Id
+             * Format: uuid
+             */
+            context_package_id: string;
+            /** Source Versions */
+            source_versions: {
+                [key: string]: unknown;
+            }[];
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Brief Id
+             * Format: uuid
+             */
+            brief_id: string;
+            body: components["schemas"]["CreativeExplorationOutput"];
+            status: components["schemas"]["ExplorationStatus"];
+            /** @default A7_AI_INFERENCE */
+            authority_level: components["schemas"]["Authority"];
+            freshness: components["schemas"]["ContextStatus"];
+        };
         /** FakeInput */
         FakeInput: {
             /**
@@ -3183,6 +3662,10 @@ export interface components {
             /** Planning Iteration */
             planning_iteration: number;
             body: components["schemas"]["ChapterPlanOutput"];
+            /** Creative Exploration Id */
+            creative_exploration_id?: string | null;
+            /** Selected Candidate Id */
+            selected_candidate_id?: string | null;
         };
         /** HardGateIssue */
         HardGateIssue: {
@@ -3213,6 +3696,8 @@ export interface components {
             plans: components["schemas"]["GenerationView"][];
             /** Reviews */
             reviews: components["schemas"]["ReviewView"][];
+            /** Explorations */
+            explorations?: components["schemas"]["ExplorationView"][];
         };
         /**
          * Intensity
@@ -4243,6 +4728,36 @@ export interface components {
             /** Expected Draft Version */
             expected_draft_version: number;
         };
+        /** RejectedConcept */
+        RejectedConcept: {
+            /** Candidate Id */
+            candidate_id: string;
+            /**
+             * Code
+             * @enum {string}
+             */
+            code: "NOT_SELECTED" | "REPETITION_RISK" | "WEAKER_STORY_FIT" | "SURFACE_ONLY_VARIATION" | "REQUIRES_MAJOR_CHANGE" | "VIOLATES_AUTHORITY";
+            /** Reason */
+            reason: string;
+        };
+        /** RelationshipModifier */
+        RelationshipModifier: {
+            /**
+             * Other Character Id
+             * Format: uuid
+             */
+            other_character_id: string;
+            /** Interaction Tendency */
+            interaction_tendency?: string | null;
+            /** Trust Expression */
+            trust_expression?: string | null;
+            /** Conflict Pattern */
+            conflict_pattern?: string | null;
+            /** Things Left Unsaid */
+            things_left_unsaid?: string[];
+            /** Guidance */
+            guidance?: string[];
+        };
         /** RequestCompletion */
         RequestCompletion: {
             /**
@@ -5024,6 +5539,11 @@ export interface components {
             paragraph_end?: number | null;
         };
         /**
+         * RiskTolerance
+         * @enum {string}
+         */
+        RiskTolerance: "LOW" | "MEDIUM" | "HIGH";
+        /**
          * RunStatus
          * @enum {string}
          */
@@ -5108,6 +5628,60 @@ export interface components {
          * @enum {string}
          */
         Status: "DRAFT" | "PROPOSED" | "APPROVED" | "LOCKED" | "ACTIVE" | "STALE" | "SUPERSEDED" | "DEPRECATED" | "CANCELLED" | "EXECUTED" | "ARCHIVED" | "COMPLETED";
+        /** StoryConceptCandidate */
+        StoryConceptCandidate: {
+            /** Id */
+            id: string;
+            /** Concept Summary */
+            concept_summary: string;
+            /** Core Event */
+            core_event: string;
+            /** Conflict Engine */
+            conflict_engine: string;
+            /** Character Pressure */
+            character_pressure: string;
+            /** Story Progression */
+            story_progression: string;
+            /** Reader Interest */
+            reader_interest: string;
+            /** Continuity Fit */
+            continuity_fit: string;
+            /** Requirement Fit */
+            requirement_fit: string;
+            /** Creative Freedom Fit */
+            creative_freedom_fit: string;
+            /** Audience Fit */
+            audience_fit: string;
+            /** Execution Feasibility */
+            execution_feasibility: string;
+            /** Required New Elements */
+            required_new_elements: string[];
+            /**
+             * Major Change Risk
+             * @enum {string}
+             */
+            major_change_risk: "LOW" | "MEDIUM" | "HIGH";
+            /** Major Change Reason */
+            major_change_reason: string;
+            /**
+             * Similarity Risk
+             * @enum {string}
+             */
+            similarity_risk: "LOW" | "MEDIUM" | "HIGH";
+            /** Similarity Reason */
+            similarity_reason: string;
+            /**
+             * Authority Fit
+             * @enum {string}
+             */
+            authority_fit: "WITHIN_BOUNDS" | "REQUIRES_MAJOR_CHANGE" | "VIOLATES_LOCK_OR_CANON";
+            /** Authority Reason */
+            authority_reason: string;
+            /** Strengths */
+            strengths: string[];
+            /** Risks */
+            risks: string[];
+        };
         /** Strength */
         Strength: {
             /** Description */
@@ -11116,6 +11690,84 @@ export interface operations {
             };
         };
     };
+    create_exploration_api_v1_workflows_chapter_exploration_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreatePlanningWorkflow"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DispatchView"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Method Not Allowed */
+            405: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unprocessable Content */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
     create_api_v1_workflows_chapter_planning_post: {
         parameters: {
             query?: never;
@@ -11676,6 +12328,159 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ReviewView"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Method Not Allowed */
+            405: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unprocessable Content */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    current_exploration_api_v1_workflows__workflow_id__planning_exploration_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                workflow_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ExplorationView"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Method Not Allowed */
+            405: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unprocessable Content */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    exploration_api_v1_workflows__workflow_id__planning_explorations__exploration_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                workflow_id: string;
+                exploration_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ExplorationView"];
                 };
             };
             /** @description Forbidden */
@@ -12381,6 +13186,722 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["WritingProfileView"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Method Not Allowed */
+            405: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unprocessable Content */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    characters_api_v1_projects__project_id__characters_get: {
+        parameters: {
+            query?: {
+                limit?: number;
+                offset?: number;
+            };
+            header?: never;
+            path: {
+                project_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CharacterSubjectView"][];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Method Not Allowed */
+            405: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unprocessable Content */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    create_character_api_v1_projects__project_id__characters_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                project_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CharacterSubjectInput"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CharacterSubjectView"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Method Not Allowed */
+            405: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unprocessable Content */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    state_api_v1_projects__project_id__characters__character_id__behavior_profile_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                project_id: string;
+                character_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CharacterProfileState"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Method Not Allowed */
+            405: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unprocessable Content */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    approved_api_v1_projects__project_id__characters__character_id__behavior_profile_approved_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                project_id: string;
+                character_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CharacterProfileView"] | null;
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Method Not Allowed */
+            405: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unprocessable Content */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    versions_api_v1_projects__project_id__characters__character_id__behavior_profile_versions_get: {
+        parameters: {
+            query?: {
+                limit?: number;
+                offset?: number;
+            };
+            header?: never;
+            path: {
+                project_id: string;
+                character_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CharacterProfileView"][];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Method Not Allowed */
+            405: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unprocessable Content */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    create_api_v1_projects__project_id__characters__character_id__behavior_profile_drafts_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                project_id: string;
+                character_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CharacterProfileCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CharacterProfileView"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Method Not Allowed */
+            405: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unprocessable Content */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    approve_api_v1_projects__project_id__characters__character_id__behavior_profile_approve_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                project_id: string;
+                character_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CharacterProfileApprove"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CharacterProfileView"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Method Not Allowed */
+            405: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unprocessable Content */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    interpret_api_v1_projects__project_id__characters__character_id__behavior_profile_interpret_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                project_id: string;
+                character_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CharacterProfileInterpret"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CharacterProfileView"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Method Not Allowed */
+            405: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unprocessable Content */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    interpretations_api_v1_projects__project_id__characters__character_id__behavior_profile_interpretations_get: {
+        parameters: {
+            query?: {
+                limit?: number;
+                offset?: number;
+            };
+            header?: never;
+            path: {
+                project_id: string;
+                character_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AgentTaskView"][];
                 };
             };
             /** @description Forbidden */

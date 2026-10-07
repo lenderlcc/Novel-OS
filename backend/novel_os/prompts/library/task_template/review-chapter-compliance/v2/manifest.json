@@ -1,0 +1,22 @@
+{
+  "module_id": "review-chapter-compliance",
+  "module_type": "TASK_TEMPLATE",
+  "version": 2,
+  "status": "STABLE",
+  "description": "NOVEL-014: supplied approved character tendencies and existing authority boundaries",
+  "content_path": "content.md",
+  "dependencies": [
+    {
+      "module_id": "novel-os-core",
+      "version": 1
+    }
+  ],
+  "compatible_agents": [
+    "A05_REVIEW"
+  ],
+  "compatible_task_types": [
+    "REVIEW_CHAPTER_COMPLIANCE"
+  ],
+  "created_at": "2026-10-06T00:00:00Z",
+  "content_hash": "805f7c48fba07b5c7e1278d72c223cf80d5b9d0848247913eabc8d85c132023c"
+}

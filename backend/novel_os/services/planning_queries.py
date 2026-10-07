@@ -1,8 +1,14 @@
 from dataclasses import asdict
 
+from novel_os.domain.context import ContextStatus
 from novel_os.domain.enums import ObjectType
 from novel_os.domain.errors import DomainError
-from novel_os.domain.planning import CreativeBrief, PlanGeneration, PlanReviewReport
+from novel_os.domain.planning import (
+    CreativeBrief,
+    CreativeExploration,
+    PlanGeneration,
+    PlanReviewReport,
+)
 from novel_os.repositories.core import CoreRepository
 from novel_os.repositories.planning import PlanningRepository
 from novel_os.repositories.workflows import WorkflowRepository
@@ -50,9 +56,33 @@ class PlanningQueries:
             raise DomainError("NOT_FOUND", "Plan review is not available")
         return asdict(report)
 
+    def exploration_view(self, exploration):
+        from novel_os.services.exploration_policy import ExplorationPolicy
+        from novel_os.services.planning_freshness import PlanningFreshness
+
+        fresh = not ExplorationPolicy(self.repo.session).invalidated_by_user(
+            exploration
+        ) and PlanningFreshness(self.repo.session).evidence_is_fresh(exploration, brief=True)
+        return {
+            **asdict(exploration),
+            "authority_level": exploration.authority_level,
+            "freshness": ContextStatus.READY if fresh else ContextStatus.STALE,
+        }
+
+    def exploration(self, workflow_id, exploration_id=None):
+        self.workflow(workflow_id)
+        result = (
+            self.repo.exploration_by_id(exploration_id)
+            if exploration_id is not None
+            else self.repo.exploration(workflow_id)
+        )
+        if result is None or result.workflow_id != workflow_id:
+            raise DomainError("NOT_FOUND", "CreativeExploration is not available")
+        return self.exploration_view(result)
+
     def history(self, workflow_id, limit=100, offset=0):
         self.workflow(workflow_id)
-        return {
+        result = {
             name: [asdict(item) for item in self.repo.history(kind, workflow_id, limit, offset)]
             for name, kind in (
                 ("briefs", CreativeBrief),
@@ -60,6 +90,11 @@ class PlanningQueries:
                 ("reviews", PlanReviewReport),
             )
         }
+        result["explorations"] = [
+            self.exploration_view(item)
+            for item in self.repo.history(CreativeExploration, workflow_id, limit, offset)
+        ]
+        return result
 
     def metrics(self, workflow_id):
         workflow = self.workflow(workflow_id)

@@ -13,10 +13,11 @@ from novel_os.services.writing_binding import WritingBindingService
 
 
 def supports_quality(workflow):
-    return not workflow.simulation and (
-        workflow.workflow_definition_id,
-        workflow.workflow_definition_version,
-    ) == ("chapter-planning", 3)
+    return (
+        not workflow.simulation
+        and workflow.workflow_definition_id == "chapter-planning"
+        and workflow.workflow_definition_version in {3, 4}
+    )
 
 
 class QualityBindingService(WritingBindingService):

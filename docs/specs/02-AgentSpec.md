@@ -280,3 +280,13 @@ A06 仍拥有 PLAN_CHAPTER_REVISION / REVISE_CHAPTER，输出分别为 locality 
 ## NOVEL-012：A07 Memory extraction
 
 A07_MEMORY / EXTRACT_CHAPTER_MEMORY 只拥有 REPORT_RESULT。输出 chapter-memory-result.v1 的六类可验证候选，不能直接写 Canon、Profile 或改变批准依据。模型调用发生于用户完成当前正文之后；另一次用户确认才触发 deterministic commit。精确证据、人物认知与 conflict 规则见 [Memory Commit](10-Memory-Canon-Commit.md)。
+
+## NOVEL-013: A03 internal Creative Exploration
+
+A03 may execute EXPLORE_CHAPTER_CONCEPTS before PLAN_CHAPTER within C04. It emits immutable A7 diagnostics and one bounded selection, never an approved Plan, new Agent, gate or Memory write. Major changes remain PROPOSAL_ONLY; all unsafe concepts block without forced selection. Normal users approve only the final Plan. See [Creative Exploration](11-Creative-Exploration.md).
+
+## NOVEL-014: character tendencies and voice
+
+A02 adds explicit INTERPRET_CHARACTER_PROFILE as a report-only task on the existing runtime. It organizes user input into a sparse Draft; only the user can approve it. It creates no Chapter Workflow and learns no personality from prose. A03 Exploration/Planning, A04 Writing, A05 Review, A06 Revision and A02 Feedback consume only relevant approved profile versions. Relationship modifiers describe expression toward another involved character, not current trust/hostility or knowledge. A07 and feedback have no profile mutation capability.
+
+Profiles guide attention, motivation, defensiveness, choice and expression. They are flexible tendencies at A3_CANON, subordinate to explicit Locks, Canon State, Knowledge and approved Plan; low risk does not prohibit a motivated risk. Review uses existing accurate voice/character issue codes, without making tendencies hard compliance gates. Revision retains source fidelity. See [Character Depth & Voice](12-Character-Depth-Voice.md).

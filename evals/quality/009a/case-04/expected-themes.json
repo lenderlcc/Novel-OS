@@ -1,0 +1,20 @@
+{
+  "case_id": "case-04",
+  "acceptance_questions": [
+    "人物是否主要作为两种工作方式或立场的载体，缺少具体人格/关系动机？",
+    "冲突是否过度对称，对话主要服务于立场证明？",
+    "诊断是否同时说明真实分歧、正式语言本身不是缺陷？"
+  ],
+  "related_optional_codes": [
+    "CHARACTERS_AS_ARGUMENTS",
+    "OVER_SYMMETRICAL_CONFLICT",
+    "FUNCTIONAL_DIALOGUE",
+    "WEAK_CHARACTER_VOICE",
+    "EXCESSIVE_CLOSURE",
+    "UNSELECTIVE_DETAIL"
+  ],
+  "exact_label_match_is_not_acceptance": true,
+  "low_immersion_label_required": false,
+  "issue_count_guidance": "Prefer 2–4 supported root causes if warranted; zero is valid, eight major issues requires manual over-detection review.",
+  "manual_acceptance": null
+}

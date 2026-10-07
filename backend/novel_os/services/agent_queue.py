@@ -26,18 +26,24 @@ class AgentQueue:
         self.lease_seconds = lease_seconds
 
     def claim(
-        self, worker_id: str, *, profile_for_task=None, task_types=None, max_attempts=None
+        self,
+        worker_id: str,
+        *,
+        profile_for_task=None,
+        task_types=None,
+        task_ids=None,
+        max_attempts=None,
     ) -> TaskLease | None:
         if not re.fullmatch(r"[A-Za-z0-9_.:-]{1,128}", worker_id):
             raise DomainError("VALIDATION_ERROR", "Invalid worker identity")
         if max_attempts is not None and (type(max_attempts) is not int or max_attempts < 1):
             raise ValueError("Attempt limit must be a positive integer")
         with self.session.begin():
-            task = self.repo.next_claimable(task_types=task_types)
+            task = self.repo.next_claimable(task_types=task_types, task_ids=task_ids)
             if task is None:
                 # Scoped workers only consume explicitly scheduled tasks. Legacy backfill
                 # remains with the general worker and must not schedule excluded stages.
-                if task_types is not None:
+                if task_types is not None or task_ids is not None:
                     return None
                 workflow_id = self.repo.unscheduled_workflow(
                     business_states=tuple(BUSINESS_STAGE_TASKS)

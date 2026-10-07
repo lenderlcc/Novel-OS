@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "runner": "evals/e2e/multi-chapter/run.py",
+  "real_provider_opt_in": "--allow-real-provider --worker-stopped",
+  "default_model_calls": 0,
+  "tests": {
+    "E2E-001R": {
+      "required_capabilities": ["Requirement", "Planning", "Writing", "Quality Review", "Revision", "Human Feedback", "Memory Commit"],
+      "provider_required": true,
+      "human_gate_required": true,
+      "prerequisites": ["Matching API/Worker database and current migration head", "No other pending/leased tasks; all polling Workers stopped", "Explicit approved Writing Profile", "Exact Plan approval, Draft acceptance and selected Memory confirmation for every chapter"],
+      "workflow_path": "/workflows/chapter-quality",
+      "workflow_version": 3,
+      "cases": ["five-chapter-continuity"],
+      "current_status": "PENDING",
+      "human_template": "evals/e2e/multi-chapter/manual-prose-evaluation.md"
+    },
+    "013R": {
+      "required_capabilities": ["Creative Exploration", "Planning", "Approved History Context"],
+      "provider_required": true,
+      "human_gate_required": true,
+      "prerequisites": ["Case 03: verify historical A Plan and exact approved Writing Profile v1/hash using existing read-only Plan, Context and Writing Profile APIs", "Case 03: establish comparable authoritative sources without silently upgrading historical POV/profile", "Repetition: legitimate approved recent Plan history through existing Plan approval APIs; synthetic eval summaries are not Canon or direct Context input", "Use the existing chapter-exploration API and explicit human Plan approval after prerequisite preparation"],
+      "workflow_path": "/workflows/chapter-exploration",
+      "workflow_version": 4,
+      "cases": ["case-03-historical-small-setback", "recent-mechanism-repetition"],
+      "preparation_status": "BLOCKED_REQUIRES_LEGITIMATE_SOURCE_HISTORY",
+      "current_status": "PENDING",
+      "human_template": "evals/creative-exploration/manual-evaluation.md"
+    },
+    "014R": {
+      "required_capabilities": ["Character Identity", "Approved Character Behavior Profile", "Creative Exploration", "Planning", "Writing", "Quality Review", "Revision", "Human Feedback", "Knowledge Isolation"],
+      "provider_required": true,
+      "human_gate_required": true,
+      "prerequisites": ["Prepare one selected case/variant in an isolated Project with legal Character identity mapping", "Explicitly approve exact selected Character Profile drafts and Writing Profile", "CDV-04: legitimate approved/committed Knowledge sources via existing chapter completion and human Memory confirmation APIs", "Review/Revision follow-up requires exact legal ChapterVersion/Review bindings; never seed the human weak sample directly into DB"],
+      "workflow_path": "/workflows/chapter-exploration",
+      "workflow_version": 4,
+      "cases": ["CDV-01-same-pressure", "CDV-02-same-character-different-relationship", "CDV-03-motivated-exception", "CDV-04-knowledge-boundary", "CDV-05-historical-no-profile"],
+      "current_status": "PENDING",
+      "human_template": "evals/character-depth/manual-evaluation.md"
+    }
+  }
+}

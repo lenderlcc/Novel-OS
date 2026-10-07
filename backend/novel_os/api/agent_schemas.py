@@ -18,13 +18,14 @@ class AgentExecutionConfigView(BaseModel):
 class AgentTaskView(BaseModel):
     task_id: UUID
     project_id: UUID
-    workflow_instance_id: UUID
-    workflow_state: ChapterState
-    workflow_state_version: int
+    workflow_instance_id: UUID | None
+    workflow_state: ChapterState | None
+    workflow_state_version: int | None
     agent_id: AgentId
     task_type: str
     objective: str
-    target_ref: UUID
+    target_ref: UUID | None
+    report_character_id: UUID | None
     requirements: list[str]
     constraints: list[str]
     capabilities: list[str]

@@ -1,0 +1,23 @@
+{
+  "profile_id": "CP-010",
+  "version": 1,
+  "status": "STABLE",
+  "description": "Explicit user description for A02 character profile draft interpretation",
+  "allowed_task_types": ["INTERPRET_CHARACTER_PROFILE"],
+  "token_budget": 48000,
+  "future_knowledge_policy": "NONE",
+  "future_horizon": 0,
+  "selectors": [
+    {
+      "selector_id": "task-input",
+      "source_type": "TASK_INPUT",
+      "priority": "P0",
+      "required": true,
+      "authority_floor": "A7_AI_INFERENCE",
+      "allowed_statuses": ["ACTIVE"],
+      "version_policy": "EXACT",
+      "scope": "PROJECT",
+      "max_items": 1
+    }
+  ]
+}

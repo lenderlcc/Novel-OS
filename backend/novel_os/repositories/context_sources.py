@@ -38,13 +38,20 @@ class ContextSourceRepository:
         )
         return to_domain(row, Chapter) if row else None
 
-    def recent_approved(self, project_id, sequence, limit):
+    def recent_approved(
+        self, project_id, sequence, limit, *, source_type=SourceType.CHAPTER_VERSION
+    ):
+        pointer = (
+            ChapterModel.approved_plan_version
+            if source_type == SourceType.CHAPTER_PLAN
+            else ChapterModel.approved_version
+        )
         rows = self.session.scalars(
             select(ChapterModel)
             .where(
                 ChapterModel.project_id == project_id,
                 ChapterModel.sequence < sequence,
-                ChapterModel.approved_version.is_not(None),
+                pointer.is_not(None),
                 ChapterModel.status.not_in([Status.ARCHIVED, Status.CANCELLED, Status.DEPRECATED]),
             )
             .order_by(ChapterModel.sequence.desc())

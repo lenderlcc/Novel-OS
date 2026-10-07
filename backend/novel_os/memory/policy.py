@@ -88,8 +88,25 @@ def classify(candidate, existing):
         existing.epistemic_status == candidate.epistemic_status
         and existing.body.get("known_fact_id")
         == (str(candidate.known_fact_id) if candidate.known_fact_id else None)
+        and (
+            candidate.candidate_type != MemoryType.OPEN_THREAD
+            or comparable_value(existing.statement) == comparable_value(candidate.statement)
+        )
     ):
         return MemoryConflict.DUPLICATE
+    if candidate.candidate_type in {MemoryType.CANON_FACT, MemoryType.OPEN_THREAD}:
+        object_state = (
+            candidate.candidate_type == MemoryType.CANON_FACT
+            and candidate.subject_ref.kind == "OBJECT"
+            and existing.body.get("state_after") == existing.value
+        )
+        if (
+            (object_state or candidate.candidate_type == MemoryType.OPEN_THREAD)
+            and candidate.state_before == existing.value
+            and candidate.state_after == candidate.value
+        ):
+            return MemoryConflict.STATE_TRANSITION
+        return MemoryConflict.CONTRADICTION
     if (
         candidate.candidate_type in STATE_TYPES
         and candidate.state_before is not None
@@ -212,7 +229,18 @@ def normalize_candidates(output, *, project_id, chapter_id, content, subjects, l
     for group in groups.values():
         eligible = [row for row in group if row["conflict_status"] not in BLOCKING_CONFLICTS]
         claims = {
-            (comparable_value(row["value"]), row["epistemic_status"], row["known_fact_id"])
+            (
+                comparable_value(row["value"]),
+                row["epistemic_status"],
+                row["known_fact_id"],
+                comparable_value(row["statement"])
+                if row["candidate_type"] == MemoryType.OPEN_THREAD
+                else None,
+                row["state_after"] == row["value"]
+                if row["candidate_type"] == MemoryType.CANON_FACT
+                and row["subject_ref"]["kind"] == "OBJECT"
+                else None,
+            )
             for row in eligible
         }
         if len(claims) > 1:

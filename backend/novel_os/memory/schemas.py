@@ -86,6 +86,19 @@ class MemoryCandidate(StrictOutput):
             and self.subject_ref.kind != "CHARACTER"
         ):
             raise ValueError("Character state/knowledge requires its character owner")
+        # Missing state fields retain a static fact or a historical initial thread.
+        if (
+            (
+                self.candidate_type == MemoryType.OPEN_THREAD
+                or (
+                    self.candidate_type == MemoryType.CANON_FACT
+                    and self.subject_ref.kind == "OBJECT"
+                )
+            )
+            and (self.state_before is not None or self.state_after is not None)
+            and self.state_after != self.value
+        ):
+            raise ValueError("Object/thread states require state_after equal to value")
         return self
 
 

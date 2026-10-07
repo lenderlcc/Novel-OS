@@ -1,0 +1,22 @@
+{
+  "module_id": "interpret-character-profile",
+  "module_type": "TASK_TEMPLATE",
+  "version": 1,
+  "status": "STABLE",
+  "description": "NOVEL-014: explicit A02 character profile draft interpretation",
+  "content_path": "content.md",
+  "dependencies": [
+    {
+      "module_id": "novel-os-core",
+      "version": 1
+    }
+  ],
+  "compatible_agents": [
+    "A02_REQUIREMENT"
+  ],
+  "compatible_task_types": [
+    "INTERPRET_CHARACTER_PROFILE"
+  ],
+  "created_at": "2026-10-06T00:00:00Z",
+  "content_hash": "05c49fb0bbcf6ce88886d54210a2cb145ba0d41bdf8bec137038a0035fcedcc1"
+}

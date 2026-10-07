@@ -60,9 +60,15 @@ class Settings(BaseSettings):
         return {
             "all": None,
             "requirement-only": ("PARSE_CHAPTER_REQUIREMENT",),
-            "planning-only": ("PARSE_CHAPTER_REQUIREMENT", "PLAN_CHAPTER", "REVIEW_CHAPTER_PLAN"),
+            "planning-only": (
+                "PARSE_CHAPTER_REQUIREMENT",
+                "EXPLORE_CHAPTER_CONCEPTS",
+                "PLAN_CHAPTER",
+                "REVIEW_CHAPTER_PLAN",
+            ),
             "chapter-quality": (
                 "PARSE_CHAPTER_REQUIREMENT",
+                "EXPLORE_CHAPTER_CONCEPTS",
                 "PLAN_CHAPTER",
                 "REVIEW_CHAPTER_PLAN",
                 "WRITE_CHAPTER",
@@ -76,6 +82,7 @@ class Settings(BaseSettings):
             ),
             "chapter-writing": (
                 "PARSE_CHAPTER_REQUIREMENT",
+                "EXPLORE_CHAPTER_CONCEPTS",
                 "PLAN_CHAPTER",
                 "REVIEW_CHAPTER_PLAN",
                 "WRITE_CHAPTER",

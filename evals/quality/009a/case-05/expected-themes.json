@@ -1,0 +1,22 @@
+{
+  "case_id": "case-05",
+  "acceptance_questions": [
+    "能否保留抽象后果和重复权衡的准确诊断？",
+    "是否理解连续观点—反驳—澄清—回答造成的程序感，而非只统计问句？",
+    "是否保留最终方向、替代选择吸引力与真实动摇的优点？"
+  ],
+  "related_optional_codes": [
+    "ABSTRACT_STAKES",
+    "OVER_EXPLAINED_REASONING",
+    "OVER_EXPLAINED_EMOTIONAL_MEANING",
+    "OVER_STRUCTURED_DIALOGUE"
+  ],
+  "false_positive_focus": [
+    "MAJOR_DIRECTION_VIOLATION"
+  ],
+  "profile_fact": "Latest Case 05 Project has no approved Profile; do not borrow Case 04 preferences or demand an Audience warning.",
+  "exact_label_match_is_not_acceptance": true,
+  "low_immersion_label_required": false,
+  "issue_count_guidance": "Prefer 2–4 supported root causes if warranted; zero is valid, eight major issues requires manual over-detection review.",
+  "manual_acceptance": null
+}

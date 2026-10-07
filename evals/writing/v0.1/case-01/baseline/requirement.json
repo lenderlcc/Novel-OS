@@ -1,0 +1,168 @@
+{
+  "id": "57342803-8f79-441d-8d8a-e7a304624880",
+  "project_id": "0767f00f-1d3a-4e82-a779-17e78d4f2888",
+  "chapter_id": "ee59f19c-7815-4e91-99ca-619a10ebd311",
+  "workflow_id": "cc7a88d3-087d-4da6-a540-9a0463eddf46",
+  "agent_run_id": "450d6158-3904-4716-bd4c-c415ea9ab05f",
+  "prompt_lineage_id": "d9130069-f4e7-4fd9-b068-85559d0ca206",
+  "context_package_id": "3a527e52-fa92-4e9e-8ecd-be8b509bb389",
+  "source_versions": [
+    {
+      "version": 2,
+      "source_id": "26b9e56a-b200-4adb-a1bb-64b7e796133d",
+      "logical_id": "26b9e56a-b200-4adb-a1bb-64b7e796133d",
+      "source_type": "TASK_INPUT"
+    },
+    {
+      "version": 2,
+      "source_id": "ee59f19c-7815-4e91-99ca-619a10ebd311",
+      "logical_id": "ee59f19c-7815-4e91-99ca-619a10ebd311",
+      "source_type": "CHAPTER"
+    },
+    {
+      "version": 1,
+      "source_id": "0767f00f-1d3a-4e82-a779-17e78d4f2888",
+      "logical_id": "0767f00f-1d3a-4e82-a779-17e78d4f2888",
+      "source_type": "PROJECT"
+    }
+  ],
+  "created_at": "2026-09-16T02:37:18.800709Z",
+  "version": 1,
+  "raw_requirement": "这一章的核心目标是让两个人原本比较紧张的关系出现一点缓和，但不要直接和解。\n\n前半段希望气氛稍微紧张一些，中间发生一件小事，让他们不得不进行合作。合作过程中可以让双方对彼此产生一点新的认识。\n\n结尾不要把关系彻底说开，只需要让读者感觉两个人之间发生了一点变化。\n\n具体场景、对话和合作的事情由你自己设计。",
+  "input_event_id": "4db87b04-0f78-45e7-9d5e-d2b92f40b66d",
+  "status": "READY",
+  "body": {
+    "kind": "creative_brief",
+    "intent_summary": "以克制、渐进的方式推动紧张关系，使本章产生可感知的关系进展，同时保留双方尚未和解的张力。",
+    "chapter_objective": "通过一件迫使关系双方合作的小事，使原本紧张的关系产生有限缓和，并为双方重新认识彼此提供空间。",
+    "must": [
+      {
+        "id": "must_slight_easing",
+        "text": "这一章的核心目标是让两个人原本比较紧张的关系出现一点缓和",
+        "source_ref": {
+          "source_type": "TASK_INPUT",
+          "logical_id": "26b9e56a-b200-4adb-a1bb-64b7e796133d",
+          "version": 2
+        },
+        "quote": "这一章的核心目标是让两个人原本比较紧张的关系出现一点缓和"
+      },
+      {
+        "id": "must_forced_cooperation",
+        "text": "中间发生一件小事，让他们不得不进行合作。",
+        "source_ref": {
+          "source_type": "TASK_INPUT",
+          "logical_id": "26b9e56a-b200-4adb-a1bb-64b7e796133d",
+          "version": 2
+        },
+        "quote": "中间发生一件小事，让他们不得不进行合作。"
+      },
+      {
+        "id": "must_reader_sense_change",
+        "text": "只需要让读者感觉两个人之间发生了一点变化。",
+        "source_ref": {
+          "source_type": "TASK_INPUT",
+          "logical_id": "26b9e56a-b200-4adb-a1bb-64b7e796133d",
+          "version": 2
+        },
+        "quote": "只需要让读者感觉两个人之间发生了一点变化。"
+      }
+    ],
+    "should": [
+      {
+        "id": "should_early_tension",
+        "text": "前半段希望气氛稍微紧张一些",
+        "source_ref": {
+          "source_type": "TASK_INPUT",
+          "logical_id": "26b9e56a-b200-4adb-a1bb-64b7e796133d",
+          "version": 2
+        },
+        "quote": "前半段希望气氛稍微紧张一些"
+      }
+    ],
+    "preferences": [
+      {
+        "id": "pref_new_understanding",
+        "text": "合作过程中可以让双方对彼此产生一点新的认识。",
+        "source_ref": {
+          "source_type": "TASK_INPUT",
+          "logical_id": "26b9e56a-b200-4adb-a1bb-64b7e796133d",
+          "version": 2
+        },
+        "quote": "合作过程中可以让双方对彼此产生一点新的认识。"
+      }
+    ],
+    "forbidden": [
+      {
+        "id": "forbid_direct_reconcile",
+        "text": "但不要直接和解。",
+        "source_ref": {
+          "source_type": "TASK_INPUT",
+          "logical_id": "26b9e56a-b200-4adb-a1bb-64b7e796133d",
+          "version": 2
+        },
+        "quote": "但不要直接和解。"
+      },
+      {
+        "id": "forbid_full_discussion",
+        "text": "结尾不要把关系彻底说开",
+        "source_ref": {
+          "source_type": "TASK_INPUT",
+          "logical_id": "26b9e56a-b200-4adb-a1bb-64b7e796133d",
+          "version": 2
+        },
+        "quote": "结尾不要把关系彻底说开"
+      }
+    ],
+    "preserve": [],
+    "quality_expectations": [],
+    "change_requests": [],
+    "required_outcome": "章末两人的紧张关系已有细微缓和或变化，但双方既未直接和解，也未把关系彻底说开。",
+    "desired_reader_effect": "让读者察觉两人之间出现了细微但真实的变化，同时明确感到关系仍未解决、未获得彻底收束。",
+    "character_focus": [
+      "原本关系紧张的两个人",
+      "双方在被迫合作时的互动与相互认知",
+      "克制、尚未完成的关系缓和"
+    ],
+    "plot_focus": [
+      "前半段维持轻度紧张气氛",
+      "中段由一件小事迫使双方合作",
+      "合作过程可带来对彼此的新认识",
+      "结尾呈现细微关系变化但不解决关系"
+    ],
+    "creative_freedom": {
+      "level": "HIGH",
+      "allowed_operations": [
+        "LOCAL_DETAIL",
+        "SCENE_ORDER",
+        "INFORMATION_DELIVERY",
+        "LOCAL_CONFLICT"
+      ],
+      "scope_description": "具体场景、对话及促成合作的小事均由创作者设计，也可安排固定阶段内部的局部场景顺序、信息呈现方式和局部摩擦。固定范围是整体推进功能与节奏：前半段保持轻度紧张，中段以小事迫使合作，结尾仅呈现细微变化；不得改成直接和解或彻底说开关系，也不得以局部创作改变这些核心方向。",
+      "major_changes": "PROPOSAL_ONLY"
+    },
+    "unresolved_ambiguities": [],
+    "assumptions": [
+      {
+        "text": "“两个人”指本章聚焦的关系双方；输入未提供其姓名或身份，因此简报保持泛称。",
+        "impact": "LOW",
+        "confidence": 0.98
+      },
+      {
+        "text": "“可以让双方对彼此产生一点新的认识”被理解为可选的叙事方向，而非必需事件。",
+        "impact": "LOW",
+        "confidence": 0.94
+      }
+    ],
+    "conflicts": [],
+    "persistent_preference_candidates": [],
+    "source_refs": [
+      {
+        "source_type": "TASK_INPUT",
+        "logical_id": "26b9e56a-b200-4adb-a1bb-64b7e796133d",
+        "version": 2
+      }
+    ],
+    "confidence": 0.94
+  },
+  "supersedes_id": null
+}

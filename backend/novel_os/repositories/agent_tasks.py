@@ -67,11 +67,12 @@ class AgentTaskRepository:
         )
         return to_domain(row, AgentRun) if row else None
 
-    def next_claimable(self, *, task_types=None):
+    def next_claimable(self, *, task_types=None, task_ids=None):
         query = (
             select(AgentTaskModel)
             .join(ProjectModel, ProjectModel.id == AgentTaskModel.project_id)
             .where(
+                AgentTaskModel.workflow_instance_id.is_not(None),
                 or_(
                     and_(
                         AgentTaskModel.status == TaskStatus.PENDING,
@@ -81,7 +82,7 @@ class AgentTaskRepository:
                         AgentTaskModel.status.in_(ACTIVE),
                         AgentTaskModel.lease_expires_at <= func.clock_timestamp(),
                     ),
-                )
+                ),
             )
             .order_by(
                 AgentTaskModel.priority.desc(),
@@ -95,6 +96,8 @@ class AgentTaskRepository:
         )
         if task_types is not None:
             query = query.where(AgentTaskModel.task_type.in_(task_types))
+        if task_ids is not None:
+            query = query.where(AgentTaskModel.task_id.in_(task_ids))
         # Take the same Project root lock as all workflow mutations before the task lock.
         skipped = []
         while True:
@@ -183,3 +186,17 @@ class AgentTaskRepository:
             .offset(offset)
         )
         return [to_domain(row, AgentRun) for row in rows]
+
+    def list_character_reports(self, project_id, character_id, limit=100, offset=0):
+        rows = self.session.scalars(
+            select(AgentTaskModel)
+            .where(
+                AgentTaskModel.project_id == project_id,
+                AgentTaskModel.report_character_id == character_id,
+                AgentTaskModel.task_type == "INTERPRET_CHARACTER_PROFILE",
+            )
+            .order_by(AgentTaskModel.created_at.desc(), AgentTaskModel.task_id)
+            .limit(limit)
+            .offset(offset)
+        )
+        return [to_domain(row, AgentTask) for row in rows]

@@ -1,0 +1,8 @@
+{
+  "case_id": "case-04",
+  "mode": "OFFLINE_HAND_AUTHORED_REGRESSION",
+  "source_chapter_version_id": "86c02b4b-7117-4ee0-9528-77870b30fc08",
+  "source_sha256": "4ed3c41579cd11b3dca885ceb521af32ab230141ec69bd261139a328c9fb6f49",
+  "candidate_sha256": "ad8fc0966fc1cfa4cb3fdbcab0078809dbd51cf46cab5d37285c8d7a85a96c4b",
+  "changes": "只替换中段一组对称论证对白，院落搭棚、纸箱、雨势、合作、未解决分歧均保留；用于证明验证器不要求字面相同。不是模型生成或质量验收。"
+}

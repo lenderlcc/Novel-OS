@@ -1,0 +1,191 @@
+{
+  "package": {
+    "project_id": "0767f00f-1d3a-4e82-a779-17e78d4f2888",
+    "task_id": "2fd5813b-5b08-4725-9813-f62c3d12ff4b",
+    "workflow_id": "cc7a88d3-087d-4da6-a540-9a0463eddf46",
+    "request": {
+      "project_id": "0767f00f-1d3a-4e82-a779-17e78d4f2888",
+      "task_id": "2fd5813b-5b08-4725-9813-f62c3d12ff4b",
+      "task_type": "WRITE_CHAPTER",
+      "chapter_id": "ee59f19c-7815-4e91-99ca-619a10ebd311",
+      "workflow_id": "cc7a88d3-087d-4da6-a540-9a0463eddf46",
+      "workflow_state_version": 12,
+      "attempt_number": 1,
+      "target_version": null,
+      "approved_plan_version": 2,
+      "chapter_sequence": 1,
+      "objective": "这一章的核心目标是让两个人原本比较紧张的关系出现一点缓和，但不要直接和解。\n\n前半段希望气氛稍微紧张一些，中间发生一件小事，让他们不得不进行合作。合作过程中可以让双方对彼此产生一点新的认识。\n\n结尾不要把关系彻底说开，只需要让读者感觉两个人之间发生了一点变化。\n\n具体场景、对话和合作的事情由你自己设计。",
+      "requirements": [
+        "{\"decision\":\"APPROVE\",\"plan_id\":\"f784571b-928c-4fd3-afcd-af4cce90a441\",\"plan_version\":2,\"reason\":\"人工批准当前方案\",\"type\":\"USER_PLANNING_DIRECTIVE\"}"
+      ],
+      "constraints": [
+        "Write from the exact approved Plan; local creativity only",
+        "No approval, lock, canon commit or direct database access"
+      ],
+      "explicit_refs": [],
+      "required_refs": [],
+      "missing_bindings": [],
+      "required_future_refs": [],
+      "knowledge_scope": "GLOBAL_ONLY",
+      "character_id": null,
+      "request_id": null
+    },
+    "profile_id": "CP-005",
+    "profile_version": 4,
+    "profile_hash": "ae9d45bd2998f772b9e262712e5503cb7d54f5d8cd2b7307a189db9921d69424",
+    "profile_json": "{\"allowed_task_types\":[\"WRITE_CHAPTER\"],\"description\":\"Exact approved Writing inputs with UTF-8 envelope allowance and required-only future dependencies\",\"future_horizon\":1,\"future_knowledge_policy\":\"REQUIRED_ONLY\",\"profile_id\":\"CP-005\",\"selectors\":[{\"allowed_statuses\":[\"ACTIVE\"],\"authority_floor\":\"A7_AI_INFERENCE\",\"max_items\":1,\"priority\":\"P0\",\"ranking_policy\":\"PRIORITY_AUTHORITY_RELEVANCE_SCOPE_FRESHNESS\",\"required\":true,\"requirement_types\":[],\"scope\":\"TARGET_CHAPTER\",\"selector_id\":\"task-input\",\"serialization_policy\":\"STRUCTURED\",\"source_type\":\"TASK_INPUT\",\"version_policy\":\"EXACT\"},{\"allowed_statuses\":[\"DRAFT\",\"ACTIVE\",\"LOCKED\",\"APPROVED\"],\"authority_floor\":\"A7_AI_INFERENCE\",\"max_items\":1,\"priority\":\"P0\",\"ranking_policy\":\"PRIORITY_AUTHORITY_RELEVANCE_SCOPE_FRESHNESS\",\"required\":true,\"requirement_types\":[],\"scope\":\"TARGET_CHAPTER\",\"selector_id\":\"target-chapter\",\"serialization_policy\":\"STRUCTURED\",\"source_type\":\"CHAPTER\",\"version_policy\":\"TARGET_VERSION\"},{\"allowed_statuses\":[\"APPROVED\",\"LOCKED\"],\"authority_floor\":\"A4_APPROVED_PLAN\",\"max_items\":1,\"priority\":\"P0\",\"ranking_policy\":\"PRIORITY_AUTHORITY_RELEVANCE_SCOPE_FRESHNESS\",\"required\":true,\"requirement_types\":[],\"scope\":\"TARGET_CHAPTER\",\"selector_id\":\"approved-plan\",\"serialization_policy\":\"STRUCTURED\",\"source_type\":\"CHAPTER_PLAN\",\"version_policy\":\"APPROVED\"},{\"allowed_statuses\":[\"APPROVED\",\"LOCKED\"],\"authority_floor\":\"A2_USER_APPROVED\",\"max_items\":200,\"priority\":\"P0\",\"ranking_policy\":\"PRIORITY_AUTHORITY_RELEVANCE_SCOPE_FRESHNESS\",\"required\":false,\"requirement_types\":[\"MUST\",\"FORBIDDEN\",\"PRESERVE\",\"CHANGE_REQUEST\"],\"scope\":\"TARGET_CHAPTER\",\"selector_id\":\"effective-requirements\",\"serialization_policy\":\"STRUCTURED\",\"source_type\":\"REQUIREMENT\",\"version_policy\":\"EFFECTIVE\"},{\"allowed_statuses\":[\"APPROVED\",\"LOCKED\"],\"authority_floor\":\"A1_USER_LOCKED\",\"max_items\":200,\"priority\":\"P0\",\"ranking_policy\":\"PRIORITY_AUTHORITY_RELEVANCE_SCOPE_FRESHNESS\",\"required\":false,\"requirement_types\":[],\"scope\":\"TARGET_CHAPTER\",\"selector_id\":\"locked-decisions\",\"serialization_policy\":\"STRUCTURED\",\"source_type\":\"DECISION\",\"version_policy\":\"LOCKED\"},{\"allowed_statuses\":[\"APPROVED\",\"LOCKED\"],\"authority_floor\":\"A2_USER_APPROVED\",\"max_items\":200,\"priority\":\"P1\",\"ranking_policy\":\"PRIORITY_AUTHORITY_RELEVANCE_SCOPE_FRESHNESS\",\"required\":false,\"requirement_types\":[\"SHOULD\",\"PREFERENCE\",\"QUALITY_EXPECTATION\"],\"scope\":\"TARGET_CHAPTER\",\"selector_id\":\"supporting-requirements\",\"serialization_policy\":\"STRUCTURED\",\"source_type\":\"REQUIREMENT\",\"version_policy\":\"EFFECTIVE\"},{\"allowed_statuses\":[\"APPROVED\",\"LOCKED\"],\"authority_floor\":\"A2_USER_APPROVED\",\"max_items\":200,\"priority\":\"P0\",\"ranking_policy\":\"PRIORITY_AUTHORITY_RELEVANCE_SCOPE_FRESHNESS\",\"required\":false,\"requirement_types\":[],\"scope\":\"TARGET_CHAPTER\",\"selector_id\":\"effective-decisions\",\"serialization_policy\":\"STRUCTURED\",\"source_type\":\"DECISION\",\"version_policy\":\"EFFECTIVE\"},{\"allowed_statuses\":[\"APPROVED\",\"LOCKED\"],\"authority_floor\":\"A2_USER_APPROVED\",\"max_items\":1,\"priority\":\"P1\",\"ranking_policy\":\"PRIORITY_AUTHORITY_RELEVANCE_SCOPE_FRESHNESS\",\"required\":false,\"requirement_types\":[],\"scope\":\"PREVIOUS_CHAPTER\",\"selector_id\":\"previous-approved-chapter\",\"serialization_policy\":\"STRUCTURED\",\"source_type\":\"CHAPTER_VERSION\",\"version_policy\":\"APPROVED\"},{\"allowed_statuses\":[\"LOCKED\"],\"authority_floor\":\"A1_USER_LOCKED\",\"max_items\":100,\"priority\":\"P0\",\"ranking_policy\":\"PRIORITY_AUTHORITY_RELEVANCE_SCOPE_FRESHNESS\",\"required\":false,\"requirement_types\":[],\"scope\":\"EXPLICIT\",\"selector_id\":\"dependency-chapter_plan\",\"serialization_policy\":\"STRUCTURED\",\"source_type\":\"CHAPTER_PLAN\",\"version_policy\":\"APPROVED\"},{\"allowed_statuses\":[\"LOCKED\"],\"authority_floor\":\"A1_USER_LOCKED\",\"max_items\":100,\"priority\":\"P0\",\"ranking_policy\":\"PRIORITY_AUTHORITY_RELEVANCE_SCOPE_FRESHNESS\",\"required\":false,\"requirement_types\":[],\"scope\":\"EXPLICIT\",\"selector_id\":\"dependency-chapter_version\",\"serialization_policy\":\"STRUCTURED\",\"source_type\":\"CHAPTER_VERSION\",\"version_policy\":\"APPROVED\"},{\"allowed_statuses\":[\"LOCKED\"],\"authority_floor\":\"A1_USER_LOCKED\",\"max_items\":100,\"priority\":\"P0\",\"ranking_policy\":\"PRIORITY_AUTHORITY_RELEVANCE_SCOPE_FRESHNESS\",\"required\":false,\"requirement_types\":[],\"scope\":\"EXPLICIT\",\"selector_id\":\"dependency-requirement\",\"serialization_policy\":\"STRUCTURED\",\"source_type\":\"REQUIREMENT\",\"version_policy\":\"LOCKED\"},{\"allowed_statuses\":[\"LOCKED\"],\"authority_floor\":\"A1_USER_LOCKED\",\"max_items\":100,\"priority\":\"P0\",\"ranking_policy\":\"PRIORITY_AUTHORITY_RELEVANCE_SCOPE_FRESHNESS\",\"required\":false,\"requirement_types\":[],\"scope\":\"EXPLICIT\",\"selector_id\":\"dependency-decision\",\"serialization_policy\":\"STRUCTURED\",\"source_type\":\"DECISION\",\"version_policy\":\"LOCKED\"}],\"status\":\"STABLE\",\"token_budget\":100000,\"version\":4}",
+    "build_status": "READY",
+    "items": [
+      {
+        "context_item_id": "0e87aa36-078e-5eee-89f5-95afeac72828",
+        "selector_id": "approved-plan",
+        "source_type": "CHAPTER_PLAN",
+        "source_id": "f784571b-928c-4fd3-afcd-af4cce90a441",
+        "logical_id": "ee59f19c-7815-4e91-99ca-619a10ebd311",
+        "source_version": 2,
+        "project_id": "0767f00f-1d3a-4e82-a779-17e78d4f2888",
+        "status": "APPROVED",
+        "authority_level": "A4_APPROVED_PLAN",
+        "locked": false,
+        "priority": "P0",
+        "scope": "TARGET_CHAPTER",
+        "payload_json": "{\"character_progression\":{\"items\":[\"甲由预设乙会制造阻碍，转为承认乙在压力下可靠，但仍不愿主动触及旧矛盾。\",\"乙由防备甲会控制或否定自己，转为发现甲能够听取有效意见并承担责任，但仍保持情感距离。\",\"两人的互动从相互牵制转为短暂配合，章末留下有限信任而非和解。\"]},\"constraints\":[\"这一章的核心目标是让两个人原本比较紧张的关系出现一点缓和\",\"中间发生一件小事，让他们不得不进行合作。\",\"只需要让读者感觉两个人之间发生了一点变化。\",\"但不要直接和解。\",\"结尾不要把关系彻底说开\"],\"ending_state\":{\"description\":\"共同事务已经解决；甲与乙对彼此的判断出现有限修正，互动中的敌意或戒备略有降低。双方没有道歉、确认和解或彻底讨论关系，旧矛盾仍待处理。\"},\"information_release\":[\"先通过当前互动呈现关系紧张，不补完旧矛盾的全部背景。\",\"合作过程中以选择和执行结果显示双方各自的能力与顾虑。\",\"结尾只让行为尺度变化可被读者感知，不由人物定义关系。\"],\"locked_dependencies\":[],\"objective\":\"通过一件规模小、后果可控却必须共同处理的突发事务，让原本紧张的甲与乙经历从对立到有效配合的短程变化，并在不和解、不彻底谈开关系的前提下形成有限缓和。\",\"planning\":{\"assumptions\":[{\"confidence\":0.98,\"impact\":\"LOW\",\"text\":\"“甲”和“乙”仅为关系双方的计划代称，写作阶段应替换为项目中的实际人物。\"},{\"confidence\":0.88,\"impact\":\"MEDIUM\",\"text\":\"由于没有场景与职业背景，合作事件暂定为处理一项突发但低风险的共同事务；其具体形式可由写作者按世界背景替换，只需保留“单人难以及时完成、双方必须协作”的功能。\"},{\"confidence\":0.9,\"impact\":\"LOW\",\"text\":\"双方的新认识通过行动能力与克制表现产生，不要求任何一方直接说明态度变化。\"}],\"character_progression\":[\"甲由预设乙会制造阻碍，转为承认乙在压力下可靠，但仍不愿主动触及旧矛盾。\",\"乙由防备甲会控制或否定自己，转为发现甲能够听取有效意见并承担责任，但仍保持情感距离。\",\"两人的互动从相互牵制转为短暂配合，章末留下有限信任而非和解。\"],\"constraints\":[\"这一章的核心目标是让两个人原本比较紧张的关系出现一点缓和\",\"中间发生一件小事，让他们不得不进行合作。\",\"只需要让读者感觉两个人之间发生了一点变化。\",\"但不要直接和解。\",\"结尾不要把关系彻底说开\"],\"creative_freedom\":{\"allowed_operations\":[\"LOCAL_DETAIL\",\"SCENE_ORDER\",\"INFORMATION_DELIVERY\",\"LOCAL_CONFLICT\"],\"level\":\"HIGH\",\"major_changes\":\"PROPOSAL_ONLY\",\"scope_description\":\"可自行选择具体环境、突发小事、合作分工、局部摩擦与变化的外在表现；整体仍须维持前半段轻度紧张、中段被迫合作、结尾仅有细微变化且关系未解决。\"},\"ending_function\":\"用一个克制且可观察的互动结果确认合作留下影响，同时让双方回避解释其意义，保存后续关系张力。\",\"ending_state\":\"共同事务已经解决；甲与乙对彼此的判断出现有限修正，互动中的敌意或戒备略有降低。双方没有道歉、确认和解或彻底讨论关系，旧矛盾仍待处理。\",\"foreshadow_actions\":[\"开场让双方对同一事务采取不同处理倾向，为中段分工冲突及互补性作准备。\",\"在合作前分别显露一项会被对方低估的能力或顾虑，合作时再让其发挥实际作用。\",\"合作结束后保留一个仍未触碰的分歧点，表明本章变化只是后续发展的起点。\"],\"information_release\":[\"先通过当前互动呈现关系紧张，不补完旧矛盾的全部背景。\",\"合作过程中以选择和执行结果显示双方各自的能力与顾虑。\",\"结尾只让行为尺度变化可被读者感知，不由人物定义关系。\"],\"kind\":\"chapter_plan\",\"locked_dependencies\":[],\"objective\":\"通过一件规模小、后果可控却必须共同处理的突发事务，让原本紧张的甲与乙经历从对立到有效配合的短程变化，并在不和解、不彻底谈开关系的前提下形成有限缓和。\",\"opening_function\":\"建立甲与乙必须处于同一情境却彼此防备的状态，以轻度摩擦展示紧张关系，并为稍后不得不合作制造合理条件。\",\"plot_progression\":[\"甲与乙因共同事务接触，表面维持必要交流，处理倾向的差异使气氛持续紧张。\",\"一项低风险但有时限的小意外打断僵持，任何一方单独处理都不够及时，迫使双方合作。\",\"双方在分工与调整中发生局部摩擦，但各自的能力或顾虑被对方看见，合作由勉强转为有效。\",\"事务解决后，两人没有讨论关系，只在后续互动中减少一层敌意或戒备。\"],\"preserved_elements\":[],\"proposed_major_changes\":[],\"proposed_new_elements\":[\"一项与所在场景相容、规模小且有时限的共同事务，功能是迫使双方协作。\",\"合作所需的互补分工：一方负责判断或协调，另一方负责执行或补足信息；具体分配可随人物设定调整。\"],\"required_outcome\":\"章末两人的紧张关系已有细微缓和或变化，但双方既未直接和解，也未把关系彻底说开。\",\"requirement_coverage\":[{\"constraint_id\":\"must_slight_easing\",\"covered\":true,\"explanation\":\"合作后的有效配合修正双方预判，收尾以敌意或戒备降低体现有限缓和。\",\"scene_ids\":[\"S3\",\"S4\"],\"scope\":\"SCENE\"},{\"constraint_id\":\"must_forced_cooperation\",\"covered\":true,\"explanation\":\"中段小意外具有时限且不便由单人及时解决，直接迫使双方分工合作。\",\"scene_ids\":[\"S2\",\"S3\"],\"scope\":\"SCENE\"},{\"constraint_id\":\"must_reader_sense_change\",\"covered\":true,\"explanation\":\"结尾以互动尺度和戒备程度的可观察变化让读者感知关系改变，而不由人物明说。\",\"scene_ids\":[\"S4\"],\"scope\":\"SCENE\"},{\"constraint_id\":\"forbid_direct_reconcile\",\"covered\":true,\"explanation\":\"计划的硬约束明确禁止直接和解，结尾状态也保留旧矛盾与情感距离。\",\"scene_ids\":[],\"scope\":\"PLAN_GLOBAL\"},{\"constraint_id\":\"forbid_full_discussion\",\"covered\":true,\"explanation\":\"计划的硬约束禁止结尾彻底说开；S4明确让双方回避解释合作对关系的意义。\",\"scene_ids\":[\"S4\"],\"scope\":\"SCENE\"},{\"constraint_id\":\"should_early_tension\",\"covered\":true,\"explanation\":\"S1建立轻度摩擦，S2在合作开始前延续处理方式上的冲突，使前半段保持紧张。\",\"scene_ids\":[\"S1\",\"S2\"],\"scope\":\"SCENE\"},{\"constraint_id\":\"pref_new_understanding\",\"covered\":true,\"explanation\":\"S3通过实际分工让双方看到此前低估的能力或顾虑，以行动形成一点新认识。\",\"scene_ids\":[\"S3\"],\"scope\":\"SCENE\"}],\"risks\":[\"若突发事务后果过重，会使关系推进依赖危机强度并偏离“小事”；应保持范围有限、主要压力来自时限与协作需求。\",\"若双方在合作后道歉、坦白或定义彼此关系，会越过有限缓和并构成直接和解；变化应落在判断和行为尺度上。\",\"若开场摩擦过强，短章内的缓和可能显得突兀；前半段应保持轻度紧张而非不可逆冲突。\",\"由于人物背景缺失，具体合作机制可能与后续设定不符；写作时可替换事件外壳，但不能删除被迫合作的因果功能。\"],\"scenes\":[{\"character_state_change\":\"甲与乙都确认对方仍处于防备状态，各自的负面预判被暂时维持。\",\"conflict\":\"双方必须处理同一项日常事务，却因方法、优先顺序或责任边界不同而互相牵制。\",\"exit_condition\":\"分歧尚未扩大，但两人被留在同一情境中，无法简单避开彼此。\",\"id\":\"S1\",\"information_release\":[\"两人的关系原本紧张。\",\"双方对彼此的处理方式抱有成见。\"],\"key_change\":\"从可回避的尴尬转为必须维持最低限度接触。\",\"purpose\":\"以克制摩擦建立前半段的轻度紧张，并说明双方为何同时在场。\"},{\"character_state_change\":\"双方从互相回避转为不情愿地接受协作必要性。\",\"conflict\":\"一项规模小但有时限的意外出现；两人起初仍想按各自方式处理，却发现单独行动难以及时完成。\",\"exit_condition\":\"双方形成最基本的临时分工，并开始共同处理问题。\",\"id\":\"S2\",\"information_release\":[\"突发事务后果可控，但拖延会造成实际麻烦。\",\"双方各自掌握解决问题所需的一部分能力、条件或信息。\"],\"key_change\":\"外部小事把并行行动改造成不得不发生的合作。\",\"purpose\":\"用与场景相容的小事迫使双方合作，同时保留局部摩擦。\"},{\"character_state_change\":\"甲和乙各自修正一项对对方的负面判断，戒备仍在但不再完全支配行动。\",\"conflict\":\"初始分工因判断差异受阻；双方必须决定是坚持成见，还是根据对方实际表现调整。\",\"exit_condition\":\"两人完成关键配合，使共同事务进入可解决状态。\",\"id\":\"S3\",\"information_release\":[\"一方表现出此前被低估的可靠性、观察力或执行能力。\",\"另一方显露出其强硬或疏离背后的实际顾虑，但不解释旧矛盾。\"],\"key_change\":\"合作从勉强并置转为基于实际表现的短暂互信。\",\"purpose\":\"让双方通过行动获得一点新认识，并使关系缓和具有因果依据。\"},{\"character_state_change\":\"双方不再像开场那样急于否定或避开对方，但都没有准备处理旧矛盾。\",\"conflict\":\"事务结束后出现可以谈开关系的短暂空间，双方却都不愿或不能越过现有边界。\",\"exit_condition\":\"两人以比开场更少敌意或更高配合度的方式分开或转入下一事务，关系议题保持未决。\",\"id\":\"S4\",\"information_release\":[\"合作确实改变了双方当下的判断。\",\"这种变化尚不足以消除既有矛盾。\"],\"key_change\":\"关系从紧绷不动转为存在有限余地，但没有获得明确命名或承诺。\",\"purpose\":\"让读者察觉细微变化，同时拒绝直接和解或彻底说开。\"}],\"source_refs\":[{\"logical_id\":\"cc7a88d3-087d-4da6-a540-9a0463eddf46\",\"source_type\":\"CREATIVE_BRIEF\",\"version\":1},{\"logical_id\":\"ee59f19c-7815-4e91-99ca-619a10ebd311\",\"source_type\":\"CHAPTER\",\"version\":2}]},\"plot_progression\":{\"items\":[\"甲与乙因共同事务接触，表面维持必要交流，处理倾向的差异使气氛持续紧张。\",\"一项低风险但有时限的小意外打断僵持，任何一方单独处理都不够及时，迫使双方合作。\",\"双方在分工与调整中发生局部摩擦，但各自的能力或顾虑被对方看见，合作由勉强转为有效。\",\"事务解决后，两人没有讨论关系，只在后续互动中减少一层敌意或戒备。\"]},\"required_outcome\":\"章末两人的紧张关系已有细微缓和或变化，但双方既未直接和解，也未把关系彻底说开。\",\"risks\":[\"若突发事务后果过重，会使关系推进依赖危机强度并偏离“小事”；应保持范围有限、主要压力来自时限与协作需求。\",\"若双方在合作后道歉、坦白或定义彼此关系，会越过有限缓和并构成直接和解；变化应落在判断和行为尺度上。\",\"若开场摩擦过强，短章内的缓和可能显得突兀；前半段应保持轻度紧张而非不可逆冲突。\",\"由于人物背景缺失，具体合作机制可能与后续设定不符；写作时可替换事件外壳，但不能删除被迫合作的因果功能。\"],\"scene_plans\":[{\"character_state_change\":\"甲与乙都确认对方仍处于防备状态，各自的负面预判被暂时维持。\",\"conflict\":\"双方必须处理同一项日常事务，却因方法、优先顺序或责任边界不同而互相牵制。\",\"exit_condition\":\"分歧尚未扩大，但两人被留在同一情境中，无法简单避开彼此。\",\"id\":\"S1\",\"information_release\":[\"两人的关系原本紧张。\",\"双方对彼此的处理方式抱有成见。\"],\"key_change\":\"从可回避的尴尬转为必须维持最低限度接触。\",\"purpose\":\"以克制摩擦建立前半段的轻度紧张，并说明双方为何同时在场。\"},{\"character_state_change\":\"双方从互相回避转为不情愿地接受协作必要性。\",\"conflict\":\"一项规模小但有时限的意外出现；两人起初仍想按各自方式处理，却发现单独行动难以及时完成。\",\"exit_condition\":\"双方形成最基本的临时分工，并开始共同处理问题。\",\"id\":\"S2\",\"information_release\":[\"突发事务后果可控，但拖延会造成实际麻烦。\",\"双方各自掌握解决问题所需的一部分能力、条件或信息。\"],\"key_change\":\"外部小事把并行行动改造成不得不发生的合作。\",\"purpose\":\"用与场景相容的小事迫使双方合作，同时保留局部摩擦。\"},{\"character_state_change\":\"甲和乙各自修正一项对对方的负面判断，戒备仍在但不再完全支配行动。\",\"conflict\":\"初始分工因判断差异受阻；双方必须决定是坚持成见，还是根据对方实际表现调整。\",\"exit_condition\":\"两人完成关键配合，使共同事务进入可解决状态。\",\"id\":\"S3\",\"information_release\":[\"一方表现出此前被低估的可靠性、观察力或执行能力。\",\"另一方显露出其强硬或疏离背后的实际顾虑，但不解释旧矛盾。\"],\"key_change\":\"合作从勉强并置转为基于实际表现的短暂互信。\",\"purpose\":\"让双方通过行动获得一点新认识，并使关系缓和具有因果依据。\"},{\"character_state_change\":\"双方不再像开场那样急于否定或避开对方，但都没有准备处理旧矛盾。\",\"conflict\":\"事务结束后出现可以谈开关系的短暂空间，双方却都不愿或不能越过现有边界。\",\"exit_condition\":\"两人以比开场更少敌意或更高配合度的方式分开或转入下一事务，关系议题保持未决。\",\"id\":\"S4\",\"information_release\":[\"合作确实改变了双方当下的判断。\",\"这种变化尚不足以消除既有矛盾。\"],\"key_change\":\"关系从紧绷不动转为存在有限余地，但没有获得明确命名或承诺。\",\"purpose\":\"让读者察觉细微变化，同时拒绝直接和解或彻底说开。\"}]}",
+        "selected_reason": "TARGET_CHAPTER/APPROVED",
+        "source_created_at": "2026-09-16T02:37:51.453008Z",
+        "source_updated_at": "2026-09-16T03:01:42.220804Z",
+        "chapter_id": "ee59f19c-7815-4e91-99ca-619a10ebd311",
+        "chapter_sequence": 1,
+        "relevance_score": 100,
+        "knowledge_scope": "GLOBAL_ONLY",
+        "character_id": null,
+        "future_knowledge": false,
+        "is_plan": true,
+        "provenance": [
+          "structured_database",
+          "version_policy:APPROVED"
+        ]
+      },
+      {
+        "context_item_id": "f32f9207-78c6-51cb-bdfc-18012f17a61e",
+        "selector_id": "task-input",
+        "source_type": "TASK_INPUT",
+        "source_id": "2fd5813b-5b08-4725-9813-f62c3d12ff4b",
+        "logical_id": "2fd5813b-5b08-4725-9813-f62c3d12ff4b",
+        "source_version": 12,
+        "project_id": "0767f00f-1d3a-4e82-a779-17e78d4f2888",
+        "status": "ACTIVE",
+        "authority_level": "A5_USER_PREFERENCE",
+        "locked": false,
+        "priority": "P0",
+        "scope": "TARGET_CHAPTER",
+        "payload_json": "{\"constraints\":[\"Write from the exact approved Plan; local creativity only\",\"No approval, lock, canon commit or direct database access\"],\"objective\":\"这一章的核心目标是让两个人原本比较紧张的关系出现一点缓和，但不要直接和解。\\n\\n前半段希望气氛稍微紧张一些，中间发生一件小事，让他们不得不进行合作。合作过程中可以让双方对彼此产生一点新的认识。\\n\\n结尾不要把关系彻底说开，只需要让读者感觉两个人之间发生了一点变化。\\n\\n具体场景、对话和合作的事情由你自己设计。\",\"requirements\":[\"{\\\"decision\\\":\\\"APPROVE\\\",\\\"plan_id\\\":\\\"f784571b-928c-4fd3-afcd-af4cce90a441\\\",\\\"plan_version\\\":2,\\\"reason\\\":\\\"人工批准当前方案\\\",\\\"type\\\":\\\"USER_PLANNING_DIRECTIVE\\\"}\"]}",
+        "selected_reason": "Explicit task input; data does not grant authority",
+        "source_created_at": "2026-09-16T03:11:41.112124Z",
+        "source_updated_at": "2026-09-16T03:11:41.112124Z",
+        "chapter_id": "ee59f19c-7815-4e91-99ca-619a10ebd311",
+        "chapter_sequence": 1,
+        "relevance_score": 100,
+        "knowledge_scope": "GLOBAL_ONLY",
+        "character_id": null,
+        "future_knowledge": false,
+        "is_plan": false,
+        "provenance": [
+          "agent_task"
+        ]
+      },
+      {
+        "context_item_id": "bdde9846-671e-5b46-b813-f835ce545a2e",
+        "selector_id": "target-chapter",
+        "source_type": "CHAPTER",
+        "source_id": "ee59f19c-7815-4e91-99ca-619a10ebd311",
+        "logical_id": "ee59f19c-7815-4e91-99ca-619a10ebd311",
+        "source_version": 4,
+        "project_id": "0767f00f-1d3a-4e82-a779-17e78d4f2888",
+        "status": "DRAFT",
+        "authority_level": "A5_USER_PREFERENCE",
+        "locked": false,
+        "priority": "P0",
+        "scope": "TARGET_CHAPTER",
+        "payload_json": "{\"approved_plan_version\":2,\"current_version\":null,\"sequence\":1,\"title\":\"第一次\"}",
+        "selected_reason": "TARGET_CHAPTER/TARGET_VERSION",
+        "source_created_at": "2026-09-16T02:19:34.445807Z",
+        "source_updated_at": "2026-09-16T03:01:42.235880Z",
+        "chapter_id": "ee59f19c-7815-4e91-99ca-619a10ebd311",
+        "chapter_sequence": 1,
+        "relevance_score": 100,
+        "knowledge_scope": "GLOBAL_ONLY",
+        "character_id": null,
+        "future_knowledge": false,
+        "is_plan": false,
+        "provenance": [
+          "structured_database",
+          "version_policy:TARGET_VERSION"
+        ]
+      }
+    ],
+    "excluded_items": [],
+    "missing_required_items": [],
+    "authority_conflicts": [],
+    "source_snapshots": [
+      {
+        "selector_id": "approved-plan",
+        "fingerprint": "26f7f7d5233d6cd03ec677dfd3d39b43f4397641cdc8af3b018513bfb853ce91"
+      },
+      {
+        "selector_id": "dependency-chapter_plan",
+        "fingerprint": "7d389b099aa8823b927c29d4fe8ae72744439ed3591bf866860e8350ce8a7fb5"
+      },
+      {
+        "selector_id": "dependency-chapter_version",
+        "fingerprint": "7d389b099aa8823b927c29d4fe8ae72744439ed3591bf866860e8350ce8a7fb5"
+      },
+      {
+        "selector_id": "dependency-decision",
+        "fingerprint": "7d389b099aa8823b927c29d4fe8ae72744439ed3591bf866860e8350ce8a7fb5"
+      },
+      {
+        "selector_id": "dependency-requirement",
+        "fingerprint": "7d389b099aa8823b927c29d4fe8ae72744439ed3591bf866860e8350ce8a7fb5"
+      },
+      {
+        "selector_id": "effective-decisions",
+        "fingerprint": "7d389b099aa8823b927c29d4fe8ae72744439ed3591bf866860e8350ce8a7fb5"
+      },
+      {
+        "selector_id": "effective-requirements",
+        "fingerprint": "7d389b099aa8823b927c29d4fe8ae72744439ed3591bf866860e8350ce8a7fb5"
+      },
+      {
+        "selector_id": "locked-decisions",
+        "fingerprint": "7d389b099aa8823b927c29d4fe8ae72744439ed3591bf866860e8350ce8a7fb5"
+      },
+      {
+        "selector_id": "previous-approved-chapter",
+        "fingerprint": "a61108e20eca9bfa1c329c7b989dae23b888474bc80ae39625c76d0f1f00aae7"
+      },
+      {
+        "selector_id": "supporting-requirements",
+        "fingerprint": "7d389b099aa8823b927c29d4fe8ae72744439ed3591bf866860e8350ce8a7fb5"
+      },
+      {
+        "selector_id": "target-chapter",
+        "fingerprint": "42f1642bc9daf2cd2d60221aa919373cf83e24c9acec00a28f9e2e4d2ba3bbb6"
+      },
+      {
+        "selector_id": "task-input",
+        "fingerprint": "e5c7c5af2a318e73f2d7baf54941353e23502c512f4c8599941205817aa1388e"
+      }
+    ],
+    "token_budget": 100000,
+    "prompt_overhead": 24271,
+    "output_reservation": 8192,
+    "estimated_tokens": 18138,
+    "future_knowledge_policy": "REQUIRED_ONLY",
+    "package_hash": "27aded80386b8a85cc0d4725ac6f9d98a507e23a2b13bf7b6e0edd51b99b833b",
+    "error_code": null,
+    "context_package_id": "f568b8fa-3b73-4b77-aa70-3dddf653a251",
+    "created_at": "2026-09-16T03:11:41.336038Z"
+  },
+  "freshness": "STALE",
+  "error_code": "CONTEXT_STALE"
+}

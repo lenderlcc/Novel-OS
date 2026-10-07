@@ -1,0 +1,36 @@
+{
+  "id": "R001",
+  "name": "Case 01: mixed obligation, prohibition, recommendation and creative delegation",
+  "raw_requirement": "这一章的核心目标是让两个人原本比较紧张的关系出现一点缓和，但不要直接和解。\n\n前半段希望气氛稍微紧张一些，中间发生一件小事，让他们不得不进行合作。合作过程中可以让双方对彼此产生一点新的认识。\n\n结尾不要把关系彻底说开，只需要让读者感觉两个人之间发生了一点变化。\n\n具体场景、对话和合作的事情由你自己设计。",
+  "sha256": "82490c0b11dc0722cede763d4558334b04a2f2879b12d5f845603ef84b1fb907",
+  "human_expectations": {
+    "intent": "关系出现有限缓和，保留未解决的张力",
+    "objective": "通过不得不合作的小事推动关系变化",
+    "must": [
+      "这一章的核心目标是让两个人原本比较紧张的关系出现一点缓和",
+      "中间发生一件小事，让他们不得不进行合作"
+    ],
+    "forbidden": [
+      "不要直接和解",
+      "结尾不要把关系彻底说开"
+    ],
+    "should": [
+      "前半段希望气氛稍微紧张一些"
+    ],
+    "preferences": [
+      "合作过程中可以让双方对彼此产生一点新的认识"
+    ],
+    "creative_delegation": "具体场景、对话和合作的事情由你自己设计",
+    "freedom_must_not_override": [
+      "前半段/中段/结尾的功能顺序",
+      "不直接和解",
+      "不彻底说开"
+    ],
+    "confidence": "self-reported, not measured accuracy; assess uncertainty, no fixed default"
+  },
+  "evaluation_notes": [
+    "Expected spans are human review anchors, not a production mapping or model-output override.",
+    "MUST vs SHOULD follows meaning; do not force all categories nonempty in other cases.",
+    "The permitted exact quote may include additional meaning-bearing context."
+  ]
+}

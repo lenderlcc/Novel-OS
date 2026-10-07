@@ -5,7 +5,7 @@ import logging
 import signal
 import threading
 from pathlib import Path
-from uuid import uuid4
+from uuid import UUID, uuid4
 
 from novel_os.agents.runtime import ExecutionResult
 from novel_os.context.profiles import ContextConfigurationError
@@ -36,6 +36,7 @@ class AgentWorker:
         heartbeat_seconds=5,
         retry_seconds=1,
         task_types=None,
+        task_ids=None,
         max_attempts=None,
     ):
         if not 0 < heartbeat_seconds < lease_seconds:
@@ -47,6 +48,7 @@ class AgentWorker:
         self.heartbeat_seconds = heartbeat_seconds
         self.retry_seconds = retry_seconds
         self.task_types = task_types
+        self.task_ids = task_ids
         self.max_attempts = max_attempts
 
     def run_once(self):
@@ -55,6 +57,7 @@ class AgentWorker:
                 self.worker_id,
                 profile_for_task=self.runtime.profile_for_task,
                 task_types=self.task_types,
+                task_ids=self.task_ids,
                 max_attempts=self.max_attempts,
             )
         if lease is None:
@@ -154,7 +157,15 @@ def main():
     parser = argparse.ArgumentParser(description="Novel OS agent worker")
     parser.add_argument("--config", type=Path, default=Path("config.toml"))
     parser.add_argument("--once", action="store_true", help="Claim and handle at most one task")
+    parser.add_argument(
+        "--task-id",
+        type=UUID,
+        action="append",
+        help="Limit --once to audited task IDs (repeatable)",
+    )
     args = parser.parse_args()
+    if args.task_id is not None and not args.once:
+        parser.error("--task-id requires --once")
     settings = Settings.from_file(args.config)
     configure_logging(settings.log_level)
     database = Database(settings)
@@ -168,6 +179,7 @@ def main():
         heartbeat_seconds=settings.agent_heartbeat_seconds,
         retry_seconds=settings.agent_retry_seconds,
         task_types=settings.agent_task_types,
+        task_ids=args.task_id,
         max_attempts=settings.agent_max_attempts,
     )
     try:

@@ -17,6 +17,7 @@ const emit = defineEmits<{
   createProject: [name: string]
   createChapter: [title: string, sequence: number]
   openProfile: []
+  openCharacters: []
   openTests: []
 }>()
 const projectName = ref(''), chapterTitle = ref(''), chapterSequence = ref(1)
@@ -78,6 +79,7 @@ function addChapter() {
 
     <div class="sidebar-actions">
       <button type="button" :disabled="!projectId" @click="emit('openProfile')">写作偏好</button>
+      <button type="button" :disabled="!projectId" @click="emit('openCharacters')">人物表现</button>
       <button v-if="testAvailable !== false" type="button" :disabled="!chapterId || testDisabled" @click="emit('openTests')">测试</button>
     </div>
   </aside>

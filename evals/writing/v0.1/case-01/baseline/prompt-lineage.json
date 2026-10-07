@@ -1,0 +1,85 @@
+{
+  "lineage_id": "60fa07ca-9883-4be0-8b78-c75d0cedc6c4",
+  "agent_run_id": "ce369307-c233-4028-8797-186e3949f95b",
+  "task_id": "2fd5813b-5b08-4725-9813-f62c3d12ff4b",
+  "system_policy": {
+    "module_id": "novel-os-core",
+    "version": 1,
+    "content_hash": "8cd5e1025f58a6e6bd5a9d5380b31ed3edfea735f51100134beaa2401c874e07",
+    "execution_hash": "fb091ba33e3f0093bd02045155866d6ced39eb16e03e734492c25fdd7cbf57d0"
+  },
+  "agent_role": {
+    "module_id": "writing-agent",
+    "version": 1,
+    "content_hash": "70d7b146f2b2cc60e60633d918ee41f289659004e697d9f15a673e8b4dc7e2a0",
+    "execution_hash": "90ea70b3d303828b298c7107775367d750be823a04518299b2c493725143a1e0"
+  },
+  "task_template": {
+    "module_id": "write-chapter",
+    "version": 2,
+    "content_hash": "5d48c411cfbd186f41b046d9d93da4ed87bacf37375e841ad57f119ace1a5eee",
+    "execution_hash": "36207747c367df4a2c307caaa134ffe46bac1f539b3470d1a33e345c74b64867"
+  },
+  "skills": [
+    {
+      "module_id": "character-voice",
+      "version": 1,
+      "content_hash": "6dfe26a69afa215a7a016deca40aabd5c7c44011dad8a5a62673e508e5ce4f02",
+      "execution_hash": "1657b2ea1e3c38b6ebe28c19d3fef1261d6c81d0b45ebf76596cdff3ae965fcb"
+    },
+    {
+      "module_id": "dialogue",
+      "version": 1,
+      "content_hash": "454a353168dfd3665f59437c46a94232d3105ca6b87d1f1827b0f816d67831d9",
+      "execution_hash": "bb115ab71236903ad460ccfc5e6ad2760371ac419564ee0980039d4e3c51fdec"
+    },
+    {
+      "module_id": "narrative-rhythm",
+      "version": 1,
+      "content_hash": "c285814c4335349770c6f4d9129d8d3d0abbb818ae8584657920676207a241bb",
+      "execution_hash": "fd28f565bb770f0a5c9b36cb7466b175dfe525fe5d48966b08f17af6fb71714f"
+    },
+    {
+      "module_id": "natural-prose",
+      "version": 1,
+      "content_hash": "4c1120687e848044038bc3aa0a1ebf18c9cef9500fb179f9e2e4abf8950a3ff4",
+      "execution_hash": "b03427fdeabe1bd06227dbcddd17eb83098582ca5ead206b8d41e33d93e946c7"
+    },
+    {
+      "module_id": "scene-execution",
+      "version": 1,
+      "content_hash": "a9946e3341562845d2dd9eb947670e4ace86cd60e1bf39402cc34edba5f6e757",
+      "execution_hash": "57bb298544718832555deaa448bd4cf07da4fab5092e8e573a88373ed55cae3e"
+    }
+  ],
+  "quality_profile": {
+    "module_id": "writing-quality",
+    "version": 1,
+    "content_hash": "a526984424d46ebc4790f1104547495439000f461360533da172f3aca97ee5f4",
+    "execution_hash": "23bf396e0fc1aa9e604749bf714e74a6a628ada4530e421464d2aaee126121cf"
+  },
+  "output_schema_id": "chapter-writing-result",
+  "output_schema_version": 1,
+  "output_schema_hash": "53650a0455ea4e0e7490f3d6caa731ca67ef651626727059a9dd9bd7efd300c7",
+  "model_profile_id": "lingzhi-structured",
+  "model_profile_hash": "896df7dde0acf2e91685f3f92532e5f928809af7ed2ad4404f340a8e0f3b359e",
+  "model_profile": {
+    "profile_id": "lingzhi-structured",
+    "provider": "lingzhi",
+    "model": "gpt-5.6-sol",
+    "capabilities": [
+      "text",
+      "structured_output"
+    ],
+    "structured_output": true,
+    "stream_support": false,
+    "timeout_seconds": 120.0,
+    "max_output_tokens": 8192,
+    "generation": {
+      "temperature": null
+    }
+  },
+  "compiled_prompt_hash": "54e6325f4ab2685dd519a3469e46f2bad80d887a6d39114403d5aca0d7d6c16d",
+  "compiler_version": 2,
+  "created_at": "2026-09-16T03:11:41.310683Z"
+}

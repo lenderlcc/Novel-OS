@@ -1,0 +1,12 @@
+{
+  "sequence": 5,
+  "title": "从记忆继续",
+  "raw_requirement": "以 Gu Che 的第三人称限知视角继续 Lin Lan、Sealed Copper Box 与 Missing Courier 的调查。不要重新解释过去的全部事实；让正式上下文提供当前状态和相关未解决事项。不要新增解决结论。",
+  "pov": "B",
+  "recorded_draft": "Gu Che met Lin Lan at Clock Tower before they left for the office. He picked up the delivery slip, leaving the broken pieces of the Sealed Copper Box where they lay.\n\nThe address was incomplete. Their next step was to ask who had accepted the Missing Courier's delivery, not to announce that the search was solved. Gu Che spoke only about the evidence he had seen.\n\nLin Lan checked the route once and folded the slip. They continued their cooperation without revisiting every earlier conversation. The unresolved search still had a place in their next decision.",
+  "capabilities": [
+    "CURRENT_MEMORY_RETRIEVAL",
+    "KNOWLEDGE_FIREWALL",
+    "CONTEXT_RELEVANCE"
+  ]
+}

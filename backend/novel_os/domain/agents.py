@@ -104,13 +104,14 @@ class AgentDefinition:
 class AgentTask:
     task_id: UUID = field(default_factory=uuid4)
     project_id: UUID
-    workflow_instance_id: UUID
-    workflow_state: ChapterState
-    workflow_state_version: int
+    workflow_instance_id: UUID | None
+    workflow_state: ChapterState | None
+    workflow_state_version: int | None
     agent_id: AgentId
     task_type: str
     objective: str
-    target_ref: UUID
+    target_ref: UUID | None
+    report_character_id: UUID | None = None
     requirements: list[str] = field(default_factory=list)
     constraints: list[str] = field(default_factory=list)
     capabilities: list[str] = field(default_factory=list)

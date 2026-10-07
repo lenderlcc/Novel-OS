@@ -1,0 +1,12 @@
+{
+  "sequence": 3,
+  "title": "真相与损坏",
+  "raw_requirement": "调查揭示 Gu Che 并非 Station Alarm 的责任方。Sealed Copper Box 在正文中永久损坏，不能再当完好物使用。本章不推进 Missing Courier。Lin Lan 留在 Clock Tower。不要抹去此前人物曾经怀疑的历史。",
+  "pov": "A",
+  "recorded_draft": "The signed station log showed that Gu Che was not responsible for the Station Alarm. Lin Lan read the entry twice. Her earlier suspicion had existed, but it was not proof and did not become a fact.\n\nAt Clock Tower, the Sealed Copper Box fell into the broken press. Its hinges snapped and its body split. It was permanently destroyed, not merely scratched, and could no longer be used as an intact box.\n\nLin Lan stayed at Clock Tower with Gu Che. They set the pieces aside and checked the log. Neither of them made a new claim about an investigation they had not advanced.",
+  "capabilities": [
+    "TRUTH_CORRECTION",
+    "OBJECT_STATE",
+    "THREAD_OMISSION"
+  ]
+}

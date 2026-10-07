@@ -1,0 +1,10 @@
+{
+  "case_id": "case-01",
+  "human_expected_themes": [
+    "AUDIENCE_STYLE_MISMATCH"
+  ],
+  "interpretation": "仅在对应历史 Profile 确实表达受众风格时判断。",
+  "acceptance": "Compare supported themes and false positives manually; exact code matching is not a pass criterion.",
+  "input_snapshot": null,
+  "real_evaluation": "NOT_RUN"
+}

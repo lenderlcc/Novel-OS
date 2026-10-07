@@ -3,6 +3,7 @@ from uuid import UUID
 
 from pydantic import BaseModel, Field
 
+from novel_os.agents.exploration_schemas import CreativeExplorationOutput
 from novel_os.agents.planning_schemas import (
     ChapterPlanOutput,
     CreativeBriefOutput,
@@ -11,7 +12,9 @@ from novel_os.agents.planning_schemas import (
 from novel_os.agents.schemas import ArtifactText
 from novel_os.api.core_schemas import PlanView
 from novel_os.api.workflow_schemas import CommandInput, Input
-from novel_os.domain.planning import BriefStatus, ReviewVerdict
+from novel_os.domain.context import ContextStatus
+from novel_os.domain.enums import Authority
+from novel_os.domain.planning import BriefStatus, ExplorationStatus, ReviewVerdict
 
 
 class CreatePlanningWorkflow(Input):
@@ -52,6 +55,16 @@ class GenerationView(EvidenceView):
     brief_id: UUID
     planning_iteration: int
     body: ChapterPlanOutput
+    creative_exploration_id: UUID | None = None
+    selected_candidate_id: str | None = None
+
+
+class ExplorationView(EvidenceView):
+    brief_id: UUID
+    body: CreativeExplorationOutput
+    status: ExplorationStatus
+    authority_level: Authority = Authority.A7_AI_INFERENCE
+    freshness: ContextStatus
 
 
 class ReviewView(EvidenceView):
@@ -70,6 +83,7 @@ class HistoryView(BaseModel):
     briefs: list[BriefView]
     plans: list[GenerationView]
     reviews: list[ReviewView]
+    explorations: list[ExplorationView] = Field(default_factory=list)
 
 
 class MetricsView(BaseModel):

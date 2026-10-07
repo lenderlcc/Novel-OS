@@ -3,6 +3,7 @@
 from dataclasses import asdict, replace
 from uuid import UUID, uuid4
 
+from novel_os.agents.registry import MEMORY_STAGE_TASK
 from novel_os.context.profiles import ContextProfile, ContextProfileRegistry
 from novel_os.domain.agents import AgentId, AgentTask
 from novel_os.domain.core import ObjectRef, now
@@ -50,7 +51,7 @@ class MemoryCommitService:
             task_type=MEMORY_TASK,
             target_ref=workflow.chapter_id,
             objective="Extract only future-relevant information from the accepted chapter",
-            expected_output_schema="chapter-memory-result.v1",
+            expected_output_schema=MEMORY_STAGE_TASK.result_schema,
             created_at=timestamp,
         )
         data = QualityBindingService(self.session).current(task, workflow, profile)
@@ -240,7 +241,7 @@ class MemoryCommitService:
         )
         used_ids = {c["subject_id"] for c in candidates}
         for subject in subjects:
-            if str(subject.id) in used_ids:
+            if str(subject.id) in used_ids and subject.batch_id is not None:
                 batch = self.repo.get(MemoryCommitBatch, subject.batch_id)
                 if (
                     self.core.repo.get_chapter(request.project_id, batch.chapter_id).sequence
@@ -338,6 +339,8 @@ class MemoryCommitService:
                         kind=ref["kind"],
                         aliases=[normalized(a) for a in ref["aliases"]],
                         batch_id=batch.id,
+                        created_at=batch.committed_at,
+                        created_by=context.actor_id,
                     )
                 )
                 subjects.add(subject_id)

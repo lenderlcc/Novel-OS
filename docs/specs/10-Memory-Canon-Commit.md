@@ -21,7 +21,7 @@
 
 | 类型 | 层 | 含义 |
 |---|---|---|
-| CANON_FACT | A3_CANON | 已确认的重要事实 |
+| CANON_FACT | A3_CANON | 已确认的重要事实；OBJECT 的明确状态字段也保存对象当前状态 |
 | CHARACTER_STATE | A3_CANON | 人物位置、持有物等当前状态 |
 | CHARACTER_KNOWLEDGE | A3_CANON | 某角色知道、相信、怀疑或存疑的认知状态 |
 | RELATIONSHIP_STATE | A3_CANON | 有明确来源的关系变化 |
@@ -42,11 +42,19 @@ Pydantic MemoryAgentResult 是 structured output 和 runtime 的同一 source of
 
 每项必须对已提供的 approved/locked Requirement、Decision、Plan、锁定 ChapterVersion 和 A3 committed-memory 给出边界检查。选中的边界缺漏属于 SCHEMA_PARSE_ERROR；已确认冲突成为可见候选冲突，不静默覆盖。相同 subject/type/slot/value 为 DUPLICATE；明确 state_before 与旧值相符的状态变化为 STATE_TRANSITION；其他不同值为 CONTRADICTION。不同措辞/属性的语义矛盾由 A07 边界检查与人工确认补充，系统不声称能确定性理解任意自然语言。
 
+对象可变状态复用 CANON_FACT + OBJECT，不增加 MemoryType 或表。`state_after=value` 明确区分对象状态与静态事实；初始状态的 state_before 为 null。只有旧条目也具有 `state_after=旧 value` 标记，且新候选 state_before **精确等于**旧 value、state_after 等于新 value 时，才允许同 subject/type/slot 的下一版本。没有旧状态标记的静态 Canon 不得通过新增标记升级成可改数据；非 OBJECT Canon 仍不得使用这一转换路径。
+
+Open Thread 同一 subject/type/slot 的 value 或规范化 statement 改变时，必须显式绑定精确旧 value 与新 state_after，复用 STATE_TRANSITION、logical_id/version/supersedes_id；仍为 A6。状态仍 OPEN 时，新的有意义证据要体现在更新的 statement 中。value 与 statement 均不变、仅换章节或引用 evidence，仍为 DUPLICATE，不增加版本。历史初始 Thread 的空状态字段保持可读。同批同属性但不同 Thread 描述、对象静态/状态标记不一致均属于冲突，不能任意选第一条静默丢弃。
+
+A07 Context 在现有已选 committed-memory payload 中提供 state_after，供模型区分对象静态事实与当前状态，不扩大检索范围。最新 A07 使用 chapter-memory-result.v2 / extract-chapter-memory Prompt v3；v1 任务与旧 Prompt 版本保留。历史提案若在新规范化下结果不同，沿用 CONTEXT_STALE 要求重新提取和人工确认，不改历史提案。
+
 同一 subject/type/slot 按整组比较规范化 value、epistemic_status 和 known_fact_id；互不兼容的可提交候选全部标为 CONTRADICTION，已有 Authority/歧义阻断保留。重复的 STATE_TRANSITION 保留转换语义，单独选中任意副本仍写入下一版本；同时选中多个副本时由现有提交去重只写一次。只有与已提交 Canon 相同的候选才直接跳过。
 
 ## 数据与事务
 
 0016 新增 memory_requests、memory_commit_proposals、memory_commit_batches、memory_subjects、committed_memory 五张表，以及 workflow.memory_request_id。Memory 六种类型共用追加式表，避免六套重复 CRUD。
+
+0017 只更新既有 supersession guard，使上述明确对象状态和 Thread 更新可用；保留全部 lineage、用户确认、不可变、事务及作用域检查。降级回0016前若已有这两类版本链，则拒绝降级，避免留下旧 Contract 无法维护的已确认历史。空隔离测试库可以执行 upgrade / downgrade -1 / upgrade。
 
 同属性通过 logical_id/version/supersedes_id 追加版本。旧行不可 update/delete。每个完成章节最多一个 batch，同一 source/proposal 唯一。Canon revision 是项目已提交 batch 的最大序号，项目根锁下递增。现有 current/approved pointers 不增加第三套正文版本指针。
 

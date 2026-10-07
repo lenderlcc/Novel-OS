@@ -1,0 +1,29 @@
+{
+  "id": "W004",
+  "suite_version": "0.1",
+  "title": "future plan leakage protection",
+  "category": "negative",
+  "provider_mode": "mock",
+  "fixture": "backend/tests/core/writing/conftest.py; existing isolated PostgreSQL pytest fixtures",
+  "input": {
+    "target_chapter_sequence": 2,
+    "future_chapter_sequence": 3,
+    "future_approved_plan_marker": "FUTURE_APPROVED_SECRET",
+    "future_draft_marker": "FUTURE_DRAFT_SECRET",
+    "explicit_dependency_boundary": "精确且必要的未来 Plan 必须 approved + locked"
+  },
+  "automated_tests": [
+    "tests/core/writing/test_context_and_prompt.py::test_previous_approved_body_not_latest_and_no_future_or_foreign_leak",
+    "tests/core/writing/test_context_and_prompt.py::test_even_explicit_locked_future_plan_requires_approval"
+  ],
+  "engineering_oracle": [
+    "无必要依赖的未来 Plan/正文不进入 Context",
+    "显式 locked 但未批准的 Plan 被拒绝，approved + locked 边界允许"
+  ],
+  "ai_behavior_oracle": [
+    "角色不得将 GLOBAL_ONLY 事实当作已知；不提前兑现未来剧情"
+  ],
+  "human_evaluation": "../templates/human-prose-evaluation.md",
+  "expected_lineage": "Every AGENT Draft must have exactly one PASS WritingResult with all seven linked sources. BLOCKED outputs must have no Draft.",
+  "limitation": "Mock/structured fault injection only; no semantic model grader or quality verdict."
+}

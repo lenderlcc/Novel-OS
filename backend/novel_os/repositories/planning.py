@@ -14,6 +14,7 @@ MAPPINGS = {
     domain.CreativeBrief: orm.CreativeBriefModel,
     domain.PlanGeneration: orm.PlanGenerationModel,
     domain.PlanReviewReport: orm.PlanReviewReportModel,
+    domain.CreativeExploration: orm.CreativeExplorationModel,
 }
 
 
@@ -173,6 +174,23 @@ class PlanningRepository:
         )
         return to_domain(model, domain.PlanGeneration) if model else None
 
+    def exploration(self, workflow_id, brief_id=None):
+        statement = select(orm.CreativeExplorationModel).where(
+            orm.CreativeExplorationModel.workflow_id == workflow_id
+        )
+        if brief_id is not None:
+            statement = statement.where(orm.CreativeExplorationModel.brief_id == brief_id)
+        model = self.session.scalar(
+            statement.order_by(
+                orm.CreativeExplorationModel.created_at.desc(), orm.CreativeExplorationModel.id
+            ).limit(1)
+        )
+        return to_domain(model, domain.CreativeExploration) if model else None
+
+    def exploration_by_id(self, exploration_id):
+        model = self.session.get(orm.CreativeExplorationModel, exploration_id)
+        return to_domain(model, domain.CreativeExploration) if model else None
+
     def review(self, workflow_id, plan_id):
         model = self.session.scalar(
             select(orm.PlanReviewReportModel)
@@ -212,15 +230,17 @@ class PlanningRepository:
             )
         ]
 
-    def last_human_directive(self, workflow_id):
+    def last_human_directive(self, workflow_id, *, decisions=None):
         from novel_os.domain.workflow import HumanGate
         from novel_os.models.workflow import HumanGateModel
 
+        statement = select(HumanGateModel).where(
+            HumanGateModel.workflow_id == workflow_id, HumanGateModel.decision.is_not(None)
+        )
+        if decisions is not None:
+            statement = statement.where(HumanGateModel.decision.in_(decisions))
         row = self.session.scalar(
-            select(HumanGateModel)
-            .where(HumanGateModel.workflow_id == workflow_id, HumanGateModel.decision.is_not(None))
-            .order_by(HumanGateModel.opened_state_version.desc())
-            .limit(1)
+            statement.order_by(HumanGateModel.opened_state_version.desc()).limit(1)
         )
         return to_domain(row, HumanGate) if row else None
 

@@ -20,13 +20,19 @@ class TaskHistory:
         self.core = CoreRepository(session)
 
     def audit(self, task: AgentTask, before, after, context, reason):
-        chapter = self.core.get_chapter(task.project_id, task.target_ref)
+        target = (
+            self.core.get_project(task.project_id)
+            if task.workflow_instance_id is None
+            else self.core.get_chapter(task.project_id, task.target_ref)
+        )
         self.core.add(
             AuditRecord(
                 project_id=task.project_id,
-                target_type=ObjectType.CHAPTER,
-                target_id=task.target_ref,
-                target_version=chapter.version,
+                target_type=ObjectType.PROJECT
+                if task.workflow_instance_id is None
+                else ObjectType.CHAPTER,
+                target_id=target.id,
+                target_version=target.version,
                 action=AuditAction.UPDATE if before else AuditAction.CREATE,
                 actor_type=context.actor_type,
                 actor_id=context.actor_id,
@@ -36,7 +42,9 @@ class TaskHistory:
                 after={
                     **snapshot(after),
                     "agent_task_id": str(task.task_id),
-                    "workflow_id": str(task.workflow_instance_id),
+                    "workflow_id": str(task.workflow_instance_id)
+                    if task.workflow_instance_id
+                    else None,
                 },
             )
         )

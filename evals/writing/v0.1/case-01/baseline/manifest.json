@@ -1,0 +1,23 @@
+{
+  "label": "A",
+  "workflow_id": "cc7a88d3-087d-4da6-a540-9a0463eddf46",
+  "project_id": "0767f00f-1d3a-4e82-a779-17e78d4f2888",
+  "chapter_id": "ee59f19c-7815-4e91-99ca-619a10ebd311",
+  "model_profile": "lingzhi-structured",
+  "model": "gpt-5.6-sol",
+  "provider": "lingzhi",
+  "profile_version": null,
+  "plan_version": 2,
+  "requirement_sha256": "82490c0b11dc0722cede763d4558334b04a2f2879b12d5f845603ef84b1fb907",
+  "draft_sha256": "28e3f7b24ca01c31ad94e1145535cc3d4f4d968acd5807f4c9a76e943bd06433",
+  "files": {
+    "context-package.json": "3290949e9ce803a2eede20f4ff0014ff2139b4171548d75b143dcb5b90c6acd2",
+    "draft.json": "62c74b4a7d816d2aba1181a45fe131c0633222542d5cc9f7f05b0cd3c84a9ad6",
+    "requirement.json": "d6ad28607a9ad177ededea1fe741d5b121354c4cbb430dad30322c5acc5109ec",
+    "writing-result.json": "7d60a87476757506a96d2b1bd29055fbc9be573431cc9ccae4621d5e1bcc0c69",
+    "requirement.txt": "82490c0b11dc0722cede763d4558334b04a2f2879b12d5f845603ef84b1fb907",
+    "draft.txt": "28e3f7b24ca01c31ad94e1145535cc3d4f4d968acd5807f4c9a76e943bd06433",
+    "prompt-lineage.json": "4eeea3e564cbd3ad77bdd7dfb205fb22556a7299e18f32301f6259376cd3b062",
+    "approved-plan.json": "441ad9df2779e257acf2edd7620a3fe0d97b694d62a7b1c2c0c7090e24954362"
+  }
+}

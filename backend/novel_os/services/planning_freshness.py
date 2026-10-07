@@ -97,6 +97,7 @@ class PlanningFreshness:
                 ChapterState.C04_CHAPTER_PLANNING,
             )
         if workflow.current_state == ChapterState.C05_PLAN_REVIEW:
+            from novel_os.services.character_profile_context import CharacterProfileContext
             from novel_os.services.planning_context import planning_refs
             from novel_os.services.writing_profile_context import WritingProfileContext
 
@@ -110,9 +111,10 @@ class PlanningFreshness:
             if generation:
                 try:
                     WritingProfileContext(self.session).check_plan(generation)
+                    CharacterProfileContext(self.session).check_plan(generation)
                 except DomainError:
                     raise PlanningContextStale(
-                        "Plan writing preferences changed; replan with approved preferences",
+                        "Plan character or writing inputs changed; replan with approved inputs",
                         ChapterState.C04_CHAPTER_PLANNING,
                     ) from None
 

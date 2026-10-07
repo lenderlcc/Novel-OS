@@ -301,3 +301,15 @@ GET 同一路径：limit/offset 分页返回反馈与可选 Interpretation（exa
 ## NOVEL-012：Completion / memory commands
 
 POST /workflows/{id}/completion 接受 exact chapter_version_id；POST /memory/confirm 接受 proposal_id 与 selected_candidate_ids；POST /memory/discard 接受 request_id。三者均使用 event_id、expected_state_version 和服务器确定的 user actor。GET /workflows/{id}/memory 返回分页 proposal/batch/entries 与动态 freshness；GET /projects/{id}/memory 支持 subject/type/history 和分页。不存在 agent memory-write endpoint。A07 输出以 MemoryAgentResult Pydantic 为唯一契约。见 [Memory Commit](10-Memory-Canon-Commit.md)。
+
+## NOVEL-013: exploration diagnostics
+
+POST /workflows/chapter-exploration reuses CreatePlanningWorkflow and starts chapter-planning v4. GET /workflows/{id}/planning/exploration and GET /planning/explorations/{exploration_id} return workflow-scoped A7 diagnostics/current freshness; planning/history adds explorations. No selection, approval, Memory or Canon mutation API is added. ExplorationAgentResult Pydantic owns structured output; PlanGeneration adds nullable exact selection lineage while ChapterPlan DTO stays unchanged. See [Creative Exploration](11-Creative-Exploration.md).
+
+## NOVEL-014: user-owned character profile commands
+
+Base `/api/v1/projects/{project_id}/characters`: GET paginated identities; POST `{name, aliases?, reason?}` creates identity only. Under `/{character_id}/behavior-profile`, GET returns separate current/approved records and version pointers; GET `/approved` and `/versions` expose exact approved and immutable history. POST `/drafts` takes `{expected_version, profile, reason?}`; zero means no prior profile, every edit creates another version. POST `/approve` takes `{expected_version, reason?}` and approves only that current Draft, superseding the previous approved record in the same transaction.
+
+POST `/interpret` takes `{text, expected_version}` and explicitly calls A02 once to produce an inspectable Draft, preserving raw source_text. This endpoint uses the configured runtime/provider, can consume API quota, never auto-approves, and checks scope/Locks/version before the call and again before persistence. No retry/poll loop invokes it. Profile interpretation uses CharacterProfileAgentResult → CharacterProfileDraftOutput → CharacterBehaviorProfileBody as the sole Structured Output contract; proposed_changes and memory_proposals must be empty.
+
+Clients cannot submit server status, version, authority, approval or actor fields. Stale tokens return VERSION_CONFLICT; profile changes invalidate affected existing task snapshots as CONTEXT_STALE. Pydantic API DTOs are independent from ORM. See [Character Depth & Voice](12-Character-Depth-Voice.md).

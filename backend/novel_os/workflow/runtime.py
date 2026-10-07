@@ -524,6 +524,23 @@ class WorkflowRuntime:
             if recovery:
                 # Re-evaluate sources changed while suspended before taking a new input snapshot.
                 raise Blocked(recovery)
+            from novel_os.services.exploration_policy import supports_exploration
+
+            if supports_exploration(workflow):
+                from novel_os.services.planning_freshness import PlanningFreshness
+
+                chapter = self.core.repo.get_chapter(workflow.project_id, workflow.chapter_id)
+                recovery = PlanningFreshness(self.session).recovery_failure(
+                    replace(
+                        workflow,
+                        current_state=workflow.resume_state,
+                        plan_version=chapter.current_plan_version
+                        if workflow.resume_state == State.C04_CHAPTER_PLANNING
+                        else workflow.plan_version,
+                    )
+                )
+                if recovery:
+                    raise Blocked(recovery)
             self._check("writable", workflow)
             if workflow.resume_state == State.C04_CHAPTER_PLANNING:
                 self._check("planning_budget", workflow)
@@ -750,7 +767,7 @@ class WorkflowRuntime:
         if target in GATE_STATES and after.status == RunStatus.WAITING_HUMAN:
             self._open_gate(after, context)
         self.audit.record(before, after, command, context, guards, reason or command.event_type)
-        if command.event_type == "CORRECT_REQUIREMENT":
+        if command.event_type in {"CORRECT_REQUIREMENT", "RESUME"}:
             self.tasks.synchronize(after, context, command=command)
         else:
             self.tasks.synchronize(after, context)

@@ -4,6 +4,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 
 from novel_os.api.agent_routes import router as agent_router
+from novel_os.api.character_profile_routes import router as character_profile_router
 from novel_os.api.context_routes import router as context_router
 from novel_os.api.core_routes import router as core_router
 from novel_os.api.errors import register_exception_handlers
@@ -57,4 +58,5 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.include_router(planning_router, prefix="/api/v1")
     app.include_router(writing_router, prefix="/api/v1")
     app.include_router(writing_profile_router, prefix="/api/v1")
+    app.include_router(character_profile_router, prefix="/api/v1")
     return app

@@ -34,6 +34,26 @@ class MockModelProvider(ModelProvider):
             return json.dumps({"task_id": str(request.task_id), "next_event": "UNTRUSTED"})
         if scenario == MockScenario.SLOW_SUCCESS:
             time.sleep(self.delay_seconds)
+        if request.output_kind == "character_profile_draft":
+            # Offline contract fixture; it does not claim semantic personality extraction.
+            from novel_os.characters.schemas import CharacterBehaviorProfileBody
+
+            return json.dumps(
+                {
+                    "task_id": str(request.task_id),
+                    "status": "SUCCESS",
+                    "result": {
+                        "kind": "character_profile_draft",
+                        "profile": CharacterBehaviorProfileBody().model_dump(mode="json"),
+                    },
+                    "confidence": 1.0,
+                    "assumptions": [],
+                    "issues": [],
+                    "proposed_changes": [],
+                    "memory_proposals": [],
+                    "escalation": None,
+                }
+            )
         if request.output_kind in {"chapter_compliance_review", "chapter_narrative_review"}:
             from novel_os.quality.mock import response
 
@@ -64,7 +84,12 @@ class MockModelProvider(ModelProvider):
             from novel_os.agents.writing_mock import response
 
             return json.dumps(response(request, scenario), ensure_ascii=False)
-        if request.output_kind in {"creative_brief", "chapter_plan", "plan_review"}:
+        if request.output_kind in {
+            "creative_brief",
+            "creative_exploration",
+            "chapter_plan",
+            "plan_review",
+        }:
             from novel_os.agents.planning_mock import response
 
             return json.dumps(response(request, scenario), ensure_ascii=False)

@@ -1,0 +1,33 @@
+{
+  "id": "W007",
+  "suite_version": "0.1",
+  "title": "stale result",
+  "category": "negative",
+  "provider_mode": "mock",
+  "fixture": "backend/tests/core/writing/conftest.py; existing isolated PostgreSQL pytest fixtures",
+  "input": {
+    "changes_during_flight": [
+      "approval",
+      "requirement",
+      "lock",
+      "chapter_lock",
+      "cancel",
+      "pause",
+      "draft"
+    ]
+  },
+  "automated_tests": [
+    "tests/core/writing/test_lifecycle.py::test_e2e_d_changed_input_or_workflow_discards_inflight_result",
+    "tests/core/writing/test_output_policy.py::test_empty_or_misbound_output_never_becomes_draft"
+  ],
+  "engineering_oracle": [
+    "STALE_IGNORED / BLOCKED / CONTEXT_STALE；无 AGENT Draft",
+    "并发用户正文保持不变；空正文解析失败不落地"
+  ],
+  "ai_behavior_oracle": [
+    "过时结果不作为人工验收候选正文"
+  ],
+  "human_evaluation": "../templates/human-prose-evaluation.md",
+  "expected_lineage": "Every AGENT Draft must have exactly one PASS WritingResult with all seven linked sources. BLOCKED outputs must have no Draft.",
+  "limitation": "Mock/structured fault injection only; no semantic model grader or quality verdict."
+}

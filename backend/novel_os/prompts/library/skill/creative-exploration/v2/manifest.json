@@ -1,0 +1,23 @@
+{
+  "module_id": "creative-exploration",
+  "module_type": "SKILL",
+  "version": 2,
+  "status": "STABLE",
+  "description": "NOVEL-013 mechanism diversity and bounded selected inference",
+  "content_path": "content.md",
+  "dependencies": [
+    {
+      "module_id": "novel-os-core",
+      "version": 1
+    }
+  ],
+  "compatible_agents": [
+    "A03_PLANNING"
+  ],
+  "compatible_task_types": [
+    "EXPLORE_CHAPTER_CONCEPTS",
+    "PLAN_CHAPTER"
+  ],
+  "created_at": "2026-10-05T00:00:00Z",
+  "content_hash": "e9942758653234b6a5fbb517e38efee43991690d6b4d61ee7d30a1a10c191d28"
+}

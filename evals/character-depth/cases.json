@@ -1,0 +1,268 @@
+{
+  "id": "NOVEL-014-character-depth-cases",
+  "kind": "OFFLINE_SYNTHETIC_FIXTURE",
+  "project_id": "82beec7d-2f88-5324-b1ab-e015bf5ad4dc",
+  "characters_file": "characters.json",
+  "engineering_execution": "Use existing API/runtime and isolated test database only; no new runner.",
+  "agent_input_boundary": "Only the selected case input and selected approved Profile bodies may enter Context. evaluator_only and acceptance status never enter model prompts.",
+  "cases": [
+    {
+      "real_provider_status": "NOT_RUN",
+      "human_result": "NOT_EVALUATED",
+      "id": "CDV-01-same-pressure",
+      "tasks": [
+        "EXPLORE_CHAPTER_CONCEPTS",
+        "PLAN_CHAPTER",
+        "WRITE_CHAPTER"
+      ],
+      "input": {
+        "scenario": "旧码头即将交班，六分钟后最后一班渡船离开。用于领取当日工资的纸质凭条掉进半开的排水槽；槽水浅，但湿滑的台阶和松动的木盖使取回方式不确定。值班员只能借出一根短绳和一张凳子。主角需要作出选择，最终救回凭条，却因此晚到两分钟。不得把小挫折升级为主线转折。",
+        "narrative_perspective": "THIRD_PERSON",
+        "shared_knowledge": [
+          "渡船离开时间",
+          "凭条位置",
+          "工具和台阶的可见状态"
+        ],
+        "variants": [
+          {
+            "label": "A",
+            "pov_character_id": "e3339fa1-b1bb-5b32-9d5d-5d56fa3902a1",
+            "involved_character_ids": [
+              "e3339fa1-b1bb-5b32-9d5d-5d56fa3902a1"
+            ],
+            "approved_profile_ids": [
+              "e3339fa1-b1bb-5b32-9d5d-5d56fa3902a1"
+            ],
+            "raw_requirement": "旧码头即将交班，六分钟后最后一班渡船离开。用于领取当日工资的纸质凭条掉进半开的排水槽；槽水浅，但湿滑的台阶和松动的木盖使取回方式不确定。值班员只能借出一根短绳和一张凳子。林遥需要作出选择，最终救回凭条，却因此晚到两分钟。不得把小挫折升级为主线转折。本章以林遥为唯一焦点人物，采用第三人称；只出现林遥和未命名值班员。"
+          },
+          {
+            "label": "B",
+            "pov_character_id": "df1bc87e-6f8a-5d5a-baeb-0f87af1d981c",
+            "involved_character_ids": [
+              "df1bc87e-6f8a-5d5a-baeb-0f87af1d981c"
+            ],
+            "approved_profile_ids": [
+              "df1bc87e-6f8a-5d5a-baeb-0f87af1d981c"
+            ],
+            "raw_requirement": "旧码头即将交班，六分钟后最后一班渡船离开。用于领取当日工资的纸质凭条掉进半开的排水槽；槽水浅，但湿滑的台阶和松动的木盖使取回方式不确定。值班员只能借出一根短绳和一张凳子。沈知需要作出选择，最终救回凭条，却因此晚到两分钟。不得把小挫折升级为主线转折。本章以沈知为唯一焦点人物，采用第三人称；只出现沈知和未命名值班员。"
+          }
+        ]
+      },
+      "evaluator_only": {
+        "controls": "两次运行保持情境、目标、知识、工具和必需结果相同；匿名值班员没有 Profile，不以不同同伴关系解释差异。",
+        "observations": [
+          "先注意什么、忽略什么",
+          "如何决定下一步",
+          "如何处理没把握与失败",
+          "对话和内心反应能否体现人物因果"
+        ],
+        "comparison": "遮去姓名后人工比较 Character Logic；可以得到相同行动结果，不规定具体台词。"
+      }
+    },
+    {
+      "real_provider_status": "NOT_RUN",
+      "human_result": "NOT_EVALUATED",
+      "id": "CDV-02-same-character-different-relationship",
+      "tasks": [
+        "PLAN_CHAPTER",
+        "WRITE_CHAPTER"
+      ],
+      "input": {
+        "scenario": "旧码头即将交班，六分钟后最后一班渡船离开。用于领取当日工资的纸质凭条掉进半开的排水槽；槽水浅，但湿滑的台阶和松动的木盖使取回方式不确定。值班员只能借出一根短绳和一张凳子。主角需要作出选择，最终救回凭条，却因此晚到两分钟。不得把小挫折升级为主线转折。",
+        "narrative_perspective": "THIRD_PERSON",
+        "pov_character_id": "e3339fa1-b1bb-5b32-9d5d-5d56fa3902a1",
+        "relationship_state": "双方当前都愿意配合，没有敌意、背叛或新增重大关系事实。",
+        "variants": [
+          {
+            "label": "A speaks to B",
+            "other_character_id": "df1bc87e-6f8a-5d5a-baeb-0f87af1d981c",
+            "involved_character_ids": [
+              "e3339fa1-b1bb-5b32-9d5d-5d56fa3902a1",
+              "df1bc87e-6f8a-5d5a-baeb-0f87af1d981c"
+            ],
+            "approved_profile_ids": [
+              "e3339fa1-b1bb-5b32-9d5d-5d56fa3902a1",
+              "df1bc87e-6f8a-5d5a-baeb-0f87af1d981c"
+            ],
+            "raw_requirement": "旧码头即将交班，六分钟后最后一班渡船离开。用于领取当日工资的纸质凭条掉进半开的排水槽；槽水浅，但湿滑的台阶和松动的木盖使取回方式不确定。值班员只能借出一根短绳和一张凳子。林遥需要作出选择，最终救回凭条，却因此晚到两分钟。不得把小挫折升级为主线转折。林遥与沈知在同一场景协作取回凭条；本章以林遥为唯一焦点人物，采用第三人称。双方当前都愿意配合，没有敌意、背叛或新增重大关系事实。"
+          },
+          {
+            "label": "A speaks to C",
+            "other_character_id": "02411e99-3344-5ec9-abfe-d24ab0739d0e",
+            "involved_character_ids": [
+              "e3339fa1-b1bb-5b32-9d5d-5d56fa3902a1",
+              "02411e99-3344-5ec9-abfe-d24ab0739d0e"
+            ],
+            "approved_profile_ids": [
+              "e3339fa1-b1bb-5b32-9d5d-5d56fa3902a1"
+            ],
+            "raw_requirement": "旧码头即将交班，六分钟后最后一班渡船离开。用于领取当日工资的纸质凭条掉进半开的排水槽；槽水浅，但湿滑的台阶和松动的木盖使取回方式不确定。值班员只能借出一根短绳和一张凳子。林遥需要作出选择，最终救回凭条，却因此晚到两分钟。不得把小挫折升级为主线转折。林遥与周衡在同一场景协作取回凭条；本章以林遥为唯一焦点人物，采用第三人称。双方当前都愿意配合，没有敌意、背叛或新增重大关系事实。"
+          }
+        ]
+      },
+      "evaluator_only": {
+        "controls": "外部情境、主角目标与可获得信息固定；重点评估 A 面对不同对象时的 openness、defense 与表达选择，分别记录 B 的自身 Profile 带来的影响。",
+        "observations": [
+          "A 是否向 B/C 解释不同内容",
+          "A 的防御与示弱方式是否随对象变化",
+          "每次 Context 是否只选相应关系 Modifier",
+          "Relationship Modifier 是否被误当成当前 trust/hostility 事实"
+        ]
+      }
+    },
+    {
+      "real_provider_status": "NOT_RUN",
+      "human_result": "NOT_EVALUATED",
+      "id": "CDV-03-motivated-exception",
+      "tasks": [
+        "PLAN_CHAPTER",
+        "WRITE_CHAPTER"
+      ],
+      "input": {
+        "scenario": "旧码头即将交班，六分钟后最后一班渡船离开。用于领取当日工资的纸质凭条掉进半开的排水槽；槽水浅，但湿滑的台阶和松动的木盖使取回方式不确定。值班员只能借出一根短绳和一张凳子。主角需要作出选择，最终救回凭条，却因此晚到两分钟。不得把小挫折升级为主线转折。",
+        "pov_character_id": "e3339fa1-b1bb-5b32-9d5d-5d56fa3902a1",
+        "involved_character_ids": [
+          "e3339fa1-b1bb-5b32-9d5d-5d56fa3902a1"
+        ],
+        "approved_profile_ids": [
+          "e3339fa1-b1bb-5b32-9d5d-5d56fa3902a1"
+        ],
+        "approved_plan_constraint": "林遥这次必须先确认木盖承重点、固定凭条，再取回；不能按通常习惯立即伸手。",
+        "current_stakes": "凭条上只剩一处清晰编号，直接拖拽可能撕掉；同伴当天能否领到工资取决于编号保留。",
+        "required_outcome": "救回完整编号，错过两分钟；保持原有场景、人物关系和事件装置。",
+        "raw_requirement": "旧码头即将交班，六分钟后最后一班渡船离开。用于领取当日工资的纸质凭条掉进半开的排水槽；槽水浅，但湿滑的台阶和松动的木盖使取回方式不确定。值班员只能借出一根短绳和一张凳子。林遥需要作出选择，最终救回凭条，却因此晚到两分钟。不得把小挫折升级为主线转折。林遥这次必须先确认木盖承重点、固定凭条，再取回；不能按通常习惯立即伸手。凭条上只剩一处清晰编号，直接拖拽可能撕掉；同伴当天能否领到工资取决于编号保留。本章以林遥为唯一焦点人物，采用第三人称。"
+      },
+      "evaluator_only": {
+        "observations": [
+          "是否执行批准 Plan，而不是以倾向为理由拒绝",
+          "耐心的例外是否有当前动机与代价支撑",
+          "例外后是否仍能看见 A 的注意、情绪防御或表达倾向",
+          "是否错误地把一次例外写回长期 Profile"
+        ]
+      }
+    },
+    {
+      "real_provider_status": "NOT_RUN",
+      "human_result": "NOT_EVALUATED",
+      "id": "CDV-04-knowledge-boundary",
+      "tasks": [
+        "PLAN_CHAPTER",
+        "WRITE_CHAPTER"
+      ],
+      "input": {
+        "scenario": "林遥到值班室取凭条，发现原来放凭条的盒子空了。周衡说凭条已经移开，没有说去了哪里。林遥可以观察、提问或怀疑，不能凭敏锐知道未获得的信息。",
+        "pov_character_id": "e3339fa1-b1bb-5b32-9d5d-5d56fa3902a1",
+        "involved_character_ids": [
+          "e3339fa1-b1bb-5b32-9d5d-5d56fa3902a1",
+          "02411e99-3344-5ec9-abfe-d24ab0739d0e"
+        ],
+        "approved_profile_ids": [
+          "e3339fa1-b1bb-5b32-9d5d-5d56fa3902a1"
+        ],
+        "character_knowledge": [
+          {
+            "character_id": "e3339fa1-b1bb-5b32-9d5d-5d56fa3902a1",
+            "epistemic_status": "KNOWS",
+            "statement": "盒子是空的。"
+          },
+          {
+            "character_id": "e3339fa1-b1bb-5b32-9d5d-5d56fa3902a1",
+            "epistemic_status": "KNOWS",
+            "statement": "周衡说凭条已经移开。"
+          }
+        ],
+        "required_outcome": "林遥询问凭条去向；本场结束前不揭晓确切存放地点。",
+        "raw_requirement": "林遥到值班室取凭条，发现原来放凭条的盒子空了。周衡说凭条已经移开，没有说去了哪里。林遥可以观察、提问或怀疑，不能凭敏锐知道未获得的信息。林遥询问凭条去向；本场结束前不揭晓确切存放地点。本章以林遥为唯一焦点人物，采用第三人称。"
+      },
+      "evaluator_only": {
+        "secret_x": "凭条在周衡外套的内袋。林遥未看见、未被告知，也没有获得支持这一位置的线索。",
+        "secret_is_agent_input": false,
+        "observations": [
+          "Writer Context 是否排除了 Secret X",
+          "观察或猜测是否被误写为确定知识",
+          "Profile 的敏锐是否成为全知的借口",
+          "CharacterKnowledge 优先于 tendency 的具体证据"
+        ]
+      }
+    },
+    {
+      "real_provider_status": "NOT_RUN",
+      "human_result": "NOT_EVALUATED",
+      "id": "CDV-05-historical-no-profile",
+      "tasks": [
+        "PLAN_CHAPTER",
+        "WRITE_CHAPTER",
+        "REVIEW_CHAPTER_COMPLIANCE",
+        "REVIEW_CHAPTER_NARRATIVE"
+      ],
+      "input": {
+        "scenario": "旧码头即将交班，六分钟后最后一班渡船离开。用于领取当日工资的纸质凭条掉进半开的排水槽；槽水浅，但湿滑的台阶和松动的木盖使取回方式不确定。值班员只能借出一根短绳和一张凳子。主角需要作出选择，最终救回凭条，却因此晚到两分钟。不得把小挫折升级为主线转折。",
+        "pov_character_id": "e3339fa1-b1bb-5b32-9d5d-5d56fa3902a1",
+        "involved_character_ids": [
+          "e3339fa1-b1bb-5b32-9d5d-5d56fa3902a1",
+          "df1bc87e-6f8a-5d5a-baeb-0f87af1d981c"
+        ],
+        "approved_profile_ids": [],
+        "profile_fixture_mode": "NONE",
+        "static_identity": [
+          "林遥",
+          "沈知"
+        ],
+        "dynamic_state": "双方需要在交班前取回同一凭条，当前均愿意合作。",
+        "character_knowledge": "两人都知道当前时间、凭条位置与可见工具。",
+        "raw_requirement": "旧码头即将交班，六分钟后最后一班渡船离开。用于领取当日工资的纸质凭条掉进半开的排水槽；槽水浅，但湿滑的台阶和松动的木盖使取回方式不确定。值班员只能借出一根短绳和一张凳子。林遥需要作出选择，最终救回凭条，却因此晚到两分钟。不得把小挫折升级为主线转折。林遥与沈知共同参与；以林遥为唯一焦点人物，采用第三人称。"
+      },
+      "evaluator_only": {
+        "observations": [
+          "没有 Profile 时完整 Plan/Write/Review 链路能否继续",
+          "是否新增必填 Profile 或强制 backfill",
+          "Review 是否凭感觉断言 OOC",
+          "不得把本例的工程兼容 PASS 写成已改善 Character Voice"
+        ]
+      }
+    }
+  ],
+  "followup_evaluations": {
+    "source": "weak-character-source.txt",
+    "source_kind": "HUMAN_AUTHORED_DELIBERATELY_UNIFORM_DIALOGUE",
+    "real_provider_status": "NOT_RUN",
+    "human_result": "NOT_EVALUATED",
+    "task_types": [
+      "REVIEW_CHAPTER_COMPLIANCE",
+      "REVIEW_CHAPTER_NARRATIVE",
+      "PLAN_CHAPTER_REVISION",
+      "REVISE_CHAPTER",
+      "VALIDATE_REVISION_FIDELITY",
+      "INTERPRET_CHAPTER_FEEDBACK"
+    ],
+    "input": {
+      "character_labels": [
+        "A",
+        "B"
+      ],
+      "profile_fixture_versions": {
+        "A": 1,
+        "B": 1
+      },
+      "approved_plan_boundary": "旧码头取回排水槽内凭条，编号保留，晚到两分钟；不改人物关系或主线。",
+      "human_feedback": "这里林遥说话不像他，尤其是直接完整交代自己害怕被评价的那句；只修改这一处对话，别换场景。"
+    },
+    "evaluator_only": {
+      "diagnostic_examples": [
+        "WEAK_CHARACTER_VOICE",
+        "CHARACTERS_AS_ARGUMENTS",
+        "OVER_STRUCTURED_DIALOGUE"
+      ],
+      "diagnostic_policy": "接受准确、有来源的现有码诊断，不要求报齐，也不新增 OOC taxonomy。",
+      "source_fidelity": [
+        "旧码头",
+        "排水槽和木盖",
+        "短绳与凳子",
+        "两人协作取回凭条且编号保留",
+        "晚到两分钟"
+      ],
+      "profile_persistence": "Review、Revision、Feedback、A07 不得修改长期 Profile version/hash。",
+      "exact_prose_assertions": false
+    }
+  }
+}

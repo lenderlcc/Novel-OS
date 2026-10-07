@@ -1,0 +1,12 @@
+{
+  "id": "b31057fa-44df-44fd-acbc-11e6f8598940",
+  "chapter_id": "c0eed078-fdd9-48b5-b4c5-62e83f6d98ec",
+  "project_id": "23c028ee-cd94-4965-af85-731e560c9633",
+  "version": "1",
+  "case_id": "case-05",
+  "source_sha256": "699cfb5b4d98d789bf5c45170bf71885c55bd3bb4c917db2f0ae49d0354c333f",
+  "existing_review_ids": [],
+  "real_provider_status": "BLOCKED_SOURCE_REVIEW_MISSING",
+  "historical_directory_mismatch": "evals/revision/010/case-05 contains e3e88aaf-ae0b-48fe-a230-9893b79761cb, a different story; not substituted.",
+  "paid_calls": 0
+}
