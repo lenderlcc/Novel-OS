@@ -1,0 +1,3990 @@
+{
+  "suite": "writing/v0.1",
+  "source_commit": "bc53b48e6d1680f1f95f01f3beb1245d43b2646c",
+  "started_at": "2026-09-15T09:43:13.611276+00:00",
+  "provider": "mock",
+  "real_provider_calls": 0,
+  "case_hashes": {
+    "W001": "177b31933d0da6f821fa208dc82644e82a302acba5ade937217229a64eb9811d",
+    "W002": "a915a6153d0eead386029fa7b1b6673d01d5e8c653503521e5c5a96cf3554ad2",
+    "W003": "37abc67f481e93a574e162501771bd260a3166dbd91a6cf7a47bd15ae65e9ba7",
+    "W004": "4320bab1201e184391a87a7378c1c12e7711fa59860450f99d6266a27bef363d",
+    "W005": "428323f5068db3c353a5dd239087f8c1718a7cbbbe1d2814c53fa41d3241e440",
+    "W006": "aa185cd3f9b74f60815d310f22b6113e88c2600fea10a9899e2def2a5191b3e3",
+    "W007": "6226206054149ebaa3381c9fa060eeb1253bfd8bae4887cfdb8ffa8061c0bca2",
+    "W008": "72a0efe882b9457fe6bba733045c270d7735fef76cad5d0382e8ade0c719cf08"
+  },
+  "trials": [
+    {
+      "test_id": "tests/core/writing/test_vertical_slice.py::test_e2e_a_writing_creates_draft_and_stops_at_c08",
+      "test_passed": true,
+      "agent_drafts": 1,
+      "generations": [
+        {
+          "writing_result_id": "3ae2e62b-1d3d-49e8-ab6d-7175dfea0de7",
+          "draft_id": "30ec816f-7c43-4c94-aab7-2de672d86c08",
+          "draft_version": 1,
+          "content_sha256": "2c44c232f768090b0eed8d7929fd89c9ae6ef6e1ff129608992f80df9243d0fb",
+          "project_id": "d4af8c4f-c065-4a2f-b1c1-f45990d52627",
+          "chapter_id": "cea9c043-f9ed-42cd-b9a8-9af0496e071d",
+          "workflow_id": "87a4765b-8a87-4c86-b930-e6e917b557ba",
+          "plan_id": "183bb72b-fdf6-4b2a-bf78-476a0ac0ece1",
+          "plan_version": 1,
+          "plan_status_at_execution": "APPROVED",
+          "context_package_id": "34a74924-1699-4ec0-a39f-f0555f202beb",
+          "context_package_hash": "c0c6bd296c64c5d1d37dbecd2d1713fdf6bf3b29b40e19f37810afdb2316cf1c",
+          "context_profile": "CP-005.v3",
+          "context_sources": [
+            {
+              "type": "CHAPTER_PLAN",
+              "id": "183bb72b-fdf6-4b2a-bf78-476a0ac0ece1",
+              "version": 1,
+              "status": "APPROVED",
+              "future_knowledge": false,
+              "knowledge_scope": "GLOBAL_ONLY"
+            },
+            {
+              "type": "CHAPTER",
+              "id": "cea9c043-f9ed-42cd-b9a8-9af0496e071d",
+              "version": 3,
+              "status": "DRAFT",
+              "future_knowledge": false,
+              "knowledge_scope": "GLOBAL_ONLY"
+            },
+            {
+              "type": "TASK_INPUT",
+              "id": "74c615aa-07db-41ab-a40c-e24e7a799566",
+              "version": 8,
+              "status": "ACTIVE",
+              "future_knowledge": false,
+              "knowledge_scope": "GLOBAL_ONLY"
+            }
+          ],
+          "prompt_lineage_id": "e7afc040-dd30-41c0-ad07-11defbe7396e",
+          "compiled_prompt_hash": "2713f374956b7bd827baa93f0251ef0a0c65e524c8394512acd8a28bec0f1f99",
+          "prompt_recompiled_and_verified": true,
+          "output_schema_hash": "53650a0455ea4e0e7490f3d6caa731ca67ef651626727059a9dd9bd7efd300c7",
+          "prompt_modules": [
+            {
+              "version": 1,
+              "module_id": "novel-os-core",
+              "content_hash": "8cd5e1025f58a6e6bd5a9d5380b31ed3edfea735f51100134beaa2401c874e07",
+              "execution_hash": "fb091ba33e3f0093bd02045155866d6ced39eb16e03e734492c25fdd7cbf57d0"
+            },
+            {
+              "version": 1,
+              "module_id": "writing-agent",
+              "content_hash": "70d7b146f2b2cc60e60633d918ee41f289659004e697d9f15a673e8b4dc7e2a0",
+              "execution_hash": "90ea70b3d303828b298c7107775367d750be823a04518299b2c493725143a1e0"
+            },
+            {
+              "version": 1,
+              "module_id": "write-chapter",
+              "content_hash": "fe2edd0f6f5bce0d10bafdffc8a6cda0364e5c24ccda246e0d8f3bc563a32bfc",
+              "execution_hash": "54edb5e036cd88004f68d4bcc78d37c0ded8a1f3df4f8f89eec5c8338a36f3a1"
+            },
+            {
+              "version": 1,
+              "module_id": "writing-quality",
+              "content_hash": "a526984424d46ebc4790f1104547495439000f461360533da172f3aca97ee5f4",
+              "execution_hash": "23bf396e0fc1aa9e604749bf714e74a6a628ada4530e421464d2aaee126121cf"
+            },
+            {
+              "version": 1,
+              "module_id": "character-voice",
+              "content_hash": "6dfe26a69afa215a7a016deca40aabd5c7c44011dad8a5a62673e508e5ce4f02",
+              "execution_hash": "1657b2ea1e3c38b6ebe28c19d3fef1261d6c81d0b45ebf76596cdff3ae965fcb"
+            },
+            {
+              "version": 1,
+              "module_id": "dialogue",
+              "content_hash": "454a353168dfd3665f59437c46a94232d3105ca6b87d1f1827b0f816d67831d9",
+              "execution_hash": "bb115ab71236903ad460ccfc5e6ad2760371ac419564ee0980039d4e3c51fdec"
+            },
+            {
+              "version": 1,
+              "module_id": "narrative-rhythm",
+              "content_hash": "c285814c4335349770c6f4d9129d8d3d0abbb818ae8584657920676207a241bb",
+              "execution_hash": "fd28f565bb770f0a5c9b36cb7466b175dfe525fe5d48966b08f17af6fb71714f"
+            },
+            {
+              "version": 1,
+              "module_id": "natural-prose",
+              "content_hash": "4c1120687e848044038bc3aa0a1ebf18c9cef9500fb179f9e2e4abf8950a3ff4",
+              "execution_hash": "b03427fdeabe1bd06227dbcddd17eb83098582ca5ead206b8d41e33d93e946c7"
+            },
+            {
+              "version": 1,
+              "module_id": "scene-execution",
+              "content_hash": "a9946e3341562845d2dd9eb947670e4ace86cd60e1bf39402cc34edba5f6e757",
+              "execution_hash": "57bb298544718832555deaa448bd4cf07da4fab5092e8e573a88373ed55cae3e"
+            }
+          ],
+          "agent_task_id": "74c615aa-07db-41ab-a40c-e24e7a799566",
+          "agent_run_id": "6091d76b-7711-4dc5-aa3b-e60c2a6cd760",
+          "attempt_number": 1,
+          "model_profile": {
+            "model": "mock-v1",
+            "provider": "mock",
+            "generation": {
+              "temperature": 0.2
+            },
+            "profile_id": "mock-writing",
+            "capabilities": [
+              "text"
+            ],
+            "stream_support": false,
+            "timeout_seconds": 90.0,
+            "max_output_tokens": 8192,
+            "structured_output": false
+          },
+          "model_profile_hash": "ef0752cf4f225a7b3df54823ef753ce335f6137d89a9a8c418c16691a3ffbade",
+          "writing_metadata": {
+            "kind": "writing_result",
+            "plan_id": "183bb72b-fdf6-4b2a-bf78-476a0ac0ece1",
+            "chapter_id": "cea9c043-f9ed-42cd-b9a8-9af0496e071d",
+            "confidence": 0.95,
+            "assumptions": [],
+            "style_notes": [
+              "以动作和简短对白呈现互动；这是离线契约样例。"
+            ],
+            "plan_version": 1,
+            "plan_deviations": [],
+            "scene_execution": [
+              {
+                "scene_id": "S1",
+                "deviation": null,
+                "source_location": "院门至准备行装",
+                "planned_function": "Resolve the requested chapter objective",
+                "execution_summary": "人物通过相互询问作出下一步选择。",
+                "function_completed": true
+              }
+            ],
+            "proposed_new_facts": [],
+            "introduced_elements": [],
+            "knowledge_risk_flags": [],
+            "unresolved_questions": []
+          },
+          "check_status": "PASS",
+          "check_codes": [],
+          "lineage_valid": true
+        }
+      ]
+    },
+    {
+      "test_id": "tests/core/writing/test_lifecycle.py::test_exact_approved_plan_survives_new_current_draft[False]",
+      "test_passed": true,
+      "agent_drafts": 1,
+      "generations": [
+        {
+          "writing_result_id": "b9632502-5877-4d30-a2ca-e3ac72295b37",
+          "draft_id": "1ef81357-db1c-4ba9-99b0-713b7a97d0f2",
+          "draft_version": 1,
+          "content_sha256": "2c44c232f768090b0eed8d7929fd89c9ae6ef6e1ff129608992f80df9243d0fb",
+          "project_id": "0bf8e6c8-78ed-4708-aba8-f79f2e32719d",
+          "chapter_id": "5e69b6a5-5b5e-4b1d-87e7-56a0e2443e8b",
+          "workflow_id": "e9795d98-80cc-4ff1-8cbc-1d429356e62a",
+          "plan_id": "bc59140d-137b-4273-af9e-8b0e149998dd",
+          "plan_version": 1,
+          "plan_status_at_execution": "APPROVED",
+          "context_package_id": "77c68a2a-ab4a-481e-abbe-86667dde96fa",
+          "context_package_hash": "78730a54ca64b3e6ef50897d3e159731c65b2a964795e18ab71815c614ea3d27",
+          "context_profile": "CP-005.v3",
+          "context_sources": [
+            {
+              "type": "CHAPTER_PLAN",
+              "id": "bc59140d-137b-4273-af9e-8b0e149998dd",
+              "version": 1,
+              "status": "APPROVED",
+              "future_knowledge": false,
+              "knowledge_scope": "GLOBAL_ONLY"
+            },
+            {
+              "type": "CHAPTER",
+              "id": "5e69b6a5-5b5e-4b1d-87e7-56a0e2443e8b",
+              "version": 4,
+              "status": "DRAFT",
+              "future_knowledge": false,
+              "knowledge_scope": "GLOBAL_ONLY"
+            },
+            {
+              "type": "TASK_INPUT",
+              "id": "66c14734-5fa6-40c8-9531-fdb475733ad7",
+              "version": 8,
+              "status": "ACTIVE",
+              "future_knowledge": false,
+              "knowledge_scope": "GLOBAL_ONLY"
+            }
+          ],
+          "prompt_lineage_id": "f2b64b59-d5e6-43f7-b768-1db7f0100232",
+          "compiled_prompt_hash": "dbb279ff77df3244cbff1b78d70b0caa36fdd796d98fbe074ae52566b1579825",
+          "prompt_recompiled_and_verified": true,
+          "output_schema_hash": "53650a0455ea4e0e7490f3d6caa731ca67ef651626727059a9dd9bd7efd300c7",
+          "prompt_modules": [
+            {
+              "version": 1,
+              "module_id": "novel-os-core",
+              "content_hash": "8cd5e1025f58a6e6bd5a9d5380b31ed3edfea735f51100134beaa2401c874e07",
+              "execution_hash": "fb091ba33e3f0093bd02045155866d6ced39eb16e03e734492c25fdd7cbf57d0"
+            },
+            {
+              "version": 1,
+              "module_id": "writing-agent",
+              "content_hash": "70d7b146f2b2cc60e60633d918ee41f289659004e697d9f15a673e8b4dc7e2a0",
+              "execution_hash": "90ea70b3d303828b298c7107775367d750be823a04518299b2c493725143a1e0"
+            },
+            {
+              "version": 1,
+              "module_id": "write-chapter",
+              "content_hash": "fe2edd0f6f5bce0d10bafdffc8a6cda0364e5c24ccda246e0d8f3bc563a32bfc",
+              "execution_hash": "54edb5e036cd88004f68d4bcc78d37c0ded8a1f3df4f8f89eec5c8338a36f3a1"
+            },
+            {
+              "version": 1,
+              "module_id": "writing-quality",
+              "content_hash": "a526984424d46ebc4790f1104547495439000f461360533da172f3aca97ee5f4",
+              "execution_hash": "23bf396e0fc1aa9e604749bf714e74a6a628ada4530e421464d2aaee126121cf"
+            },
+            {
+              "version": 1,
+              "module_id": "character-voice",
+              "content_hash": "6dfe26a69afa215a7a016deca40aabd5c7c44011dad8a5a62673e508e5ce4f02",
+              "execution_hash": "1657b2ea1e3c38b6ebe28c19d3fef1261d6c81d0b45ebf76596cdff3ae965fcb"
+            },
+            {
+              "version": 1,
+              "module_id": "dialogue",
+              "content_hash": "454a353168dfd3665f59437c46a94232d3105ca6b87d1f1827b0f816d67831d9",
+              "execution_hash": "bb115ab71236903ad460ccfc5e6ad2760371ac419564ee0980039d4e3c51fdec"
+            },
+            {
+              "version": 1,
+              "module_id": "narrative-rhythm",
+              "content_hash": "c285814c4335349770c6f4d9129d8d3d0abbb818ae8584657920676207a241bb",
+              "execution_hash": "fd28f565bb770f0a5c9b36cb7466b175dfe525fe5d48966b08f17af6fb71714f"
+            },
+            {
+              "version": 1,
+              "module_id": "natural-prose",
+              "content_hash": "4c1120687e848044038bc3aa0a1ebf18c9cef9500fb179f9e2e4abf8950a3ff4",
+              "execution_hash": "b03427fdeabe1bd06227dbcddd17eb83098582ca5ead206b8d41e33d93e946c7"
+            },
+            {
+              "version": 1,
+              "module_id": "scene-execution",
+              "content_hash": "a9946e3341562845d2dd9eb947670e4ace86cd60e1bf39402cc34edba5f6e757",
+              "execution_hash": "57bb298544718832555deaa448bd4cf07da4fab5092e8e573a88373ed55cae3e"
+            }
+          ],
+          "agent_task_id": "66c14734-5fa6-40c8-9531-fdb475733ad7",
+          "agent_run_id": "5f00794e-470c-4c9b-a551-0ce026063145",
+          "attempt_number": 1,
+          "model_profile": {
+            "model": "mock-v1",
+            "provider": "mock",
+            "generation": {
+              "temperature": 0.2
+            },
+            "profile_id": "mock-writing",
+            "capabilities": [
+              "text"
+            ],
+            "stream_support": false,
+            "timeout_seconds": 90.0,
+            "max_output_tokens": 8192,
+            "structured_output": false
+          },
+          "model_profile_hash": "ef0752cf4f225a7b3df54823ef753ce335f6137d89a9a8c418c16691a3ffbade",
+          "writing_metadata": {
+            "kind": "writing_result",
+            "plan_id": "bc59140d-137b-4273-af9e-8b0e149998dd",
+            "chapter_id": "5e69b6a5-5b5e-4b1d-87e7-56a0e2443e8b",
+            "confidence": 0.95,
+            "assumptions": [],
+            "style_notes": [
+              "以动作和简短对白呈现互动；这是离线契约样例。"
+            ],
+            "plan_version": 1,
+            "plan_deviations": [],
+            "scene_execution": [
+              {
+                "scene_id": "S1",
+                "deviation": null,
+                "source_location": "院门至准备行装",
+                "planned_function": "Resolve the requested chapter objective",
+                "execution_summary": "人物通过相互询问作出下一步选择。",
+                "function_completed": true
+              }
+            ],
+            "proposed_new_facts": [],
+            "introduced_elements": [],
+            "knowledge_risk_flags": [],
+            "unresolved_questions": []
+          },
+          "check_status": "PASS",
+          "check_codes": [],
+          "lineage_valid": true
+        }
+      ]
+    },
+    {
+      "test_id": "tests/core/writing/test_lifecycle.py::test_exact_approved_plan_survives_new_current_draft[True]",
+      "test_passed": true,
+      "agent_drafts": 1,
+      "generations": [
+        {
+          "writing_result_id": "5b6e1751-a690-47e4-921c-0630d4bf5ecc",
+          "draft_id": "1c8da69f-eb99-4026-b0bb-5ac5f28450d6",
+          "draft_version": 1,
+          "content_sha256": "2c44c232f768090b0eed8d7929fd89c9ae6ef6e1ff129608992f80df9243d0fb",
+          "project_id": "10a7b2dc-3298-4fa1-b1d7-dfa644b0add2",
+          "chapter_id": "75ad2731-3660-4b6d-b659-fed32c010a00",
+          "workflow_id": "5c653f64-2f79-43ec-850f-afa97f85dbfe",
+          "plan_id": "4fcc1c4e-9ced-4780-b071-ba44b42921a4",
+          "plan_version": 1,
+          "plan_status_at_execution": "APPROVED",
+          "context_package_id": "9b57d5d8-d08a-4987-8c14-bba17ec266c3",
+          "context_package_hash": "14c0f3c9bc89a7b8881655752e28766e66bb021d03ea1adce246a3d322cf9ba6",
+          "context_profile": "CP-005.v3",
+          "context_sources": [
+            {
+              "type": "CHAPTER_PLAN",
+              "id": "4fcc1c4e-9ced-4780-b071-ba44b42921a4",
+              "version": 1,
+              "status": "APPROVED",
+              "future_knowledge": false,
+              "knowledge_scope": "GLOBAL_ONLY"
+            },
+            {
+              "type": "CHAPTER",
+              "id": "75ad2731-3660-4b6d-b659-fed32c010a00",
+              "version": 3,
+              "status": "DRAFT",
+              "future_knowledge": false,
+              "knowledge_scope": "GLOBAL_ONLY"
+            },
+            {
+              "type": "TASK_INPUT",
+              "id": "cc386920-b026-42a5-bd37-5e42543eb965",
+              "version": 8,
+              "status": "ACTIVE",
+              "future_knowledge": false,
+              "knowledge_scope": "GLOBAL_ONLY"
+            }
+          ],
+          "prompt_lineage_id": "0982be4c-d0e8-4bfb-b4c2-71418ab6cb6f",
+          "compiled_prompt_hash": "dd34763c0450c5716fe36da7893a3cb16b024c3ff89c2f52e24da9b9a0364b3a",
+          "prompt_recompiled_and_verified": true,
+          "output_schema_hash": "53650a0455ea4e0e7490f3d6caa731ca67ef651626727059a9dd9bd7efd300c7",
+          "prompt_modules": [
+            {
+              "version": 1,
+              "module_id": "novel-os-core",
+              "content_hash": "8cd5e1025f58a6e6bd5a9d5380b31ed3edfea735f51100134beaa2401c874e07",
+              "execution_hash": "fb091ba33e3f0093bd02045155866d6ced39eb16e03e734492c25fdd7cbf57d0"
+            },
+            {
+              "version": 1,
+              "module_id": "writing-agent",
+              "content_hash": "70d7b146f2b2cc60e60633d918ee41f289659004e697d9f15a673e8b4dc7e2a0",
+              "execution_hash": "90ea70b3d303828b298c7107775367d750be823a04518299b2c493725143a1e0"
+            },
+            {
+              "version": 1,
+              "module_id": "write-chapter",
+              "content_hash": "fe2edd0f6f5bce0d10bafdffc8a6cda0364e5c24ccda246e0d8f3bc563a32bfc",
+              "execution_hash": "54edb5e036cd88004f68d4bcc78d37c0ded8a1f3df4f8f89eec5c8338a36f3a1"
+            },
+            {
+              "version": 1,
+              "module_id": "writing-quality",
+              "content_hash": "a526984424d46ebc4790f1104547495439000f461360533da172f3aca97ee5f4",
+              "execution_hash": "23bf396e0fc1aa9e604749bf714e74a6a628ada4530e421464d2aaee126121cf"
+            },
+            {
+              "version": 1,
+              "module_id": "character-voice",
+              "content_hash": "6dfe26a69afa215a7a016deca40aabd5c7c44011dad8a5a62673e508e5ce4f02",
+              "execution_hash": "1657b2ea1e3c38b6ebe28c19d3fef1261d6c81d0b45ebf76596cdff3ae965fcb"
+            },
+            {
+              "version": 1,
+              "module_id": "dialogue",
+              "content_hash": "454a353168dfd3665f59437c46a94232d3105ca6b87d1f1827b0f816d67831d9",
+              "execution_hash": "bb115ab71236903ad460ccfc5e6ad2760371ac419564ee0980039d4e3c51fdec"
+            },
+            {
+              "version": 1,
+              "module_id": "narrative-rhythm",
+              "content_hash": "c285814c4335349770c6f4d9129d8d3d0abbb818ae8584657920676207a241bb",
+              "execution_hash": "fd28f565bb770f0a5c9b36cb7466b175dfe525fe5d48966b08f17af6fb71714f"
+            },
+            {
+              "version": 1,
+              "module_id": "natural-prose",
+              "content_hash": "4c1120687e848044038bc3aa0a1ebf18c9cef9500fb179f9e2e4abf8950a3ff4",
+              "execution_hash": "b03427fdeabe1bd06227dbcddd17eb83098582ca5ead206b8d41e33d93e946c7"
+            },
+            {
+              "version": 1,
+              "module_id": "scene-execution",
+              "content_hash": "a9946e3341562845d2dd9eb947670e4ace86cd60e1bf39402cc34edba5f6e757",
+              "execution_hash": "57bb298544718832555deaa448bd4cf07da4fab5092e8e573a88373ed55cae3e"
+            }
+          ],
+          "agent_task_id": "cc386920-b026-42a5-bd37-5e42543eb965",
+          "agent_run_id": "9230ab6f-c58f-4561-9409-2245992638dd",
+          "attempt_number": 1,
+          "model_profile": {
+            "model": "mock-v1",
+            "provider": "mock",
+            "generation": {
+              "temperature": 0.2
+            },
+            "profile_id": "mock-writing",
+            "capabilities": [
+              "text"
+            ],
+            "stream_support": false,
+            "timeout_seconds": 90.0,
+            "max_output_tokens": 8192,
+            "structured_output": false
+          },
+          "model_profile_hash": "ef0752cf4f225a7b3df54823ef753ce335f6137d89a9a8c418c16691a3ffbade",
+          "writing_metadata": {
+            "kind": "writing_result",
+            "plan_id": "4fcc1c4e-9ced-4780-b071-ba44b42921a4",
+            "chapter_id": "75ad2731-3660-4b6d-b659-fed32c010a00",
+            "confidence": 0.95,
+            "assumptions": [],
+            "style_notes": [
+              "以动作和简短对白呈现互动；这是离线契约样例。"
+            ],
+            "plan_version": 1,
+            "plan_deviations": [],
+            "scene_execution": [
+              {
+                "scene_id": "S1",
+                "deviation": null,
+                "source_location": "院门至准备行装",
+                "planned_function": "Resolve the requested chapter objective",
+                "execution_summary": "人物通过相互询问作出下一步选择。",
+                "function_completed": true
+              }
+            ],
+            "proposed_new_facts": [],
+            "introduced_elements": [],
+            "knowledge_risk_flags": [],
+            "unresolved_questions": []
+          },
+          "check_status": "PASS",
+          "check_codes": [],
+          "lineage_valid": true
+        }
+      ]
+    },
+    {
+      "test_id": "tests/core/writing/test_context_and_prompt.py::test_previous_approved_body_not_latest_and_no_future_or_foreign_leak",
+      "test_passed": true,
+      "agent_drafts": 1,
+      "generations": [
+        {
+          "writing_result_id": "bf591a6a-9c91-4d8b-ba84-285cddecff69",
+          "draft_id": "88856a79-30ac-404c-858e-baa1b4240c89",
+          "draft_version": 1,
+          "content_sha256": "2c44c232f768090b0eed8d7929fd89c9ae6ef6e1ff129608992f80df9243d0fb",
+          "project_id": "4d5b0c91-9978-427e-9676-6986f45acba9",
+          "chapter_id": "c6e7e777-575b-4be9-af89-171bb0676862",
+          "workflow_id": "b5720b69-b16e-4c3c-94f6-23f47d0d62a9",
+          "plan_id": "ac53948e-77cd-4e62-bb75-8dab543e085c",
+          "plan_version": 1,
+          "plan_status_at_execution": "APPROVED",
+          "context_package_id": "2bf6f0e1-0174-40d4-b578-7470639f3645",
+          "context_package_hash": "7870329c704f403d3fd66f4dd60a609e25b4196a248aab230b6023ce174205fe",
+          "context_profile": "CP-005.v3",
+          "context_sources": [
+            {
+              "type": "CHAPTER_PLAN",
+              "id": "ac53948e-77cd-4e62-bb75-8dab543e085c",
+              "version": 1,
+              "status": "APPROVED",
+              "future_knowledge": false,
+              "knowledge_scope": "GLOBAL_ONLY"
+            },
+            {
+              "type": "CHAPTER",
+              "id": "c6e7e777-575b-4be9-af89-171bb0676862",
+              "version": 3,
+              "status": "DRAFT",
+              "future_knowledge": false,
+              "knowledge_scope": "GLOBAL_ONLY"
+            },
+            {
+              "type": "TASK_INPUT",
+              "id": "b816f312-a50a-4f14-b37e-4240286a888e",
+              "version": 8,
+              "status": "ACTIVE",
+              "future_knowledge": false,
+              "knowledge_scope": "GLOBAL_ONLY"
+            },
+            {
+              "type": "CHAPTER_VERSION",
+              "id": "c4541abb-8db3-49fd-b4eb-67566722ca5a",
+              "version": 2,
+              "status": "APPROVED",
+              "future_knowledge": false,
+              "knowledge_scope": "GLOBAL_ONLY"
+            }
+          ],
+          "prompt_lineage_id": "51e753e3-8a61-4622-89aa-ba4903dbb9c7",
+          "compiled_prompt_hash": "93116000545964475c8f51313608565d6d0a778f3b4ca54bed2801aff0437b39",
+          "prompt_recompiled_and_verified": true,
+          "output_schema_hash": "53650a0455ea4e0e7490f3d6caa731ca67ef651626727059a9dd9bd7efd300c7",
+          "prompt_modules": [
+            {
+              "version": 1,
+              "module_id": "novel-os-core",
+              "content_hash": "8cd5e1025f58a6e6bd5a9d5380b31ed3edfea735f51100134beaa2401c874e07",
+              "execution_hash": "fb091ba33e3f0093bd02045155866d6ced39eb16e03e734492c25fdd7cbf57d0"
+            },
+            {
+              "version": 1,
+              "module_id": "writing-agent",
+              "content_hash": "70d7b146f2b2cc60e60633d918ee41f289659004e697d9f15a673e8b4dc7e2a0",
+              "execution_hash": "90ea70b3d303828b298c7107775367d750be823a04518299b2c493725143a1e0"
+            },
+            {
+              "version": 1,
+              "module_id": "write-chapter",
+              "content_hash": "fe2edd0f6f5bce0d10bafdffc8a6cda0364e5c24ccda246e0d8f3bc563a32bfc",
+              "execution_hash": "54edb5e036cd88004f68d4bcc78d37c0ded8a1f3df4f8f89eec5c8338a36f3a1"
+            },
+            {
+              "version": 1,
+              "module_id": "writing-quality",
+              "content_hash": "a526984424d46ebc4790f1104547495439000f461360533da172f3aca97ee5f4",
+              "execution_hash": "23bf396e0fc1aa9e604749bf714e74a6a628ada4530e421464d2aaee126121cf"
+            },
+            {
+              "version": 1,
+              "module_id": "character-voice",
+              "content_hash": "6dfe26a69afa215a7a016deca40aabd5c7c44011dad8a5a62673e508e5ce4f02",
+              "execution_hash": "1657b2ea1e3c38b6ebe28c19d3fef1261d6c81d0b45ebf76596cdff3ae965fcb"
+            },
+            {
+              "version": 1,
+              "module_id": "dialogue",
+              "content_hash": "454a353168dfd3665f59437c46a94232d3105ca6b87d1f1827b0f816d67831d9",
+              "execution_hash": "bb115ab71236903ad460ccfc5e6ad2760371ac419564ee0980039d4e3c51fdec"
+            },
+            {
+              "version": 1,
+              "module_id": "narrative-rhythm",
+              "content_hash": "c285814c4335349770c6f4d9129d8d3d0abbb818ae8584657920676207a241bb",
+              "execution_hash": "fd28f565bb770f0a5c9b36cb7466b175dfe525fe5d48966b08f17af6fb71714f"
+            },
+            {
+              "version": 1,
+              "module_id": "natural-prose",
+              "content_hash": "4c1120687e848044038bc3aa0a1ebf18c9cef9500fb179f9e2e4abf8950a3ff4",
+              "execution_hash": "b03427fdeabe1bd06227dbcddd17eb83098582ca5ead206b8d41e33d93e946c7"
+            },
+            {
+              "version": 1,
+              "module_id": "scene-execution",
+              "content_hash": "a9946e3341562845d2dd9eb947670e4ace86cd60e1bf39402cc34edba5f6e757",
+              "execution_hash": "57bb298544718832555deaa448bd4cf07da4fab5092e8e573a88373ed55cae3e"
+            }
+          ],
+          "agent_task_id": "b816f312-a50a-4f14-b37e-4240286a888e",
+          "agent_run_id": "11ed5de8-a50c-4c49-8ec5-c08fd8370aef",
+          "attempt_number": 1,
+          "model_profile": {
+            "model": "mock-v1",
+            "provider": "mock",
+            "generation": {
+              "temperature": 0.2
+            },
+            "profile_id": "mock-writing",
+            "capabilities": [
+              "text"
+            ],
+            "stream_support": false,
+            "timeout_seconds": 90.0,
+            "max_output_tokens": 8192,
+            "structured_output": false
+          },
+          "model_profile_hash": "ef0752cf4f225a7b3df54823ef753ce335f6137d89a9a8c418c16691a3ffbade",
+          "writing_metadata": {
+            "kind": "writing_result",
+            "plan_id": "ac53948e-77cd-4e62-bb75-8dab543e085c",
+            "chapter_id": "c6e7e777-575b-4be9-af89-171bb0676862",
+            "confidence": 0.95,
+            "assumptions": [],
+            "style_notes": [
+              "以动作和简短对白呈现互动；这是离线契约样例。"
+            ],
+            "plan_version": 1,
+            "plan_deviations": [],
+            "scene_execution": [
+              {
+                "scene_id": "S1",
+                "deviation": null,
+                "source_location": "院门至准备行装",
+                "planned_function": "Resolve the requested chapter objective",
+                "execution_summary": "人物通过相互询问作出下一步选择。",
+                "function_completed": true
+              }
+            ],
+            "proposed_new_facts": [],
+            "introduced_elements": [],
+            "knowledge_risk_flags": [],
+            "unresolved_questions": []
+          },
+          "check_status": "PASS",
+          "check_codes": [],
+          "lineage_valid": true
+        }
+      ]
+    },
+    {
+      "test_id": "tests/core/writing/test_context_and_prompt.py::test_even_explicit_locked_future_plan_requires_approval[False]",
+      "test_passed": true,
+      "agent_drafts": 1,
+      "generations": [
+        {
+          "writing_result_id": "2146dc94-fc70-4d52-b4b8-1ac45d72f1f8",
+          "draft_id": "6b2bba91-34de-464c-beaf-fecc5df24f07",
+          "draft_version": 1,
+          "content_sha256": "2c44c232f768090b0eed8d7929fd89c9ae6ef6e1ff129608992f80df9243d0fb",
+          "project_id": "871acf92-8670-4141-96e2-24120c70e372",
+          "chapter_id": "13bc31b3-04a6-4519-aee3-817e2e0a3e59",
+          "workflow_id": "327b1502-3154-4914-a1b4-2d7122e11ab4",
+          "plan_id": "92d8b251-c17f-42c5-b135-a5813614b95b",
+          "plan_version": 1,
+          "plan_status_at_execution": "APPROVED",
+          "context_package_id": "6c35ae46-012b-4366-8343-2f1ddfda276b",
+          "context_package_hash": "766ddb9b0b803e74d7c23ed91bf0419be79ac2a1a5f1b2a746f738ff9f265f97",
+          "context_profile": "CP-005.v3",
+          "context_sources": [
+            {
+              "type": "CHAPTER_PLAN",
+              "id": "92d8b251-c17f-42c5-b135-a5813614b95b",
+              "version": 1,
+              "status": "APPROVED",
+              "future_knowledge": false,
+              "knowledge_scope": "GLOBAL_ONLY"
+            },
+            {
+              "type": "CHAPTER",
+              "id": "13bc31b3-04a6-4519-aee3-817e2e0a3e59",
+              "version": 3,
+              "status": "DRAFT",
+              "future_knowledge": false,
+              "knowledge_scope": "GLOBAL_ONLY"
+            },
+            {
+              "type": "TASK_INPUT",
+              "id": "9e04da8b-c557-4348-b7d6-b52068ef1bb6",
+              "version": 8,
+              "status": "ACTIVE",
+              "future_knowledge": false,
+              "knowledge_scope": "GLOBAL_ONLY"
+            }
+          ],
+          "prompt_lineage_id": "42d841ab-947d-4a6b-aca6-1620541353e2",
+          "compiled_prompt_hash": "85a153cae543624cfd480099f2ea4612ff950436e80975651cfde8551fe1bf6a",
+          "prompt_recompiled_and_verified": true,
+          "output_schema_hash": "53650a0455ea4e0e7490f3d6caa731ca67ef651626727059a9dd9bd7efd300c7",
+          "prompt_modules": [
+            {
+              "version": 1,
+              "module_id": "novel-os-core",
+              "content_hash": "8cd5e1025f58a6e6bd5a9d5380b31ed3edfea735f51100134beaa2401c874e07",
+              "execution_hash": "fb091ba33e3f0093bd02045155866d6ced39eb16e03e734492c25fdd7cbf57d0"
+            },
+            {
+              "version": 1,
+              "module_id": "writing-agent",
+              "content_hash": "70d7b146f2b2cc60e60633d918ee41f289659004e697d9f15a673e8b4dc7e2a0",
+              "execution_hash": "90ea70b3d303828b298c7107775367d750be823a04518299b2c493725143a1e0"
+            },
+            {
+              "version": 1,
+              "module_id": "write-chapter",
+              "content_hash": "fe2edd0f6f5bce0d10bafdffc8a6cda0364e5c24ccda246e0d8f3bc563a32bfc",
+              "execution_hash": "54edb5e036cd88004f68d4bcc78d37c0ded8a1f3df4f8f89eec5c8338a36f3a1"
+            },
+            {
+              "version": 1,
+              "module_id": "writing-quality",
+              "content_hash": "a526984424d46ebc4790f1104547495439000f461360533da172f3aca97ee5f4",
+              "execution_hash": "23bf396e0fc1aa9e604749bf714e74a6a628ada4530e421464d2aaee126121cf"
+            },
+            {
+              "version": 1,
+              "module_id": "character-voice",
+              "content_hash": "6dfe26a69afa215a7a016deca40aabd5c7c44011dad8a5a62673e508e5ce4f02",
+              "execution_hash": "1657b2ea1e3c38b6ebe28c19d3fef1261d6c81d0b45ebf76596cdff3ae965fcb"
+            },
+            {
+              "version": 1,
+              "module_id": "dialogue",
+              "content_hash": "454a353168dfd3665f59437c46a94232d3105ca6b87d1f1827b0f816d67831d9",
+              "execution_hash": "bb115ab71236903ad460ccfc5e6ad2760371ac419564ee0980039d4e3c51fdec"
+            },
+            {
+              "version": 1,
+              "module_id": "narrative-rhythm",
+              "content_hash": "c285814c4335349770c6f4d9129d8d3d0abbb818ae8584657920676207a241bb",
+              "execution_hash": "fd28f565bb770f0a5c9b36cb7466b175dfe525fe5d48966b08f17af6fb71714f"
+            },
+            {
+              "version": 1,
+              "module_id": "natural-prose",
+              "content_hash": "4c1120687e848044038bc3aa0a1ebf18c9cef9500fb179f9e2e4abf8950a3ff4",
+              "execution_hash": "b03427fdeabe1bd06227dbcddd17eb83098582ca5ead206b8d41e33d93e946c7"
+            },
+            {
+              "version": 1,
+              "module_id": "scene-execution",
+              "content_hash": "a9946e3341562845d2dd9eb947670e4ace86cd60e1bf39402cc34edba5f6e757",
+              "execution_hash": "57bb298544718832555deaa448bd4cf07da4fab5092e8e573a88373ed55cae3e"
+            }
+          ],
+          "agent_task_id": "9e04da8b-c557-4348-b7d6-b52068ef1bb6",
+          "agent_run_id": "f006bfb2-6f28-4c96-bde4-c21f1fae80aa",
+          "attempt_number": 1,
+          "model_profile": {
+            "model": "mock-v1",
+            "provider": "mock",
+            "generation": {
+              "temperature": 0.2
+            },
+            "profile_id": "mock-writing",
+            "capabilities": [
+              "text"
+            ],
+            "stream_support": false,
+            "timeout_seconds": 90.0,
+            "max_output_tokens": 8192,
+            "structured_output": false
+          },
+          "model_profile_hash": "ef0752cf4f225a7b3df54823ef753ce335f6137d89a9a8c418c16691a3ffbade",
+          "writing_metadata": {
+            "kind": "writing_result",
+            "plan_id": "92d8b251-c17f-42c5-b135-a5813614b95b",
+            "chapter_id": "13bc31b3-04a6-4519-aee3-817e2e0a3e59",
+            "confidence": 0.95,
+            "assumptions": [],
+            "style_notes": [
+              "以动作和简短对白呈现互动；这是离线契约样例。"
+            ],
+            "plan_version": 1,
+            "plan_deviations": [],
+            "scene_execution": [
+              {
+                "scene_id": "S1",
+                "deviation": null,
+                "source_location": "院门至准备行装",
+                "planned_function": "Resolve the requested chapter objective",
+                "execution_summary": "人物通过相互询问作出下一步选择。",
+                "function_completed": true
+              }
+            ],
+            "proposed_new_facts": [],
+            "introduced_elements": [],
+            "knowledge_risk_flags": [],
+            "unresolved_questions": []
+          },
+          "check_status": "PASS",
+          "check_codes": [],
+          "lineage_valid": true
+        }
+      ]
+    },
+    {
+      "test_id": "tests/core/writing/test_context_and_prompt.py::test_even_explicit_locked_future_plan_requires_approval[True]",
+      "test_passed": true,
+      "agent_drafts": 1,
+      "generations": [
+        {
+          "writing_result_id": "995061ff-b9cb-481a-b747-10bbf9ba5b5b",
+          "draft_id": "5317acd9-b150-4d8d-8be3-393cc01bb99f",
+          "draft_version": 1,
+          "content_sha256": "2c44c232f768090b0eed8d7929fd89c9ae6ef6e1ff129608992f80df9243d0fb",
+          "project_id": "991e98d3-6aa2-4fa7-ad4f-ad41403c2aeb",
+          "chapter_id": "2a8b4a17-5d51-433d-9e25-d64fd0690fe9",
+          "workflow_id": "a0a567a3-8820-46a3-85ed-bcf7bfbaa0f2",
+          "plan_id": "de1d7b66-7c1d-4dfa-9ad7-6154b1669dce",
+          "plan_version": 1,
+          "plan_status_at_execution": "APPROVED",
+          "context_package_id": "8ee14c3f-f69c-4da3-8928-44199afa5cb2",
+          "context_package_hash": "402a1b41640ecc07903f0bbb0734f118d37c3705540494b9daa7169efff700bc",
+          "context_profile": "CP-005.v3",
+          "context_sources": [
+            {
+              "type": "CHAPTER_PLAN",
+              "id": "de1d7b66-7c1d-4dfa-9ad7-6154b1669dce",
+              "version": 1,
+              "status": "APPROVED",
+              "future_knowledge": false,
+              "knowledge_scope": "GLOBAL_ONLY"
+            },
+            {
+              "type": "CHAPTER",
+              "id": "2a8b4a17-5d51-433d-9e25-d64fd0690fe9",
+              "version": 3,
+              "status": "DRAFT",
+              "future_knowledge": false,
+              "knowledge_scope": "GLOBAL_ONLY"
+            },
+            {
+              "type": "TASK_INPUT",
+              "id": "8013866d-4f9c-4064-b0fe-459da3d813c6",
+              "version": 8,
+              "status": "ACTIVE",
+              "future_knowledge": false,
+              "knowledge_scope": "GLOBAL_ONLY"
+            }
+          ],
+          "prompt_lineage_id": "74cf4b0a-92bc-4589-8f79-4f197d59699e",
+          "compiled_prompt_hash": "a67bb0c048ad3e93834075a1e3972c92b09dd92bc81b1391972dfbcfdd177c29",
+          "prompt_recompiled_and_verified": true,
+          "output_schema_hash": "53650a0455ea4e0e7490f3d6caa731ca67ef651626727059a9dd9bd7efd300c7",
+          "prompt_modules": [
+            {
+              "version": 1,
+              "module_id": "novel-os-core",
+              "content_hash": "8cd5e1025f58a6e6bd5a9d5380b31ed3edfea735f51100134beaa2401c874e07",
+              "execution_hash": "fb091ba33e3f0093bd02045155866d6ced39eb16e03e734492c25fdd7cbf57d0"
+            },
+            {
+              "version": 1,
+              "module_id": "writing-agent",
+              "content_hash": "70d7b146f2b2cc60e60633d918ee41f289659004e697d9f15a673e8b4dc7e2a0",
+              "execution_hash": "90ea70b3d303828b298c7107775367d750be823a04518299b2c493725143a1e0"
+            },
+            {
+              "version": 1,
+              "module_id": "write-chapter",
+              "content_hash": "fe2edd0f6f5bce0d10bafdffc8a6cda0364e5c24ccda246e0d8f3bc563a32bfc",
+              "execution_hash": "54edb5e036cd88004f68d4bcc78d37c0ded8a1f3df4f8f89eec5c8338a36f3a1"
+            },
+            {
+              "version": 1,
+              "module_id": "writing-quality",
+              "content_hash": "a526984424d46ebc4790f1104547495439000f461360533da172f3aca97ee5f4",
+              "execution_hash": "23bf396e0fc1aa9e604749bf714e74a6a628ada4530e421464d2aaee126121cf"
+            },
+            {
+              "version": 1,
+              "module_id": "character-voice",
+              "content_hash": "6dfe26a69afa215a7a016deca40aabd5c7c44011dad8a5a62673e508e5ce4f02",
+              "execution_hash": "1657b2ea1e3c38b6ebe28c19d3fef1261d6c81d0b45ebf76596cdff3ae965fcb"
+            },
+            {
+              "version": 1,
+              "module_id": "dialogue",
+              "content_hash": "454a353168dfd3665f59437c46a94232d3105ca6b87d1f1827b0f816d67831d9",
+              "execution_hash": "bb115ab71236903ad460ccfc5e6ad2760371ac419564ee0980039d4e3c51fdec"
+            },
+            {
+              "version": 1,
+              "module_id": "narrative-rhythm",
+              "content_hash": "c285814c4335349770c6f4d9129d8d3d0abbb818ae8584657920676207a241bb",
+              "execution_hash": "fd28f565bb770f0a5c9b36cb7466b175dfe525fe5d48966b08f17af6fb71714f"
+            },
+            {
+              "version": 1,
+              "module_id": "natural-prose",
+              "content_hash": "4c1120687e848044038bc3aa0a1ebf18c9cef9500fb179f9e2e4abf8950a3ff4",
+              "execution_hash": "b03427fdeabe1bd06227dbcddd17eb83098582ca5ead206b8d41e33d93e946c7"
+            },
+            {
+              "version": 1,
+              "module_id": "scene-execution",
+              "content_hash": "a9946e3341562845d2dd9eb947670e4ace86cd60e1bf39402cc34edba5f6e757",
+              "execution_hash": "57bb298544718832555deaa448bd4cf07da4fab5092e8e573a88373ed55cae3e"
+            }
+          ],
+          "agent_task_id": "8013866d-4f9c-4064-b0fe-459da3d813c6",
+          "agent_run_id": "e72ab564-b2e3-491e-8db6-02fea796bdff",
+          "attempt_number": 1,
+          "model_profile": {
+            "model": "mock-v1",
+            "provider": "mock",
+            "generation": {
+              "temperature": 0.2
+            },
+            "profile_id": "mock-writing",
+            "capabilities": [
+              "text"
+            ],
+            "stream_support": false,
+            "timeout_seconds": 90.0,
+            "max_output_tokens": 8192,
+            "structured_output": false
+          },
+          "model_profile_hash": "ef0752cf4f225a7b3df54823ef753ce335f6137d89a9a8c418c16691a3ffbade",
+          "writing_metadata": {
+            "kind": "writing_result",
+            "plan_id": "de1d7b66-7c1d-4dfa-9ad7-6154b1669dce",
+            "chapter_id": "2a8b4a17-5d51-433d-9e25-d64fd0690fe9",
+            "confidence": 0.95,
+            "assumptions": [],
+            "style_notes": [
+              "以动作和简短对白呈现互动；这是离线契约样例。"
+            ],
+            "plan_version": 1,
+            "plan_deviations": [],
+            "scene_execution": [
+              {
+                "scene_id": "S1",
+                "deviation": null,
+                "source_location": "院门至准备行装",
+                "planned_function": "Resolve the requested chapter objective",
+                "execution_summary": "人物通过相互询问作出下一步选择。",
+                "function_completed": true
+              }
+            ],
+            "proposed_new_facts": [],
+            "introduced_elements": [],
+            "knowledge_risk_flags": [],
+            "unresolved_questions": []
+          },
+          "check_status": "PASS",
+          "check_codes": [],
+          "lineage_valid": true
+        }
+      ]
+    },
+    {
+      "test_id": "tests/core/writing/test_output_policy.py::test_deviation_and_proposal_policy[WRITING_LOCAL_DEVIATION-None]",
+      "test_passed": true,
+      "agent_drafts": 1,
+      "generations": [
+        {
+          "writing_result_id": "f065e6d9-77ef-42a2-8dc4-b0dc9001d101",
+          "draft_id": "44d22539-1236-40c2-9112-70111feaf9de",
+          "draft_version": 1,
+          "content_sha256": "2c44c232f768090b0eed8d7929fd89c9ae6ef6e1ff129608992f80df9243d0fb",
+          "project_id": "d7e151ce-8251-45ea-b5dd-3f467315d030",
+          "chapter_id": "117fd5f2-d464-4849-ba65-404c8bb46896",
+          "workflow_id": "1a749575-3d25-4716-a545-fe10f96bac20",
+          "plan_id": "748c4d43-4434-4192-abe9-4f9ddd7f0fc6",
+          "plan_version": 1,
+          "plan_status_at_execution": "APPROVED",
+          "context_package_id": "b48b51db-e680-45d1-882d-203c72bdd5b2",
+          "context_package_hash": "f1ac8ac3f80d737ac4b52060f2bee87ba626efe10f2dfc1dbc31af070a0702c6",
+          "context_profile": "CP-005.v3",
+          "context_sources": [
+            {
+              "type": "CHAPTER_PLAN",
+              "id": "748c4d43-4434-4192-abe9-4f9ddd7f0fc6",
+              "version": 1,
+              "status": "APPROVED",
+              "future_knowledge": false,
+              "knowledge_scope": "GLOBAL_ONLY"
+            },
+            {
+              "type": "CHAPTER",
+              "id": "117fd5f2-d464-4849-ba65-404c8bb46896",
+              "version": 3,
+              "status": "DRAFT",
+              "future_knowledge": false,
+              "knowledge_scope": "GLOBAL_ONLY"
+            },
+            {
+              "type": "TASK_INPUT",
+              "id": "ffe4c444-bb29-4545-ae31-becde4a0625c",
+              "version": 8,
+              "status": "ACTIVE",
+              "future_knowledge": false,
+              "knowledge_scope": "GLOBAL_ONLY"
+            }
+          ],
+          "prompt_lineage_id": "a0871db1-cb89-4f21-9372-35e3bdcbf935",
+          "compiled_prompt_hash": "7df0e0933b7367b26fd383eac00fc12f7a148a4d9fa0640e8492ca460ab5589d",
+          "prompt_recompiled_and_verified": true,
+          "output_schema_hash": "53650a0455ea4e0e7490f3d6caa731ca67ef651626727059a9dd9bd7efd300c7",
+          "prompt_modules": [
+            {
+              "version": 1,
+              "module_id": "novel-os-core",
+              "content_hash": "8cd5e1025f58a6e6bd5a9d5380b31ed3edfea735f51100134beaa2401c874e07",
+              "execution_hash": "fb091ba33e3f0093bd02045155866d6ced39eb16e03e734492c25fdd7cbf57d0"
+            },
+            {
+              "version": 1,
+              "module_id": "writing-agent",
+              "content_hash": "70d7b146f2b2cc60e60633d918ee41f289659004e697d9f15a673e8b4dc7e2a0",
+              "execution_hash": "90ea70b3d303828b298c7107775367d750be823a04518299b2c493725143a1e0"
+            },
+            {
+              "version": 1,
+              "module_id": "write-chapter",
+              "content_hash": "fe2edd0f6f5bce0d10bafdffc8a6cda0364e5c24ccda246e0d8f3bc563a32bfc",
+              "execution_hash": "54edb5e036cd88004f68d4bcc78d37c0ded8a1f3df4f8f89eec5c8338a36f3a1"
+            },
+            {
+              "version": 1,
+              "module_id": "writing-quality",
+              "content_hash": "a526984424d46ebc4790f1104547495439000f461360533da172f3aca97ee5f4",
+              "execution_hash": "23bf396e0fc1aa9e604749bf714e74a6a628ada4530e421464d2aaee126121cf"
+            },
+            {
+              "version": 1,
+              "module_id": "character-voice",
+              "content_hash": "6dfe26a69afa215a7a016deca40aabd5c7c44011dad8a5a62673e508e5ce4f02",
+              "execution_hash": "1657b2ea1e3c38b6ebe28c19d3fef1261d6c81d0b45ebf76596cdff3ae965fcb"
+            },
+            {
+              "version": 1,
+              "module_id": "dialogue",
+              "content_hash": "454a353168dfd3665f59437c46a94232d3105ca6b87d1f1827b0f816d67831d9",
+              "execution_hash": "bb115ab71236903ad460ccfc5e6ad2760371ac419564ee0980039d4e3c51fdec"
+            },
+            {
+              "version": 1,
+              "module_id": "narrative-rhythm",
+              "content_hash": "c285814c4335349770c6f4d9129d8d3d0abbb818ae8584657920676207a241bb",
+              "execution_hash": "fd28f565bb770f0a5c9b36cb7466b175dfe525fe5d48966b08f17af6fb71714f"
+            },
+            {
+              "version": 1,
+              "module_id": "natural-prose",
+              "content_hash": "4c1120687e848044038bc3aa0a1ebf18c9cef9500fb179f9e2e4abf8950a3ff4",
+              "execution_hash": "b03427fdeabe1bd06227dbcddd17eb83098582ca5ead206b8d41e33d93e946c7"
+            },
+            {
+              "version": 1,
+              "module_id": "scene-execution",
+              "content_hash": "a9946e3341562845d2dd9eb947670e4ace86cd60e1bf39402cc34edba5f6e757",
+              "execution_hash": "57bb298544718832555deaa448bd4cf07da4fab5092e8e573a88373ed55cae3e"
+            }
+          ],
+          "agent_task_id": "ffe4c444-bb29-4545-ae31-becde4a0625c",
+          "agent_run_id": "48b26b4a-beed-4c5a-b53b-fbd98bdd6319",
+          "attempt_number": 1,
+          "model_profile": {
+            "model": "mock-v1",
+            "provider": "mock",
+            "generation": {
+              "temperature": 0.2
+            },
+            "profile_id": "mock-writing",
+            "capabilities": [
+              "text"
+            ],
+            "stream_support": false,
+            "timeout_seconds": 90.0,
+            "max_output_tokens": 8192,
+            "structured_output": false
+          },
+          "model_profile_hash": "ef0752cf4f225a7b3df54823ef753ce335f6137d89a9a8c418c16691a3ffbade",
+          "writing_metadata": {
+            "kind": "writing_result",
+            "plan_id": "748c4d43-4434-4192-abe9-4f9ddd7f0fc6",
+            "chapter_id": "117fd5f2-d464-4849-ba65-404c8bb46896",
+            "confidence": 0.95,
+            "assumptions": [],
+            "style_notes": [
+              "以动作和简短对白呈现互动；这是离线契约样例。"
+            ],
+            "plan_version": 1,
+            "plan_deviations": [
+              {
+                "type": "LOCAL_EXECUTION",
+                "impact": "供后续独立审查",
+                "reason": "样例偏离",
+                "location": "结尾",
+                "severity": "LOCAL",
+                "confidence": 0.9,
+                "actual_behavior": "调整执行方式",
+                "requires_replan": false,
+                "planned_behavior": "完成已批准场景功能"
+              }
+            ],
+            "scene_execution": [
+              {
+                "scene_id": "S1",
+                "deviation": null,
+                "source_location": "院门至准备行装",
+                "planned_function": "Resolve the requested chapter objective",
+                "execution_summary": "人物通过相互询问作出下一步选择。",
+                "function_completed": true
+              }
+            ],
+            "proposed_new_facts": [],
+            "introduced_elements": [],
+            "knowledge_risk_flags": [],
+            "unresolved_questions": []
+          },
+          "check_status": "PASS",
+          "check_codes": [],
+          "lineage_valid": true
+        }
+      ]
+    },
+    {
+      "test_id": "tests/core/writing/test_output_policy.py::test_deviation_and_proposal_policy[WRITING_MODERATE_DEVIATION-None]",
+      "test_passed": true,
+      "agent_drafts": 1,
+      "generations": [
+        {
+          "writing_result_id": "8bab9caa-60c8-4c1e-a18b-2edd7a7fe31a",
+          "draft_id": "4fbc975a-34de-4c53-8187-12b32a58af4d",
+          "draft_version": 1,
+          "content_sha256": "2c44c232f768090b0eed8d7929fd89c9ae6ef6e1ff129608992f80df9243d0fb",
+          "project_id": "2298b058-486a-42aa-88af-470b92ee74c6",
+          "chapter_id": "3587f387-dbf5-411a-990f-86dbb9007c55",
+          "workflow_id": "32c7fc53-efe0-4313-8671-66df781c1dca",
+          "plan_id": "26ea91e0-afba-4e7e-961a-8fba55970ce7",
+          "plan_version": 1,
+          "plan_status_at_execution": "APPROVED",
+          "context_package_id": "fb24017b-cfac-4e8d-ab23-c9d8c9732add",
+          "context_package_hash": "4a6ab86303160d38395da4061e68ca0340fda1baec62c1f896c2f956f97ac28d",
+          "context_profile": "CP-005.v3",
+          "context_sources": [
+            {
+              "type": "CHAPTER_PLAN",
+              "id": "26ea91e0-afba-4e7e-961a-8fba55970ce7",
+              "version": 1,
+              "status": "APPROVED",
+              "future_knowledge": false,
+              "knowledge_scope": "GLOBAL_ONLY"
+            },
+            {
+              "type": "CHAPTER",
+              "id": "3587f387-dbf5-411a-990f-86dbb9007c55",
+              "version": 3,
+              "status": "DRAFT",
+              "future_knowledge": false,
+              "knowledge_scope": "GLOBAL_ONLY"
+            },
+            {
+              "type": "TASK_INPUT",
+              "id": "0842a5d5-7a43-445f-bc36-75546a52faf2",
+              "version": 8,
+              "status": "ACTIVE",
+              "future_knowledge": false,
+              "knowledge_scope": "GLOBAL_ONLY"
+            }
+          ],
+          "prompt_lineage_id": "58018f2d-4b0b-43cc-81c2-9cf2abc3aa47",
+          "compiled_prompt_hash": "8cd9a4bc436be95107a9bfb078932fe86716a16659869ea5e2d98f33447c5ad6",
+          "prompt_recompiled_and_verified": true,
+          "output_schema_hash": "53650a0455ea4e0e7490f3d6caa731ca67ef651626727059a9dd9bd7efd300c7",
+          "prompt_modules": [
+            {
+              "version": 1,
+              "module_id": "novel-os-core",
+              "content_hash": "8cd5e1025f58a6e6bd5a9d5380b31ed3edfea735f51100134beaa2401c874e07",
+              "execution_hash": "fb091ba33e3f0093bd02045155866d6ced39eb16e03e734492c25fdd7cbf57d0"
+            },
+            {
+              "version": 1,
+              "module_id": "writing-agent",
+              "content_hash": "70d7b146f2b2cc60e60633d918ee41f289659004e697d9f15a673e8b4dc7e2a0",
+              "execution_hash": "90ea70b3d303828b298c7107775367d750be823a04518299b2c493725143a1e0"
+            },
+            {
+              "version": 1,
+              "module_id": "write-chapter",
+              "content_hash": "fe2edd0f6f5bce0d10bafdffc8a6cda0364e5c24ccda246e0d8f3bc563a32bfc",
+              "execution_hash": "54edb5e036cd88004f68d4bcc78d37c0ded8a1f3df4f8f89eec5c8338a36f3a1"
+            },
+            {
+              "version": 1,
+              "module_id": "writing-quality",
+              "content_hash": "a526984424d46ebc4790f1104547495439000f461360533da172f3aca97ee5f4",
+              "execution_hash": "23bf396e0fc1aa9e604749bf714e74a6a628ada4530e421464d2aaee126121cf"
+            },
+            {
+              "version": 1,
+              "module_id": "character-voice",
+              "content_hash": "6dfe26a69afa215a7a016deca40aabd5c7c44011dad8a5a62673e508e5ce4f02",
+              "execution_hash": "1657b2ea1e3c38b6ebe28c19d3fef1261d6c81d0b45ebf76596cdff3ae965fcb"
+            },
+            {
+              "version": 1,
+              "module_id": "dialogue",
+              "content_hash": "454a353168dfd3665f59437c46a94232d3105ca6b87d1f1827b0f816d67831d9",
+              "execution_hash": "bb115ab71236903ad460ccfc5e6ad2760371ac419564ee0980039d4e3c51fdec"
+            },
+            {
+              "version": 1,
+              "module_id": "narrative-rhythm",
+              "content_hash": "c285814c4335349770c6f4d9129d8d3d0abbb818ae8584657920676207a241bb",
+              "execution_hash": "fd28f565bb770f0a5c9b36cb7466b175dfe525fe5d48966b08f17af6fb71714f"
+            },
+            {
+              "version": 1,
+              "module_id": "natural-prose",
+              "content_hash": "4c1120687e848044038bc3aa0a1ebf18c9cef9500fb179f9e2e4abf8950a3ff4",
+              "execution_hash": "b03427fdeabe1bd06227dbcddd17eb83098582ca5ead206b8d41e33d93e946c7"
+            },
+            {
+              "version": 1,
+              "module_id": "scene-execution",
+              "content_hash": "a9946e3341562845d2dd9eb947670e4ace86cd60e1bf39402cc34edba5f6e757",
+              "execution_hash": "57bb298544718832555deaa448bd4cf07da4fab5092e8e573a88373ed55cae3e"
+            }
+          ],
+          "agent_task_id": "0842a5d5-7a43-445f-bc36-75546a52faf2",
+          "agent_run_id": "52ae4858-f325-4682-ac57-c7da8a51caef",
+          "attempt_number": 1,
+          "model_profile": {
+            "model": "mock-v1",
+            "provider": "mock",
+            "generation": {
+              "temperature": 0.2
+            },
+            "profile_id": "mock-writing",
+            "capabilities": [
+              "text"
+            ],
+            "stream_support": false,
+            "timeout_seconds": 90.0,
+            "max_output_tokens": 8192,
+            "structured_output": false
+          },
+          "model_profile_hash": "ef0752cf4f225a7b3df54823ef753ce335f6137d89a9a8c418c16691a3ffbade",
+          "writing_metadata": {
+            "kind": "writing_result",
+            "plan_id": "26ea91e0-afba-4e7e-961a-8fba55970ce7",
+            "chapter_id": "3587f387-dbf5-411a-990f-86dbb9007c55",
+            "confidence": 0.95,
+            "assumptions": [],
+            "style_notes": [
+              "以动作和简短对白呈现互动；这是离线契约样例。"
+            ],
+            "plan_version": 1,
+            "plan_deviations": [
+              {
+                "type": "LOCAL_EXECUTION",
+                "impact": "供后续独立审查",
+                "reason": "样例偏离",
+                "location": "结尾",
+                "severity": "MODERATE",
+                "confidence": 0.9,
+                "actual_behavior": "调整执行方式",
+                "requires_replan": false,
+                "planned_behavior": "完成已批准场景功能"
+              }
+            ],
+            "scene_execution": [
+              {
+                "scene_id": "S1",
+                "deviation": null,
+                "source_location": "院门至准备行装",
+                "planned_function": "Resolve the requested chapter objective",
+                "execution_summary": "人物通过相互询问作出下一步选择。",
+                "function_completed": true
+              }
+            ],
+            "proposed_new_facts": [],
+            "introduced_elements": [],
+            "knowledge_risk_flags": [],
+            "unresolved_questions": []
+          },
+          "check_status": "PASS",
+          "check_codes": [],
+          "lineage_valid": true
+        }
+      ]
+    },
+    {
+      "test_id": "tests/core/writing/test_output_policy.py::test_deviation_and_proposal_policy[WRITING_MAJOR_DEVIATION-MAJOR_PLAN_DEVIATION]",
+      "test_passed": true,
+      "agent_drafts": 0,
+      "generations": [
+        {
+          "writing_result_id": "72001ec7-0110-41ba-bb58-89cb41e57446",
+          "draft_id": null,
+          "draft_version": null,
+          "content_sha256": "2c44c232f768090b0eed8d7929fd89c9ae6ef6e1ff129608992f80df9243d0fb",
+          "project_id": "990cbafc-501a-4b5a-afd1-4a6ae01951be",
+          "chapter_id": "9d0b350f-c6b7-470b-8248-db9923235e41",
+          "workflow_id": "a279d23f-0773-4bf2-a01f-22e9d984f869",
+          "plan_id": "7a7139ef-ab0a-405d-9d18-808b3541949c",
+          "plan_version": 1,
+          "plan_status_at_execution": "APPROVED",
+          "context_package_id": "62d6279d-fe9a-4ee9-8383-0ded3397b086",
+          "context_package_hash": "8da502f708828001ea53d8cd9c3aabc7bf1a2dfaf9f70f026665c9848f667c39",
+          "context_profile": "CP-005.v3",
+          "context_sources": [
+            {
+              "type": "CHAPTER_PLAN",
+              "id": "7a7139ef-ab0a-405d-9d18-808b3541949c",
+              "version": 1,
+              "status": "APPROVED",
+              "future_knowledge": false,
+              "knowledge_scope": "GLOBAL_ONLY"
+            },
+            {
+              "type": "CHAPTER",
+              "id": "9d0b350f-c6b7-470b-8248-db9923235e41",
+              "version": 3,
+              "status": "DRAFT",
+              "future_knowledge": false,
+              "knowledge_scope": "GLOBAL_ONLY"
+            },
+            {
+              "type": "TASK_INPUT",
+              "id": "dc8f7c0c-8f69-472d-95aa-714e088e9bcd",
+              "version": 8,
+              "status": "ACTIVE",
+              "future_knowledge": false,
+              "knowledge_scope": "GLOBAL_ONLY"
+            }
+          ],
+          "prompt_lineage_id": "a5210d5d-8bb0-4fbd-8dc1-6d1075fab2b5",
+          "compiled_prompt_hash": "0fbd6986f55b0ea1d9eb4c0e32aca5f98dcb7b8de11ee6fc13270dbeeb4515e4",
+          "prompt_recompiled_and_verified": true,
+          "output_schema_hash": "53650a0455ea4e0e7490f3d6caa731ca67ef651626727059a9dd9bd7efd300c7",
+          "prompt_modules": [
+            {
+              "version": 1,
+              "module_id": "novel-os-core",
+              "content_hash": "8cd5e1025f58a6e6bd5a9d5380b31ed3edfea735f51100134beaa2401c874e07",
+              "execution_hash": "fb091ba33e3f0093bd02045155866d6ced39eb16e03e734492c25fdd7cbf57d0"
+            },
+            {
+              "version": 1,
+              "module_id": "writing-agent",
+              "content_hash": "70d7b146f2b2cc60e60633d918ee41f289659004e697d9f15a673e8b4dc7e2a0",
+              "execution_hash": "90ea70b3d303828b298c7107775367d750be823a04518299b2c493725143a1e0"
+            },
+            {
+              "version": 1,
+              "module_id": "write-chapter",
+              "content_hash": "fe2edd0f6f5bce0d10bafdffc8a6cda0364e5c24ccda246e0d8f3bc563a32bfc",
+              "execution_hash": "54edb5e036cd88004f68d4bcc78d37c0ded8a1f3df4f8f89eec5c8338a36f3a1"
+            },
+            {
+              "version": 1,
+              "module_id": "writing-quality",
+              "content_hash": "a526984424d46ebc4790f1104547495439000f461360533da172f3aca97ee5f4",
+              "execution_hash": "23bf396e0fc1aa9e604749bf714e74a6a628ada4530e421464d2aaee126121cf"
+            },
+            {
+              "version": 1,
+              "module_id": "character-voice",
+              "content_hash": "6dfe26a69afa215a7a016deca40aabd5c7c44011dad8a5a62673e508e5ce4f02",
+              "execution_hash": "1657b2ea1e3c38b6ebe28c19d3fef1261d6c81d0b45ebf76596cdff3ae965fcb"
+            },
+            {
+              "version": 1,
+              "module_id": "dialogue",
+              "content_hash": "454a353168dfd3665f59437c46a94232d3105ca6b87d1f1827b0f816d67831d9",
+              "execution_hash": "bb115ab71236903ad460ccfc5e6ad2760371ac419564ee0980039d4e3c51fdec"
+            },
+            {
+              "version": 1,
+              "module_id": "narrative-rhythm",
+              "content_hash": "c285814c4335349770c6f4d9129d8d3d0abbb818ae8584657920676207a241bb",
+              "execution_hash": "fd28f565bb770f0a5c9b36cb7466b175dfe525fe5d48966b08f17af6fb71714f"
+            },
+            {
+              "version": 1,
+              "module_id": "natural-prose",
+              "content_hash": "4c1120687e848044038bc3aa0a1ebf18c9cef9500fb179f9e2e4abf8950a3ff4",
+              "execution_hash": "b03427fdeabe1bd06227dbcddd17eb83098582ca5ead206b8d41e33d93e946c7"
+            },
+            {
+              "version": 1,
+              "module_id": "scene-execution",
+              "content_hash": "a9946e3341562845d2dd9eb947670e4ace86cd60e1bf39402cc34edba5f6e757",
+              "execution_hash": "57bb298544718832555deaa448bd4cf07da4fab5092e8e573a88373ed55cae3e"
+            }
+          ],
+          "agent_task_id": "dc8f7c0c-8f69-472d-95aa-714e088e9bcd",
+          "agent_run_id": "ef39800b-303d-45bb-9ffd-3756a19647e3",
+          "attempt_number": 1,
+          "model_profile": {
+            "model": "mock-v1",
+            "provider": "mock",
+            "generation": {
+              "temperature": 0.2
+            },
+            "profile_id": "mock-writing",
+            "capabilities": [
+              "text"
+            ],
+            "stream_support": false,
+            "timeout_seconds": 90.0,
+            "max_output_tokens": 8192,
+            "structured_output": false
+          },
+          "model_profile_hash": "ef0752cf4f225a7b3df54823ef753ce335f6137d89a9a8c418c16691a3ffbade",
+          "writing_metadata": {
+            "kind": "writing_result",
+            "plan_id": "7a7139ef-ab0a-405d-9d18-808b3541949c",
+            "chapter_id": "9d0b350f-c6b7-470b-8248-db9923235e41",
+            "confidence": 0.95,
+            "assumptions": [],
+            "style_notes": [
+              "以动作和简短对白呈现互动；这是离线契约样例。"
+            ],
+            "plan_version": 1,
+            "plan_deviations": [
+              {
+                "type": "MAJOR_DIRECTION",
+                "impact": "供后续独立审查",
+                "reason": "样例偏离",
+                "location": "结尾",
+                "severity": "MAJOR",
+                "confidence": 0.9,
+                "actual_behavior": "调整执行方式",
+                "requires_replan": true,
+                "planned_behavior": "完成已批准场景功能"
+              }
+            ],
+            "scene_execution": [
+              {
+                "scene_id": "S1",
+                "deviation": null,
+                "source_location": "院门至准备行装",
+                "planned_function": "Resolve the requested chapter objective",
+                "execution_summary": "人物通过相互询问作出下一步选择。",
+                "function_completed": true
+              }
+            ],
+            "proposed_new_facts": [],
+            "introduced_elements": [],
+            "knowledge_risk_flags": [],
+            "unresolved_questions": []
+          },
+          "check_status": "BLOCKED",
+          "check_codes": [
+            "MAJOR_PLAN_DEVIATION"
+          ],
+          "lineage_valid": true
+        }
+      ]
+    },
+    {
+      "test_id": "tests/core/writing/test_output_policy.py::test_deviation_and_proposal_policy[WRITING_PROPOSED_FACT-None]",
+      "test_passed": true,
+      "agent_drafts": 1,
+      "generations": [
+        {
+          "writing_result_id": "4bd0eba2-c8b2-43c4-b51a-9ca75acc7577",
+          "draft_id": "864b08df-fba7-449c-a181-4365241acd15",
+          "draft_version": 1,
+          "content_sha256": "2c44c232f768090b0eed8d7929fd89c9ae6ef6e1ff129608992f80df9243d0fb",
+          "project_id": "f32286c3-2039-4478-b98a-135a80ae551e",
+          "chapter_id": "fa6116e0-3d1c-436d-a709-13e6642e4185",
+          "workflow_id": "f6e519ca-d7bb-4bdb-81e6-bbf432062daf",
+          "plan_id": "787a3e17-e2f7-40be-8dfa-d7bf4bccfeec",
+          "plan_version": 1,
+          "plan_status_at_execution": "APPROVED",
+          "context_package_id": "dbe89b6f-264a-4a77-9f84-efee7d4f094b",
+          "context_package_hash": "61d16a4a530ef5ae2b3c8ebe30900a9a09d1d730636412f611cde316457849a8",
+          "context_profile": "CP-005.v3",
+          "context_sources": [
+            {
+              "type": "CHAPTER_PLAN",
+              "id": "787a3e17-e2f7-40be-8dfa-d7bf4bccfeec",
+              "version": 1,
+              "status": "APPROVED",
+              "future_knowledge": false,
+              "knowledge_scope": "GLOBAL_ONLY"
+            },
+            {
+              "type": "CHAPTER",
+              "id": "fa6116e0-3d1c-436d-a709-13e6642e4185",
+              "version": 3,
+              "status": "DRAFT",
+              "future_knowledge": false,
+              "knowledge_scope": "GLOBAL_ONLY"
+            },
+            {
+              "type": "TASK_INPUT",
+              "id": "146d06e8-040c-4654-9cae-7005aee61075",
+              "version": 8,
+              "status": "ACTIVE",
+              "future_knowledge": false,
+              "knowledge_scope": "GLOBAL_ONLY"
+            }
+          ],
+          "prompt_lineage_id": "322efe7c-1c90-4d6e-99ba-cff39a3d3217",
+          "compiled_prompt_hash": "a4a2afe75f5310ed920d026aa3328735887db11ccff9418d9a3646048a2da6db",
+          "prompt_recompiled_and_verified": true,
+          "output_schema_hash": "53650a0455ea4e0e7490f3d6caa731ca67ef651626727059a9dd9bd7efd300c7",
+          "prompt_modules": [
+            {
+              "version": 1,
+              "module_id": "novel-os-core",
+              "content_hash": "8cd5e1025f58a6e6bd5a9d5380b31ed3edfea735f51100134beaa2401c874e07",
+              "execution_hash": "fb091ba33e3f0093bd02045155866d6ced39eb16e03e734492c25fdd7cbf57d0"
+            },
+            {
+              "version": 1,
+              "module_id": "writing-agent",
+              "content_hash": "70d7b146f2b2cc60e60633d918ee41f289659004e697d9f15a673e8b4dc7e2a0",
+              "execution_hash": "90ea70b3d303828b298c7107775367d750be823a04518299b2c493725143a1e0"
+            },
+            {
+              "version": 1,
+              "module_id": "write-chapter",
+              "content_hash": "fe2edd0f6f5bce0d10bafdffc8a6cda0364e5c24ccda246e0d8f3bc563a32bfc",
+              "execution_hash": "54edb5e036cd88004f68d4bcc78d37c0ded8a1f3df4f8f89eec5c8338a36f3a1"
+            },
+            {
+              "version": 1,
+              "module_id": "writing-quality",
+              "content_hash": "a526984424d46ebc4790f1104547495439000f461360533da172f3aca97ee5f4",
+              "execution_hash": "23bf396e0fc1aa9e604749bf714e74a6a628ada4530e421464d2aaee126121cf"
+            },
+            {
+              "version": 1,
+              "module_id": "character-voice",
+              "content_hash": "6dfe26a69afa215a7a016deca40aabd5c7c44011dad8a5a62673e508e5ce4f02",
+              "execution_hash": "1657b2ea1e3c38b6ebe28c19d3fef1261d6c81d0b45ebf76596cdff3ae965fcb"
+            },
+            {
+              "version": 1,
+              "module_id": "dialogue",
+              "content_hash": "454a353168dfd3665f59437c46a94232d3105ca6b87d1f1827b0f816d67831d9",
+              "execution_hash": "bb115ab71236903ad460ccfc5e6ad2760371ac419564ee0980039d4e3c51fdec"
+            },
+            {
+              "version": 1,
+              "module_id": "narrative-rhythm",
+              "content_hash": "c285814c4335349770c6f4d9129d8d3d0abbb818ae8584657920676207a241bb",
+              "execution_hash": "fd28f565bb770f0a5c9b36cb7466b175dfe525fe5d48966b08f17af6fb71714f"
+            },
+            {
+              "version": 1,
+              "module_id": "natural-prose",
+              "content_hash": "4c1120687e848044038bc3aa0a1ebf18c9cef9500fb179f9e2e4abf8950a3ff4",
+              "execution_hash": "b03427fdeabe1bd06227dbcddd17eb83098582ca5ead206b8d41e33d93e946c7"
+            },
+            {
+              "version": 1,
+              "module_id": "scene-execution",
+              "content_hash": "a9946e3341562845d2dd9eb947670e4ace86cd60e1bf39402cc34edba5f6e757",
+              "execution_hash": "57bb298544718832555deaa448bd4cf07da4fab5092e8e573a88373ed55cae3e"
+            }
+          ],
+          "agent_task_id": "146d06e8-040c-4654-9cae-7005aee61075",
+          "agent_run_id": "3269a070-976e-46cc-bb37-6c4f0bc2ff16",
+          "attempt_number": 1,
+          "model_profile": {
+            "model": "mock-v1",
+            "provider": "mock",
+            "generation": {
+              "temperature": 0.2
+            },
+            "profile_id": "mock-writing",
+            "capabilities": [
+              "text"
+            ],
+            "stream_support": false,
+            "timeout_seconds": 90.0,
+            "max_output_tokens": 8192,
+            "structured_output": false
+          },
+          "model_profile_hash": "ef0752cf4f225a7b3df54823ef753ce335f6137d89a9a8c418c16691a3ffbade",
+          "writing_metadata": {
+            "kind": "writing_result",
+            "plan_id": "787a3e17-e2f7-40be-8dfa-d7bf4bccfeec",
+            "chapter_id": "fa6116e0-3d1c-436d-a709-13e6642e4185",
+            "confidence": 0.95,
+            "assumptions": [],
+            "style_notes": [
+              "以动作和简短对白呈现互动；这是离线契约样例。"
+            ],
+            "plan_version": 1,
+            "plan_deviations": [],
+            "scene_execution": [
+              {
+                "scene_id": "S1",
+                "deviation": null,
+                "source_location": "院门至准备行装",
+                "planned_function": "Resolve the requested chapter objective",
+                "execution_summary": "人物通过相互询问作出下一步选择。",
+                "function_completed": true
+              }
+            ],
+            "proposed_new_facts": [
+              {
+                "fact": "屋内留有旧地图",
+                "scope": "当前场景",
+                "reason": "支撑局部互动",
+                "confidence": 0.8,
+                "importance": "MINOR",
+                "source_location": "地图展开处"
+              }
+            ],
+            "introduced_elements": [],
+            "knowledge_risk_flags": [],
+            "unresolved_questions": []
+          },
+          "check_status": "PASS",
+          "check_codes": [],
+          "lineage_valid": true
+        }
+      ]
+    },
+    {
+      "test_id": "tests/core/writing/test_output_policy.py::test_deviation_and_proposal_policy[WRITING_KNOWLEDGE_RISK-None]",
+      "test_passed": true,
+      "agent_drafts": 1,
+      "generations": [
+        {
+          "writing_result_id": "bcb3c4fa-97a7-411f-9f7f-cd409c6834cc",
+          "draft_id": "e7eb3233-57e7-4424-a885-549130535d2c",
+          "draft_version": 1,
+          "content_sha256": "2c44c232f768090b0eed8d7929fd89c9ae6ef6e1ff129608992f80df9243d0fb",
+          "project_id": "7baedc89-9ebb-41aa-968b-85785b4308a3",
+          "chapter_id": "8dc32594-3195-4e61-922b-0190d0a3f179",
+          "workflow_id": "ba0eb230-3e5b-4917-838a-75f96c077462",
+          "plan_id": "db8c1ce9-db40-447e-bf8a-22df6def7c70",
+          "plan_version": 1,
+          "plan_status_at_execution": "APPROVED",
+          "context_package_id": "aab4d609-3fa9-4c91-bc73-459975eee8b7",
+          "context_package_hash": "0d7f880b2308fed73eeadd87f5885aa94c35a75570150563d541c3358017268e",
+          "context_profile": "CP-005.v3",
+          "context_sources": [
+            {
+              "type": "CHAPTER_PLAN",
+              "id": "db8c1ce9-db40-447e-bf8a-22df6def7c70",
+              "version": 1,
+              "status": "APPROVED",
+              "future_knowledge": false,
+              "knowledge_scope": "GLOBAL_ONLY"
+            },
+            {
+              "type": "CHAPTER",
+              "id": "8dc32594-3195-4e61-922b-0190d0a3f179",
+              "version": 3,
+              "status": "DRAFT",
+              "future_knowledge": false,
+              "knowledge_scope": "GLOBAL_ONLY"
+            },
+            {
+              "type": "TASK_INPUT",
+              "id": "46b2e66e-c73d-4ac6-b4ef-74deb1ffc1ca",
+              "version": 8,
+              "status": "ACTIVE",
+              "future_knowledge": false,
+              "knowledge_scope": "GLOBAL_ONLY"
+            }
+          ],
+          "prompt_lineage_id": "b14a5527-1f91-4751-96aa-791e10308716",
+          "compiled_prompt_hash": "f32cc01e6200eb778d2f70c85b870319cd013685502f7354ce0bc6ddc376fc7f",
+          "prompt_recompiled_and_verified": true,
+          "output_schema_hash": "53650a0455ea4e0e7490f3d6caa731ca67ef651626727059a9dd9bd7efd300c7",
+          "prompt_modules": [
+            {
+              "version": 1,
+              "module_id": "novel-os-core",
+              "content_hash": "8cd5e1025f58a6e6bd5a9d5380b31ed3edfea735f51100134beaa2401c874e07",
+              "execution_hash": "fb091ba33e3f0093bd02045155866d6ced39eb16e03e734492c25fdd7cbf57d0"
+            },
+            {
+              "version": 1,
+              "module_id": "writing-agent",
+              "content_hash": "70d7b146f2b2cc60e60633d918ee41f289659004e697d9f15a673e8b4dc7e2a0",
+              "execution_hash": "90ea70b3d303828b298c7107775367d750be823a04518299b2c493725143a1e0"
+            },
+            {
+              "version": 1,
+              "module_id": "write-chapter",
+              "content_hash": "fe2edd0f6f5bce0d10bafdffc8a6cda0364e5c24ccda246e0d8f3bc563a32bfc",
+              "execution_hash": "54edb5e036cd88004f68d4bcc78d37c0ded8a1f3df4f8f89eec5c8338a36f3a1"
+            },
+            {
+              "version": 1,
+              "module_id": "writing-quality",
+              "content_hash": "a526984424d46ebc4790f1104547495439000f461360533da172f3aca97ee5f4",
+              "execution_hash": "23bf396e0fc1aa9e604749bf714e74a6a628ada4530e421464d2aaee126121cf"
+            },
+            {
+              "version": 1,
+              "module_id": "character-voice",
+              "content_hash": "6dfe26a69afa215a7a016deca40aabd5c7c44011dad8a5a62673e508e5ce4f02",
+              "execution_hash": "1657b2ea1e3c38b6ebe28c19d3fef1261d6c81d0b45ebf76596cdff3ae965fcb"
+            },
+            {
+              "version": 1,
+              "module_id": "dialogue",
+              "content_hash": "454a353168dfd3665f59437c46a94232d3105ca6b87d1f1827b0f816d67831d9",
+              "execution_hash": "bb115ab71236903ad460ccfc5e6ad2760371ac419564ee0980039d4e3c51fdec"
+            },
+            {
+              "version": 1,
+              "module_id": "narrative-rhythm",
+              "content_hash": "c285814c4335349770c6f4d9129d8d3d0abbb818ae8584657920676207a241bb",
+              "execution_hash": "fd28f565bb770f0a5c9b36cb7466b175dfe525fe5d48966b08f17af6fb71714f"
+            },
+            {
+              "version": 1,
+              "module_id": "natural-prose",
+              "content_hash": "4c1120687e848044038bc3aa0a1ebf18c9cef9500fb179f9e2e4abf8950a3ff4",
+              "execution_hash": "b03427fdeabe1bd06227dbcddd17eb83098582ca5ead206b8d41e33d93e946c7"
+            },
+            {
+              "version": 1,
+              "module_id": "scene-execution",
+              "content_hash": "a9946e3341562845d2dd9eb947670e4ace86cd60e1bf39402cc34edba5f6e757",
+              "execution_hash": "57bb298544718832555deaa448bd4cf07da4fab5092e8e573a88373ed55cae3e"
+            }
+          ],
+          "agent_task_id": "46b2e66e-c73d-4ac6-b4ef-74deb1ffc1ca",
+          "agent_run_id": "d415acb3-6e3e-4e36-90b2-c6643741bf19",
+          "attempt_number": 1,
+          "model_profile": {
+            "model": "mock-v1",
+            "provider": "mock",
+            "generation": {
+              "temperature": 0.2
+            },
+            "profile_id": "mock-writing",
+            "capabilities": [
+              "text"
+            ],
+            "stream_support": false,
+            "timeout_seconds": 90.0,
+            "max_output_tokens": 8192,
+            "structured_output": false
+          },
+          "model_profile_hash": "ef0752cf4f225a7b3df54823ef753ce335f6137d89a9a8c418c16691a3ffbade",
+          "writing_metadata": {
+            "kind": "writing_result",
+            "plan_id": "db8c1ce9-db40-447e-bf8a-22df6def7c70",
+            "chapter_id": "8dc32594-3195-4e61-922b-0190d0a3f179",
+            "confidence": 0.95,
+            "assumptions": [],
+            "style_notes": [
+              "以动作和简短对白呈现互动；这是离线契约样例。"
+            ],
+            "plan_version": 1,
+            "plan_deviations": [],
+            "scene_execution": [
+              {
+                "scene_id": "S1",
+                "deviation": null,
+                "source_location": "院门至准备行装",
+                "planned_function": "Resolve the requested chapter objective",
+                "execution_summary": "人物通过相互询问作出下一步选择。",
+                "function_completed": true
+              }
+            ],
+            "proposed_new_facts": [],
+            "introduced_elements": [],
+            "knowledge_risk_flags": [
+              {
+                "fact": "河边道路是否畅通",
+                "risk": "仅为推测，未提升成已知事实",
+                "character_ref": "阿岚",
+                "confirmed_leak": false,
+                "knowledge_type": "SUSPICION",
+                "source_location": "讨论路线"
+              }
+            ],
+            "unresolved_questions": []
+          },
+          "check_status": "PASS",
+          "check_codes": [],
+          "lineage_valid": true
+        }
+      ]
+    },
+    {
+      "test_id": "tests/core/writing/test_output_policy.py::test_major_change_cannot_hide_behind_local_label[REQUIRED_OUTCOME]",
+      "test_passed": true,
+      "agent_drafts": 0,
+      "generations": [
+        {
+          "writing_result_id": "d6d5de10-78d9-4482-bc89-bd783aac852e",
+          "draft_id": null,
+          "draft_version": null,
+          "content_sha256": "2c44c232f768090b0eed8d7929fd89c9ae6ef6e1ff129608992f80df9243d0fb",
+          "project_id": "58ff2644-1635-494c-8538-f2e7e91af575",
+          "chapter_id": "ec88199b-65bd-495d-a2fc-8d7044a95465",
+          "workflow_id": "50ec521b-5c0c-4b26-8c68-738e76377287",
+          "plan_id": "5e3b7e7d-9903-4149-99ac-3e99ee887ef7",
+          "plan_version": 1,
+          "plan_status_at_execution": "APPROVED",
+          "context_package_id": "8f48f1cd-ddee-4d22-bb88-b79b4c17a8d5",
+          "context_package_hash": "9638eb09763ed7ad017748c8c526f97fe9c2f2f6b66bf87c44328453e7905a8a",
+          "context_profile": "CP-005.v3",
+          "context_sources": [
+            {
+              "type": "CHAPTER_PLAN",
+              "id": "5e3b7e7d-9903-4149-99ac-3e99ee887ef7",
+              "version": 1,
+              "status": "APPROVED",
+              "future_knowledge": false,
+              "knowledge_scope": "GLOBAL_ONLY"
+            },
+            {
+              "type": "CHAPTER",
+              "id": "ec88199b-65bd-495d-a2fc-8d7044a95465",
+              "version": 3,
+              "status": "DRAFT",
+              "future_knowledge": false,
+              "knowledge_scope": "GLOBAL_ONLY"
+            },
+            {
+              "type": "TASK_INPUT",
+              "id": "f34a3ece-5a04-46ac-862a-fc2ed5f5da71",
+              "version": 8,
+              "status": "ACTIVE",
+              "future_knowledge": false,
+              "knowledge_scope": "GLOBAL_ONLY"
+            }
+          ],
+          "prompt_lineage_id": "c0746469-f2ab-4d0d-a22f-a9d377e1e070",
+          "compiled_prompt_hash": "a605b712b0d87e0288eed7b72a19579b45bc1842b02c2bf701b696863be26416",
+          "prompt_recompiled_and_verified": true,
+          "output_schema_hash": "53650a0455ea4e0e7490f3d6caa731ca67ef651626727059a9dd9bd7efd300c7",
+          "prompt_modules": [
+            {
+              "version": 1,
+              "module_id": "novel-os-core",
+              "content_hash": "8cd5e1025f58a6e6bd5a9d5380b31ed3edfea735f51100134beaa2401c874e07",
+              "execution_hash": "fb091ba33e3f0093bd02045155866d6ced39eb16e03e734492c25fdd7cbf57d0"
+            },
+            {
+              "version": 1,
+              "module_id": "writing-agent",
+              "content_hash": "70d7b146f2b2cc60e60633d918ee41f289659004e697d9f15a673e8b4dc7e2a0",
+              "execution_hash": "90ea70b3d303828b298c7107775367d750be823a04518299b2c493725143a1e0"
+            },
+            {
+              "version": 1,
+              "module_id": "write-chapter",
+              "content_hash": "fe2edd0f6f5bce0d10bafdffc8a6cda0364e5c24ccda246e0d8f3bc563a32bfc",
+              "execution_hash": "54edb5e036cd88004f68d4bcc78d37c0ded8a1f3df4f8f89eec5c8338a36f3a1"
+            },
+            {
+              "version": 1,
+              "module_id": "writing-quality",
+              "content_hash": "a526984424d46ebc4790f1104547495439000f461360533da172f3aca97ee5f4",
+              "execution_hash": "23bf396e0fc1aa9e604749bf714e74a6a628ada4530e421464d2aaee126121cf"
+            },
+            {
+              "version": 1,
+              "module_id": "character-voice",
+              "content_hash": "6dfe26a69afa215a7a016deca40aabd5c7c44011dad8a5a62673e508e5ce4f02",
+              "execution_hash": "1657b2ea1e3c38b6ebe28c19d3fef1261d6c81d0b45ebf76596cdff3ae965fcb"
+            },
+            {
+              "version": 1,
+              "module_id": "dialogue",
+              "content_hash": "454a353168dfd3665f59437c46a94232d3105ca6b87d1f1827b0f816d67831d9",
+              "execution_hash": "bb115ab71236903ad460ccfc5e6ad2760371ac419564ee0980039d4e3c51fdec"
+            },
+            {
+              "version": 1,
+              "module_id": "narrative-rhythm",
+              "content_hash": "c285814c4335349770c6f4d9129d8d3d0abbb818ae8584657920676207a241bb",
+              "execution_hash": "fd28f565bb770f0a5c9b36cb7466b175dfe525fe5d48966b08f17af6fb71714f"
+            },
+            {
+              "version": 1,
+              "module_id": "natural-prose",
+              "content_hash": "4c1120687e848044038bc3aa0a1ebf18c9cef9500fb179f9e2e4abf8950a3ff4",
+              "execution_hash": "b03427fdeabe1bd06227dbcddd17eb83098582ca5ead206b8d41e33d93e946c7"
+            },
+            {
+              "version": 1,
+              "module_id": "scene-execution",
+              "content_hash": "a9946e3341562845d2dd9eb947670e4ace86cd60e1bf39402cc34edba5f6e757",
+              "execution_hash": "57bb298544718832555deaa448bd4cf07da4fab5092e8e573a88373ed55cae3e"
+            }
+          ],
+          "agent_task_id": "f34a3ece-5a04-46ac-862a-fc2ed5f5da71",
+          "agent_run_id": "99145df8-a683-4a85-aa91-1ed67b0eb553",
+          "attempt_number": 1,
+          "model_profile": {
+            "model": "mock-v1",
+            "provider": "mock",
+            "generation": {
+              "temperature": 0.2
+            },
+            "profile_id": "mock-writing",
+            "capabilities": [
+              "text"
+            ],
+            "stream_support": false,
+            "timeout_seconds": 90.0,
+            "max_output_tokens": 8192,
+            "structured_output": false
+          },
+          "model_profile_hash": "ef0752cf4f225a7b3df54823ef753ce335f6137d89a9a8c418c16691a3ffbade",
+          "writing_metadata": {
+            "kind": "writing_result",
+            "plan_id": "5e3b7e7d-9903-4149-99ac-3e99ee887ef7",
+            "chapter_id": "ec88199b-65bd-495d-a2fc-8d7044a95465",
+            "confidence": 0.95,
+            "assumptions": [],
+            "style_notes": [
+              "以动作和简短对白呈现互动；这是离线契约样例。"
+            ],
+            "plan_version": 1,
+            "plan_deviations": [
+              {
+                "type": "REQUIRED_OUTCOME",
+                "impact": "影响章节",
+                "reason": "提案",
+                "location": "结尾",
+                "severity": "LOCAL",
+                "confidence": 0.99,
+                "actual_behavior": "改变方向",
+                "requires_replan": false,
+                "planned_behavior": "遵守计划"
+              }
+            ],
+            "scene_execution": [
+              {
+                "scene_id": "S1",
+                "deviation": null,
+                "source_location": "院门至准备行装",
+                "planned_function": "Resolve the requested chapter objective",
+                "execution_summary": "人物通过相互询问作出下一步选择。",
+                "function_completed": true
+              }
+            ],
+            "proposed_new_facts": [],
+            "introduced_elements": [],
+            "knowledge_risk_flags": [],
+            "unresolved_questions": []
+          },
+          "check_status": "BLOCKED",
+          "check_codes": [
+            "MAJOR_PLAN_DEVIATION"
+          ],
+          "lineage_valid": true
+        }
+      ]
+    },
+    {
+      "test_id": "tests/core/writing/test_output_policy.py::test_major_change_cannot_hide_behind_local_label[ENDING_DIRECTION]",
+      "test_passed": true,
+      "agent_drafts": 0,
+      "generations": [
+        {
+          "writing_result_id": "bf2338d4-8237-41ce-af29-cb5592c1f569",
+          "draft_id": null,
+          "draft_version": null,
+          "content_sha256": "2c44c232f768090b0eed8d7929fd89c9ae6ef6e1ff129608992f80df9243d0fb",
+          "project_id": "7c393ffa-a9d7-440e-a631-5b08714aafd8",
+          "chapter_id": "fcdf77ac-2215-491c-9176-5b8a9d238e5a",
+          "workflow_id": "70160a6f-6591-44dc-9788-77f45e119058",
+          "plan_id": "69171cce-a807-4280-a620-7da760548860",
+          "plan_version": 1,
+          "plan_status_at_execution": "APPROVED",
+          "context_package_id": "2cf11bd8-a508-4d19-b06b-50899c3aa8f1",
+          "context_package_hash": "74c3bbcdc885058ab4a88f1ec9b4c2a1cb3ae61a3f7d98bba6b42161e0228c37",
+          "context_profile": "CP-005.v3",
+          "context_sources": [
+            {
+              "type": "CHAPTER_PLAN",
+              "id": "69171cce-a807-4280-a620-7da760548860",
+              "version": 1,
+              "status": "APPROVED",
+              "future_knowledge": false,
+              "knowledge_scope": "GLOBAL_ONLY"
+            },
+            {
+              "type": "CHAPTER",
+              "id": "fcdf77ac-2215-491c-9176-5b8a9d238e5a",
+              "version": 3,
+              "status": "DRAFT",
+              "future_knowledge": false,
+              "knowledge_scope": "GLOBAL_ONLY"
+            },
+            {
+              "type": "TASK_INPUT",
+              "id": "4ea9e725-250c-43b6-837b-d7a2dc308f66",
+              "version": 8,
+              "status": "ACTIVE",
+              "future_knowledge": false,
+              "knowledge_scope": "GLOBAL_ONLY"
+            }
+          ],
+          "prompt_lineage_id": "9c580d7c-9feb-40af-a1ab-4e5e24df080a",
+          "compiled_prompt_hash": "23be76a95406534eae72ca3c304442456cfd9ab1f05c3873a5db60c0d88d3e18",
+          "prompt_recompiled_and_verified": true,
+          "output_schema_hash": "53650a0455ea4e0e7490f3d6caa731ca67ef651626727059a9dd9bd7efd300c7",
+          "prompt_modules": [
+            {
+              "version": 1,
+              "module_id": "novel-os-core",
+              "content_hash": "8cd5e1025f58a6e6bd5a9d5380b31ed3edfea735f51100134beaa2401c874e07",
+              "execution_hash": "fb091ba33e3f0093bd02045155866d6ced39eb16e03e734492c25fdd7cbf57d0"
+            },
+            {
+              "version": 1,
+              "module_id": "writing-agent",
+              "content_hash": "70d7b146f2b2cc60e60633d918ee41f289659004e697d9f15a673e8b4dc7e2a0",
+              "execution_hash": "90ea70b3d303828b298c7107775367d750be823a04518299b2c493725143a1e0"
+            },
+            {
+              "version": 1,
+              "module_id": "write-chapter",
+              "content_hash": "fe2edd0f6f5bce0d10bafdffc8a6cda0364e5c24ccda246e0d8f3bc563a32bfc",
+              "execution_hash": "54edb5e036cd88004f68d4bcc78d37c0ded8a1f3df4f8f89eec5c8338a36f3a1"
+            },
+            {
+              "version": 1,
+              "module_id": "writing-quality",
+              "content_hash": "a526984424d46ebc4790f1104547495439000f461360533da172f3aca97ee5f4",
+              "execution_hash": "23bf396e0fc1aa9e604749bf714e74a6a628ada4530e421464d2aaee126121cf"
+            },
+            {
+              "version": 1,
+              "module_id": "character-voice",
+              "content_hash": "6dfe26a69afa215a7a016deca40aabd5c7c44011dad8a5a62673e508e5ce4f02",
+              "execution_hash": "1657b2ea1e3c38b6ebe28c19d3fef1261d6c81d0b45ebf76596cdff3ae965fcb"
+            },
+            {
+              "version": 1,
+              "module_id": "dialogue",
+              "content_hash": "454a353168dfd3665f59437c46a94232d3105ca6b87d1f1827b0f816d67831d9",
+              "execution_hash": "bb115ab71236903ad460ccfc5e6ad2760371ac419564ee0980039d4e3c51fdec"
+            },
+            {
+              "version": 1,
+              "module_id": "narrative-rhythm",
+              "content_hash": "c285814c4335349770c6f4d9129d8d3d0abbb818ae8584657920676207a241bb",
+              "execution_hash": "fd28f565bb770f0a5c9b36cb7466b175dfe525fe5d48966b08f17af6fb71714f"
+            },
+            {
+              "version": 1,
+              "module_id": "natural-prose",
+              "content_hash": "4c1120687e848044038bc3aa0a1ebf18c9cef9500fb179f9e2e4abf8950a3ff4",
+              "execution_hash": "b03427fdeabe1bd06227dbcddd17eb83098582ca5ead206b8d41e33d93e946c7"
+            },
+            {
+              "version": 1,
+              "module_id": "scene-execution",
+              "content_hash": "a9946e3341562845d2dd9eb947670e4ace86cd60e1bf39402cc34edba5f6e757",
+              "execution_hash": "57bb298544718832555deaa448bd4cf07da4fab5092e8e573a88373ed55cae3e"
+            }
+          ],
+          "agent_task_id": "4ea9e725-250c-43b6-837b-d7a2dc308f66",
+          "agent_run_id": "9b09e84d-0c4d-4ea1-8e3b-13e7ff079700",
+          "attempt_number": 1,
+          "model_profile": {
+            "model": "mock-v1",
+            "provider": "mock",
+            "generation": {
+              "temperature": 0.2
+            },
+            "profile_id": "mock-writing",
+            "capabilities": [
+              "text"
+            ],
+            "stream_support": false,
+            "timeout_seconds": 90.0,
+            "max_output_tokens": 8192,
+            "structured_output": false
+          },
+          "model_profile_hash": "ef0752cf4f225a7b3df54823ef753ce335f6137d89a9a8c418c16691a3ffbade",
+          "writing_metadata": {
+            "kind": "writing_result",
+            "plan_id": "69171cce-a807-4280-a620-7da760548860",
+            "chapter_id": "fcdf77ac-2215-491c-9176-5b8a9d238e5a",
+            "confidence": 0.95,
+            "assumptions": [],
+            "style_notes": [
+              "以动作和简短对白呈现互动；这是离线契约样例。"
+            ],
+            "plan_version": 1,
+            "plan_deviations": [
+              {
+                "type": "ENDING_DIRECTION",
+                "impact": "影响章节",
+                "reason": "提案",
+                "location": "结尾",
+                "severity": "LOCAL",
+                "confidence": 0.99,
+                "actual_behavior": "改变方向",
+                "requires_replan": false,
+                "planned_behavior": "遵守计划"
+              }
+            ],
+            "scene_execution": [
+              {
+                "scene_id": "S1",
+                "deviation": null,
+                "source_location": "院门至准备行装",
+                "planned_function": "Resolve the requested chapter objective",
+                "execution_summary": "人物通过相互询问作出下一步选择。",
+                "function_completed": true
+              }
+            ],
+            "proposed_new_facts": [],
+            "introduced_elements": [],
+            "knowledge_risk_flags": [],
+            "unresolved_questions": []
+          },
+          "check_status": "BLOCKED",
+          "check_codes": [
+            "MAJOR_PLAN_DEVIATION"
+          ],
+          "lineage_valid": true
+        }
+      ]
+    },
+    {
+      "test_id": "tests/core/writing/test_output_policy.py::test_major_change_cannot_hide_behind_local_label[MAJOR_DIRECTION]",
+      "test_passed": true,
+      "agent_drafts": 0,
+      "generations": [
+        {
+          "writing_result_id": "f0f05f90-9ca2-417a-a8a8-89331ebfa194",
+          "draft_id": null,
+          "draft_version": null,
+          "content_sha256": "2c44c232f768090b0eed8d7929fd89c9ae6ef6e1ff129608992f80df9243d0fb",
+          "project_id": "5d47853d-4dd5-44a7-accc-3fea9fd84747",
+          "chapter_id": "3d7fe0d4-a4b5-45a6-be39-43840a6a7bc7",
+          "workflow_id": "04e6bc24-ba18-4131-bd0c-5ffe902cce0b",
+          "plan_id": "e96fc8f0-167f-46bb-8034-d402307e0066",
+          "plan_version": 1,
+          "plan_status_at_execution": "APPROVED",
+          "context_package_id": "5ac8b4b6-dba7-47e3-ad10-8f7552750139",
+          "context_package_hash": "0910872d6bd5a5403c9fd7d5a3672c6daee7da8607a3e09952728597c50f172d",
+          "context_profile": "CP-005.v3",
+          "context_sources": [
+            {
+              "type": "CHAPTER_PLAN",
+              "id": "e96fc8f0-167f-46bb-8034-d402307e0066",
+              "version": 1,
+              "status": "APPROVED",
+              "future_knowledge": false,
+              "knowledge_scope": "GLOBAL_ONLY"
+            },
+            {
+              "type": "CHAPTER",
+              "id": "3d7fe0d4-a4b5-45a6-be39-43840a6a7bc7",
+              "version": 3,
+              "status": "DRAFT",
+              "future_knowledge": false,
+              "knowledge_scope": "GLOBAL_ONLY"
+            },
+            {
+              "type": "TASK_INPUT",
+              "id": "f1d20450-c930-407e-aadb-eb68362aab4e",
+              "version": 8,
+              "status": "ACTIVE",
+              "future_knowledge": false,
+              "knowledge_scope": "GLOBAL_ONLY"
+            }
+          ],
+          "prompt_lineage_id": "cfb4736e-d39a-4709-9bf0-fa0bf86b9f96",
+          "compiled_prompt_hash": "9f17112cf89ce60a1a9a807ca328741fa8f682f3fbbfec3492d552a043f9ec6f",
+          "prompt_recompiled_and_verified": true,
+          "output_schema_hash": "53650a0455ea4e0e7490f3d6caa731ca67ef651626727059a9dd9bd7efd300c7",
+          "prompt_modules": [
+            {
+              "version": 1,
+              "module_id": "novel-os-core",
+              "content_hash": "8cd5e1025f58a6e6bd5a9d5380b31ed3edfea735f51100134beaa2401c874e07",
+              "execution_hash": "fb091ba33e3f0093bd02045155866d6ced39eb16e03e734492c25fdd7cbf57d0"
+            },
+            {
+              "version": 1,
+              "module_id": "writing-agent",
+              "content_hash": "70d7b146f2b2cc60e60633d918ee41f289659004e697d9f15a673e8b4dc7e2a0",
+              "execution_hash": "90ea70b3d303828b298c7107775367d750be823a04518299b2c493725143a1e0"
+            },
+            {
+              "version": 1,
+              "module_id": "write-chapter",
+              "content_hash": "fe2edd0f6f5bce0d10bafdffc8a6cda0364e5c24ccda246e0d8f3bc563a32bfc",
+              "execution_hash": "54edb5e036cd88004f68d4bcc78d37c0ded8a1f3df4f8f89eec5c8338a36f3a1"
+            },
+            {
+              "version": 1,
+              "module_id": "writing-quality",
+              "content_hash": "a526984424d46ebc4790f1104547495439000f461360533da172f3aca97ee5f4",
+              "execution_hash": "23bf396e0fc1aa9e604749bf714e74a6a628ada4530e421464d2aaee126121cf"
+            },
+            {
+              "version": 1,
+              "module_id": "character-voice",
+              "content_hash": "6dfe26a69afa215a7a016deca40aabd5c7c44011dad8a5a62673e508e5ce4f02",
+              "execution_hash": "1657b2ea1e3c38b6ebe28c19d3fef1261d6c81d0b45ebf76596cdff3ae965fcb"
+            },
+            {
+              "version": 1,
+              "module_id": "dialogue",
+              "content_hash": "454a353168dfd3665f59437c46a94232d3105ca6b87d1f1827b0f816d67831d9",
+              "execution_hash": "bb115ab71236903ad460ccfc5e6ad2760371ac419564ee0980039d4e3c51fdec"
+            },
+            {
+              "version": 1,
+              "module_id": "narrative-rhythm",
+              "content_hash": "c285814c4335349770c6f4d9129d8d3d0abbb818ae8584657920676207a241bb",
+              "execution_hash": "fd28f565bb770f0a5c9b36cb7466b175dfe525fe5d48966b08f17af6fb71714f"
+            },
+            {
+              "version": 1,
+              "module_id": "natural-prose",
+              "content_hash": "4c1120687e848044038bc3aa0a1ebf18c9cef9500fb179f9e2e4abf8950a3ff4",
+              "execution_hash": "b03427fdeabe1bd06227dbcddd17eb83098582ca5ead206b8d41e33d93e946c7"
+            },
+            {
+              "version": 1,
+              "module_id": "scene-execution",
+              "content_hash": "a9946e3341562845d2dd9eb947670e4ace86cd60e1bf39402cc34edba5f6e757",
+              "execution_hash": "57bb298544718832555deaa448bd4cf07da4fab5092e8e573a88373ed55cae3e"
+            }
+          ],
+          "agent_task_id": "f1d20450-c930-407e-aadb-eb68362aab4e",
+          "agent_run_id": "e91dbf18-05c3-4f40-a49e-cdb1437eaa31",
+          "attempt_number": 1,
+          "model_profile": {
+            "model": "mock-v1",
+            "provider": "mock",
+            "generation": {
+              "temperature": 0.2
+            },
+            "profile_id": "mock-writing",
+            "capabilities": [
+              "text"
+            ],
+            "stream_support": false,
+            "timeout_seconds": 90.0,
+            "max_output_tokens": 8192,
+            "structured_output": false
+          },
+          "model_profile_hash": "ef0752cf4f225a7b3df54823ef753ce335f6137d89a9a8c418c16691a3ffbade",
+          "writing_metadata": {
+            "kind": "writing_result",
+            "plan_id": "e96fc8f0-167f-46bb-8034-d402307e0066",
+            "chapter_id": "3d7fe0d4-a4b5-45a6-be39-43840a6a7bc7",
+            "confidence": 0.95,
+            "assumptions": [],
+            "style_notes": [
+              "以动作和简短对白呈现互动；这是离线契约样例。"
+            ],
+            "plan_version": 1,
+            "plan_deviations": [
+              {
+                "type": "MAJOR_DIRECTION",
+                "impact": "影响章节",
+                "reason": "提案",
+                "location": "结尾",
+                "severity": "LOCAL",
+                "confidence": 0.99,
+                "actual_behavior": "改变方向",
+                "requires_replan": false,
+                "planned_behavior": "遵守计划"
+              }
+            ],
+            "scene_execution": [
+              {
+                "scene_id": "S1",
+                "deviation": null,
+                "source_location": "院门至准备行装",
+                "planned_function": "Resolve the requested chapter objective",
+                "execution_summary": "人物通过相互询问作出下一步选择。",
+                "function_completed": true
+              }
+            ],
+            "proposed_new_facts": [],
+            "introduced_elements": [],
+            "knowledge_risk_flags": [],
+            "unresolved_questions": []
+          },
+          "check_status": "BLOCKED",
+          "check_codes": [
+            "MAJOR_PLAN_DEVIATION"
+          ],
+          "lineage_valid": true
+        }
+      ]
+    },
+    {
+      "test_id": "tests/core/writing/test_output_policy.py::test_major_change_cannot_hide_behind_local_label[LOCKED_DECISION]",
+      "test_passed": true,
+      "agent_drafts": 0,
+      "generations": [
+        {
+          "writing_result_id": "ed679a45-731a-4a91-890b-bae2a47b7563",
+          "draft_id": null,
+          "draft_version": null,
+          "content_sha256": "2c44c232f768090b0eed8d7929fd89c9ae6ef6e1ff129608992f80df9243d0fb",
+          "project_id": "462dd66a-009d-49fe-b695-1e4e54a619bc",
+          "chapter_id": "d2fa3670-cc8a-49c6-ad52-05948ae63983",
+          "workflow_id": "d36e5bdd-fac9-4d70-88e7-0efe5ccd0876",
+          "plan_id": "7155226b-4fed-4c87-ac5e-3134bbd59fff",
+          "plan_version": 1,
+          "plan_status_at_execution": "APPROVED",
+          "context_package_id": "3fe94459-d7fe-4b11-abd4-193e4b619f7d",
+          "context_package_hash": "2540457c4a20b141cfa102cb65f784e35ec71d67a1aa320f5d46e0ae5acd25f7",
+          "context_profile": "CP-005.v3",
+          "context_sources": [
+            {
+              "type": "CHAPTER_PLAN",
+              "id": "7155226b-4fed-4c87-ac5e-3134bbd59fff",
+              "version": 1,
+              "status": "APPROVED",
+              "future_knowledge": false,
+              "knowledge_scope": "GLOBAL_ONLY"
+            },
+            {
+              "type": "CHAPTER",
+              "id": "d2fa3670-cc8a-49c6-ad52-05948ae63983",
+              "version": 3,
+              "status": "DRAFT",
+              "future_knowledge": false,
+              "knowledge_scope": "GLOBAL_ONLY"
+            },
+            {
+              "type": "TASK_INPUT",
+              "id": "5f8bc79e-6c5f-4096-8783-596c2a3cce73",
+              "version": 8,
+              "status": "ACTIVE",
+              "future_knowledge": false,
+              "knowledge_scope": "GLOBAL_ONLY"
+            }
+          ],
+          "prompt_lineage_id": "82894837-bb4d-4a1f-b967-7bd83ba5e3a2",
+          "compiled_prompt_hash": "44e3ae96d1857a7e8faaa102a282ac019b7e19a27cc52d8717c1ac23644430f6",
+          "prompt_recompiled_and_verified": true,
+          "output_schema_hash": "53650a0455ea4e0e7490f3d6caa731ca67ef651626727059a9dd9bd7efd300c7",
+          "prompt_modules": [
+            {
+              "version": 1,
+              "module_id": "novel-os-core",
+              "content_hash": "8cd5e1025f58a6e6bd5a9d5380b31ed3edfea735f51100134beaa2401c874e07",
+              "execution_hash": "fb091ba33e3f0093bd02045155866d6ced39eb16e03e734492c25fdd7cbf57d0"
+            },
+            {
+              "version": 1,
+              "module_id": "writing-agent",
+              "content_hash": "70d7b146f2b2cc60e60633d918ee41f289659004e697d9f15a673e8b4dc7e2a0",
+              "execution_hash": "90ea70b3d303828b298c7107775367d750be823a04518299b2c493725143a1e0"
+            },
+            {
+              "version": 1,
+              "module_id": "write-chapter",
+              "content_hash": "fe2edd0f6f5bce0d10bafdffc8a6cda0364e5c24ccda246e0d8f3bc563a32bfc",
+              "execution_hash": "54edb5e036cd88004f68d4bcc78d37c0ded8a1f3df4f8f89eec5c8338a36f3a1"
+            },
+            {
+              "version": 1,
+              "module_id": "writing-quality",
+              "content_hash": "a526984424d46ebc4790f1104547495439000f461360533da172f3aca97ee5f4",
+              "execution_hash": "23bf396e0fc1aa9e604749bf714e74a6a628ada4530e421464d2aaee126121cf"
+            },
+            {
+              "version": 1,
+              "module_id": "character-voice",
+              "content_hash": "6dfe26a69afa215a7a016deca40aabd5c7c44011dad8a5a62673e508e5ce4f02",
+              "execution_hash": "1657b2ea1e3c38b6ebe28c19d3fef1261d6c81d0b45ebf76596cdff3ae965fcb"
+            },
+            {
+              "version": 1,
+              "module_id": "dialogue",
+              "content_hash": "454a353168dfd3665f59437c46a94232d3105ca6b87d1f1827b0f816d67831d9",
+              "execution_hash": "bb115ab71236903ad460ccfc5e6ad2760371ac419564ee0980039d4e3c51fdec"
+            },
+            {
+              "version": 1,
+              "module_id": "narrative-rhythm",
+              "content_hash": "c285814c4335349770c6f4d9129d8d3d0abbb818ae8584657920676207a241bb",
+              "execution_hash": "fd28f565bb770f0a5c9b36cb7466b175dfe525fe5d48966b08f17af6fb71714f"
+            },
+            {
+              "version": 1,
+              "module_id": "natural-prose",
+              "content_hash": "4c1120687e848044038bc3aa0a1ebf18c9cef9500fb179f9e2e4abf8950a3ff4",
+              "execution_hash": "b03427fdeabe1bd06227dbcddd17eb83098582ca5ead206b8d41e33d93e946c7"
+            },
+            {
+              "version": 1,
+              "module_id": "scene-execution",
+              "content_hash": "a9946e3341562845d2dd9eb947670e4ace86cd60e1bf39402cc34edba5f6e757",
+              "execution_hash": "57bb298544718832555deaa448bd4cf07da4fab5092e8e573a88373ed55cae3e"
+            }
+          ],
+          "agent_task_id": "5f8bc79e-6c5f-4096-8783-596c2a3cce73",
+          "agent_run_id": "57f843a5-ee0b-45c9-b934-0e6264b09752",
+          "attempt_number": 1,
+          "model_profile": {
+            "model": "mock-v1",
+            "provider": "mock",
+            "generation": {
+              "temperature": 0.2
+            },
+            "profile_id": "mock-writing",
+            "capabilities": [
+              "text"
+            ],
+            "stream_support": false,
+            "timeout_seconds": 90.0,
+            "max_output_tokens": 8192,
+            "structured_output": false
+          },
+          "model_profile_hash": "ef0752cf4f225a7b3df54823ef753ce335f6137d89a9a8c418c16691a3ffbade",
+          "writing_metadata": {
+            "kind": "writing_result",
+            "plan_id": "7155226b-4fed-4c87-ac5e-3134bbd59fff",
+            "chapter_id": "d2fa3670-cc8a-49c6-ad52-05948ae63983",
+            "confidence": 0.95,
+            "assumptions": [],
+            "style_notes": [
+              "以动作和简短对白呈现互动；这是离线契约样例。"
+            ],
+            "plan_version": 1,
+            "plan_deviations": [
+              {
+                "type": "LOCKED_DECISION",
+                "impact": "影响章节",
+                "reason": "提案",
+                "location": "结尾",
+                "severity": "LOCAL",
+                "confidence": 0.99,
+                "actual_behavior": "改变方向",
+                "requires_replan": false,
+                "planned_behavior": "遵守计划"
+              }
+            ],
+            "scene_execution": [
+              {
+                "scene_id": "S1",
+                "deviation": null,
+                "source_location": "院门至准备行装",
+                "planned_function": "Resolve the requested chapter objective",
+                "execution_summary": "人物通过相互询问作出下一步选择。",
+                "function_completed": true
+              }
+            ],
+            "proposed_new_facts": [],
+            "introduced_elements": [],
+            "knowledge_risk_flags": [],
+            "unresolved_questions": []
+          },
+          "check_status": "BLOCKED",
+          "check_codes": [
+            "MAJOR_PLAN_DEVIATION"
+          ],
+          "lineage_valid": true
+        }
+      ]
+    },
+    {
+      "test_id": "tests/core/writing/test_output_policy.py::test_major_change_cannot_hide_behind_local_label[CORE_CHARACTER]",
+      "test_passed": true,
+      "agent_drafts": 0,
+      "generations": [
+        {
+          "writing_result_id": "8fefe974-970f-4ad1-bdda-b94c91f17951",
+          "draft_id": null,
+          "draft_version": null,
+          "content_sha256": "2c44c232f768090b0eed8d7929fd89c9ae6ef6e1ff129608992f80df9243d0fb",
+          "project_id": "5f55d5e3-4975-45a9-a27a-8476a80ba6e6",
+          "chapter_id": "cdda5ff4-d445-48d9-8c85-cfd8d2b29bf5",
+          "workflow_id": "f09d8b1d-341f-45b9-baba-f030d444f787",
+          "plan_id": "0853c84d-a79f-4796-b133-0f920467e4b6",
+          "plan_version": 1,
+          "plan_status_at_execution": "APPROVED",
+          "context_package_id": "c8588288-77a7-4a34-a1e0-584ab4482692",
+          "context_package_hash": "a45723b3815a3d1c57faff44288cec751be1eb98d843e2def7d322a512c4969c",
+          "context_profile": "CP-005.v3",
+          "context_sources": [
+            {
+              "type": "CHAPTER_PLAN",
+              "id": "0853c84d-a79f-4796-b133-0f920467e4b6",
+              "version": 1,
+              "status": "APPROVED",
+              "future_knowledge": false,
+              "knowledge_scope": "GLOBAL_ONLY"
+            },
+            {
+              "type": "CHAPTER",
+              "id": "cdda5ff4-d445-48d9-8c85-cfd8d2b29bf5",
+              "version": 3,
+              "status": "DRAFT",
+              "future_knowledge": false,
+              "knowledge_scope": "GLOBAL_ONLY"
+            },
+            {
+              "type": "TASK_INPUT",
+              "id": "701674d0-5d7f-4fae-a09c-26f8d3d3ba49",
+              "version": 8,
+              "status": "ACTIVE",
+              "future_knowledge": false,
+              "knowledge_scope": "GLOBAL_ONLY"
+            }
+          ],
+          "prompt_lineage_id": "58e77ba5-6d0e-4004-978e-910869374b70",
+          "compiled_prompt_hash": "f5f980030087d45c2a807cc643bdb867288baa3c775a3fdbfbef1de1534b8583",
+          "prompt_recompiled_and_verified": true,
+          "output_schema_hash": "53650a0455ea4e0e7490f3d6caa731ca67ef651626727059a9dd9bd7efd300c7",
+          "prompt_modules": [
+            {
+              "version": 1,
+              "module_id": "novel-os-core",
+              "content_hash": "8cd5e1025f58a6e6bd5a9d5380b31ed3edfea735f51100134beaa2401c874e07",
+              "execution_hash": "fb091ba33e3f0093bd02045155866d6ced39eb16e03e734492c25fdd7cbf57d0"
+            },
+            {
+              "version": 1,
+              "module_id": "writing-agent",
+              "content_hash": "70d7b146f2b2cc60e60633d918ee41f289659004e697d9f15a673e8b4dc7e2a0",
+              "execution_hash": "90ea70b3d303828b298c7107775367d750be823a04518299b2c493725143a1e0"
+            },
+            {
+              "version": 1,
+              "module_id": "write-chapter",
+              "content_hash": "fe2edd0f6f5bce0d10bafdffc8a6cda0364e5c24ccda246e0d8f3bc563a32bfc",
+              "execution_hash": "54edb5e036cd88004f68d4bcc78d37c0ded8a1f3df4f8f89eec5c8338a36f3a1"
+            },
+            {
+              "version": 1,
+              "module_id": "writing-quality",
+              "content_hash": "a526984424d46ebc4790f1104547495439000f461360533da172f3aca97ee5f4",
+              "execution_hash": "23bf396e0fc1aa9e604749bf714e74a6a628ada4530e421464d2aaee126121cf"
+            },
+            {
+              "version": 1,
+              "module_id": "character-voice",
+              "content_hash": "6dfe26a69afa215a7a016deca40aabd5c7c44011dad8a5a62673e508e5ce4f02",
+              "execution_hash": "1657b2ea1e3c38b6ebe28c19d3fef1261d6c81d0b45ebf76596cdff3ae965fcb"
+            },
+            {
+              "version": 1,
+              "module_id": "dialogue",
+              "content_hash": "454a353168dfd3665f59437c46a94232d3105ca6b87d1f1827b0f816d67831d9",
+              "execution_hash": "bb115ab71236903ad460ccfc5e6ad2760371ac419564ee0980039d4e3c51fdec"
+            },
+            {
+              "version": 1,
+              "module_id": "narrative-rhythm",
+              "content_hash": "c285814c4335349770c6f4d9129d8d3d0abbb818ae8584657920676207a241bb",
+              "execution_hash": "fd28f565bb770f0a5c9b36cb7466b175dfe525fe5d48966b08f17af6fb71714f"
+            },
+            {
+              "version": 1,
+              "module_id": "natural-prose",
+              "content_hash": "4c1120687e848044038bc3aa0a1ebf18c9cef9500fb179f9e2e4abf8950a3ff4",
+              "execution_hash": "b03427fdeabe1bd06227dbcddd17eb83098582ca5ead206b8d41e33d93e946c7"
+            },
+            {
+              "version": 1,
+              "module_id": "scene-execution",
+              "content_hash": "a9946e3341562845d2dd9eb947670e4ace86cd60e1bf39402cc34edba5f6e757",
+              "execution_hash": "57bb298544718832555deaa448bd4cf07da4fab5092e8e573a88373ed55cae3e"
+            }
+          ],
+          "agent_task_id": "701674d0-5d7f-4fae-a09c-26f8d3d3ba49",
+          "agent_run_id": "23a266ec-17ae-4696-bcc2-c753e531f4af",
+          "attempt_number": 1,
+          "model_profile": {
+            "model": "mock-v1",
+            "provider": "mock",
+            "generation": {
+              "temperature": 0.2
+            },
+            "profile_id": "mock-writing",
+            "capabilities": [
+              "text"
+            ],
+            "stream_support": false,
+            "timeout_seconds": 90.0,
+            "max_output_tokens": 8192,
+            "structured_output": false
+          },
+          "model_profile_hash": "ef0752cf4f225a7b3df54823ef753ce335f6137d89a9a8c418c16691a3ffbade",
+          "writing_metadata": {
+            "kind": "writing_result",
+            "plan_id": "0853c84d-a79f-4796-b133-0f920467e4b6",
+            "chapter_id": "cdda5ff4-d445-48d9-8c85-cfd8d2b29bf5",
+            "confidence": 0.95,
+            "assumptions": [],
+            "style_notes": [
+              "以动作和简短对白呈现互动；这是离线契约样例。"
+            ],
+            "plan_version": 1,
+            "plan_deviations": [
+              {
+                "type": "CORE_CHARACTER",
+                "impact": "影响章节",
+                "reason": "提案",
+                "location": "结尾",
+                "severity": "LOCAL",
+                "confidence": 0.99,
+                "actual_behavior": "改变方向",
+                "requires_replan": false,
+                "planned_behavior": "遵守计划"
+              }
+            ],
+            "scene_execution": [
+              {
+                "scene_id": "S1",
+                "deviation": null,
+                "source_location": "院门至准备行装",
+                "planned_function": "Resolve the requested chapter objective",
+                "execution_summary": "人物通过相互询问作出下一步选择。",
+                "function_completed": true
+              }
+            ],
+            "proposed_new_facts": [],
+            "introduced_elements": [],
+            "knowledge_risk_flags": [],
+            "unresolved_questions": []
+          },
+          "check_status": "BLOCKED",
+          "check_codes": [
+            "MAJOR_PLAN_DEVIATION"
+          ],
+          "lineage_valid": true
+        }
+      ]
+    },
+    {
+      "test_id": "tests/core/writing/test_output_policy.py::test_major_change_cannot_hide_behind_local_label[WORLD_RULE]",
+      "test_passed": true,
+      "agent_drafts": 0,
+      "generations": [
+        {
+          "writing_result_id": "b1996110-cd43-49fb-a091-3d9cb550447c",
+          "draft_id": null,
+          "draft_version": null,
+          "content_sha256": "2c44c232f768090b0eed8d7929fd89c9ae6ef6e1ff129608992f80df9243d0fb",
+          "project_id": "fe781190-fc94-4320-9a8c-7c629781a9f8",
+          "chapter_id": "9683aeb4-38ee-49b3-bf83-3a209140a836",
+          "workflow_id": "39043cd3-0664-4e7f-8648-8ad75f42bdee",
+          "plan_id": "075bdc67-0119-428b-88f2-a6f516051867",
+          "plan_version": 1,
+          "plan_status_at_execution": "APPROVED",
+          "context_package_id": "323b0fe9-5c26-431f-9b5d-507a392a8b1f",
+          "context_package_hash": "ef2d0c0d41267d1fe9489f9ae3bc0c9d88c971a5210001b0dc6c40f67aee0d75",
+          "context_profile": "CP-005.v3",
+          "context_sources": [
+            {
+              "type": "CHAPTER_PLAN",
+              "id": "075bdc67-0119-428b-88f2-a6f516051867",
+              "version": 1,
+              "status": "APPROVED",
+              "future_knowledge": false,
+              "knowledge_scope": "GLOBAL_ONLY"
+            },
+            {
+              "type": "CHAPTER",
+              "id": "9683aeb4-38ee-49b3-bf83-3a209140a836",
+              "version": 3,
+              "status": "DRAFT",
+              "future_knowledge": false,
+              "knowledge_scope": "GLOBAL_ONLY"
+            },
+            {
+              "type": "TASK_INPUT",
+              "id": "fd500e56-cc51-4aa5-ac6e-3d1851fc25a8",
+              "version": 8,
+              "status": "ACTIVE",
+              "future_knowledge": false,
+              "knowledge_scope": "GLOBAL_ONLY"
+            }
+          ],
+          "prompt_lineage_id": "ae840f15-82d7-4118-b199-c6870a107e54",
+          "compiled_prompt_hash": "53d73ac7b049659a4ea84abf550393fd83cd165afd98385e5030f05e7b4446ad",
+          "prompt_recompiled_and_verified": true,
+          "output_schema_hash": "53650a0455ea4e0e7490f3d6caa731ca67ef651626727059a9dd9bd7efd300c7",
+          "prompt_modules": [
+            {
+              "version": 1,
+              "module_id": "novel-os-core",
+              "content_hash": "8cd5e1025f58a6e6bd5a9d5380b31ed3edfea735f51100134beaa2401c874e07",
+              "execution_hash": "fb091ba33e3f0093bd02045155866d6ced39eb16e03e734492c25fdd7cbf57d0"
+            },
+            {
+              "version": 1,
+              "module_id": "writing-agent",
+              "content_hash": "70d7b146f2b2cc60e60633d918ee41f289659004e697d9f15a673e8b4dc7e2a0",
+              "execution_hash": "90ea70b3d303828b298c7107775367d750be823a04518299b2c493725143a1e0"
+            },
+            {
+              "version": 1,
+              "module_id": "write-chapter",
+              "content_hash": "fe2edd0f6f5bce0d10bafdffc8a6cda0364e5c24ccda246e0d8f3bc563a32bfc",
+              "execution_hash": "54edb5e036cd88004f68d4bcc78d37c0ded8a1f3df4f8f89eec5c8338a36f3a1"
+            },
+            {
+              "version": 1,
+              "module_id": "writing-quality",
+              "content_hash": "a526984424d46ebc4790f1104547495439000f461360533da172f3aca97ee5f4",
+              "execution_hash": "23bf396e0fc1aa9e604749bf714e74a6a628ada4530e421464d2aaee126121cf"
+            },
+            {
+              "version": 1,
+              "module_id": "character-voice",
+              "content_hash": "6dfe26a69afa215a7a016deca40aabd5c7c44011dad8a5a62673e508e5ce4f02",
+              "execution_hash": "1657b2ea1e3c38b6ebe28c19d3fef1261d6c81d0b45ebf76596cdff3ae965fcb"
+            },
+            {
+              "version": 1,
+              "module_id": "dialogue",
+              "content_hash": "454a353168dfd3665f59437c46a94232d3105ca6b87d1f1827b0f816d67831d9",
+              "execution_hash": "bb115ab71236903ad460ccfc5e6ad2760371ac419564ee0980039d4e3c51fdec"
+            },
+            {
+              "version": 1,
+              "module_id": "narrative-rhythm",
+              "content_hash": "c285814c4335349770c6f4d9129d8d3d0abbb818ae8584657920676207a241bb",
+              "execution_hash": "fd28f565bb770f0a5c9b36cb7466b175dfe525fe5d48966b08f17af6fb71714f"
+            },
+            {
+              "version": 1,
+              "module_id": "natural-prose",
+              "content_hash": "4c1120687e848044038bc3aa0a1ebf18c9cef9500fb179f9e2e4abf8950a3ff4",
+              "execution_hash": "b03427fdeabe1bd06227dbcddd17eb83098582ca5ead206b8d41e33d93e946c7"
+            },
+            {
+              "version": 1,
+              "module_id": "scene-execution",
+              "content_hash": "a9946e3341562845d2dd9eb947670e4ace86cd60e1bf39402cc34edba5f6e757",
+              "execution_hash": "57bb298544718832555deaa448bd4cf07da4fab5092e8e573a88373ed55cae3e"
+            }
+          ],
+          "agent_task_id": "fd500e56-cc51-4aa5-ac6e-3d1851fc25a8",
+          "agent_run_id": "5fecd237-aee9-409e-a980-972dc8719fdc",
+          "attempt_number": 1,
+          "model_profile": {
+            "model": "mock-v1",
+            "provider": "mock",
+            "generation": {
+              "temperature": 0.2
+            },
+            "profile_id": "mock-writing",
+            "capabilities": [
+              "text"
+            ],
+            "stream_support": false,
+            "timeout_seconds": 90.0,
+            "max_output_tokens": 8192,
+            "structured_output": false
+          },
+          "model_profile_hash": "ef0752cf4f225a7b3df54823ef753ce335f6137d89a9a8c418c16691a3ffbade",
+          "writing_metadata": {
+            "kind": "writing_result",
+            "plan_id": "075bdc67-0119-428b-88f2-a6f516051867",
+            "chapter_id": "9683aeb4-38ee-49b3-bf83-3a209140a836",
+            "confidence": 0.95,
+            "assumptions": [],
+            "style_notes": [
+              "以动作和简短对白呈现互动；这是离线契约样例。"
+            ],
+            "plan_version": 1,
+            "plan_deviations": [
+              {
+                "type": "WORLD_RULE",
+                "impact": "影响章节",
+                "reason": "提案",
+                "location": "结尾",
+                "severity": "LOCAL",
+                "confidence": 0.99,
+                "actual_behavior": "改变方向",
+                "requires_replan": false,
+                "planned_behavior": "遵守计划"
+              }
+            ],
+            "scene_execution": [
+              {
+                "scene_id": "S1",
+                "deviation": null,
+                "source_location": "院门至准备行装",
+                "planned_function": "Resolve the requested chapter objective",
+                "execution_summary": "人物通过相互询问作出下一步选择。",
+                "function_completed": true
+              }
+            ],
+            "proposed_new_facts": [],
+            "introduced_elements": [],
+            "knowledge_risk_flags": [],
+            "unresolved_questions": []
+          },
+          "check_status": "BLOCKED",
+          "check_codes": [
+            "MAJOR_PLAN_DEVIATION"
+          ],
+          "lineage_valid": true
+        }
+      ]
+    },
+    {
+      "test_id": "tests/core/writing/test_output_policy.py::test_major_change_cannot_hide_behind_local_label[FUTURE_STRUCTURE]",
+      "test_passed": true,
+      "agent_drafts": 0,
+      "generations": [
+        {
+          "writing_result_id": "53a6be75-099d-46bf-ab89-0a0c3a1b4248",
+          "draft_id": null,
+          "draft_version": null,
+          "content_sha256": "2c44c232f768090b0eed8d7929fd89c9ae6ef6e1ff129608992f80df9243d0fb",
+          "project_id": "39708534-f7c1-4695-a0bc-09bb09a9892c",
+          "chapter_id": "ed640240-56e9-4fdf-9c63-0d19c9d480a9",
+          "workflow_id": "7e22ecfc-f60b-4583-a902-92b75291d348",
+          "plan_id": "48a186e2-7266-4e9b-9bd9-a33e66b4034f",
+          "plan_version": 1,
+          "plan_status_at_execution": "APPROVED",
+          "context_package_id": "db4ad3e0-290a-4338-8162-4de4e24d3017",
+          "context_package_hash": "6fc502496d78e3e026d9b186963a8d5494f4e5bc06ba27362f1e4bf344c307ad",
+          "context_profile": "CP-005.v3",
+          "context_sources": [
+            {
+              "type": "CHAPTER_PLAN",
+              "id": "48a186e2-7266-4e9b-9bd9-a33e66b4034f",
+              "version": 1,
+              "status": "APPROVED",
+              "future_knowledge": false,
+              "knowledge_scope": "GLOBAL_ONLY"
+            },
+            {
+              "type": "CHAPTER",
+              "id": "ed640240-56e9-4fdf-9c63-0d19c9d480a9",
+              "version": 3,
+              "status": "DRAFT",
+              "future_knowledge": false,
+              "knowledge_scope": "GLOBAL_ONLY"
+            },
+            {
+              "type": "TASK_INPUT",
+              "id": "5d1d299f-b97f-4762-81ce-a1f136659d2d",
+              "version": 8,
+              "status": "ACTIVE",
+              "future_knowledge": false,
+              "knowledge_scope": "GLOBAL_ONLY"
+            }
+          ],
+          "prompt_lineage_id": "04d05fd7-8c29-4ba8-ba30-59f8b6046bfe",
+          "compiled_prompt_hash": "845916e541cea4f8b062ae2d98934b8cc758b77fd39868c16a7596e0dc0dcef0",
+          "prompt_recompiled_and_verified": true,
+          "output_schema_hash": "53650a0455ea4e0e7490f3d6caa731ca67ef651626727059a9dd9bd7efd300c7",
+          "prompt_modules": [
+            {
+              "version": 1,
+              "module_id": "novel-os-core",
+              "content_hash": "8cd5e1025f58a6e6bd5a9d5380b31ed3edfea735f51100134beaa2401c874e07",
+              "execution_hash": "fb091ba33e3f0093bd02045155866d6ced39eb16e03e734492c25fdd7cbf57d0"
+            },
+            {
+              "version": 1,
+              "module_id": "writing-agent",
+              "content_hash": "70d7b146f2b2cc60e60633d918ee41f289659004e697d9f15a673e8b4dc7e2a0",
+              "execution_hash": "90ea70b3d303828b298c7107775367d750be823a04518299b2c493725143a1e0"
+            },
+            {
+              "version": 1,
+              "module_id": "write-chapter",
+              "content_hash": "fe2edd0f6f5bce0d10bafdffc8a6cda0364e5c24ccda246e0d8f3bc563a32bfc",
+              "execution_hash": "54edb5e036cd88004f68d4bcc78d37c0ded8a1f3df4f8f89eec5c8338a36f3a1"
+            },
+            {
+              "version": 1,
+              "module_id": "writing-quality",
+              "content_hash": "a526984424d46ebc4790f1104547495439000f461360533da172f3aca97ee5f4",
+              "execution_hash": "23bf396e0fc1aa9e604749bf714e74a6a628ada4530e421464d2aaee126121cf"
+            },
+            {
+              "version": 1,
+              "module_id": "character-voice",
+              "content_hash": "6dfe26a69afa215a7a016deca40aabd5c7c44011dad8a5a62673e508e5ce4f02",
+              "execution_hash": "1657b2ea1e3c38b6ebe28c19d3fef1261d6c81d0b45ebf76596cdff3ae965fcb"
+            },
+            {
+              "version": 1,
+              "module_id": "dialogue",
+              "content_hash": "454a353168dfd3665f59437c46a94232d3105ca6b87d1f1827b0f816d67831d9",
+              "execution_hash": "bb115ab71236903ad460ccfc5e6ad2760371ac419564ee0980039d4e3c51fdec"
+            },
+            {
+              "version": 1,
+              "module_id": "narrative-rhythm",
+              "content_hash": "c285814c4335349770c6f4d9129d8d3d0abbb818ae8584657920676207a241bb",
+              "execution_hash": "fd28f565bb770f0a5c9b36cb7466b175dfe525fe5d48966b08f17af6fb71714f"
+            },
+            {
+              "version": 1,
+              "module_id": "natural-prose",
+              "content_hash": "4c1120687e848044038bc3aa0a1ebf18c9cef9500fb179f9e2e4abf8950a3ff4",
+              "execution_hash": "b03427fdeabe1bd06227dbcddd17eb83098582ca5ead206b8d41e33d93e946c7"
+            },
+            {
+              "version": 1,
+              "module_id": "scene-execution",
+              "content_hash": "a9946e3341562845d2dd9eb947670e4ace86cd60e1bf39402cc34edba5f6e757",
+              "execution_hash": "57bb298544718832555deaa448bd4cf07da4fab5092e8e573a88373ed55cae3e"
+            }
+          ],
+          "agent_task_id": "5d1d299f-b97f-4762-81ce-a1f136659d2d",
+          "agent_run_id": "2233bd04-5501-4bfb-b4ee-8ba1e8be4d1c",
+          "attempt_number": 1,
+          "model_profile": {
+            "model": "mock-v1",
+            "provider": "mock",
+            "generation": {
+              "temperature": 0.2
+            },
+            "profile_id": "mock-writing",
+            "capabilities": [
+              "text"
+            ],
+            "stream_support": false,
+            "timeout_seconds": 90.0,
+            "max_output_tokens": 8192,
+            "structured_output": false
+          },
+          "model_profile_hash": "ef0752cf4f225a7b3df54823ef753ce335f6137d89a9a8c418c16691a3ffbade",
+          "writing_metadata": {
+            "kind": "writing_result",
+            "plan_id": "48a186e2-7266-4e9b-9bd9-a33e66b4034f",
+            "chapter_id": "ed640240-56e9-4fdf-9c63-0d19c9d480a9",
+            "confidence": 0.95,
+            "assumptions": [],
+            "style_notes": [
+              "以动作和简短对白呈现互动；这是离线契约样例。"
+            ],
+            "plan_version": 1,
+            "plan_deviations": [
+              {
+                "type": "FUTURE_STRUCTURE",
+                "impact": "影响章节",
+                "reason": "提案",
+                "location": "结尾",
+                "severity": "LOCAL",
+                "confidence": 0.99,
+                "actual_behavior": "改变方向",
+                "requires_replan": false,
+                "planned_behavior": "遵守计划"
+              }
+            ],
+            "scene_execution": [
+              {
+                "scene_id": "S1",
+                "deviation": null,
+                "source_location": "院门至准备行装",
+                "planned_function": "Resolve the requested chapter objective",
+                "execution_summary": "人物通过相互询问作出下一步选择。",
+                "function_completed": true
+              }
+            ],
+            "proposed_new_facts": [],
+            "introduced_elements": [],
+            "knowledge_risk_flags": [],
+            "unresolved_questions": []
+          },
+          "check_status": "BLOCKED",
+          "check_codes": [
+            "MAJOR_PLAN_DEVIATION"
+          ],
+          "lineage_valid": true
+        }
+      ]
+    },
+    {
+      "test_id": "tests/core/writing/test_output_policy.py::test_major_change_cannot_hide_behind_local_label[FORBIDDEN_CONSTRAINT]",
+      "test_passed": true,
+      "agent_drafts": 0,
+      "generations": [
+        {
+          "writing_result_id": "63ee280e-c20e-4d10-a3f3-6abb113e2e96",
+          "draft_id": null,
+          "draft_version": null,
+          "content_sha256": "2c44c232f768090b0eed8d7929fd89c9ae6ef6e1ff129608992f80df9243d0fb",
+          "project_id": "c059b3a5-1933-4248-a080-5c696a2a948c",
+          "chapter_id": "51d037f6-93b1-427b-8be2-7cde363989cc",
+          "workflow_id": "87ff1fd5-ed6c-4d0c-8a4d-19dd43a89e69",
+          "plan_id": "76c74cd5-0b99-4d6c-ace8-3910b148d3c6",
+          "plan_version": 1,
+          "plan_status_at_execution": "APPROVED",
+          "context_package_id": "545c6a8a-0552-4e47-a56a-3cbaba955a44",
+          "context_package_hash": "9404acd9dff3af080eb20ed4164523bfe1fd4ef47a4334ac194eadbe82e11ea2",
+          "context_profile": "CP-005.v3",
+          "context_sources": [
+            {
+              "type": "CHAPTER_PLAN",
+              "id": "76c74cd5-0b99-4d6c-ace8-3910b148d3c6",
+              "version": 1,
+              "status": "APPROVED",
+              "future_knowledge": false,
+              "knowledge_scope": "GLOBAL_ONLY"
+            },
+            {
+              "type": "CHAPTER",
+              "id": "51d037f6-93b1-427b-8be2-7cde363989cc",
+              "version": 3,
+              "status": "DRAFT",
+              "future_knowledge": false,
+              "knowledge_scope": "GLOBAL_ONLY"
+            },
+            {
+              "type": "TASK_INPUT",
+              "id": "1d64966d-b650-4154-8af9-b4d74877476d",
+              "version": 8,
+              "status": "ACTIVE",
+              "future_knowledge": false,
+              "knowledge_scope": "GLOBAL_ONLY"
+            }
+          ],
+          "prompt_lineage_id": "518fa9c6-8cc3-44fd-9e83-d14f203e6763",
+          "compiled_prompt_hash": "78ff2dd2a869da53990d4f2511896c1fdd3c131eaf9a57b61e222c2357f74e87",
+          "prompt_recompiled_and_verified": true,
+          "output_schema_hash": "53650a0455ea4e0e7490f3d6caa731ca67ef651626727059a9dd9bd7efd300c7",
+          "prompt_modules": [
+            {
+              "version": 1,
+              "module_id": "novel-os-core",
+              "content_hash": "8cd5e1025f58a6e6bd5a9d5380b31ed3edfea735f51100134beaa2401c874e07",
+              "execution_hash": "fb091ba33e3f0093bd02045155866d6ced39eb16e03e734492c25fdd7cbf57d0"
+            },
+            {
+              "version": 1,
+              "module_id": "writing-agent",
+              "content_hash": "70d7b146f2b2cc60e60633d918ee41f289659004e697d9f15a673e8b4dc7e2a0",
+              "execution_hash": "90ea70b3d303828b298c7107775367d750be823a04518299b2c493725143a1e0"
+            },
+            {
+              "version": 1,
+              "module_id": "write-chapter",
+              "content_hash": "fe2edd0f6f5bce0d10bafdffc8a6cda0364e5c24ccda246e0d8f3bc563a32bfc",
+              "execution_hash": "54edb5e036cd88004f68d4bcc78d37c0ded8a1f3df4f8f89eec5c8338a36f3a1"
+            },
+            {
+              "version": 1,
+              "module_id": "writing-quality",
+              "content_hash": "a526984424d46ebc4790f1104547495439000f461360533da172f3aca97ee5f4",
+              "execution_hash": "23bf396e0fc1aa9e604749bf714e74a6a628ada4530e421464d2aaee126121cf"
+            },
+            {
+              "version": 1,
+              "module_id": "character-voice",
+              "content_hash": "6dfe26a69afa215a7a016deca40aabd5c7c44011dad8a5a62673e508e5ce4f02",
+              "execution_hash": "1657b2ea1e3c38b6ebe28c19d3fef1261d6c81d0b45ebf76596cdff3ae965fcb"
+            },
+            {
+              "version": 1,
+              "module_id": "dialogue",
+              "content_hash": "454a353168dfd3665f59437c46a94232d3105ca6b87d1f1827b0f816d67831d9",
+              "execution_hash": "bb115ab71236903ad460ccfc5e6ad2760371ac419564ee0980039d4e3c51fdec"
+            },
+            {
+              "version": 1,
+              "module_id": "narrative-rhythm",
+              "content_hash": "c285814c4335349770c6f4d9129d8d3d0abbb818ae8584657920676207a241bb",
+              "execution_hash": "fd28f565bb770f0a5c9b36cb7466b175dfe525fe5d48966b08f17af6fb71714f"
+            },
+            {
+              "version": 1,
+              "module_id": "natural-prose",
+              "content_hash": "4c1120687e848044038bc3aa0a1ebf18c9cef9500fb179f9e2e4abf8950a3ff4",
+              "execution_hash": "b03427fdeabe1bd06227dbcddd17eb83098582ca5ead206b8d41e33d93e946c7"
+            },
+            {
+              "version": 1,
+              "module_id": "scene-execution",
+              "content_hash": "a9946e3341562845d2dd9eb947670e4ace86cd60e1bf39402cc34edba5f6e757",
+              "execution_hash": "57bb298544718832555deaa448bd4cf07da4fab5092e8e573a88373ed55cae3e"
+            }
+          ],
+          "agent_task_id": "1d64966d-b650-4154-8af9-b4d74877476d",
+          "agent_run_id": "d9ab4bc1-945a-4299-9686-0cee032c341c",
+          "attempt_number": 1,
+          "model_profile": {
+            "model": "mock-v1",
+            "provider": "mock",
+            "generation": {
+              "temperature": 0.2
+            },
+            "profile_id": "mock-writing",
+            "capabilities": [
+              "text"
+            ],
+            "stream_support": false,
+            "timeout_seconds": 90.0,
+            "max_output_tokens": 8192,
+            "structured_output": false
+          },
+          "model_profile_hash": "ef0752cf4f225a7b3df54823ef753ce335f6137d89a9a8c418c16691a3ffbade",
+          "writing_metadata": {
+            "kind": "writing_result",
+            "plan_id": "76c74cd5-0b99-4d6c-ace8-3910b148d3c6",
+            "chapter_id": "51d037f6-93b1-427b-8be2-7cde363989cc",
+            "confidence": 0.95,
+            "assumptions": [],
+            "style_notes": [
+              "以动作和简短对白呈现互动；这是离线契约样例。"
+            ],
+            "plan_version": 1,
+            "plan_deviations": [
+              {
+                "type": "FORBIDDEN_CONSTRAINT",
+                "impact": "影响章节",
+                "reason": "提案",
+                "location": "结尾",
+                "severity": "LOCAL",
+                "confidence": 0.99,
+                "actual_behavior": "改变方向",
+                "requires_replan": false,
+                "planned_behavior": "遵守计划"
+              }
+            ],
+            "scene_execution": [
+              {
+                "scene_id": "S1",
+                "deviation": null,
+                "source_location": "院门至准备行装",
+                "planned_function": "Resolve the requested chapter objective",
+                "execution_summary": "人物通过相互询问作出下一步选择。",
+                "function_completed": true
+              }
+            ],
+            "proposed_new_facts": [],
+            "introduced_elements": [],
+            "knowledge_risk_flags": [],
+            "unresolved_questions": []
+          },
+          "check_status": "BLOCKED",
+          "check_codes": [
+            "FORBIDDEN_CONSTRAINT",
+            "MAJOR_PLAN_DEVIATION"
+          ],
+          "lineage_valid": true
+        }
+      ]
+    },
+    {
+      "test_id": "tests/core/writing/test_lifecycle.py::test_technical_retry_same_task_new_runs_one_version[FORMAT_ERROR_ONCE]",
+      "test_passed": true,
+      "agent_drafts": 1,
+      "generations": [
+        {
+          "writing_result_id": "d578ceab-fb41-4e6f-9239-c1a4dd74dbef",
+          "draft_id": "a0209239-7c73-4cea-81bf-d16f04f06658",
+          "draft_version": 1,
+          "content_sha256": "2c44c232f768090b0eed8d7929fd89c9ae6ef6e1ff129608992f80df9243d0fb",
+          "project_id": "cc05dd6a-ba1e-4234-9826-729fc0f9cf23",
+          "chapter_id": "6c929f48-0dd0-497b-bd21-2b2beca7324c",
+          "workflow_id": "4e7e229c-21d4-4559-9d83-5c3f6ec48ab9",
+          "plan_id": "4079bea4-5b8e-4b01-83d5-d60076a66560",
+          "plan_version": 1,
+          "plan_status_at_execution": "APPROVED",
+          "context_package_id": "3cff0c0e-5e80-4b22-9095-0191da6f7ca0",
+          "context_package_hash": "017a1f5c125d41ccb7f2ee04dee6aa507340f08f36f51d3e6a78657a9f57f308",
+          "context_profile": "CP-005.v3",
+          "context_sources": [
+            {
+              "type": "CHAPTER_PLAN",
+              "id": "4079bea4-5b8e-4b01-83d5-d60076a66560",
+              "version": 1,
+              "status": "APPROVED",
+              "future_knowledge": false,
+              "knowledge_scope": "GLOBAL_ONLY"
+            },
+            {
+              "type": "CHAPTER",
+              "id": "6c929f48-0dd0-497b-bd21-2b2beca7324c",
+              "version": 3,
+              "status": "DRAFT",
+              "future_knowledge": false,
+              "knowledge_scope": "GLOBAL_ONLY"
+            },
+            {
+              "type": "TASK_INPUT",
+              "id": "d2e23f6a-a962-45d2-a326-382b9fe71cf4",
+              "version": 8,
+              "status": "ACTIVE",
+              "future_knowledge": false,
+              "knowledge_scope": "GLOBAL_ONLY"
+            }
+          ],
+          "prompt_lineage_id": "aa5a607a-6bf6-4c4b-aed7-59d42153afa1",
+          "compiled_prompt_hash": "8dd80939fb7c0e73bff2efe57151a98a2558deba98a47c4e252e4615aba0a24f",
+          "prompt_recompiled_and_verified": true,
+          "output_schema_hash": "53650a0455ea4e0e7490f3d6caa731ca67ef651626727059a9dd9bd7efd300c7",
+          "prompt_modules": [
+            {
+              "version": 1,
+              "module_id": "novel-os-core",
+              "content_hash": "8cd5e1025f58a6e6bd5a9d5380b31ed3edfea735f51100134beaa2401c874e07",
+              "execution_hash": "fb091ba33e3f0093bd02045155866d6ced39eb16e03e734492c25fdd7cbf57d0"
+            },
+            {
+              "version": 1,
+              "module_id": "writing-agent",
+              "content_hash": "70d7b146f2b2cc60e60633d918ee41f289659004e697d9f15a673e8b4dc7e2a0",
+              "execution_hash": "90ea70b3d303828b298c7107775367d750be823a04518299b2c493725143a1e0"
+            },
+            {
+              "version": 1,
+              "module_id": "write-chapter",
+              "content_hash": "fe2edd0f6f5bce0d10bafdffc8a6cda0364e5c24ccda246e0d8f3bc563a32bfc",
+              "execution_hash": "54edb5e036cd88004f68d4bcc78d37c0ded8a1f3df4f8f89eec5c8338a36f3a1"
+            },
+            {
+              "version": 1,
+              "module_id": "writing-quality",
+              "content_hash": "a526984424d46ebc4790f1104547495439000f461360533da172f3aca97ee5f4",
+              "execution_hash": "23bf396e0fc1aa9e604749bf714e74a6a628ada4530e421464d2aaee126121cf"
+            },
+            {
+              "version": 1,
+              "module_id": "character-voice",
+              "content_hash": "6dfe26a69afa215a7a016deca40aabd5c7c44011dad8a5a62673e508e5ce4f02",
+              "execution_hash": "1657b2ea1e3c38b6ebe28c19d3fef1261d6c81d0b45ebf76596cdff3ae965fcb"
+            },
+            {
+              "version": 1,
+              "module_id": "dialogue",
+              "content_hash": "454a353168dfd3665f59437c46a94232d3105ca6b87d1f1827b0f816d67831d9",
+              "execution_hash": "bb115ab71236903ad460ccfc5e6ad2760371ac419564ee0980039d4e3c51fdec"
+            },
+            {
+              "version": 1,
+              "module_id": "narrative-rhythm",
+              "content_hash": "c285814c4335349770c6f4d9129d8d3d0abbb818ae8584657920676207a241bb",
+              "execution_hash": "fd28f565bb770f0a5c9b36cb7466b175dfe525fe5d48966b08f17af6fb71714f"
+            },
+            {
+              "version": 1,
+              "module_id": "natural-prose",
+              "content_hash": "4c1120687e848044038bc3aa0a1ebf18c9cef9500fb179f9e2e4abf8950a3ff4",
+              "execution_hash": "b03427fdeabe1bd06227dbcddd17eb83098582ca5ead206b8d41e33d93e946c7"
+            },
+            {
+              "version": 1,
+              "module_id": "scene-execution",
+              "content_hash": "a9946e3341562845d2dd9eb947670e4ace86cd60e1bf39402cc34edba5f6e757",
+              "execution_hash": "57bb298544718832555deaa448bd4cf07da4fab5092e8e573a88373ed55cae3e"
+            }
+          ],
+          "agent_task_id": "d2e23f6a-a962-45d2-a326-382b9fe71cf4",
+          "agent_run_id": "32052617-6d76-4811-b88c-32abca442c52",
+          "attempt_number": 2,
+          "model_profile": {
+            "model": "mock-v1",
+            "provider": "mock",
+            "generation": {
+              "temperature": 0.2
+            },
+            "profile_id": "mock-writing",
+            "capabilities": [
+              "text"
+            ],
+            "stream_support": false,
+            "timeout_seconds": 90.0,
+            "max_output_tokens": 8192,
+            "structured_output": false
+          },
+          "model_profile_hash": "ef0752cf4f225a7b3df54823ef753ce335f6137d89a9a8c418c16691a3ffbade",
+          "writing_metadata": {
+            "kind": "writing_result",
+            "plan_id": "4079bea4-5b8e-4b01-83d5-d60076a66560",
+            "chapter_id": "6c929f48-0dd0-497b-bd21-2b2beca7324c",
+            "confidence": 0.95,
+            "assumptions": [],
+            "style_notes": [
+              "以动作和简短对白呈现互动；这是离线契约样例。"
+            ],
+            "plan_version": 1,
+            "plan_deviations": [],
+            "scene_execution": [
+              {
+                "scene_id": "S1",
+                "deviation": null,
+                "source_location": "院门至准备行装",
+                "planned_function": "Resolve the requested chapter objective",
+                "execution_summary": "人物通过相互询问作出下一步选择。",
+                "function_completed": true
+              }
+            ],
+            "proposed_new_facts": [],
+            "introduced_elements": [],
+            "knowledge_risk_flags": [],
+            "unresolved_questions": []
+          },
+          "check_status": "PASS",
+          "check_codes": [],
+          "lineage_valid": true
+        }
+      ]
+    },
+    {
+      "test_id": "tests/core/writing/test_lifecycle.py::test_technical_retry_same_task_new_runs_one_version[MODEL_ERROR_ONCE]",
+      "test_passed": true,
+      "agent_drafts": 1,
+      "generations": [
+        {
+          "writing_result_id": "fe77718c-ba7b-47a7-8925-5e3e9a7bec87",
+          "draft_id": "655fbfce-b55f-42c6-8581-d5f28a068b53",
+          "draft_version": 1,
+          "content_sha256": "2c44c232f768090b0eed8d7929fd89c9ae6ef6e1ff129608992f80df9243d0fb",
+          "project_id": "affe3670-e342-470d-becd-bff0384b837c",
+          "chapter_id": "e368810c-830a-4b84-b2ed-ece2e1fca4b3",
+          "workflow_id": "062fbafb-d514-40e6-b30f-6389542d8d57",
+          "plan_id": "64c3f7a8-b629-425e-ae4d-000504eb6e45",
+          "plan_version": 1,
+          "plan_status_at_execution": "APPROVED",
+          "context_package_id": "a7780f64-640a-4aeb-9fd3-f8b028649957",
+          "context_package_hash": "854e52aed0492b7bd7cf5e94dec03a626927565af815deca6dce924a7aa69957",
+          "context_profile": "CP-005.v3",
+          "context_sources": [
+            {
+              "type": "CHAPTER_PLAN",
+              "id": "64c3f7a8-b629-425e-ae4d-000504eb6e45",
+              "version": 1,
+              "status": "APPROVED",
+              "future_knowledge": false,
+              "knowledge_scope": "GLOBAL_ONLY"
+            },
+            {
+              "type": "CHAPTER",
+              "id": "e368810c-830a-4b84-b2ed-ece2e1fca4b3",
+              "version": 3,
+              "status": "DRAFT",
+              "future_knowledge": false,
+              "knowledge_scope": "GLOBAL_ONLY"
+            },
+            {
+              "type": "TASK_INPUT",
+              "id": "84e70696-ee7c-4136-8f35-305a892f33bf",
+              "version": 8,
+              "status": "ACTIVE",
+              "future_knowledge": false,
+              "knowledge_scope": "GLOBAL_ONLY"
+            }
+          ],
+          "prompt_lineage_id": "811ffd8d-de3c-41f2-b9fc-2972d0e0014f",
+          "compiled_prompt_hash": "ad693b18008ae7a15e5ea872acdfde1a2c09dc05e32f5002ccec271f74388a3a",
+          "prompt_recompiled_and_verified": true,
+          "output_schema_hash": "53650a0455ea4e0e7490f3d6caa731ca67ef651626727059a9dd9bd7efd300c7",
+          "prompt_modules": [
+            {
+              "version": 1,
+              "module_id": "novel-os-core",
+              "content_hash": "8cd5e1025f58a6e6bd5a9d5380b31ed3edfea735f51100134beaa2401c874e07",
+              "execution_hash": "fb091ba33e3f0093bd02045155866d6ced39eb16e03e734492c25fdd7cbf57d0"
+            },
+            {
+              "version": 1,
+              "module_id": "writing-agent",
+              "content_hash": "70d7b146f2b2cc60e60633d918ee41f289659004e697d9f15a673e8b4dc7e2a0",
+              "execution_hash": "90ea70b3d303828b298c7107775367d750be823a04518299b2c493725143a1e0"
+            },
+            {
+              "version": 1,
+              "module_id": "write-chapter",
+              "content_hash": "fe2edd0f6f5bce0d10bafdffc8a6cda0364e5c24ccda246e0d8f3bc563a32bfc",
+              "execution_hash": "54edb5e036cd88004f68d4bcc78d37c0ded8a1f3df4f8f89eec5c8338a36f3a1"
+            },
+            {
+              "version": 1,
+              "module_id": "writing-quality",
+              "content_hash": "a526984424d46ebc4790f1104547495439000f461360533da172f3aca97ee5f4",
+              "execution_hash": "23bf396e0fc1aa9e604749bf714e74a6a628ada4530e421464d2aaee126121cf"
+            },
+            {
+              "version": 1,
+              "module_id": "character-voice",
+              "content_hash": "6dfe26a69afa215a7a016deca40aabd5c7c44011dad8a5a62673e508e5ce4f02",
+              "execution_hash": "1657b2ea1e3c38b6ebe28c19d3fef1261d6c81d0b45ebf76596cdff3ae965fcb"
+            },
+            {
+              "version": 1,
+              "module_id": "dialogue",
+              "content_hash": "454a353168dfd3665f59437c46a94232d3105ca6b87d1f1827b0f816d67831d9",
+              "execution_hash": "bb115ab71236903ad460ccfc5e6ad2760371ac419564ee0980039d4e3c51fdec"
+            },
+            {
+              "version": 1,
+              "module_id": "narrative-rhythm",
+              "content_hash": "c285814c4335349770c6f4d9129d8d3d0abbb818ae8584657920676207a241bb",
+              "execution_hash": "fd28f565bb770f0a5c9b36cb7466b175dfe525fe5d48966b08f17af6fb71714f"
+            },
+            {
+              "version": 1,
+              "module_id": "natural-prose",
+              "content_hash": "4c1120687e848044038bc3aa0a1ebf18c9cef9500fb179f9e2e4abf8950a3ff4",
+              "execution_hash": "b03427fdeabe1bd06227dbcddd17eb83098582ca5ead206b8d41e33d93e946c7"
+            },
+            {
+              "version": 1,
+              "module_id": "scene-execution",
+              "content_hash": "a9946e3341562845d2dd9eb947670e4ace86cd60e1bf39402cc34edba5f6e757",
+              "execution_hash": "57bb298544718832555deaa448bd4cf07da4fab5092e8e573a88373ed55cae3e"
+            }
+          ],
+          "agent_task_id": "84e70696-ee7c-4136-8f35-305a892f33bf",
+          "agent_run_id": "8a78e320-44d1-457e-bf44-11ce81467a65",
+          "attempt_number": 2,
+          "model_profile": {
+            "model": "mock-v1",
+            "provider": "mock",
+            "generation": {
+              "temperature": 0.2
+            },
+            "profile_id": "mock-writing",
+            "capabilities": [
+              "text"
+            ],
+            "stream_support": false,
+            "timeout_seconds": 90.0,
+            "max_output_tokens": 8192,
+            "structured_output": false
+          },
+          "model_profile_hash": "ef0752cf4f225a7b3df54823ef753ce335f6137d89a9a8c418c16691a3ffbade",
+          "writing_metadata": {
+            "kind": "writing_result",
+            "plan_id": "64c3f7a8-b629-425e-ae4d-000504eb6e45",
+            "chapter_id": "e368810c-830a-4b84-b2ed-ece2e1fca4b3",
+            "confidence": 0.95,
+            "assumptions": [],
+            "style_notes": [
+              "以动作和简短对白呈现互动；这是离线契约样例。"
+            ],
+            "plan_version": 1,
+            "plan_deviations": [],
+            "scene_execution": [
+              {
+                "scene_id": "S1",
+                "deviation": null,
+                "source_location": "院门至准备行装",
+                "planned_function": "Resolve the requested chapter objective",
+                "execution_summary": "人物通过相互询问作出下一步选择。",
+                "function_completed": true
+              }
+            ],
+            "proposed_new_facts": [],
+            "introduced_elements": [],
+            "knowledge_risk_flags": [],
+            "unresolved_questions": []
+          },
+          "check_status": "PASS",
+          "check_codes": [],
+          "lineage_valid": true
+        }
+      ]
+    },
+    {
+      "test_id": "tests/core/writing/test_lifecycle.py::test_two_concurrent_deliveries_create_one_draft",
+      "test_passed": true,
+      "agent_drafts": 1,
+      "generations": [
+        {
+          "writing_result_id": "80df2a3c-e461-4224-b762-73769f6b4342",
+          "draft_id": "9c03fc76-ef7f-4598-9888-db81736c908c",
+          "draft_version": 1,
+          "content_sha256": "2c44c232f768090b0eed8d7929fd89c9ae6ef6e1ff129608992f80df9243d0fb",
+          "project_id": "6c369e9b-0fc8-4be5-b7b4-e3b4d9f02ccb",
+          "chapter_id": "7df076f5-b6a0-41c3-8e29-eb84466c2cb4",
+          "workflow_id": "b5c523e4-8392-4530-8028-99d7de899496",
+          "plan_id": "13fa7bd1-3317-49d8-9790-bb20cf32526d",
+          "plan_version": 1,
+          "plan_status_at_execution": "APPROVED",
+          "context_package_id": "bb966849-e27e-4a87-9819-0a02c6f27f28",
+          "context_package_hash": "03bb13cea1f5c4b0ea66d070f9075ba5c7276e39670760bb798e9411fd71425c",
+          "context_profile": "CP-005.v3",
+          "context_sources": [
+            {
+              "type": "CHAPTER_PLAN",
+              "id": "13fa7bd1-3317-49d8-9790-bb20cf32526d",
+              "version": 1,
+              "status": "APPROVED",
+              "future_knowledge": false,
+              "knowledge_scope": "GLOBAL_ONLY"
+            },
+            {
+              "type": "CHAPTER",
+              "id": "7df076f5-b6a0-41c3-8e29-eb84466c2cb4",
+              "version": 3,
+              "status": "DRAFT",
+              "future_knowledge": false,
+              "knowledge_scope": "GLOBAL_ONLY"
+            },
+            {
+              "type": "TASK_INPUT",
+              "id": "1e71b415-c4bc-4ee0-bdf3-794e98516d4c",
+              "version": 8,
+              "status": "ACTIVE",
+              "future_knowledge": false,
+              "knowledge_scope": "GLOBAL_ONLY"
+            }
+          ],
+          "prompt_lineage_id": "f3ee40e1-9c9f-4999-99d7-c431dbcc0930",
+          "compiled_prompt_hash": "eb4e30a5b2546a45b402ca63fa0393f6a43418be03dc79f0960af2630dda3535",
+          "prompt_recompiled_and_verified": true,
+          "output_schema_hash": "53650a0455ea4e0e7490f3d6caa731ca67ef651626727059a9dd9bd7efd300c7",
+          "prompt_modules": [
+            {
+              "version": 1,
+              "module_id": "novel-os-core",
+              "content_hash": "8cd5e1025f58a6e6bd5a9d5380b31ed3edfea735f51100134beaa2401c874e07",
+              "execution_hash": "fb091ba33e3f0093bd02045155866d6ced39eb16e03e734492c25fdd7cbf57d0"
+            },
+            {
+              "version": 1,
+              "module_id": "writing-agent",
+              "content_hash": "70d7b146f2b2cc60e60633d918ee41f289659004e697d9f15a673e8b4dc7e2a0",
+              "execution_hash": "90ea70b3d303828b298c7107775367d750be823a04518299b2c493725143a1e0"
+            },
+            {
+              "version": 1,
+              "module_id": "write-chapter",
+              "content_hash": "fe2edd0f6f5bce0d10bafdffc8a6cda0364e5c24ccda246e0d8f3bc563a32bfc",
+              "execution_hash": "54edb5e036cd88004f68d4bcc78d37c0ded8a1f3df4f8f89eec5c8338a36f3a1"
+            },
+            {
+              "version": 1,
+              "module_id": "writing-quality",
+              "content_hash": "a526984424d46ebc4790f1104547495439000f461360533da172f3aca97ee5f4",
+              "execution_hash": "23bf396e0fc1aa9e604749bf714e74a6a628ada4530e421464d2aaee126121cf"
+            },
+            {
+              "version": 1,
+              "module_id": "character-voice",
+              "content_hash": "6dfe26a69afa215a7a016deca40aabd5c7c44011dad8a5a62673e508e5ce4f02",
+              "execution_hash": "1657b2ea1e3c38b6ebe28c19d3fef1261d6c81d0b45ebf76596cdff3ae965fcb"
+            },
+            {
+              "version": 1,
+              "module_id": "dialogue",
+              "content_hash": "454a353168dfd3665f59437c46a94232d3105ca6b87d1f1827b0f816d67831d9",
+              "execution_hash": "bb115ab71236903ad460ccfc5e6ad2760371ac419564ee0980039d4e3c51fdec"
+            },
+            {
+              "version": 1,
+              "module_id": "narrative-rhythm",
+              "content_hash": "c285814c4335349770c6f4d9129d8d3d0abbb818ae8584657920676207a241bb",
+              "execution_hash": "fd28f565bb770f0a5c9b36cb7466b175dfe525fe5d48966b08f17af6fb71714f"
+            },
+            {
+              "version": 1,
+              "module_id": "natural-prose",
+              "content_hash": "4c1120687e848044038bc3aa0a1ebf18c9cef9500fb179f9e2e4abf8950a3ff4",
+              "execution_hash": "b03427fdeabe1bd06227dbcddd17eb83098582ca5ead206b8d41e33d93e946c7"
+            },
+            {
+              "version": 1,
+              "module_id": "scene-execution",
+              "content_hash": "a9946e3341562845d2dd9eb947670e4ace86cd60e1bf39402cc34edba5f6e757",
+              "execution_hash": "57bb298544718832555deaa448bd4cf07da4fab5092e8e573a88373ed55cae3e"
+            }
+          ],
+          "agent_task_id": "1e71b415-c4bc-4ee0-bdf3-794e98516d4c",
+          "agent_run_id": "2bab93a1-b374-4d3d-8b9a-2f3bd8c47ec5",
+          "attempt_number": 1,
+          "model_profile": {
+            "model": "mock-v1",
+            "provider": "mock",
+            "generation": {
+              "temperature": 0.2
+            },
+            "profile_id": "mock-writing",
+            "capabilities": [
+              "text"
+            ],
+            "stream_support": false,
+            "timeout_seconds": 90.0,
+            "max_output_tokens": 8192,
+            "structured_output": false
+          },
+          "model_profile_hash": "ef0752cf4f225a7b3df54823ef753ce335f6137d89a9a8c418c16691a3ffbade",
+          "writing_metadata": {
+            "kind": "writing_result",
+            "plan_id": "13fa7bd1-3317-49d8-9790-bb20cf32526d",
+            "chapter_id": "7df076f5-b6a0-41c3-8e29-eb84466c2cb4",
+            "confidence": 0.95,
+            "assumptions": [],
+            "style_notes": [
+              "以动作和简短对白呈现互动；这是离线契约样例。"
+            ],
+            "plan_version": 1,
+            "plan_deviations": [],
+            "scene_execution": [
+              {
+                "scene_id": "S1",
+                "deviation": null,
+                "source_location": "院门至准备行装",
+                "planned_function": "Resolve the requested chapter objective",
+                "execution_summary": "人物通过相互询问作出下一步选择。",
+                "function_completed": true
+              }
+            ],
+            "proposed_new_facts": [],
+            "introduced_elements": [],
+            "knowledge_risk_flags": [],
+            "unresolved_questions": []
+          },
+          "check_status": "PASS",
+          "check_codes": [],
+          "lineage_valid": true
+        }
+      ]
+    },
+    {
+      "test_id": "tests/core/writing/test_lifecycle.py::test_e2e_d_changed_input_or_workflow_discards_inflight_result[approval]",
+      "test_passed": true,
+      "agent_drafts": 0,
+      "generations": []
+    },
+    {
+      "test_id": "tests/core/writing/test_lifecycle.py::test_e2e_d_changed_input_or_workflow_discards_inflight_result[requirement]",
+      "test_passed": true,
+      "agent_drafts": 0,
+      "generations": []
+    },
+    {
+      "test_id": "tests/core/writing/test_lifecycle.py::test_e2e_d_changed_input_or_workflow_discards_inflight_result[lock]",
+      "test_passed": true,
+      "agent_drafts": 0,
+      "generations": []
+    },
+    {
+      "test_id": "tests/core/writing/test_lifecycle.py::test_e2e_d_changed_input_or_workflow_discards_inflight_result[chapter_lock]",
+      "test_passed": true,
+      "agent_drafts": 0,
+      "generations": []
+    },
+    {
+      "test_id": "tests/core/writing/test_lifecycle.py::test_e2e_d_changed_input_or_workflow_discards_inflight_result[cancel]",
+      "test_passed": true,
+      "agent_drafts": 0,
+      "generations": []
+    },
+    {
+      "test_id": "tests/core/writing/test_lifecycle.py::test_e2e_d_changed_input_or_workflow_discards_inflight_result[pause]",
+      "test_passed": true,
+      "agent_drafts": 0,
+      "generations": []
+    },
+    {
+      "test_id": "tests/core/writing/test_lifecycle.py::test_e2e_d_changed_input_or_workflow_discards_inflight_result[draft]",
+      "test_passed": true,
+      "agent_drafts": 0,
+      "generations": []
+    },
+    {
+      "test_id": "tests/core/writing/test_output_policy.py::test_empty_or_misbound_output_never_becomes_draft[WRITING_EMPTY_CONTENT-SCHEMA_PARSE_ERROR]",
+      "test_passed": true,
+      "agent_drafts": 0,
+      "generations": []
+    },
+    {
+      "test_id": "tests/core/writing/test_output_policy.py::test_empty_or_misbound_output_never_becomes_draft[WRITING_STALE_RESULT-CONTEXT_STALE]",
+      "test_passed": true,
+      "agent_drafts": 0,
+      "generations": []
+    },
+    {
+      "test_id": "tests/core/writing/test_lifecycle.py::test_e2e_b_new_draft_preserves_approved_body_then_regeneration",
+      "test_passed": true,
+      "agent_drafts": 2,
+      "generations": [
+        {
+          "writing_result_id": "33f1764b-028d-4b53-8f4a-0773f72c4ae8",
+          "draft_id": "34675dfb-26cc-4722-a13e-671b66d7250b",
+          "draft_version": 2,
+          "content_sha256": "2c44c232f768090b0eed8d7929fd89c9ae6ef6e1ff129608992f80df9243d0fb",
+          "project_id": "23c90a80-e93e-42ec-8dbe-ce88935f452a",
+          "chapter_id": "0404d153-7c9c-4cce-9f22-b8aea08884f2",
+          "workflow_id": "0c8caf70-788b-4363-a565-0c5fac5fbf33",
+          "plan_id": "3e3bb383-4eae-45d3-8a1b-602709d769e2",
+          "plan_version": 1,
+          "plan_status_at_execution": "APPROVED",
+          "context_package_id": "2bd37d32-8ac0-41bc-ab21-629fc0e7c44c",
+          "context_package_hash": "90e86394a7ce5829ffb6895c907444dee94a369813d8559c30c934832476a676",
+          "context_profile": "CP-005.v3",
+          "context_sources": [
+            {
+              "type": "CHAPTER_PLAN",
+              "id": "3e3bb383-4eae-45d3-8a1b-602709d769e2",
+              "version": 1,
+              "status": "APPROVED",
+              "future_knowledge": false,
+              "knowledge_scope": "GLOBAL_ONLY"
+            },
+            {
+              "type": "CHAPTER",
+              "id": "0404d153-7c9c-4cce-9f22-b8aea08884f2",
+              "version": 5,
+              "status": "DRAFT",
+              "future_knowledge": false,
+              "knowledge_scope": "GLOBAL_ONLY"
+            },
+            {
+              "type": "TASK_INPUT",
+              "id": "e3e6ff4d-b5d2-4daa-8cf4-03ce4723e225",
+              "version": 8,
+              "status": "ACTIVE",
+              "future_knowledge": false,
+              "knowledge_scope": "GLOBAL_ONLY"
+            }
+          ],
+          "prompt_lineage_id": "77d48f3c-d9c1-4fec-850a-76ac111ec9fe",
+          "compiled_prompt_hash": "7120ee271cd74c788c28ac0372393692ad8ca7c58912de3cd783170ca1b22f3f",
+          "prompt_recompiled_and_verified": true,
+          "output_schema_hash": "53650a0455ea4e0e7490f3d6caa731ca67ef651626727059a9dd9bd7efd300c7",
+          "prompt_modules": [
+            {
+              "version": 1,
+              "module_id": "novel-os-core",
+              "content_hash": "8cd5e1025f58a6e6bd5a9d5380b31ed3edfea735f51100134beaa2401c874e07",
+              "execution_hash": "fb091ba33e3f0093bd02045155866d6ced39eb16e03e734492c25fdd7cbf57d0"
+            },
+            {
+              "version": 1,
+              "module_id": "writing-agent",
+              "content_hash": "70d7b146f2b2cc60e60633d918ee41f289659004e697d9f15a673e8b4dc7e2a0",
+              "execution_hash": "90ea70b3d303828b298c7107775367d750be823a04518299b2c493725143a1e0"
+            },
+            {
+              "version": 1,
+              "module_id": "write-chapter",
+              "content_hash": "fe2edd0f6f5bce0d10bafdffc8a6cda0364e5c24ccda246e0d8f3bc563a32bfc",
+              "execution_hash": "54edb5e036cd88004f68d4bcc78d37c0ded8a1f3df4f8f89eec5c8338a36f3a1"
+            },
+            {
+              "version": 1,
+              "module_id": "writing-quality",
+              "content_hash": "a526984424d46ebc4790f1104547495439000f461360533da172f3aca97ee5f4",
+              "execution_hash": "23bf396e0fc1aa9e604749bf714e74a6a628ada4530e421464d2aaee126121cf"
+            },
+            {
+              "version": 1,
+              "module_id": "character-voice",
+              "content_hash": "6dfe26a69afa215a7a016deca40aabd5c7c44011dad8a5a62673e508e5ce4f02",
+              "execution_hash": "1657b2ea1e3c38b6ebe28c19d3fef1261d6c81d0b45ebf76596cdff3ae965fcb"
+            },
+            {
+              "version": 1,
+              "module_id": "dialogue",
+              "content_hash": "454a353168dfd3665f59437c46a94232d3105ca6b87d1f1827b0f816d67831d9",
+              "execution_hash": "bb115ab71236903ad460ccfc5e6ad2760371ac419564ee0980039d4e3c51fdec"
+            },
+            {
+              "version": 1,
+              "module_id": "narrative-rhythm",
+              "content_hash": "c285814c4335349770c6f4d9129d8d3d0abbb818ae8584657920676207a241bb",
+              "execution_hash": "fd28f565bb770f0a5c9b36cb7466b175dfe525fe5d48966b08f17af6fb71714f"
+            },
+            {
+              "version": 1,
+              "module_id": "natural-prose",
+              "content_hash": "4c1120687e848044038bc3aa0a1ebf18c9cef9500fb179f9e2e4abf8950a3ff4",
+              "execution_hash": "b03427fdeabe1bd06227dbcddd17eb83098582ca5ead206b8d41e33d93e946c7"
+            },
+            {
+              "version": 1,
+              "module_id": "scene-execution",
+              "content_hash": "a9946e3341562845d2dd9eb947670e4ace86cd60e1bf39402cc34edba5f6e757",
+              "execution_hash": "57bb298544718832555deaa448bd4cf07da4fab5092e8e573a88373ed55cae3e"
+            }
+          ],
+          "agent_task_id": "e3e6ff4d-b5d2-4daa-8cf4-03ce4723e225",
+          "agent_run_id": "ceef4aee-e014-43c5-8e69-f55c645341ab",
+          "attempt_number": 1,
+          "model_profile": {
+            "model": "mock-v1",
+            "provider": "mock",
+            "generation": {
+              "temperature": 0.2
+            },
+            "profile_id": "mock-writing",
+            "capabilities": [
+              "text"
+            ],
+            "stream_support": false,
+            "timeout_seconds": 90.0,
+            "max_output_tokens": 8192,
+            "structured_output": false
+          },
+          "model_profile_hash": "ef0752cf4f225a7b3df54823ef753ce335f6137d89a9a8c418c16691a3ffbade",
+          "writing_metadata": {
+            "kind": "writing_result",
+            "plan_id": "3e3bb383-4eae-45d3-8a1b-602709d769e2",
+            "chapter_id": "0404d153-7c9c-4cce-9f22-b8aea08884f2",
+            "confidence": 0.95,
+            "assumptions": [],
+            "style_notes": [
+              "以动作和简短对白呈现互动；这是离线契约样例。"
+            ],
+            "plan_version": 1,
+            "plan_deviations": [],
+            "scene_execution": [
+              {
+                "scene_id": "S1",
+                "deviation": null,
+                "source_location": "院门至准备行装",
+                "planned_function": "Resolve the requested chapter objective",
+                "execution_summary": "人物通过相互询问作出下一步选择。",
+                "function_completed": true
+              }
+            ],
+            "proposed_new_facts": [],
+            "introduced_elements": [],
+            "knowledge_risk_flags": [],
+            "unresolved_questions": []
+          },
+          "check_status": "PASS",
+          "check_codes": [],
+          "lineage_valid": true
+        },
+        {
+          "writing_result_id": "20215423-af6d-49dc-97da-52f0f198366f",
+          "draft_id": "00500313-8aec-4c77-b9e7-1a412151e6b1",
+          "draft_version": 3,
+          "content_sha256": "2c44c232f768090b0eed8d7929fd89c9ae6ef6e1ff129608992f80df9243d0fb",
+          "project_id": "23c90a80-e93e-42ec-8dbe-ce88935f452a",
+          "chapter_id": "0404d153-7c9c-4cce-9f22-b8aea08884f2",
+          "workflow_id": "0c8caf70-788b-4363-a565-0c5fac5fbf33",
+          "plan_id": "3e3bb383-4eae-45d3-8a1b-602709d769e2",
+          "plan_version": 1,
+          "plan_status_at_execution": "APPROVED",
+          "context_package_id": "03d6d70d-c2c4-45cc-a81d-5c549dd2d649",
+          "context_package_hash": "3a098132d182da08dffbf82f8d8dfc8c64b0df2a5b1a0cece00a0ce453e4a975",
+          "context_profile": "CP-005.v3",
+          "context_sources": [
+            {
+              "type": "CHAPTER_PLAN",
+              "id": "3e3bb383-4eae-45d3-8a1b-602709d769e2",
+              "version": 1,
+              "status": "APPROVED",
+              "future_knowledge": false,
+              "knowledge_scope": "GLOBAL_ONLY"
+            },
+            {
+              "type": "CHAPTER",
+              "id": "0404d153-7c9c-4cce-9f22-b8aea08884f2",
+              "version": 6,
+              "status": "DRAFT",
+              "future_knowledge": false,
+              "knowledge_scope": "GLOBAL_ONLY"
+            },
+            {
+              "type": "TASK_INPUT",
+              "id": "b6f666c3-63b3-4f80-a27b-ecb48efa55c5",
+              "version": 10,
+              "status": "ACTIVE",
+              "future_knowledge": false,
+              "knowledge_scope": "GLOBAL_ONLY"
+            }
+          ],
+          "prompt_lineage_id": "c3b3c5d9-241e-467a-b5cc-11e7c92ded15",
+          "compiled_prompt_hash": "c9bb3ee35c5344cc439bc08b478224039bea8491ecf4d4e062c2ef80ecaea440",
+          "prompt_recompiled_and_verified": true,
+          "output_schema_hash": "53650a0455ea4e0e7490f3d6caa731ca67ef651626727059a9dd9bd7efd300c7",
+          "prompt_modules": [
+            {
+              "version": 1,
+              "module_id": "novel-os-core",
+              "content_hash": "8cd5e1025f58a6e6bd5a9d5380b31ed3edfea735f51100134beaa2401c874e07",
+              "execution_hash": "fb091ba33e3f0093bd02045155866d6ced39eb16e03e734492c25fdd7cbf57d0"
+            },
+            {
+              "version": 1,
+              "module_id": "writing-agent",
+              "content_hash": "70d7b146f2b2cc60e60633d918ee41f289659004e697d9f15a673e8b4dc7e2a0",
+              "execution_hash": "90ea70b3d303828b298c7107775367d750be823a04518299b2c493725143a1e0"
+            },
+            {
+              "version": 1,
+              "module_id": "write-chapter",
+              "content_hash": "fe2edd0f6f5bce0d10bafdffc8a6cda0364e5c24ccda246e0d8f3bc563a32bfc",
+              "execution_hash": "54edb5e036cd88004f68d4bcc78d37c0ded8a1f3df4f8f89eec5c8338a36f3a1"
+            },
+            {
+              "version": 1,
+              "module_id": "writing-quality",
+              "content_hash": "a526984424d46ebc4790f1104547495439000f461360533da172f3aca97ee5f4",
+              "execution_hash": "23bf396e0fc1aa9e604749bf714e74a6a628ada4530e421464d2aaee126121cf"
+            },
+            {
+              "version": 1,
+              "module_id": "character-voice",
+              "content_hash": "6dfe26a69afa215a7a016deca40aabd5c7c44011dad8a5a62673e508e5ce4f02",
+              "execution_hash": "1657b2ea1e3c38b6ebe28c19d3fef1261d6c81d0b45ebf76596cdff3ae965fcb"
+            },
+            {
+              "version": 1,
+              "module_id": "dialogue",
+              "content_hash": "454a353168dfd3665f59437c46a94232d3105ca6b87d1f1827b0f816d67831d9",
+              "execution_hash": "bb115ab71236903ad460ccfc5e6ad2760371ac419564ee0980039d4e3c51fdec"
+            },
+            {
+              "version": 1,
+              "module_id": "narrative-rhythm",
+              "content_hash": "c285814c4335349770c6f4d9129d8d3d0abbb818ae8584657920676207a241bb",
+              "execution_hash": "fd28f565bb770f0a5c9b36cb7466b175dfe525fe5d48966b08f17af6fb71714f"
+            },
+            {
+              "version": 1,
+              "module_id": "natural-prose",
+              "content_hash": "4c1120687e848044038bc3aa0a1ebf18c9cef9500fb179f9e2e4abf8950a3ff4",
+              "execution_hash": "b03427fdeabe1bd06227dbcddd17eb83098582ca5ead206b8d41e33d93e946c7"
+            },
+            {
+              "version": 1,
+              "module_id": "scene-execution",
+              "content_hash": "a9946e3341562845d2dd9eb947670e4ace86cd60e1bf39402cc34edba5f6e757",
+              "execution_hash": "57bb298544718832555deaa448bd4cf07da4fab5092e8e573a88373ed55cae3e"
+            }
+          ],
+          "agent_task_id": "b6f666c3-63b3-4f80-a27b-ecb48efa55c5",
+          "agent_run_id": "3837b8db-c600-47ae-82b2-2b8bf66c5a05",
+          "attempt_number": 1,
+          "model_profile": {
+            "model": "mock-v1",
+            "provider": "mock",
+            "generation": {
+              "temperature": 0.2
+            },
+            "profile_id": "mock-writing",
+            "capabilities": [
+              "text"
+            ],
+            "stream_support": false,
+            "timeout_seconds": 90.0,
+            "max_output_tokens": 8192,
+            "structured_output": false
+          },
+          "model_profile_hash": "ef0752cf4f225a7b3df54823ef753ce335f6137d89a9a8c418c16691a3ffbade",
+          "writing_metadata": {
+            "kind": "writing_result",
+            "plan_id": "3e3bb383-4eae-45d3-8a1b-602709d769e2",
+            "chapter_id": "0404d153-7c9c-4cce-9f22-b8aea08884f2",
+            "confidence": 0.95,
+            "assumptions": [],
+            "style_notes": [
+              "以动作和简短对白呈现互动；这是离线契约样例。"
+            ],
+            "plan_version": 1,
+            "plan_deviations": [],
+            "scene_execution": [
+              {
+                "scene_id": "S1",
+                "deviation": null,
+                "source_location": "院门至准备行装",
+                "planned_function": "Resolve the requested chapter objective",
+                "execution_summary": "人物通过相互询问作出下一步选择。",
+                "function_completed": true
+              }
+            ],
+            "proposed_new_facts": [],
+            "introduced_elements": [],
+            "knowledge_risk_flags": [],
+            "unresolved_questions": []
+          },
+          "check_status": "PASS",
+          "check_codes": [],
+          "lineage_valid": true
+        }
+      ]
+    }
+  ],
+  "finished_at": "2026-09-15T09:43:54.094709+00:00",
+  "pytest_exit_code": 0,
+  "total_agent_drafts": 15
+}

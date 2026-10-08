@@ -1,0 +1,38 @@
+{
+  "image_id": "sha256:182250de198bc644cfaa472114d5ebd29f25cf4ecef11950bcf52b9599de6910",
+  "running_image_id": "sha256:182250de198bc644cfaa472114d5ebd29f25cf4ecef11950bcf52b9599de6910",
+  "product_python_tree_sha256": "e2dd19cc286bcbc6a1e6a41e80c2af86c3de3ed2f7c5e005a9f12865cedfd81c",
+  "container_migration_current": "0009_writing_agent (head)",
+  "requests": [
+    {
+      "path": "/api/v1/health",
+      "status": 200,
+      "request_id": "novel008-acceptance",
+      "body": {
+        "status": "ok"
+      }
+    },
+    {
+      "path": "/api/v1/health/db",
+      "status": 200,
+      "request_id": "novel008-acceptance",
+      "body": {
+        "status": "ok",
+        "database": "ok"
+      }
+    },
+    {
+      "path": "/api/v1/acceptance-missing-route",
+      "status": 404,
+      "request_id": "novel008-acceptance",
+      "body": {
+        "error": {
+          "code": "NOT_FOUND",
+          "message": "Not Found",
+          "request_id": "novel008-acceptance",
+          "details": []
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,397 @@
+{
+  "workflow_id": "65f50bbc-8484-4f60-91cd-9f3d5426edfe",
+  "brief": {
+    "id": "95a6cb57-a80c-4959-a136-025c9ec6a1af",
+    "project_id": "23c028ee-cd94-4965-af85-731e560c9633",
+    "chapter_id": "8688a77f-df2e-4726-a22b-6035b1f3157b",
+    "workflow_id": "65f50bbc-8484-4f60-91cd-9f3d5426edfe",
+    "agent_run_id": "3a1a141d-c31f-4c8f-9859-6830f742b845",
+    "prompt_lineage_id": "500fb0bb-c1b0-4755-a074-8851018dc30d",
+    "context_package_id": "6e92bca4-2572-49df-97a2-93ed38c39536",
+    "source_versions": [
+      {
+        "version": 2,
+        "source_id": "c578c1c6-aee7-498a-a0d7-389549013c04",
+        "logical_id": "c578c1c6-aee7-498a-a0d7-389549013c04",
+        "source_type": "TASK_INPUT"
+      },
+      {
+        "version": 2,
+        "source_id": "8688a77f-df2e-4726-a22b-6035b1f3157b",
+        "logical_id": "8688a77f-df2e-4726-a22b-6035b1f3157b",
+        "source_type": "CHAPTER"
+      },
+      {
+        "version": 1,
+        "source_id": "23c028ee-cd94-4965-af85-731e560c9633",
+        "logical_id": "23c028ee-cd94-4965-af85-731e560c9633",
+        "source_type": "PROJECT"
+      }
+    ],
+    "created_at": "2026-09-15T11:36:55.592132Z",
+    "version": 1,
+    "raw_requirement": "这一章的核心目标是让两个人原本比较紧张的关系出现一点缓和，但不要直接和解。\n\n前半段希望气氛稍微紧张一些，中间发生一件小事，让他们不得不进行合作。合作过程中可以让双方对彼此产生一点新的认识。\n\n结尾不要把关系彻底说开，只需要让读者感觉两个人之间发生了一点变化。\n\n具体场景、对话和合作的事情由你自己设计。",
+    "input_event_id": "ef5a4e1a-9db8-455f-8789-65a952c31a27",
+    "status": "READY",
+    "body": {
+      "kind": "creative_brief",
+      "intent_summary": "这一章的核心目标是让两个人原本比较紧张的关系出现一点缓和，但不要直接和解。\n\n前半段希望气氛稍微紧张一些，中间发生一件小事，让他们不得不进行合作。合作过程中可以让双方对彼此产生一点新的认识。\n\n结尾不要把关系彻底说开，只需要让读者感觉两个人之间发生了一点变化。\n\n具体场景、对话和合作的事情由你自己设计。",
+      "chapter_objective": "这一章的核心目标是让两个人原本比较紧张的关系出现一点缓和，但不要直接和解。\n\n前半段希望气氛稍微紧张一些，中间发生一件小事，让他们不得不进行合作。合作过程中可以让双方对彼此产生一点新的认识。\n\n结尾不要把关系彻底说开，只需要让读者感觉两个人之间发生了一点变化。\n\n具体场景、对话和合作的事情由你自己设计。",
+      "must": [
+        {
+          "id": "M1",
+          "text": "这一章的核心目标是让两个人原本比较紧张的关系出现一点缓和，但不要直接和解。\n\n前半段希望气氛稍微紧张一些，中间发生一件小事，让他们不得不进行合作。合作过程中可以让双方对彼此产生一点新的认识。\n\n结尾不要把关系彻底说开，只需要让读者感觉两个人之间发生了一点变化。\n\n具体场景、对话和合作的事情由你自己设计。",
+          "source_ref": {
+            "source_type": "TASK_INPUT",
+            "logical_id": "c578c1c6-aee7-498a-a0d7-389549013c04",
+            "version": 2
+          },
+          "quote": "这一章的核心目标是让两个人原本比较紧张的关系出现一点缓和，但不要直接和解。\n\n前半段希望气氛稍微紧张一些，中间发生一件小事，让他们不得不进行合作。合作过程中可以让双方对彼此产生一点新的认识。\n\n结尾不要把关系彻底说开，只需要让读者感觉两个人之间发生了一点变化。\n\n具体场景、对话和合作的事情由你自己设计。"
+        }
+      ],
+      "should": [],
+      "preferences": [],
+      "forbidden": [],
+      "preserve": [],
+      "quality_expectations": [],
+      "change_requests": [],
+      "required_outcome": "这一章的核心目标是让两个人原本比较紧张的关系出现一点缓和，但不要直接和解。\n\n前半段希望气氛稍微紧张一些，中间发生一件小事，让他们不得不进行合作。合作过程中可以让双方对彼此产生一点新的认识。\n\n结尾不要把关系彻底说开，只需要让读者感觉两个人之间发生了一点变化。\n\n具体场景、对话和合作的事情由你自己设计。",
+      "desired_reader_effect": "Follow the requested chapter intent",
+      "character_focus": [],
+      "plot_focus": [],
+      "creative_freedom": {
+        "level": "MEDIUM",
+        "allowed_operations": [
+          "LOCAL_DETAIL",
+          "SCENE_ORDER"
+        ],
+        "scope_description": "Local structure only; major direction remains user-owned",
+        "major_changes": "PROPOSAL_ONLY"
+      },
+      "unresolved_ambiguities": [],
+      "assumptions": [],
+      "conflicts": [],
+      "persistent_preference_candidates": [],
+      "source_refs": [
+        {
+          "source_type": "TASK_INPUT",
+          "logical_id": "c578c1c6-aee7-498a-a0d7-389549013c04",
+          "version": 2
+        }
+      ],
+      "confidence": 0.95
+    },
+    "supersedes_id": null
+  },
+  "task": {
+    "task_id": "c578c1c6-aee7-498a-a0d7-389549013c04",
+    "project_id": "23c028ee-cd94-4965-af85-731e560c9633",
+    "workflow_instance_id": "65f50bbc-8484-4f60-91cd-9f3d5426edfe",
+    "workflow_state": "C01_REQUIREMENT_INTAKE",
+    "workflow_state_version": 2,
+    "agent_id": "A02_REQUIREMENT",
+    "task_type": "PARSE_CHAPTER_REQUIREMENT",
+    "objective": "这一章的核心目标是让两个人原本比较紧张的关系出现一点缓和，但不要直接和解。\n\n前半段希望气氛稍微紧张一些，中间发生一件小事，让他们不得不进行合作。合作过程中可以让双方对彼此产生一点新的认识。\n\n结尾不要把关系彻底说开，只需要让读者感觉两个人之间发生了一点变化。\n\n具体场景、对话和合作的事情由你自己设计。",
+    "target_ref": "8688a77f-df2e-4726-a22b-6035b1f3157b",
+    "requirements": [],
+    "constraints": [
+      "Planning only; no chapter prose",
+      "No approval, lock, canon commit or direct database access"
+    ],
+    "capabilities": [
+      "REPORT_RESULT"
+    ],
+    "expected_output_schema": "chapter-requirement-result.v1",
+    "status": "SUCCEEDED",
+    "priority": 0,
+    "version": 4,
+    "attempt_count": 1,
+    "max_attempts": 3,
+    "created_at": "2026-09-15T11:36:54.389786Z",
+    "available_at": "2026-09-15T11:36:54.389786Z",
+    "claimed_at": "2026-09-15T11:36:55.291215Z",
+    "started_at": "2026-09-15T11:36:55.332496Z",
+    "completed_at": "2026-09-15T11:36:55.542041Z",
+    "lease_owner": null,
+    "lease_expires_at": null,
+    "heartbeat_at": null,
+    "last_error_code": null,
+    "last_error_message": null,
+    "result_ref": "3a1a141d-c31f-4c8f-9859-6830f742b845",
+    "result_metadata": {
+      "kind": "creative_brief",
+      "model": {
+        "usage": {
+          "input_tokens": null,
+          "total_tokens": null,
+          "output_tokens": null
+        },
+        "latency_ms": 0,
+        "finish_reason": "stop"
+      },
+      "verdict": null,
+      "confidence": 0.95,
+      "result_status": "SUCCESS",
+      "escalation_required": false
+    }
+  },
+  "run": {
+    "run_id": "3a1a141d-c31f-4c8f-9859-6830f742b845",
+    "task_id": "c578c1c6-aee7-498a-a0d7-389549013c04",
+    "attempt_number": 1,
+    "worker_id": "worker-2f9ea335a28645b8b61554dc31b36579",
+    "status": "SUCCEEDED",
+    "claimed_at": "2026-09-15T11:36:55.291215Z",
+    "started_at": "2026-09-15T11:36:55.332496Z",
+    "finished_at": "2026-09-15T11:36:55.754671Z",
+    "duration_ms": 422,
+    "provider": "mock",
+    "model": "mock-v1",
+    "input_metadata": {
+      "task_type": "PARSE_CHAPTER_REQUIREMENT",
+      "output_schema": "chapter-requirement-result.v1",
+      "state_version": 2
+    },
+    "output_metadata": {
+      "kind": "creative_brief",
+      "model": {
+        "usage": {
+          "input_tokens": null,
+          "total_tokens": null,
+          "output_tokens": null
+        },
+        "latency_ms": 0,
+        "finish_reason": "stop"
+      },
+      "verdict": null,
+      "confidence": 0.95,
+      "result_status": "SUCCESS",
+      "escalation_required": false
+    },
+    "error_code": null,
+    "error_message": null,
+    "result_status": "SUCCESS",
+    "disposition": "APPLIED"
+  },
+  "lineage": {
+    "lineage_id": "500fb0bb-c1b0-4755-a074-8851018dc30d",
+    "agent_run_id": "3a1a141d-c31f-4c8f-9859-6830f742b845",
+    "task_id": "c578c1c6-aee7-498a-a0d7-389549013c04",
+    "system_policy": {
+      "module_id": "novel-os-core",
+      "version": 1,
+      "content_hash": "8cd5e1025f58a6e6bd5a9d5380b31ed3edfea735f51100134beaa2401c874e07",
+      "execution_hash": "fb091ba33e3f0093bd02045155866d6ced39eb16e03e734492c25fdd7cbf57d0"
+    },
+    "agent_role": {
+      "module_id": "requirement-agent",
+      "version": 1,
+      "content_hash": "c7ecf7273e6458817d1a4a7f01682fd620a77ee5c691cfe3a1e01b454b8620e3",
+      "execution_hash": "cd1b272bc5e5b5bf75b553d0f0304cf4d478fad48fe31c2776b41f9a546da1f0"
+    },
+    "task_template": {
+      "module_id": "parse-chapter-requirement",
+      "version": 1,
+      "content_hash": "1a8945555964daec3923ab39231b57b6096f50fc633429c2a1e19bf431e956cc",
+      "execution_hash": "17dd78a6003286f55ac8d329828c20162c4379486fab11f48e3695cadd849390"
+    },
+    "skills": [
+      {
+        "module_id": "requirement-normalization",
+        "version": 1,
+        "content_hash": "9eedeec6cac8552c096c2e0120d338e0d9a56b42cde331e86c1a19e231a1c705",
+        "execution_hash": "561eab3f794772986eaaf9dc101810d38f1f9d848d2659b708ed8f5cd6b98f2d"
+      }
+    ],
+    "quality_profile": {
+      "module_id": "planning-quality",
+      "version": 1,
+      "content_hash": "6ca45373e3c1e78fe52754d0e6829a2cef45d5cdecf67526e39ebb5949050c11",
+      "execution_hash": "b6286d549169fd7db88aa8f7a6ed544d9a41680b9f865ea8c397b2d313c52eed"
+    },
+    "output_schema_id": "chapter-requirement-result",
+    "output_schema_version": 1,
+    "output_schema_hash": "2cc5c6ec54d6f1e5390241095d74502ef91304ca10ac27893762f5cfee4145a9",
+    "model_profile_id": "mock-default",
+    "model_profile_hash": "20a9b51392e4f4f14867693c836ddccda34b63425db3d6e99f87b2048e14d94d",
+    "model_profile": {
+      "profile_id": "mock-default",
+      "provider": "mock",
+      "model": "mock-v1",
+      "capabilities": [
+        "text"
+      ],
+      "structured_output": false,
+      "stream_support": false,
+      "timeout_seconds": 30.0,
+      "max_output_tokens": 4096,
+      "generation": {
+        "temperature": 0.2
+      }
+    },
+    "compiled_prompt_hash": "24747b18cfb77d5581721023d484019b8b4a480146f5a3c3148022084ca1ee08",
+    "compiler_version": 2,
+    "created_at": "2026-09-15T11:36:55.436397Z"
+  },
+  "context": {
+    "package": {
+      "project_id": "23c028ee-cd94-4965-af85-731e560c9633",
+      "task_id": "c578c1c6-aee7-498a-a0d7-389549013c04",
+      "workflow_id": "65f50bbc-8484-4f60-91cd-9f3d5426edfe",
+      "request": {
+        "project_id": "23c028ee-cd94-4965-af85-731e560c9633",
+        "task_id": "c578c1c6-aee7-498a-a0d7-389549013c04",
+        "task_type": "PARSE_CHAPTER_REQUIREMENT",
+        "chapter_id": "8688a77f-df2e-4726-a22b-6035b1f3157b",
+        "workflow_id": "65f50bbc-8484-4f60-91cd-9f3d5426edfe",
+        "workflow_state_version": 2,
+        "attempt_number": 1,
+        "target_version": null,
+        "approved_plan_version": null,
+        "chapter_sequence": 1,
+        "objective": "这一章的核心目标是让两个人原本比较紧张的关系出现一点缓和，但不要直接和解。\n\n前半段希望气氛稍微紧张一些，中间发生一件小事，让他们不得不进行合作。合作过程中可以让双方对彼此产生一点新的认识。\n\n结尾不要把关系彻底说开，只需要让读者感觉两个人之间发生了一点变化。\n\n具体场景、对话和合作的事情由你自己设计。",
+        "requirements": [],
+        "constraints": [
+          "Planning only; no chapter prose",
+          "No approval, lock, canon commit or direct database access"
+        ],
+        "explicit_refs": [],
+        "required_refs": [],
+        "missing_bindings": [],
+        "required_future_refs": [],
+        "knowledge_scope": "GLOBAL_ONLY",
+        "character_id": null,
+        "request_id": null
+      },
+      "profile_id": "CP-003A",
+      "profile_version": 1,
+      "profile_hash": "18adf9ba91d6bfcca0b32e3964ee35e11dc43f643c0d8943931de584ec6562d7",
+      "profile_json": "{\"allowed_task_types\":[\"PARSE_CHAPTER_REQUIREMENT\"],\"description\":\"Interpret raw chapter intent with relevant approved constraints only\",\"future_horizon\":1,\"future_knowledge_policy\":\"NONE\",\"profile_id\":\"CP-003A\",\"selectors\":[{\"allowed_statuses\":[\"ACTIVE\"],\"authority_floor\":\"A7_AI_INFERENCE\",\"max_items\":1,\"priority\":\"P0\",\"ranking_policy\":\"PRIORITY_AUTHORITY_RELEVANCE_SCOPE_FRESHNESS\",\"required\":true,\"requirement_types\":[],\"scope\":\"TARGET_CHAPTER\",\"selector_id\":\"task-input\",\"serialization_policy\":\"STRUCTURED\",\"source_type\":\"TASK_INPUT\",\"version_policy\":\"EXACT\"},{\"allowed_statuses\":[\"DRAFT\",\"ACTIVE\",\"LOCKED\",\"APPROVED\"],\"authority_floor\":\"A7_AI_INFERENCE\",\"max_items\":1,\"priority\":\"P0\",\"ranking_policy\":\"PRIORITY_AUTHORITY_RELEVANCE_SCOPE_FRESHNESS\",\"required\":true,\"requirement_types\":[],\"scope\":\"TARGET_CHAPTER\",\"selector_id\":\"target-chapter\",\"serialization_policy\":\"STRUCTURED\",\"source_type\":\"CHAPTER\",\"version_policy\":\"TARGET_VERSION\"},{\"allowed_statuses\":[\"APPROVED\",\"LOCKED\"],\"authority_floor\":\"A2_USER_APPROVED\",\"max_items\":200,\"priority\":\"P1\",\"ranking_policy\":\"PRIORITY_AUTHORITY_RELEVANCE_SCOPE_FRESHNESS\",\"required\":false,\"requirement_types\":[],\"scope\":\"TARGET_CHAPTER\",\"selector_id\":\"effective-requirements\",\"serialization_policy\":\"STRUCTURED\",\"source_type\":\"REQUIREMENT\",\"version_policy\":\"EFFECTIVE\"},{\"allowed_statuses\":[\"APPROVED\",\"LOCKED\"],\"authority_floor\":\"A2_USER_APPROVED\",\"max_items\":200,\"priority\":\"P1\",\"ranking_policy\":\"PRIORITY_AUTHORITY_RELEVANCE_SCOPE_FRESHNESS\",\"required\":false,\"requirement_types\":[],\"scope\":\"TARGET_CHAPTER\",\"selector_id\":\"effective-decisions\",\"serialization_policy\":\"STRUCTURED\",\"source_type\":\"DECISION\",\"version_policy\":\"EFFECTIVE\"},{\"allowed_statuses\":[\"ACTIVE\",\"LOCKED\"],\"authority_floor\":\"A7_AI_INFERENCE\",\"max_items\":1,\"priority\":\"P2\",\"ranking_policy\":\"PRIORITY_AUTHORITY_RELEVANCE_SCOPE_FRESHNESS\",\"required\":false,\"requirement_types\":[],\"scope\":\"PROJECT\",\"selector_id\":\"project-metadata\",\"serialization_policy\":\"STRUCTURED\",\"source_type\":\"PROJECT\",\"version_policy\":\"CURRENT\"}],\"status\":\"STABLE\",\"token_budget\":80000,\"version\":1}",
+      "build_status": "READY",
+      "items": [
+        {
+          "context_item_id": "0a65fe76-705a-5982-a4dc-2d395f53e116",
+          "selector_id": "task-input",
+          "source_type": "TASK_INPUT",
+          "source_id": "c578c1c6-aee7-498a-a0d7-389549013c04",
+          "logical_id": "c578c1c6-aee7-498a-a0d7-389549013c04",
+          "source_version": 2,
+          "project_id": "23c028ee-cd94-4965-af85-731e560c9633",
+          "status": "ACTIVE",
+          "authority_level": "A5_USER_PREFERENCE",
+          "locked": false,
+          "priority": "P0",
+          "scope": "TARGET_CHAPTER",
+          "payload_json": "{\"constraints\":[\"Planning only; no chapter prose\",\"No approval, lock, canon commit or direct database access\"],\"objective\":\"这一章的核心目标是让两个人原本比较紧张的关系出现一点缓和，但不要直接和解。\\n\\n前半段希望气氛稍微紧张一些，中间发生一件小事，让他们不得不进行合作。合作过程中可以让双方对彼此产生一点新的认识。\\n\\n结尾不要把关系彻底说开，只需要让读者感觉两个人之间发生了一点变化。\\n\\n具体场景、对话和合作的事情由你自己设计。\",\"requirements\":[]}",
+          "selected_reason": "Explicit task input; data does not grant authority",
+          "source_created_at": "2026-09-15T11:36:54.389786Z",
+          "source_updated_at": "2026-09-15T11:36:54.389786Z",
+          "chapter_id": "8688a77f-df2e-4726-a22b-6035b1f3157b",
+          "chapter_sequence": 1,
+          "relevance_score": 100,
+          "knowledge_scope": "GLOBAL_ONLY",
+          "character_id": null,
+          "future_knowledge": false,
+          "is_plan": false,
+          "provenance": [
+            "agent_task"
+          ]
+        },
+        {
+          "context_item_id": "9e0e5ae0-9c75-51d7-8f6a-0084dd52321f",
+          "selector_id": "target-chapter",
+          "source_type": "CHAPTER",
+          "source_id": "8688a77f-df2e-4726-a22b-6035b1f3157b",
+          "logical_id": "8688a77f-df2e-4726-a22b-6035b1f3157b",
+          "source_version": 2,
+          "project_id": "23c028ee-cd94-4965-af85-731e560c9633",
+          "status": "DRAFT",
+          "authority_level": "A5_USER_PREFERENCE",
+          "locked": false,
+          "priority": "P0",
+          "scope": "TARGET_CHAPTER",
+          "payload_json": "{\"sequence\":1,\"title\":\"第一次\"}",
+          "selected_reason": "TARGET_CHAPTER/TARGET_VERSION",
+          "source_created_at": "2026-09-15T11:33:07.750796Z",
+          "source_updated_at": "2026-09-15T11:34:42.124120Z",
+          "chapter_id": "8688a77f-df2e-4726-a22b-6035b1f3157b",
+          "chapter_sequence": 1,
+          "relevance_score": 100,
+          "knowledge_scope": "GLOBAL_ONLY",
+          "character_id": null,
+          "future_knowledge": false,
+          "is_plan": false,
+          "provenance": [
+            "structured_database",
+            "version_policy:TARGET_VERSION"
+          ]
+        },
+        {
+          "context_item_id": "3dbe7bda-82b5-59dc-80f2-99c68701e418",
+          "selector_id": "project-metadata",
+          "source_type": "PROJECT",
+          "source_id": "23c028ee-cd94-4965-af85-731e560c9633",
+          "logical_id": "23c028ee-cd94-4965-af85-731e560c9633",
+          "source_version": 1,
+          "project_id": "23c028ee-cd94-4965-af85-731e560c9633",
+          "status": "ACTIVE",
+          "authority_level": "A5_USER_PREFERENCE",
+          "locked": false,
+          "priority": "P2",
+          "scope": "PROJECT",
+          "payload_json": "{\"description\":\"\",\"name\":\"测试\",\"tags\":[]}",
+          "selected_reason": "PROJECT/CURRENT",
+          "source_created_at": "2026-09-15T11:32:49.785929Z",
+          "source_updated_at": "2026-09-15T11:32:49.785943Z",
+          "chapter_id": null,
+          "chapter_sequence": null,
+          "relevance_score": 50,
+          "knowledge_scope": "GLOBAL_ONLY",
+          "character_id": null,
+          "future_knowledge": false,
+          "is_plan": false,
+          "provenance": [
+            "structured_database",
+            "version_policy:CURRENT"
+          ]
+        }
+      ],
+      "excluded_items": [],
+      "missing_required_items": [],
+      "authority_conflicts": [],
+      "source_snapshots": [
+        {
+          "selector_id": "effective-decisions",
+          "fingerprint": "7d389b099aa8823b927c29d4fe8ae72744439ed3591bf866860e8350ce8a7fb5"
+        },
+        {
+          "selector_id": "effective-requirements",
+          "fingerprint": "7d389b099aa8823b927c29d4fe8ae72744439ed3591bf866860e8350ce8a7fb5"
+        },
+        {
+          "selector_id": "project-metadata",
+          "fingerprint": "74bed82ca1971762e870c67297cdc5109940a418cd691e149ffb65196c6257eb"
+        },
+        {
+          "selector_id": "target-chapter",
+          "fingerprint": "5c1bb96464fcd02170c9b585e4c9d716def98d9ee1632151fb73a782c1dd9592"
+        },
+        {
+          "selector_id": "task-input",
+          "fingerprint": "1caca12b536a4ae79f502dac34d95bbeed59c8491dead816ad506ea93cf704e8"
+        }
+      ],
+      "token_budget": 80000,
+      "prompt_overhead": 12557,
+      "output_reservation": 4096,
+      "estimated_tokens": 3469,
+      "future_knowledge_policy": "NONE",
+      "package_hash": "e54579b7678597cf834610520798ad37f9ee4f49ad80cf8f8e9569de86a66ddc",
+      "error_code": null,
+      "context_package_id": "6e92bca4-2572-49df-97a2-93ed38c39536",
+      "created_at": "2026-09-15T11:36:55.461366Z"
+    },
+    "freshness": "STALE",
+    "error_code": "CONTEXT_STALE"
+  }
+}

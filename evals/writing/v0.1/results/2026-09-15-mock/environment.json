@@ -1,0 +1,22 @@
+{
+  "captured_at": "2026-09-15T09:47:18.993626+00:00",
+  "python": "3.13.12",
+  "packages": {
+    "fastapi": "0.141.1",
+    "sqlalchemy": "2.0.52",
+    "alembic": "1.19.2",
+    "pydantic": "2.13.5",
+    "pydantic-settings": "2.15.0",
+    "pytest": "9.1.1",
+    "ruff": "0.16.6",
+    "psycopg": "3.3.5",
+    "httpx": "0.28.1"
+  },
+  "provider_probe": {
+    "credential_configured": false,
+    "configured_profile": "mock-default",
+    "real_calls": 0
+  },
+  "source_commit": "bc53b48e6d1680f1f95f01f3beb1245d43b2646c",
+  "docker_server": "29.5.2"
+}

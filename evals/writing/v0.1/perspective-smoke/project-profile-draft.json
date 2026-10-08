@@ -1,0 +1,23 @@
+{
+  "project_id": "23c028ee-cd94-4965-af85-731e560c9633",
+  "current_profile_version": 2,
+  "approved_profile_version": 1,
+  "versions": [
+    {
+      "id": "db33c48c-2fc3-4860-8614-647ec539b470",
+      "profile_id": "23c028ee-cd94-4965-af85-731e560c9633",
+      "version": 2,
+      "profile_hash": "65b5845a46d30da3db6f4fe5950029442c918035f8b7031bae8db4a6cede7ff3",
+      "status": "DRAFT",
+      "narrative_perspective": "THIRD_PERSON"
+    },
+    {
+      "id": "71175674-6bfd-4b50-aa55-85b61defeb49",
+      "profile_id": "23c028ee-cd94-4965-af85-731e560c9633",
+      "version": 1,
+      "profile_hash": "4a65f88c4e78c362435ce02d5e7a75e5b729c7f0fc8420ceeb4fada07f8236e1",
+      "status": "APPROVED",
+      "narrative_perspective": null
+    }
+  ]
+}

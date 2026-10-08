@@ -1,0 +1,36 @@
+{
+  "reviewer": "independent fresh-context acceptance agent",
+  "code_commit": "bc53b48e6d1680f1f95f01f3beb1245d43b2646c",
+  "product_changes_made": false,
+  "real_provider_calls": 0,
+  "findings": [],
+  "evidence_checked": {
+    "trials": 32,
+    "agent_drafts": 15,
+    "generations": 24,
+    "blocked_generations": 9,
+    "case_sha256": 8,
+    "model_profile_sha256": 24,
+    "writing_metadata_schema": 24,
+    "output_schema_sha256": 24,
+    "prompt_module_pins": 216,
+    "junit_and_lineage_counts_agree": true
+  },
+  "separate_contract_test": {
+    "passed": 21,
+    "failures": 0
+  },
+  "documentation_checks": [
+    "13 human evaluation dimensions present",
+    "Mock/real/human outcomes separated",
+    "offline runner cannot select live test",
+    "live test maximum 3 attempts disclosed",
+    "explicit future dependency direct ContextEngine scope disclosed"
+  ],
+  "nonblocking_coverage_suggestion": "Add a future negative test that cross-binds valid existing IDs from another task/run, rather than only nonexistent random UUIDs.",
+  "limitations": [
+    "No real Provider execution",
+    "No human prose scoring",
+    "Structured deviation checks do not prove absence of unreported semantic deviations"
+  ]
+}

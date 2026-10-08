@@ -1,0 +1,103 @@
+{
+  "finished_at": "2026-09-15T09:50:27.366447+00:00",
+  "source_commit": "bc53b48e6d1680f1f95f01f3beb1245d43b2646c",
+  "overall_verdict": "CONDITIONAL PASS",
+  "engineering_acceptance": "PASS",
+  "ai_behavior_acceptance": {
+    "mock_contract_and_policy": "PASS",
+    "real_provider_smoke": "NOT RUN",
+    "real_provider_calls": 0,
+    "reason": "No credential configured; no paid opt-in execution"
+  },
+  "human_prose_evaluation": "NOT EVALUATED",
+  "full_suite": {
+    "command": "uv run pytest --junitxml=/tmp/novel008-acceptance-full.xml",
+    "exit_code": 0,
+    "collected": 784,
+    "passed": 781,
+    "skipped": 3,
+    "warnings": 2,
+    "duration_seconds": 548.34,
+    "skipped_tests": [
+      {
+        "name": "tests.core.workflow.test_planning_live.test_real_provider_planning_vertical_slice",
+        "reason": "Paid planning E2E is opt-in; pass --live-model explicitly"
+      },
+      {
+        "name": "tests.core.writing.test_live.test_real_provider_writes_from_approved_test_plan",
+        "reason": "Paid Writing smoke requires explicit --live-model"
+      },
+      {
+        "name": "tests.prompts.test_providers.test_live_openai_smoke_is_explicit_opt_in",
+        "reason": "Real provider disabled; opt in with --live-model"
+      }
+    ]
+  },
+  "writing_e2e": {
+    "passed": 32,
+    "agent_drafts": 15,
+    "generations": 24,
+    "blocked_generations": 9,
+    "lineage_validated_for_every_agent_draft": true,
+    "duration_seconds": 40.2
+  },
+  "migration_roundtrip_prior_rows_unchanged_test": "PASS",
+  "migration": {
+    "database": "isolated test_database_url",
+    "temporary_schema": "acceptance008_9589076043ec4af59ecfabf206b495ec",
+    "steps": [
+      {
+        "command": "alembic upgrade head",
+        "exit_code": 0,
+        "revision": "0009_writing_agent",
+        "expected_revision": "0009_writing_agent"
+      },
+      {
+        "command": "alembic downgrade -1",
+        "exit_code": 0,
+        "revision": "0008_requirement_planning",
+        "expected_revision": "0008_requirement_planning"
+      },
+      {
+        "command": "alembic upgrade head",
+        "exit_code": 0,
+        "revision": "0009_writing_agent",
+        "expected_revision": "0009_writing_agent"
+      },
+      {
+        "command": "alembic check",
+        "exit_code": 0,
+        "revision": "0009_writing_agent",
+        "expected_revision": "0009_writing_agent"
+      }
+    ],
+    "temporary_schema_removed": true
+  },
+  "quality_checks": [
+    {
+      "command": "uv run ruff check . ../evals/writing/v0.1",
+      "exit_code": 0,
+      "output": "All checks passed!"
+    },
+    {
+      "command": "uv run ruff format --check . ../evals/writing/v0.1",
+      "exit_code": 0,
+      "output": "228 files already formatted"
+    },
+    {
+      "command": "git diff --check",
+      "exit_code": 0,
+      "output": ""
+    }
+  ],
+  "product_code_diff": "",
+  "eval_harness_sha256": {
+    "run.py": "e8168bc40146c93072364d132985fa3159c3ad608641c6f2c67da621a0924215",
+    "lineage_audit.py": "e4a0af46378dbb3f565b93a8a943b8c56a05d6d38d872b61c1cc51cb645b6f08"
+  },
+  "new_files_whitespace_check": {
+    "result": "PASS",
+    "files_checked": 29,
+    "method": "git diff --no-index --check /dev/null <each new file>"
+  }
+}

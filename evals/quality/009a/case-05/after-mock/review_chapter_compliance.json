@@ -1,0 +1,33 @@
+{
+  "task_id": "9ec27587-80a6-409b-88f3-cc4a8619b101",
+  "status": "SUCCESS",
+  "result": {
+    "chapter_id": "23208bf8-ecc7-4054-8ae9-46cf4bc15181",
+    "chapter_version_id": "e3e88aaf-ae0b-48fe-a230-9893b79761cb",
+    "strengths": [
+      {
+        "description": "开篇保留了具体场景入口（Mock 证据样例）。",
+        "evidence": [
+          {
+            "paragraph_index": 1,
+            "excerpt": "门已经开了。",
+            "reason": "离线契约样例引用实际段落；不是人工或模型文学验收。"
+          }
+        ],
+        "preservation_direction": "修改时保留已经建立的场景入口。"
+      }
+    ],
+    "revision_priorities": [],
+    "source_refs": [],
+    "confidence": 0.8,
+    "kind": "chapter_compliance_review",
+    "compliance_verdict": "PASS",
+    "hard_gate_issues": []
+  },
+  "confidence": 0.8,
+  "assumptions": [],
+  "issues": [],
+  "proposed_changes": [],
+  "memory_proposals": [],
+  "escalation": null
+}

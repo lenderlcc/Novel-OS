@@ -1,0 +1,34 @@
+{
+  "chapter_id": "23208bf8-ecc7-4054-8ae9-46cf4bc15181",
+  "chapter_version_id": "e3e88aaf-ae0b-48fe-a230-9893b79761cb",
+  "strengths": [
+    {
+      "description": "开篇保留了具体场景入口（Mock 证据样例）。",
+      "evidence": [
+        {
+          "paragraph_index": 1,
+          "excerpt": "门已经开了。",
+          "reason": "离线契约样例引用实际段落；不是人工或模型文学验收。"
+        }
+      ],
+      "preservation_direction": "修改时保留已经建立的场景入口。"
+    }
+  ],
+  "revision_priorities": [],
+  "source_refs": [],
+  "confidence": 0.8,
+  "kind": "chapter_quality_review",
+  "overall_verdict": "PASS",
+  "compliance_verdict": "PASS",
+  "narrative_verdict": "PASS",
+  "audience_fit_verdict": "PASS",
+  "hard_gate_issues": [],
+  "quality_issues": [],
+  "reviewer_version": "A05-quality.v2",
+  "prompt_lineage_id": "7972e290-3b26-49bb-944b-6f3e68564d8a",
+  "context_package_id": "0c9118ac-7fe5-41d0-9021-88965491e0d0",
+  "compliance_prompt_lineage_id": "068371cc-4518-4a21-b0a8-802187c9e0d9",
+  "compliance_context_package_id": "0326d406-e57f-4935-a9be-0d910182ac2a",
+  "created_at": "2026-09-24T08:14:01.767875Z",
+  "audience_evidence": []
+}

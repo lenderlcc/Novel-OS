@@ -1,0 +1,35 @@
+{
+  "task_id": "ee56d580-a62c-4789-a929-ce50b1ffe0d2",
+  "status": "SUCCESS",
+  "result": {
+    "chapter_id": "119ae046-5b27-4b71-9ad2-eaae9518af99",
+    "chapter_version_id": "86c02b4b-7117-4ee0-9528-77870b30fc08",
+    "strengths": [
+      {
+        "description": "开篇保留了具体场景入口（Mock 证据样例）。",
+        "evidence": [
+          {
+            "paragraph_index": 1,
+            "excerpt": "第四章 矛盾",
+            "reason": "离线契约样例引用实际段落；不是人工或模型文学验收。"
+          }
+        ],
+        "preservation_direction": "修改时保留已经建立的场景入口。"
+      }
+    ],
+    "revision_priorities": [],
+    "source_refs": [],
+    "confidence": 0.8,
+    "kind": "chapter_narrative_review",
+    "narrative_verdict": "PASS",
+    "audience_fit_verdict": "PASS",
+    "quality_issues": [],
+    "audience_evidence": []
+  },
+  "confidence": 0.8,
+  "assumptions": [],
+  "issues": [],
+  "proposed_changes": [],
+  "memory_proposals": [],
+  "escalation": null
+}

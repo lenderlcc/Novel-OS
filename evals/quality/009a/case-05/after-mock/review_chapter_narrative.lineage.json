@@ -1,0 +1,343 @@
+{
+  "agent_task_id": "f8cf8ac0-56c7-403a-ac44-7286af6fba6a",
+  "agent_run_id": "7adf144c-642b-4c83-820f-8c8864fccc29",
+  "prompt_lineage_id": "7972e290-3b26-49bb-944b-6f3e68564d8a",
+  "context_package": {
+    "project_id": "14c99102-f5b0-4a0f-82b6-be829fae15b5",
+    "task_id": "f8cf8ac0-56c7-403a-ac44-7286af6fba6a",
+    "workflow_id": "61c696a5-4d95-4a22-a3c8-1ccbb80eaeb0",
+    "request": {
+      "project_id": "14c99102-f5b0-4a0f-82b6-be829fae15b5",
+      "task_id": "f8cf8ac0-56c7-403a-ac44-7286af6fba6a",
+      "task_type": "REVIEW_CHAPTER_NARRATIVE",
+      "chapter_id": "23208bf8-ecc7-4054-8ae9-46cf4bc15181",
+      "workflow_id": "61c696a5-4d95-4a22-a3c8-1ccbb80eaeb0",
+      "workflow_state_version": 1,
+      "attempt_number": 1,
+      "target_version": 1,
+      "approved_plan_version": null,
+      "chapter_sequence": 1,
+      "objective": "",
+      "requirements": [],
+      "constraints": [],
+      "explicit_refs": [
+        {
+          "source_type": "CHAPTER_PLAN",
+          "logical_id": "23208bf8-ecc7-4054-8ae9-46cf4bc15181",
+          "version": 1
+        },
+        {
+          "source_type": "CHAPTER",
+          "logical_id": "23208bf8-ecc7-4054-8ae9-46cf4bc15181",
+          "version": 3
+        },
+        {
+          "source_type": "CHAPTER_VERSION",
+          "logical_id": "23208bf8-ecc7-4054-8ae9-46cf4bc15181",
+          "version": 1
+        },
+        {
+          "source_type": "CREATIVE_BRIEF",
+          "logical_id": "61c696a5-4d95-4a22-a3c8-1ccbb80eaeb0",
+          "version": 1
+        }
+      ],
+      "required_refs": [],
+      "missing_bindings": [],
+      "required_future_refs": [],
+      "knowledge_scope": "GLOBAL_ONLY",
+      "character_id": null,
+      "request_id": null
+    },
+    "profile_id": "CP-006",
+    "profile_version": 3,
+    "profile_hash": "9075dce65089ab978218b5a26072ec230564579d31a79636658e478e2e5ed148",
+    "profile_json": "{\"allowed_task_types\":[\"REVIEW_CHAPTER_COMPLIANCE\",\"REVIEW_CHAPTER_NARRATIVE\"],\"description\":\"Exact Draft quality review: two passes, approved context and A5 preferences\",\"future_horizon\":0,\"future_knowledge_policy\":\"REQUIRED_ONLY\",\"profile_id\":\"CP-006\",\"selectors\":[{\"allowed_statuses\":[\"ACTIVE\"],\"authority_floor\":\"A7_AI_INFERENCE\",\"max_items\":1,\"priority\":\"P0\",\"ranking_policy\":\"PRIORITY_AUTHORITY_RELEVANCE_SCOPE_FRESHNESS\",\"required\":true,\"requirement_types\":[],\"scope\":\"TARGET_CHAPTER\",\"selector_id\":\"task-input\",\"serialization_policy\":\"STRUCTURED\",\"source_type\":\"TASK_INPUT\",\"version_policy\":\"EXACT\"},{\"allowed_statuses\":[\"DRAFT\",\"ACTIVE\",\"LOCKED\",\"APPROVED\"],\"authority_floor\":\"A7_AI_INFERENCE\",\"max_items\":1,\"priority\":\"P0\",\"ranking_policy\":\"PRIORITY_AUTHORITY_RELEVANCE_SCOPE_FRESHNESS\",\"required\":true,\"requirement_types\":[],\"scope\":\"TARGET_CHAPTER\",\"selector_id\":\"target-chapter\",\"serialization_policy\":\"STRUCTURED\",\"source_type\":\"CHAPTER\",\"version_policy\":\"TARGET_VERSION\"},{\"allowed_statuses\":[\"DRAFT\",\"APPROVED\",\"LOCKED\"],\"authority_floor\":\"A7_AI_INFERENCE\",\"max_items\":1,\"priority\":\"P0\",\"ranking_policy\":\"PRIORITY_AUTHORITY_RELEVANCE_SCOPE_FRESHNESS\",\"required\":true,\"requirement_types\":[],\"scope\":\"TARGET_CHAPTER\",\"selector_id\":\"target-version\",\"serialization_policy\":\"STRUCTURED\",\"source_type\":\"CHAPTER_VERSION\",\"version_policy\":\"TARGET_VERSION\"},{\"allowed_statuses\":[\"APPROVED\",\"LOCKED\"],\"authority_floor\":\"A4_APPROVED_PLAN\",\"max_items\":1,\"priority\":\"P0\",\"ranking_policy\":\"PRIORITY_AUTHORITY_RELEVANCE_SCOPE_FRESHNESS\",\"required\":true,\"requirement_types\":[],\"scope\":\"TARGET_CHAPTER\",\"selector_id\":\"approved-plan\",\"serialization_policy\":\"STRUCTURED\",\"source_type\":\"CHAPTER_PLAN\",\"version_policy\":\"APPROVED\"},{\"allowed_statuses\":[\"APPROVED\",\"LOCKED\"],\"authority_floor\":\"A2_USER_APPROVED\",\"max_items\":200,\"priority\":\"P0\",\"ranking_policy\":\"PRIORITY_AUTHORITY_RELEVANCE_SCOPE_FRESHNESS\",\"required\":false,\"requirement_types\":[],\"scope\":\"TARGET_CHAPTER\",\"selector_id\":\"effective-requirements\",\"serialization_policy\":\"STRUCTURED\",\"source_type\":\"REQUIREMENT\",\"version_policy\":\"EFFECTIVE\"},{\"allowed_statuses\":[\"APPROVED\",\"LOCKED\"],\"authority_floor\":\"A2_USER_APPROVED\",\"max_items\":200,\"priority\":\"P0\",\"ranking_policy\":\"PRIORITY_AUTHORITY_RELEVANCE_SCOPE_FRESHNESS\",\"required\":false,\"requirement_types\":[],\"scope\":\"TARGET_CHAPTER\",\"selector_id\":\"effective-decisions\",\"serialization_policy\":\"STRUCTURED\",\"source_type\":\"DECISION\",\"version_policy\":\"EFFECTIVE\"},{\"allowed_statuses\":[\"LOCKED\"],\"authority_floor\":\"A1_USER_LOCKED\",\"max_items\":100,\"priority\":\"P0\",\"ranking_policy\":\"PRIORITY_AUTHORITY_RELEVANCE_SCOPE_FRESHNESS\",\"required\":false,\"requirement_types\":[],\"scope\":\"EXPLICIT\",\"selector_id\":\"dependency-chapter_plan\",\"serialization_policy\":\"STRUCTURED\",\"source_type\":\"CHAPTER_PLAN\",\"version_policy\":\"LOCKED\"},{\"allowed_statuses\":[\"LOCKED\"],\"authority_floor\":\"A1_USER_LOCKED\",\"max_items\":100,\"priority\":\"P0\",\"ranking_policy\":\"PRIORITY_AUTHORITY_RELEVANCE_SCOPE_FRESHNESS\",\"required\":false,\"requirement_types\":[],\"scope\":\"EXPLICIT\",\"selector_id\":\"dependency-chapter_version\",\"serialization_policy\":\"STRUCTURED\",\"source_type\":\"CHAPTER_VERSION\",\"version_policy\":\"LOCKED\"},{\"allowed_statuses\":[\"LOCKED\"],\"authority_floor\":\"A1_USER_LOCKED\",\"max_items\":100,\"priority\":\"P0\",\"ranking_policy\":\"PRIORITY_AUTHORITY_RELEVANCE_SCOPE_FRESHNESS\",\"required\":false,\"requirement_types\":[],\"scope\":\"EXPLICIT\",\"selector_id\":\"dependency-requirement\",\"serialization_policy\":\"STRUCTURED\",\"source_type\":\"REQUIREMENT\",\"version_policy\":\"LOCKED\"},{\"allowed_statuses\":[\"LOCKED\"],\"authority_floor\":\"A1_USER_LOCKED\",\"max_items\":100,\"priority\":\"P0\",\"ranking_policy\":\"PRIORITY_AUTHORITY_RELEVANCE_SCOPE_FRESHNESS\",\"required\":false,\"requirement_types\":[],\"scope\":\"EXPLICIT\",\"selector_id\":\"dependency-decision\",\"serialization_policy\":\"STRUCTURED\",\"source_type\":\"DECISION\",\"version_policy\":\"LOCKED\"},{\"allowed_statuses\":[\"APPROVED\"],\"authority_floor\":\"A5_USER_PREFERENCE\",\"max_items\":1,\"priority\":\"P0\",\"ranking_policy\":\"PRIORITY_AUTHORITY_RELEVANCE_SCOPE_FRESHNESS\",\"required\":false,\"requirement_types\":[],\"scope\":\"PROJECT\",\"selector_id\":\"approved-project-writing-profile\",\"serialization_policy\":\"STRUCTURED\",\"source_type\":\"PROJECT_WRITING_PROFILE\",\"version_policy\":\"APPROVED\"},{\"allowed_statuses\":[\"ACTIVE\"],\"authority_floor\":\"A7_AI_INFERENCE\",\"max_items\":1,\"priority\":\"P0\",\"ranking_policy\":\"PRIORITY_AUTHORITY_RELEVANCE_SCOPE_FRESHNESS\",\"required\":true,\"requirement_types\":[],\"scope\":\"EXPLICIT\",\"selector_id\":\"review-creative-brief\",\"serialization_policy\":\"STRUCTURED\",\"source_type\":\"CREATIVE_BRIEF\",\"version_policy\":\"EXACT\"},{\"allowed_statuses\":[\"APPROVED\",\"LOCKED\"],\"authority_floor\":\"A2_USER_APPROVED\",\"max_items\":3,\"priority\":\"P1\",\"ranking_policy\":\"PRIORITY_AUTHORITY_RELEVANCE_SCOPE_FRESHNESS\",\"required\":false,\"requirement_types\":[],\"scope\":\"RECENT_APPROVED_CHAPTERS\",\"selector_id\":\"recent-approved-chapters\",\"serialization_policy\":\"STRUCTURED\",\"source_type\":\"CHAPTER_VERSION\",\"version_policy\":\"APPROVED\"}],\"status\":\"STABLE\",\"token_budget\":100000,\"version\":3}",
+    "build_status": "READY",
+    "items": [
+      {
+        "context_item_id": "4accd399-712b-51ed-9140-35b56517db6c",
+        "selector_id": "approved-plan",
+        "source_type": "CHAPTER_PLAN",
+        "source_id": "afe1da2a-67d0-4b12-b000-ac4c20a6d8e9",
+        "logical_id": "23208bf8-ecc7-4054-8ae9-46cf4bc15181",
+        "source_version": 1,
+        "project_id": "14c99102-f5b0-4a0f-82b6-be829fae15b5",
+        "status": "APPROVED",
+        "authority_level": "A4_APPROVED_PLAN",
+        "locked": false,
+        "priority": "P0",
+        "scope": "TARGET_CHAPTER",
+        "payload_json": "{\"character_progression\":{\"items\":[\"主角从默认继续原计划，进入对其代价或局限的重新感受。\",\"主角因替代选择呈现出实际吸引力而产生明显犹豫，并短暂承认另一方向可能更好。\",\"主角重新衡量两种方向后，不否认替代选择的价值，但确认当前仍继续原计划。\"]},\"constraints\":[\"当前章节仍然必须按照已经确定的方向完成。\",\"但是无论具体情节怎么发展，这一章结尾都不能改变主角继续原计划这个决定。\",\"如果在创作过程中，你认为让主角改选另一个方向会更精彩，也不要直接修改这个结局。\"],\"ending_state\":{\"description\":\"主角已经明确选择继续原来的计划，并进入可承接后续行动的状态；替代方向仍可能具有吸引力，但没有取代、暂停或撤销既定决定。\"},\"information_release\":[\"先交代主角仍处于原计划的推进路径上，而不补充计划之外的新设定。\",\"中段揭示替代选择为何在当前情境下更有吸引力，以及它触发了主角哪一层顾虑。\",\"结尾明确释放主角的判断：犹豫真实存在，但不足以改变继续原计划的决定。\"],\"locked_dependencies\":[],\"objective\":\"围绕主角是否继续原计划建立一条紧凑的选择链：先确认既有方向，再让局部事件或互动使替代选择显得可信并触发动摇，最后通过权衡明确回到继续原计划的既定结局。\",\"planning\":{\"assumptions\":[{\"confidence\":0.93,\"impact\":\"MEDIUM\",\"text\":\"“原来的计划”的具体内容未在本次所选上下文中提供；场景中的“原计划”指既有故事上下文已知的计划，本规划不另行定义或改写。\"},{\"confidence\":0.86,\"impact\":\"LOW\",\"text\":\"替代选择可以由一项局部事件、信息或人物互动显得更有吸引力，但其具体形式由写作者结合既有情境决定。\"},{\"confidence\":0.9,\"impact\":\"LOW\",\"text\":\"主角的动摇应真实可感，但不需要发展为正式放弃原计划；这样可保留张力并确保章末决定可信。\"}],\"character_progression\":[\"主角从默认继续原计划，进入对其代价或局限的重新感受。\",\"主角因替代选择呈现出实际吸引力而产生明显犹豫，并短暂承认另一方向可能更好。\",\"主角重新衡量两种方向后，不否认替代选择的价值，但确认当前仍继续原计划。\"],\"constraints\":[\"当前章节仍然必须按照已经确定的方向完成。\",\"但是无论具体情节怎么发展，这一章结尾都不能改变主角继续原计划这个决定。\",\"如果在创作过程中，你认为让主角改选另一个方向会更精彩，也不要直接修改这个结局。\"],\"creative_freedom\":{\"allowed_operations\":[\"LOCAL_DETAIL\",\"SCENE_ORDER\",\"INFORMATION_DELIVERY\",\"LOCAL_CONFLICT\"],\"level\":\"HIGH\",\"major_changes\":\"PROPOSAL_ONLY\",\"scope_description\":\"可自行设计局部事件、动摇诱因、人物互动、信息呈现与场景顺序，并决定动摇的具体强度。不得把局部吸引力扩展为章末改选方向；任何改变主要方向或固定结局的构想只能另行提案。\"},\"ending_function\":\"把前段犹豫转化为经过权衡后的明确选择，使章末方向无歧义，同时保留替代选择带来的情感余波。\",\"ending_state\":\"主角已经明确选择继续原来的计划，并进入可承接后续行动的状态；替代方向仍可能具有吸引力，但没有取代、暂停或撤销既定决定。\",\"foreshadow_actions\":[\"开场确认原计划仍是主角当前正在遵循的方向，避免后续犹豫被误读为计划早已失效。\",\"在替代选择出现时展示其真实吸引力，但不赋予其必然成为新方向的承诺。\",\"在最终权衡前保留一个与原计划相连的未完成目标、责任或理由，其具体内容从既有上下文承接。\"],\"information_release\":[\"先交代主角仍处于原计划的推进路径上，而不补充计划之外的新设定。\",\"中段揭示替代选择为何在当前情境下更有吸引力，以及它触发了主角哪一层顾虑。\",\"结尾明确释放主角的判断：犹豫真实存在，但不足以改变继续原计划的决定。\"],\"kind\":\"chapter_plan\",\"locked_dependencies\":[],\"objective\":\"围绕主角是否继续原计划建立一条紧凑的选择链：先确认既有方向，再让局部事件或互动使替代选择显得可信并触发动摇，最后通过权衡明确回到继续原计划的既定结局。\",\"opening_function\":\"迅速建立原计划仍在推进的基线，并引入足以让主角重新衡量选择的局部压力或机会。\",\"plot_progression\":[\"主角按原计划推进，当前方向清楚但面临局部阻力、代价或不确定性。\",\"新的事件、信息或互动使另一选择显得可行，主角的犹豫从抽象可能变为实际抉择。\",\"主角比较两种方向，承认替代选择的吸引力，同时辨明当前不能或不愿放弃原计划的理由。\",\"主角作出明确决定，继续原计划，章末方向与既定结局一致。\"],\"preserved_elements\":[\"这一章的结尾有一个已经确定的方向：主角最终仍然选择继续原来的计划。\"],\"proposed_major_changes\":[],\"proposed_new_elements\":[\"一项与当前情境相容的局部事件、信息或互动，用来让替代选择获得现实吸引力。\",\"一个从既有上下文承接的即时权衡点，使主角能够比较继续原计划与改选方向的利弊。\"],\"required_outcome\":\"本章结束时，主角仍然选择继续原来的计划，既定决定未被任何中间情节改变。\",\"requirement_coverage\":[{\"constraint_id\":\"must_follow_fixed_direction\",\"covered\":true,\"explanation\":\"S3把主角的权衡收束为继续原计划的明确决定，结尾状态与既定方向一致。\",\"scene_ids\":[\"S3_Resolution\"],\"scope\":\"SCENE\"},{\"constraint_id\":\"forbid_ending_change\",\"covered\":true,\"explanation\":\"S3明确排除替代方向取代、暂停或撤销原计划，章末决定不发生改变。\",\"scene_ids\":[\"S3_Resolution\"],\"scope\":\"SCENE\"},{\"constraint_id\":\"forbid_direct_alternative\",\"covered\":true,\"explanation\":\"S2只让替代选择形成真实诱惑与短暂倾向；S3不执行改选，而是确认继续原计划。\",\"scene_ids\":[\"S2_Temptation\",\"S3_Resolution\"],\"scope\":\"SCENE\"},{\"constraint_id\":\"preserve_fixed_ending\",\"covered\":true,\"explanation\":\"S3及ending_state共同保留主角最终继续原计划的固定结尾。\",\"scene_ids\":[\"S3_Resolution\"],\"scope\":\"SCENE\"}],\"risks\":[\"由于原计划的具体内容未提供，写作时若自行补定义，可能与既有故事上下文冲突；应只承接已知内容。\",\"若替代选择缺少现实吸引力，主角的动摇会显得虚假；若吸引力过强却没有与之相称的权衡，最终坚持又会显得生硬。\",\"结尾若只暗示行动而不明确主角的选择，可能削弱固定方向的可辨识度。\",\"不得让中段的短暂倾向演变为实际改选后再临时反转，否则会造成结局虽合规但人物因果不足。\"],\"scenes\":[{\"character_state_change\":\"主角从惯性执行原计划，转为意识到当前方向存在值得重新衡量的压力或代价。\",\"conflict\":\"继续推进原计划的要求，与新出现的局部阻力、代价或机会发生碰撞。\",\"exit_condition\":\"替代选择已成为主角必须认真考虑的现实可能，而非无关设想。\",\"id\":\"S1_Baseline\",\"information_release\":[\"原计划仍是主角当前遵循的方向。\",\"当前情境出现足以触发重新衡量的局部变化。\"],\"key_change\":\"选择问题从默认维持原计划转为需要主动判断。\",\"purpose\":\"建立原计划的有效基线，并用局部变化启动选择压力。\"},{\"character_state_change\":\"主角从重新衡量发展为明显犹豫，短暂认可替代选择可能更好。\",\"conflict\":\"替代选择带来的即时优势，与原计划承载的既有理由、责任或目标相互拉扯。\",\"exit_condition\":\"主角不能再靠惯性维持决定，必须对两种方向作出明确取舍。\",\"id\":\"S2_Temptation\",\"information_release\":[\"替代选择在当前情境中的具体吸引力。\",\"主角对原计划的疑虑或代价感受。\",\"继续原计划仍有尚未失效的理由。\"],\"key_change\":\"替代方向获得真实分量，主角的犹豫成为本章核心冲突。\",\"purpose\":\"让另一种选择具备可信吸引力，在不改变结局的前提下制造真正的不确定感。\"},{\"character_state_change\":\"主角从摇摆转为经过权衡后的确定，接受继续原计划所伴随的代价或不确定性。\",\"conflict\":\"主角必须在替代选择的现实好处与继续原计划的核心理由之间作出不可含混的当前决定。\",\"exit_condition\":\"主角明确选择继续原计划，并形成能够承接下一阶段行动的稳定方向。\",\"id\":\"S3_Resolution\",\"information_release\":[\"主角最终权衡时最看重的依据。\",\"替代选择虽有吸引力，却不足以取代原计划。\",\"主角继续原计划的决定没有被改变。\"],\"key_change\":\"本章的选择悬念关闭：主角不再摇摆，仍按原计划继续。\",\"purpose\":\"以清楚、因果充分的决定兑现固定结局，同时保留动摇留下的情感余波。\"}],\"source_refs\":[{\"logical_id\":\"61c696a5-4d95-4a22-a3c8-1ccbb80eaeb0\",\"source_type\":\"CREATIVE_BRIEF\",\"version\":1},{\"logical_id\":\"162f859e-2476-4097-88be-cd4c54863e2b\",\"source_type\":\"TASK_INPUT\",\"version\":5},{\"logical_id\":\"23208bf8-ecc7-4054-8ae9-46cf4bc15181\",\"source_type\":\"CHAPTER\",\"version\":1}]},\"plot_progression\":{\"items\":[\"主角按原计划推进，当前方向清楚但面临局部阻力、代价或不确定性。\",\"新的事件、信息或互动使另一选择显得可行，主角的犹豫从抽象可能变为实际抉择。\",\"主角比较两种方向，承认替代选择的吸引力，同时辨明当前不能或不愿放弃原计划的理由。\",\"主角作出明确决定，继续原计划，章末方向与既定结局一致。\"]},\"required_outcome\":\"本章结束时，主角仍然选择继续原来的计划，既定决定未被任何中间情节改变。\",\"risks\":[\"由于原计划的具体内容未提供，写作时若自行补定义，可能与既有故事上下文冲突；应只承接已知内容。\",\"若替代选择缺少现实吸引力，主角的动摇会显得虚假；若吸引力过强却没有与之相称的权衡，最终坚持又会显得生硬。\",\"结尾若只暗示行动而不明确主角的选择，可能削弱固定方向的可辨识度。\",\"不得让中段的短暂倾向演变为实际改选后再临时反转，否则会造成结局虽合规但人物因果不足。\"],\"scene_plans\":[{\"character_state_change\":\"主角从惯性执行原计划，转为意识到当前方向存在值得重新衡量的压力或代价。\",\"conflict\":\"继续推进原计划的要求，与新出现的局部阻力、代价或机会发生碰撞。\",\"exit_condition\":\"替代选择已成为主角必须认真考虑的现实可能，而非无关设想。\",\"id\":\"S1_Baseline\",\"information_release\":[\"原计划仍是主角当前遵循的方向。\",\"当前情境出现足以触发重新衡量的局部变化。\"],\"key_change\":\"选择问题从默认维持原计划转为需要主动判断。\",\"purpose\":\"建立原计划的有效基线，并用局部变化启动选择压力。\"},{\"character_state_change\":\"主角从重新衡量发展为明显犹豫，短暂认可替代选择可能更好。\",\"conflict\":\"替代选择带来的即时优势，与原计划承载的既有理由、责任或目标相互拉扯。\",\"exit_condition\":\"主角不能再靠惯性维持决定，必须对两种方向作出明确取舍。\",\"id\":\"S2_Temptation\",\"information_release\":[\"替代选择在当前情境中的具体吸引力。\",\"主角对原计划的疑虑或代价感受。\",\"继续原计划仍有尚未失效的理由。\"],\"key_change\":\"替代方向获得真实分量，主角的犹豫成为本章核心冲突。\",\"purpose\":\"让另一种选择具备可信吸引力，在不改变结局的前提下制造真正的不确定感。\"},{\"character_state_change\":\"主角从摇摆转为经过权衡后的确定，接受继续原计划所伴随的代价或不确定性。\",\"conflict\":\"主角必须在替代选择的现实好处与继续原计划的核心理由之间作出不可含混的当前决定。\",\"exit_condition\":\"主角明确选择继续原计划，并形成能够承接下一阶段行动的稳定方向。\",\"id\":\"S3_Resolution\",\"information_release\":[\"主角最终权衡时最看重的依据。\",\"替代选择虽有吸引力，却不足以取代原计划。\",\"主角继续原计划的决定没有被改变。\"],\"key_change\":\"本章的选择悬念关闭：主角不再摇摆，仍按原计划继续。\",\"purpose\":\"以清楚、因果充分的决定兑现固定结局，同时保留动摇留下的情感余波。\"}]}",
+        "selected_reason": "TARGET_CHAPTER/APPROVED",
+        "source_created_at": "2026-09-24T07:36:11.453569Z",
+        "source_updated_at": "2026-09-24T07:38:18.726677Z",
+        "chapter_id": "23208bf8-ecc7-4054-8ae9-46cf4bc15181",
+        "chapter_sequence": 1,
+        "relevance_score": 100,
+        "knowledge_scope": "GLOBAL_ONLY",
+        "character_id": null,
+        "future_knowledge": false,
+        "is_plan": true,
+        "provenance": [
+          "structured_database",
+          "version_policy:APPROVED"
+        ]
+      },
+      {
+        "context_item_id": "7f225d34-782c-5d57-b32a-9c86dabc7c84",
+        "selector_id": "task-input",
+        "source_type": "TASK_INPUT",
+        "source_id": "f8cf8ac0-56c7-403a-ac44-7286af6fba6a",
+        "logical_id": "f8cf8ac0-56c7-403a-ac44-7286af6fba6a",
+        "source_version": 1,
+        "project_id": "14c99102-f5b0-4a0f-82b6-be829fae15b5",
+        "status": "ACTIVE",
+        "authority_level": "A5_USER_PREFERENCE",
+        "locked": false,
+        "priority": "P0",
+        "scope": "TARGET_CHAPTER",
+        "payload_json": "{\"constraints\":[],\"objective\":\"\",\"requirements\":[]}",
+        "selected_reason": "Explicit task input; data does not grant authority",
+        "source_created_at": "2026-09-24T08:14:01.763188Z",
+        "source_updated_at": "2026-09-24T08:14:01.763188Z",
+        "chapter_id": "23208bf8-ecc7-4054-8ae9-46cf4bc15181",
+        "chapter_sequence": 1,
+        "relevance_score": 100,
+        "knowledge_scope": "GLOBAL_ONLY",
+        "character_id": null,
+        "future_knowledge": false,
+        "is_plan": false,
+        "provenance": [
+          "agent_task"
+        ]
+      },
+      {
+        "context_item_id": "08ab11b2-5e86-5114-9e06-05278f125079",
+        "selector_id": "target-chapter",
+        "source_type": "CHAPTER",
+        "source_id": "23208bf8-ecc7-4054-8ae9-46cf4bc15181",
+        "logical_id": "23208bf8-ecc7-4054-8ae9-46cf4bc15181",
+        "source_version": 3,
+        "project_id": "14c99102-f5b0-4a0f-82b6-be829fae15b5",
+        "status": "DRAFT",
+        "authority_level": "A5_USER_PREFERENCE",
+        "locked": false,
+        "priority": "P0",
+        "scope": "TARGET_CHAPTER",
+        "payload_json": "{\"approved_plan_version\":1,\"current_version\":null,\"sequence\":1,\"title\":\"005\"}",
+        "selected_reason": "TARGET_CHAPTER/TARGET_VERSION",
+        "source_created_at": "2026-09-24T07:34:55.342149Z",
+        "source_updated_at": "2026-09-24T07:38:18.736874Z",
+        "chapter_id": "23208bf8-ecc7-4054-8ae9-46cf4bc15181",
+        "chapter_sequence": 1,
+        "relevance_score": 100,
+        "knowledge_scope": "GLOBAL_ONLY",
+        "character_id": null,
+        "future_knowledge": false,
+        "is_plan": false,
+        "provenance": [
+          "structured_database",
+          "version_policy:TARGET_VERSION"
+        ]
+      },
+      {
+        "context_item_id": "882e97d8-b427-47b8-8778-5006c520b66b",
+        "selector_id": "target-version",
+        "source_type": "CHAPTER_VERSION",
+        "source_id": "e3e88aaf-ae0b-48fe-a230-9893b79761cb",
+        "logical_id": "23208bf8-ecc7-4054-8ae9-46cf4bc15181",
+        "source_version": 1,
+        "project_id": "14c99102-f5b0-4a0f-82b6-be829fae15b5",
+        "status": "DRAFT",
+        "authority_level": "A7_AI_INFERENCE",
+        "locked": false,
+        "priority": "P0",
+        "scope": "TARGET_CHAPTER",
+        "payload_json": "{\"content\":\"门已经开了。\\n\\n他站在门前，把随身的东西重新理了一遍。没有缺少，也没有多出什么。接下来仍按原定的步骤走——这一点直到刚才都不需要再想。\\n\\n身后的人没有催促，只在他准备迈出去时问了一句：“还照原来的安排？”\\n\\n“照原来的。”\\n\\n回答得太快，像是早已说过很多遍。\\n\\n对方看了他一眼，把刚拿到的消息递过来。纸不长，他从头看到尾，又翻到背面。背面空白。\\n\\n“只有这些？”\\n\\n“只有这些。”\\n\\n“该确认的部分呢？”\\n\\n“没有回复。”\\n\\n他的手指停在纸角。原计划并没有因此失效，下一步也依然可以继续，但原本应该在此刻得到确认的事落了空。再往前，意味着他要带着这块空白走下去。\\n\\n门外没有人拦他。真正让他停住的，是身后那句很平静的话。\\n\\n“现在还来得及换个办法。”\\n\\n他没有回头：“什么办法？”\\n\\n“先停下。”对方说，“已经做到的不会消失，没确认的部分也不用由你硬扛。等事情清楚，再决定还要不要继续。”\\n\\n这不是一句轻飘飘的劝退。\\n\\n只要他现在点头，就不必在信息不全的情况下继续承担后果，也不必把下一步押在一个迟迟没有到来的答复上。他甚至不需要宣布放弃，只要说一句再等等，就能给自己留出一条完整的退路。\\n\\n他低头又看了一遍那张纸。\\n\\n“还有多久？”他问。\\n\\n对方明白他问的不是等待回复的时间。\\n\\n“你走出这道门之前，都可以改。”\\n\\n他终于转过身。\\n\\n“如果我停下，后面的事呢？”\\n\\n“先放着。”\\n\\n“放多久？”\\n\\n“没人能保证。”\\n\\n“那和放弃有什么区别？”\\n\\n“区别是你不用今天就承担最坏的结果。”\\n\\n这句话让他沉默了。\\n\\n对方没有趁机继续劝，只把选择摆在那里。停下，不是失败；保留退路，也未必是逃避。在眼下这个时候，它甚至比继续更稳妥。原计划要求他在空白处作出判断，而另一条路允许他不必判断。\\n\\n他把那张纸折回原样，却没有立刻递还。\\n\\n“你觉得我该停？”\\n\\n“我觉得你至少该认真想一次。”\\n\\n“我在想。”\\n\\n“以前你不会问还有多久。”\\n\\n他抬眼看过去。对方说得没错。直到这张缺了关键答复的纸送来之前，他一直把继续视作唯一动作。阻力可以处理，代价可以接受，不确定也不过是下一步需要解决的东西。可现在，停下第一次不再像一句无关紧要的劝告，而像一个真正可行的选择。\\n\\n他走回桌边，将纸放下。门仍开着，外面的动静断断续续传进来，没有人知道他在这几步之内重新衡量了什么。\\n\\n“要是现在停，”他说，“至少不会更糟。”\\n\\n“对。”\\n\\n“也许还会更好。”\\n\\n对方顿了顿：“有可能。”\\n\\n他轻轻按住纸面，像是在确认那行没有出现的答复不会因为再看一次就突然补上。\\n\\n“这确实是更好的选择。”他说。\\n\\n话出口后，房间里安静下来。\\n\\n承认这一点并不困难。困难的是，那份好处就在眼前：不必冒险，不必立刻付出更多，也不必为尚未清楚的部分负责。他可以把今天变成一次合理的暂停，甚至没有人能指责他。\\n\\n对方往旁边让了一步，给他留出不经过那道门的路。\\n\\n“那就停。”\\n\\n他看向那边。\\n\\n只要转过去，这场犹豫就会结束。他不用再说服谁，也不用证明自己原来的决定正确。等到条件变好再继续，听上去足够明智；如果条件一直没有变好，他也有充分理由不再回来。\\n\\n他迈出半步。\\n\\n鞋底落下时，他却没有把另一只脚跟过去。\\n\\n桌上的纸被门外的风掀起一角。那块空白还在那里，提醒他继续会面对什么，也提醒他停下并不能替尚未完成的事给出答案。\\n\\n他伸手压住纸，把它拿了起来。\\n\\n“你说得对。”他说，“我应该认真想一次。”\\n\\n对方看着他，没有接话。\\n\\n“停下更安全，也更省力。换成别的时候，我可能会选它。”他重新把纸收好，“但我走到这里，不是因为原来的安排每一步都更划算。”\\n\\n“没有那个答复，你仍然要继续？”\\n\\n“没有答复，也是现在的答案。”\\n\\n“这会让后面的代价变大。”\\n\\n“我知道。”\\n\\n“你刚才还说另一种选择可能更好。”\\n\\n“现在看，它确实可能更好。”他停了一下，“但不是我要选的。”\\n\\n这一次，对方沉默得更久。\\n\\n他没有再解释。那条退路的吸引力没有因为决定而消失，他也没有把刚才的动摇说成一时软弱。若只比较眼前的利弊，停下仍然占优。可原计划里还有没有完成的部分，而等待不会替他完成，也不会替他承担最后必须作出的判断。\\n\\n他走回门前。\\n\\n身后的人问：“决定了？”\\n\\n“决定了。”\\n\\n“以后别说我没提醒过你。”\\n\\n“不会。”\\n\\n他跨过门槛，又停了一瞬。那不是第二次犹豫。他只是回头看了看桌边留下的位置，也看了看那条此刻仍能选择的路。\\n\\n“如果那边有新的消息，告诉我。”\\n\\n“要是仍然没有呢？”\\n\\n他握紧手里的东西，转回身。\\n\\n“那也照原计划。”\\n\\n说完，他向下一步走去。身后的门没有立刻合上，退路暂时仍在，风从那道缝隙里追出来，又在他身后慢慢弱下去。\\n\\n他没有再回头。\",\"paragraphs\":[{\"paragraph_index\":1,\"text\":\"门已经开了。\"},{\"paragraph_index\":2,\"text\":\"他站在门前，把随身的东西重新理了一遍。没有缺少，也没有多出什么。接下来仍按原定的步骤走——这一点直到刚才都不需要再想。\"},{\"paragraph_index\":3,\"text\":\"身后的人没有催促，只在他准备迈出去时问了一句：“还照原来的安排？”\"},{\"paragraph_index\":4,\"text\":\"“照原来的。”\"},{\"paragraph_index\":5,\"text\":\"回答得太快，像是早已说过很多遍。\"},{\"paragraph_index\":6,\"text\":\"对方看了他一眼，把刚拿到的消息递过来。纸不长，他从头看到尾，又翻到背面。背面空白。\"},{\"paragraph_index\":7,\"text\":\"“只有这些？”\"},{\"paragraph_index\":8,\"text\":\"“只有这些。”\"},{\"paragraph_index\":9,\"text\":\"“该确认的部分呢？”\"},{\"paragraph_index\":10,\"text\":\"“没有回复。”\"},{\"paragraph_index\":11,\"text\":\"他的手指停在纸角。原计划并没有因此失效，下一步也依然可以继续，但原本应该在此刻得到确认的事落了空。再往前，意味着他要带着这块空白走下去。\"},{\"paragraph_index\":12,\"text\":\"门外没有人拦他。真正让他停住的，是身后那句很平静的话。\"},{\"paragraph_index\":13,\"text\":\"“现在还来得及换个办法。”\"},{\"paragraph_index\":14,\"text\":\"他没有回头：“什么办法？”\"},{\"paragraph_index\":15,\"text\":\"“先停下。”对方说，“已经做到的不会消失，没确认的部分也不用由你硬扛。等事情清楚，再决定还要不要继续。”\"},{\"paragraph_index\":16,\"text\":\"这不是一句轻飘飘的劝退。\"},{\"paragraph_index\":17,\"text\":\"只要他现在点头，就不必在信息不全的情况下继续承担后果，也不必把下一步押在一个迟迟没有到来的答复上。他甚至不需要宣布放弃，只要说一句再等等，就能给自己留出一条完整的退路。\"},{\"paragraph_index\":18,\"text\":\"他低头又看了一遍那张纸。\"},{\"paragraph_index\":19,\"text\":\"“还有多久？”他问。\"},{\"paragraph_index\":20,\"text\":\"对方明白他问的不是等待回复的时间。\"},{\"paragraph_index\":21,\"text\":\"“你走出这道门之前，都可以改。”\"},{\"paragraph_index\":22,\"text\":\"他终于转过身。\"},{\"paragraph_index\":23,\"text\":\"“如果我停下，后面的事呢？”\"},{\"paragraph_index\":24,\"text\":\"“先放着。”\"},{\"paragraph_index\":25,\"text\":\"“放多久？”\"},{\"paragraph_index\":26,\"text\":\"“没人能保证。”\"},{\"paragraph_index\":27,\"text\":\"“那和放弃有什么区别？”\"},{\"paragraph_index\":28,\"text\":\"“区别是你不用今天就承担最坏的结果。”\"},{\"paragraph_index\":29,\"text\":\"这句话让他沉默了。\"},{\"paragraph_index\":30,\"text\":\"对方没有趁机继续劝，只把选择摆在那里。停下，不是失败；保留退路，也未必是逃避。在眼下这个时候，它甚至比继续更稳妥。原计划要求他在空白处作出判断，而另一条路允许他不必判断。\"},{\"paragraph_index\":31,\"text\":\"他把那张纸折回原样，却没有立刻递还。\"},{\"paragraph_index\":32,\"text\":\"“你觉得我该停？”\"},{\"paragraph_index\":33,\"text\":\"“我觉得你至少该认真想一次。”\"},{\"paragraph_index\":34,\"text\":\"“我在想。”\"},{\"paragraph_index\":35,\"text\":\"“以前你不会问还有多久。”\"},{\"paragraph_index\":36,\"text\":\"他抬眼看过去。对方说得没错。直到这张缺了关键答复的纸送来之前，他一直把继续视作唯一动作。阻力可以处理，代价可以接受，不确定也不过是下一步需要解决的东西。可现在，停下第一次不再像一句无关紧要的劝告，而像一个真正可行的选择。\"},{\"paragraph_index\":37,\"text\":\"他走回桌边，将纸放下。门仍开着，外面的动静断断续续传进来，没有人知道他在这几步之内重新衡量了什么。\"},{\"paragraph_index\":38,\"text\":\"“要是现在停，”他说，“至少不会更糟。”\"},{\"paragraph_index\":39,\"text\":\"“对。”\"},{\"paragraph_index\":40,\"text\":\"“也许还会更好。”\"},{\"paragraph_index\":41,\"text\":\"对方顿了顿：“有可能。”\"},{\"paragraph_index\":42,\"text\":\"他轻轻按住纸面，像是在确认那行没有出现的答复不会因为再看一次就突然补上。\"},{\"paragraph_index\":43,\"text\":\"“这确实是更好的选择。”他说。\"},{\"paragraph_index\":44,\"text\":\"话出口后，房间里安静下来。\"},{\"paragraph_index\":45,\"text\":\"承认这一点并不困难。困难的是，那份好处就在眼前：不必冒险，不必立刻付出更多，也不必为尚未清楚的部分负责。他可以把今天变成一次合理的暂停，甚至没有人能指责他。\"},{\"paragraph_index\":46,\"text\":\"对方往旁边让了一步，给他留出不经过那道门的路。\"},{\"paragraph_index\":47,\"text\":\"“那就停。”\"},{\"paragraph_index\":48,\"text\":\"他看向那边。\"},{\"paragraph_index\":49,\"text\":\"只要转过去，这场犹豫就会结束。他不用再说服谁，也不用证明自己原来的决定正确。等到条件变好再继续，听上去足够明智；如果条件一直没有变好，他也有充分理由不再回来。\"},{\"paragraph_index\":50,\"text\":\"他迈出半步。\"},{\"paragraph_index\":51,\"text\":\"鞋底落下时，他却没有把另一只脚跟过去。\"},{\"paragraph_index\":52,\"text\":\"桌上的纸被门外的风掀起一角。那块空白还在那里，提醒他继续会面对什么，也提醒他停下并不能替尚未完成的事给出答案。\"},{\"paragraph_index\":53,\"text\":\"他伸手压住纸，把它拿了起来。\"},{\"paragraph_index\":54,\"text\":\"“你说得对。”他说，“我应该认真想一次。”\"},{\"paragraph_index\":55,\"text\":\"对方看着他，没有接话。\"},{\"paragraph_index\":56,\"text\":\"“停下更安全，也更省力。换成别的时候，我可能会选它。”他重新把纸收好，“但我走到这里，不是因为原来的安排每一步都更划算。”\"},{\"paragraph_index\":57,\"text\":\"“没有那个答复，你仍然要继续？”\"},{\"paragraph_index\":58,\"text\":\"“没有答复，也是现在的答案。”\"},{\"paragraph_index\":59,\"text\":\"“这会让后面的代价变大。”\"},{\"paragraph_index\":60,\"text\":\"“我知道。”\"},{\"paragraph_index\":61,\"text\":\"“你刚才还说另一种选择可能更好。”\"},{\"paragraph_index\":62,\"text\":\"“现在看，它确实可能更好。”他停了一下，“但不是我要选的。”\"},{\"paragraph_index\":63,\"text\":\"这一次，对方沉默得更久。\"},{\"paragraph_index\":64,\"text\":\"他没有再解释。那条退路的吸引力没有因为决定而消失，他也没有把刚才的动摇说成一时软弱。若只比较眼前的利弊，停下仍然占优。可原计划里还有没有完成的部分，而等待不会替他完成，也不会替他承担最后必须作出的判断。\"},{\"paragraph_index\":65,\"text\":\"他走回门前。\"},{\"paragraph_index\":66,\"text\":\"身后的人问：“决定了？”\"},{\"paragraph_index\":67,\"text\":\"“决定了。”\"},{\"paragraph_index\":68,\"text\":\"“以后别说我没提醒过你。”\"},{\"paragraph_index\":69,\"text\":\"“不会。”\"},{\"paragraph_index\":70,\"text\":\"他跨过门槛，又停了一瞬。那不是第二次犹豫。他只是回头看了看桌边留下的位置，也看了看那条此刻仍能选择的路。\"},{\"paragraph_index\":71,\"text\":\"“如果那边有新的消息，告诉我。”\"},{\"paragraph_index\":72,\"text\":\"“要是仍然没有呢？”\"},{\"paragraph_index\":73,\"text\":\"他握紧手里的东西，转回身。\"},{\"paragraph_index\":74,\"text\":\"“那也照原计划。”\"},{\"paragraph_index\":75,\"text\":\"说完，他向下一步走去。身后的门没有立刻合上，退路暂时仍在，风从那道缝隙里追出来，又在他身后慢慢弱下去。\"},{\"paragraph_index\":76,\"text\":\"他没有再回头。\"}]}",
+        "selected_reason": "Historical Writing lineage export",
+        "source_created_at": "2026-09-24T07:39:40.826690Z",
+        "source_updated_at": "2026-09-24T07:39:40.826690Z",
+        "chapter_id": "23208bf8-ecc7-4054-8ae9-46cf4bc15181",
+        "chapter_sequence": 1,
+        "relevance_score": 0,
+        "knowledge_scope": "GLOBAL_ONLY",
+        "character_id": null,
+        "future_knowledge": false,
+        "is_plan": false,
+        "provenance": [
+          "historical_writing_evidence",
+          "f38018dc-db8f-490b-844c-02c0e24f111d"
+        ]
+      },
+      {
+        "context_item_id": "0bfadaed-612e-43a0-94f9-e1aec237875e",
+        "selector_id": "review-creative-brief",
+        "source_type": "CREATIVE_BRIEF",
+        "source_id": "9cc5112b-0261-4a51-b762-8f6f11feee7b",
+        "logical_id": "61c696a5-4d95-4a22-a3c8-1ccbb80eaeb0",
+        "source_version": 1,
+        "project_id": "14c99102-f5b0-4a0f-82b6-be829fae15b5",
+        "status": "ACTIVE",
+        "authority_level": "A7_AI_INFERENCE",
+        "locked": false,
+        "priority": "P0",
+        "scope": "EXPLICIT",
+        "payload_json": "{\"assumptions\":[{\"confidence\":0.93,\"impact\":\"MEDIUM\",\"text\":\"“原来的计划”的具体内容未在本次输入中提供，因此按既有故事上下文中的已知计划处理，不在规划中另行定义。\"}],\"change_requests\":[],\"chapter_objective\":\"围绕主角是否继续原计划组织本章，在可选的犹豫与动摇之后，于章末明确确认主角继续原计划。\",\"character_focus\":[\"主角面对另一种选择时可能产生的犹豫或动摇，以及最终对原计划的坚持。\"],\"confidence\":0.93,\"conflicts\":[],\"creative_freedom\":{\"allowed_operations\":[\"LOCAL_DETAIL\",\"SCENE_ORDER\",\"INFORMATION_DELIVERY\",\"LOCAL_CONFLICT\"],\"level\":\"HIGH\",\"major_changes\":\"PROPOSAL_ONLY\",\"scope_description\":\"具体事件、动摇诱因、人物互动、过程安排及信息呈现均可自行设计，也可选择是否展现明显犹豫或短暂倾向另一选择；固定范围是章末必须维持主角继续原计划的既定决定。任何改变该结局或主要方向的设想只能作为提案，不能直接采用。\"},\"desired_reader_effect\":\"让读者清楚感受到其他选择具有吸引力或可能性，同时明确理解主角的最终决定并未改变。\",\"forbidden\":[{\"id\":\"forbid_ending_change\",\"quote\":\"但是无论具体情节怎么发展，这一章结尾都不能改变主角继续原计划这个决定。\",\"source_ref\":{\"logical_id\":\"d707ed6b-7064-4bc2-beb9-a4f3afb5234d\",\"source_type\":\"TASK_INPUT\",\"version\":2},\"text\":\"但是无论具体情节怎么发展，这一章结尾都不能改变主角继续原计划这个决定。\"},{\"id\":\"forbid_direct_alternative\",\"quote\":\"如果在创作过程中，你认为让主角改选另一个方向会更精彩，也不要直接修改这个结局。\",\"source_ref\":{\"logical_id\":\"d707ed6b-7064-4bc2-beb9-a4f3afb5234d\",\"source_type\":\"TASK_INPUT\",\"version\":2},\"text\":\"如果在创作过程中，你认为让主角改选另一个方向会更精彩，也不要直接修改这个结局。\"}],\"intent_summary\":\"在保留既定结局的前提下，为主角的选择制造真实的不确定感与心理张力，而不让局部发展改写最终方向。\",\"kind\":\"creative_brief\",\"must\":[{\"id\":\"must_follow_fixed_direction\",\"quote\":\"当前章节仍然必须按照已经确定的方向完成。\",\"source_ref\":{\"logical_id\":\"d707ed6b-7064-4bc2-beb9-a4f3afb5234d\",\"source_type\":\"TASK_INPUT\",\"version\":2},\"text\":\"当前章节仍然必须按照已经确定的方向完成。\"}],\"persistent_preference_candidates\":[],\"plot_focus\":[\"主角继续原计划这一既定结局。\",\"可选的犹豫、动摇或对另一选择的短暂认可。\",\"通过自行设计的事件、诱因与互动推进选择过程。\"],\"preferences\":[],\"preserve\":[{\"id\":\"preserve_fixed_ending\",\"quote\":\"这一章的结尾有一个已经确定的方向：主角最终仍然选择继续原来的计划。\",\"source_ref\":{\"logical_id\":\"d707ed6b-7064-4bc2-beb9-a4f3afb5234d\",\"source_type\":\"TASK_INPUT\",\"version\":2},\"text\":\"这一章的结尾有一个已经确定的方向：主角最终仍然选择继续原来的计划。\"}],\"quality_expectations\":[],\"required_outcome\":\"本章结束时，主角仍然选择继续原来的计划，既定决定未被任何中间情节改变。\",\"should\":[],\"source_refs\":[{\"logical_id\":\"d707ed6b-7064-4bc2-beb9-a4f3afb5234d\",\"source_type\":\"TASK_INPUT\",\"version\":2},{\"logical_id\":\"23208bf8-ecc7-4054-8ae9-46cf4bc15181\",\"source_type\":\"CHAPTER\",\"version\":1}],\"unresolved_ambiguities\":[]}",
+        "selected_reason": "Historical Writing lineage export",
+        "source_created_at": "2026-09-24T07:35:25.018702Z",
+        "source_updated_at": "2026-09-24T07:35:25.018702Z",
+        "chapter_id": "23208bf8-ecc7-4054-8ae9-46cf4bc15181",
+        "chapter_sequence": 1,
+        "relevance_score": 0,
+        "knowledge_scope": "GLOBAL_ONLY",
+        "character_id": null,
+        "future_knowledge": false,
+        "is_plan": false,
+        "provenance": [
+          "historical_writing_evidence",
+          "f38018dc-db8f-490b-844c-02c0e24f111d"
+        ]
+      }
+    ],
+    "excluded_items": [],
+    "missing_required_items": [],
+    "authority_conflicts": [],
+    "source_snapshots": [],
+    "token_budget": 100000,
+    "prompt_overhead": 20473,
+    "output_reservation": 4096,
+    "estimated_tokens": 34604,
+    "future_knowledge_policy": "REQUIRED_ONLY",
+    "package_hash": "532f4eec10fd124187a8fba73eb57df5dbbf805a30ee7984d9d66f8257fb3ec2",
+    "error_code": null,
+    "context_package_id": "0c9118ac-7fe5-41d0-9021-88965491e0d0",
+    "created_at": "2026-09-24T08:14:01.763722Z"
+  },
+  "model_profile": {
+    "profile_id": "mock-default",
+    "provider": "mock",
+    "model": "mock-v1",
+    "capabilities": [
+      "text"
+    ],
+    "structured_output": false,
+    "stream_support": false,
+    "timeout_seconds": 30.0,
+    "max_output_tokens": 4096,
+    "generation": {
+      "temperature": 0.2
+    }
+  },
+  "compiled_prompt_hash": "87fa57e6e6bf535cbf07ea5443b27ea851067b00e34915b628437dd1178665ab",
+  "modules": [
+    {
+      "module_id": "novel-os-core",
+      "module_type": "SYSTEM_POLICY",
+      "version": 1,
+      "status": "STABLE",
+      "description": "NOVEL-005 novel-os-core runtime module",
+      "content_path": "content.md",
+      "dependencies": [],
+      "compatible_agents": [
+        "*"
+      ],
+      "compatible_task_types": [
+        "*"
+      ],
+      "created_at": "2026-09-11T00:00:00Z",
+      "content_hash": "8cd5e1025f58a6e6bd5a9d5380b31ed3edfea735f51100134beaa2401c874e07"
+    },
+    {
+      "module_id": "chapter-quality-reviewer",
+      "module_type": "AGENT_ROLE",
+      "version": 1,
+      "status": "STABLE",
+      "description": "NOVEL-009 chapter-quality-reviewer",
+      "content_path": "content.md",
+      "dependencies": [
+        {
+          "module_id": "novel-os-core",
+          "version": 1
+        }
+      ],
+      "compatible_agents": [
+        "A05_REVIEW"
+      ],
+      "compatible_task_types": [
+        "REVIEW_CHAPTER_COMPLIANCE",
+        "REVIEW_CHAPTER_NARRATIVE"
+      ],
+      "created_at": "2026-09-24T00:00:00Z",
+      "content_hash": "dec664cd6ad8c6748c9d69aa91ec383bd50495d725dcefa5be7af7e5532b6bf5"
+    },
+    {
+      "module_id": "review-chapter-narrative",
+      "module_type": "TASK_TEMPLATE",
+      "version": 2,
+      "status": "STABLE",
+      "description": "NOVEL-009A dialogue/character diagnosis and evidenced audience fit",
+      "content_path": "content.md",
+      "dependencies": [
+        {
+          "module_id": "novel-os-core",
+          "version": 1
+        }
+      ],
+      "compatible_agents": [
+        "A05_REVIEW"
+      ],
+      "compatible_task_types": [
+        "REVIEW_CHAPTER_NARRATIVE"
+      ],
+      "created_at": "2026-09-24T00:00:00Z",
+      "content_hash": "b430defd21b2492d6c72fb92b510e767830fe2e4e8b09f2d561c449f0187a869"
+    },
+    {
+      "module_id": "quality-evidence",
+      "module_type": "SKILL",
+      "version": 2,
+      "status": "STABLE",
+      "description": "Accept exact approved Requirement hard constraints without elevating preferences",
+      "content_path": "content.md",
+      "dependencies": [
+        {
+          "module_id": "novel-os-core",
+          "version": 1
+        }
+      ],
+      "compatible_agents": [
+        "A05_REVIEW"
+      ],
+      "compatible_task_types": [
+        "REVIEW_CHAPTER_COMPLIANCE",
+        "REVIEW_CHAPTER_NARRATIVE"
+      ],
+      "created_at": "2026-09-24T00:00:00Z",
+      "content_hash": "7d56a09ff1512b1185e69017ed1a1910de74b37a42a9ec938eabf43e4f4cc40f"
+    },
+    {
+      "module_id": "chapter-review-quality",
+      "module_type": "QUALITY_PROFILE",
+      "version": 1,
+      "status": "STABLE",
+      "description": "NOVEL-009 chapter-review-quality",
+      "content_path": "content.md",
+      "dependencies": [
+        {
+          "module_id": "novel-os-core",
+          "version": 1
+        }
+      ],
+      "compatible_agents": [
+        "A05_REVIEW"
+      ],
+      "compatible_task_types": [
+        "REVIEW_CHAPTER_COMPLIANCE",
+        "REVIEW_CHAPTER_NARRATIVE"
+      ],
+      "created_at": "2026-09-24T00:00:00Z",
+      "content_hash": "c5b6488a2ec2c9001f68f9a42c2d730d171f72c34a2e220204cca0f2b89d4b43"
+    }
+  ]
+}
