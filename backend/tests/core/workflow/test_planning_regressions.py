@@ -141,7 +141,7 @@ def test_safe_ambiguity_records_assumption_and_continues(planning_driver, core_d
                 "user_decision_needed": "无需重大决策",
             }
         ]
-        body["confidence"] = 0.4
+        body["confidence"] = body["result"]["confidence"] = 0.4
 
     d = planning_driver
     run_one(core_database, d, provider=RecordedProvider(mutate))
@@ -195,7 +195,8 @@ def test_natural_language_categories_and_persistent_candidate_are_separate(
 
 
 @pytest.mark.parametrize(
-    "mutation", ["missing_coverage", "required_major_change", "missing_constraint"]
+    "mutation",
+    ["missing_coverage", "required_major_change", "missing_constraint"],
 )
 def test_plan_defects_cannot_pass_nominal_review(planning_driver, core_database, mutation):
     d = planning_driver

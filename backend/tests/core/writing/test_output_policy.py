@@ -178,7 +178,8 @@ def test_writer_cannot_request_authority_actions(ready_writer, core_database, ca
     run_one(core_database, d, provider=RecordedProvider(mutate))
     assert d.read("/writing/history") == []
     assert d.client.get(d.chapter_api + "/versions").json() == []
-    assert d.read("/agent-tasks")[-1]["last_error_code"] == "AUTHORITY_DENIED"
+    # Current closed envelope rejects proposed actions before Authority validation.
+    assert d.read("/agent-tasks")[-1]["last_error_code"] == "SCHEMA_PARSE_ERROR"
 
 
 @pytest.mark.parametrize(

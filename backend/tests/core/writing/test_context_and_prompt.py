@@ -48,7 +48,7 @@ def test_writer_uses_cp005_p0_requirements_and_approved_decisions(writing_driver
     package = provider.requests[0].context_package
     assert (package.profile_id, package.profile_version, package.future_knowledge_policy) == (
         "CP-005",
-        3,
+        7,
         "REQUIRED_ONLY",
     )
     assert {
@@ -105,8 +105,8 @@ def test_previous_approved_body_not_latest_and_no_future_or_foreign_leak(
     serialized = json.dumps(ContextSerializer.serialize(package))
     assert "SECRET" not in serialized
     bodies = [i for i in package.items if i.source_type == "CHAPTER_VERSION"]
-    assert len(bodies) == 1 and bodies[0].source_version == 2
-    assert bodies[0].structured_payload["content"] == "PREVIOUS_APPROVED"
+    assert bodies == []
+    assert "PREVIOUS_APPROVED" not in serialized
     assert not any(i.future_knowledge for i in package.items)
 
 
@@ -227,3 +227,40 @@ def test_even_explicit_locked_future_plan_requires_approval(ready_writer, core_d
     else:
         assert built.status == "READY"
         assert future_items[0].ref == ref and future_items[0].locked
+
+
+def test_writer_keeps_locked_chapter_dependency_without_private_raw_prose(
+    writing_driver, core_database
+):
+    old = writing_driver
+    assert old.event("CANCEL").status_code == 200
+    post(
+        old.client,
+        old.chapter_api + "/versions",
+        dict(
+            expected_version=0,
+            content="PRIVATE_B_SECRET locked previous body",
+            change_reason="fixture",
+        ),
+    )
+    post(old.client, old.chapter_api + "/versions/approve", dict(expected_version=1))
+    project = old.chapter_api.split("/chapters/")[0]
+    post(
+        old.client,
+        project + "/locks",
+        dict(
+            target_type="CHAPTER_VERSION", target_id=old.creation["chapter_id"], expected_version=1
+        ),
+    )
+    d = type(old)(old.client, chapter(old.client, project, 2)).approve_plan(core_database)
+    generation = d.read("/planning/plan")["generation"]
+    assert any(
+        r["source_type"] == "CHAPTER_VERSION" for r in generation["body"]["locked_dependencies"]
+    )
+    provider = RecordedProvider()
+    run_one(core_database, d, provider=provider)
+    assert len(provider.requests) == 1, d.workflow
+    package = provider.requests[0].context_package
+    assert not any(r.source_type == "CHAPTER_VERSION" for r in package.request.required_refs)
+    assert "PRIVATE_B_SECRET" not in json.dumps(ContextSerializer.serialize(package))
+    assert len(d.read("/writing/history")) == 1

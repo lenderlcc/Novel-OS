@@ -6,7 +6,7 @@ import pytest
 from pydantic import ValidationError
 
 from novel_os.agents.writing_mock import response
-from novel_os.agents.writing_schemas import WritingAgentResult
+from novel_os.agents.writing_schemas import WritingAgentResultV2 as WritingAgentResult
 from novel_os.context.profiles import ContextProfileRegistry
 from novel_os.prompts.registry import PromptRegistry
 from novel_os.prompts.tasks import TaskDefinitionRegistry
@@ -36,9 +36,23 @@ def test_generated_contract_is_the_same_schema_used_to_parse():
     assert len(definition.resolve(PromptRegistry())) == 9
     assert {c.value for c in definition.capabilities} == {"PROPOSE_DRAFT"}
     registry = ContextProfileRegistry()
-    assert registry.for_task("WRITE_CHAPTER").version == 3
+    assert registry.for_task("WRITE_CHAPTER").version == 7
     assert registry.for_task("MOCK_WRITE").version == 2
     assert registry.for_task("WRITE_CHAPTER").future_knowledge_policy == "REQUIRED_ONLY"
+
+
+def test_writer_prompt_keeps_operations_empty_and_exact_scene_functions():
+    from novel_os.prompts.contracts import ModuleRef
+
+    registry = PromptRegistry()
+    previous = registry.resolve(ModuleRef(module_id="write-chapter", version=1))
+    assert previous.module.content_hash == (
+        "fe2edd0f6f5bce0d10bafdffc8a6cda0364e5c24ccda246e0d8f3bc563a32bfc"
+    )
+    current = registry.resolve(TaskDefinitionRegistry().get("WRITE_CHAPTER").task_template)
+    assert current.module.version == 6
+    for rule in ("proposed_changes=[]", "memory_proposals=[]", "planned_function verbatim"):
+        assert rule in current.content
 
 
 @pytest.mark.parametrize(

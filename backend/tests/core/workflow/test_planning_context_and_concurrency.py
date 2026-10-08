@@ -47,7 +47,7 @@ def test_previous_approved_body_and_exact_brief_are_selected(
     )
     briefs = [item for item in package.items if item.source_type == "CREATIVE_BRIEF"]
     assert len(briefs) == 1 and briefs[0].priority == "P0"
-    assert package.profile_id == "CP-004" and package.profile_version == 3
+    assert package.profile_id == "CP-004" and package.profile_version == 8
 
 
 def test_locked_decision_is_p0_and_omission_blocks_plan(planning_driver, core_database):

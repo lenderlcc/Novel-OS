@@ -116,32 +116,23 @@ def test_ambiguity_decision_threshold(impact, confidence, safe, expected):
         "REQUIREMENT_MISUNDERSTANDING",
     ],
 )
-def test_hard_gates_override_pass_and_confidence(code):
+def test_hard_gates_reject_contradictory_pass_even_with_high_confidence(code):
     brief, plan, review = fixture_outputs()
     review["result"]["hard_gate_issues"] = [{"code": code, "description": "Concrete hard failure"}]
     review["result"]["confidence"] = 1
-    result = effective_verdict(
-        PlanReviewOutput.model_validate(review["result"]),
-        CreativeBriefOutput.model_validate(brief["result"]),
-        ChapterPlanOutput.model_validate(plan["result"]),
-    )
-    assert result.verdict == "FAIL"
-    assert result.hard_gate_issues[0].code == code
+    with pytest.raises(ValidationError):
+        PlanReviewOutput.model_validate(review["result"])
 
 
 @pytest.mark.parametrize(
     "field",
     ["missing_requirements", "forbidden_violations", "locked_conflicts", "direction_conflicts"],
 )
-def test_structured_hard_evidence_overrides_nominal_pass(field):
+def test_structured_hard_evidence_rejects_nominal_pass(field):
     brief, plan, review = fixture_outputs()
     review["result"][field] = ["Explicit conflict"]
-    result = effective_verdict(
-        PlanReviewOutput.model_validate(review["result"]),
-        CreativeBriefOutput.model_validate(brief["result"]),
-        ChapterPlanOutput.model_validate(plan["result"]),
-    )
-    assert result.verdict == "FAIL"
+    with pytest.raises(ValidationError):
+        PlanReviewOutput.model_validate(review["result"])
 
 
 def test_soft_quality_warns_without_false_hard_fail():
@@ -167,7 +158,8 @@ def test_scene_schema_cannot_carry_prose_blueprint(field):
 def test_prompt_and_context_contracts_keep_legacy_profiles():
     contexts = ContextProfileRegistry()
     assert contexts.for_task("MOCK_PLAN").version == 2
-    assert contexts.for_task("PLAN_CHAPTER").version == 3
+    assert contexts.resolve("CP-004", 6).version == 6
+    assert contexts.for_task("PLAN_CHAPTER").version == 9
     assert contexts.for_task("PARSE_CHAPTER_REQUIREMENT").profile_id == "CP-003A"
     assert contexts.for_task("REVIEW_CHAPTER_PLAN").profile_id == "CP-004R"
     tasks = TaskDefinitionRegistry()

@@ -251,17 +251,23 @@ uv run --locked pytest -m 'not integration'
 
 ### 迁移验证
 
+升降级验证只能使用新建的独立测试库或 schema，不要对已有开发数据执行 downgrade。
+在独立 checkout 的 `backend/config.toml` 中，将 `postgres_url` 指向该验证库，并确保
+`test_database_url` 指向另一独立 `_test` 库；保留默认 Mock 配置，不填写真实 Provider Key。
 在 `backend/` 下执行：
 
 ```bash
 uv run --locked alembic upgrade head
+uv run --locked alembic heads
 uv run --locked alembic downgrade -1
 uv run --locked alembic upgrade head
 uv run --locked alembic current
 uv run --locked alembic check
 ```
 
-当前 revision 是 `0007_context_engine`，前驱为 `0006_prompt_runtime`。
+实际 migration head 以 `alembic heads` 为准，当前数据库版本以 `alembic current` 为准。
+以下是 NOVEL-006 的历史迁移说明，不代表当前 head：
+`0007_context_engine` 的前驱为 `0006_prompt_runtime`。
 0004 已用于 NOVEL-003 Review 修复，0005 用于 Agent Runtime，0006 用于 Prompt Lineage；
 NOVEL-006 顺延使用 0007，未修改旧迁移。0007 新增 `context_packages` 及不可变快照保护。
 从 0007 执行 `downgrade -1` 只删除 Context 快照，保留 Core、Workflow、AgentTask、AgentRun、

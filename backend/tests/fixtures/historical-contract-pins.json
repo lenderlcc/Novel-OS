@@ -1,0 +1,71 @@
+{
+  "source_commit": "38de644b835ae06eed82b39a9959a11f5b0d6d9b",
+  "tasks": [
+    {
+      "task_type": "PARSE_CHAPTER_REQUIREMENT",
+      "output_schema": "chapter-requirement-result.v1",
+      "schema_hash": "7adc291e7db586c97c0f8e89673794d687642fe5ff6f8055786d30ecd61c9bb5",
+      "task_prompt": {
+        "module_id": "parse-chapter-requirement",
+        "version": 3,
+        "content_hash": "9d9608d83ea77d9f2620cdb6451af0021dd322886b7d482f42a33285cee5934d",
+        "execution_hash": "58078faf0bd53ac9bbebfa484a86f49c31b7fd2f24e678cb3fbb509b7b864954"
+      }
+    },
+    {
+      "task_type": "PLAN_CHAPTER",
+      "output_schema": "chapter-planning-result.v2",
+      "schema_hash": "1c36b0d8e86d1ccf16c2771d02dd6194d40ec0cbec3712ab6fe2e76e0ba33c50",
+      "task_prompt": {
+        "module_id": "plan-chapter",
+        "version": 9,
+        "content_hash": "9feb772507b5475d0bddea8b1665c34778b9ec92827056dbcb4c4c8895a6492d",
+        "execution_hash": "89d7c57526fb7a48d1fec0d47784d247f2f13a8bb3fc17426a3a3fd79ba86ccb"
+      }
+    },
+    {
+      "task_type": "REVIEW_CHAPTER_PLAN",
+      "output_schema": "chapter-plan-review-result.v2",
+      "schema_hash": "5835010658665b892368ec32f63d6427e084fb4b42ef3be2ea602c58a4852233",
+      "task_prompt": {
+        "module_id": "review-chapter-plan",
+        "version": 5,
+        "content_hash": "06af8e0861b7f5dfdadea3a0a30cc30038f970b144d866a55cae022b47785b8a",
+        "execution_hash": "23e5d534376e16b846216cb666132c62eeb71940933ef6ac4dbde5e856890ed8"
+      }
+    },
+    {
+      "task_type": "WRITE_CHAPTER",
+      "output_schema": "chapter-writing-result.v1",
+      "schema_hash": "53650a0455ea4e0e7490f3d6caa731ca67ef651626727059a9dd9bd7efd300c7",
+      "task_prompt": {
+        "module_id": "write-chapter",
+        "version": 5,
+        "content_hash": "aefea72da011dcd38f438c19d80270a87ddebaa068932afdb7a005c5ca1bcf92",
+        "execution_hash": "a75f46c8f0cf8cd2735656ffaef6c90f478f05156616869dd96ebf55ebf9bd8c"
+      }
+    },
+    {
+      "task_type": "REVIEW_CHAPTER_COMPLIANCE",
+      "output_schema": "chapter-compliance-review.v1",
+      "schema_hash": "41dd6e5b4572f09b8f5b27360a4fcd0176586081f15f53413f58deba7b037e46",
+      "task_prompt": {
+        "module_id": "review-chapter-compliance",
+        "version": 2,
+        "content_hash": "805f7c48fba07b5c7e1278d72c223cf80d5b9d0848247913eabc8d85c132023c",
+        "execution_hash": "4c4886b4829c12555839d78b796c21c4b06281230ce89e3dd4545c464dcb3e50"
+      }
+    },
+    {
+      "task_type": "REVIEW_CHAPTER_NARRATIVE",
+      "output_schema": "chapter-narrative-review.v2",
+      "schema_hash": "b57e9954b6a1d93fb6d3470d740b38ed91148fa185c0af6982a8601b9984b9c4",
+      "task_prompt": {
+        "module_id": "review-chapter-narrative",
+        "version": 3,
+        "content_hash": "932e2b147e26ed524cd5cf6bf9ba02be473e6ed51624b9302a9bec13d731145b",
+        "execution_hash": "466ce5d9e1b805eb6b3c7036e64596a42700c7b481a939e4c6cb186e33d1ac61"
+      }
+    }
+  ]
+}

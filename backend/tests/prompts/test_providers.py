@@ -291,3 +291,39 @@ def test_wrong_provider_profile_fails_before_network(prompt_task):
         ),
     )
     assert AgentRuntime(provider).execute(prompt_task).error_code == "MODEL_INVALID_REQUEST"
+
+
+@pytest.mark.parametrize(
+    "task_type",
+    [
+        "PARSE_CHAPTER_REQUIREMENT",
+        "PLAN_CHAPTER",
+        "REVIEW_CHAPTER_PLAN",
+        "WRITE_CHAPTER",
+    ],
+)
+def test_native_structured_schemas_require_all_properties_including_nullable(task_type):
+    from copy import deepcopy
+
+    schema = json.loads(TaskDefinitionRegistry().get(task_type).output_schema.schema_json)
+    original = deepcopy(schema)
+    native = native_schema(schema)
+
+    def check(node):
+        if isinstance(node, dict):
+            assert "default" not in node
+            if node.get("type") == "object":
+                assert set(node.get("required", [])) == set(node["properties"])
+                assert node["additionalProperties"] is False
+            for value in node.values():
+                check(value)
+        elif isinstance(node, list):
+            for value in node:
+                check(value)
+
+    check(native)
+    assert schema == original  # Never rewrite the local versioned contract/hash.
+    if task_type == "REVIEW_CHAPTER_PLAN":
+        issue = native["$defs"]["HardGateIssue"]
+        assert "constraint_id" in issue["required"]
+        assert {"type": "null"} in issue["properties"]["constraint_id"]["anyOf"]
