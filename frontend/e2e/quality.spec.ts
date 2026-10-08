@@ -18,8 +18,9 @@ test('Mock chapter reaches a read-only review with all workflow stage labels', a
     /需求/, /方案/, /正文/, /审阅/, /修改/, /完成/,
   ])
   await expect(page.getByTestId('draft')).toBeVisible()
-  await expect(page.locator('.quality-review')).toContainText('值得保留')
-  await expect(page.locator('.quality-review')).not.toContainText('prompt_lineage_id')
+  const review = page.getByRole('region', { name: '正文审阅', exact: true })
+  await expect(review).toContainText('值得保留')
+  await expect(review).not.toContainText('prompt_lineage_id')
   await page.screenshot({ path: '/tmp/novel009-workspace-review.png', fullPage: true })
   await page.getByRole('button', { name: 'Debug', exact: true }).click()
   await page.getByText('Chapter Quality Reviews', { exact: true }).click()
