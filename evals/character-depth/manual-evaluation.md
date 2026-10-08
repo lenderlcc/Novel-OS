@@ -45,6 +45,20 @@
 
 先隐藏明确姓名阅读，记录能否大致区分人物行为/对白及依据；然后打开完整 evidence 中的 label/source 映射核对。这个 human aid 不构成自动 PASS rule，主持人仍需记录可比性和展示顺序。
 
+## Blind Character Evaluation
+
+Sample A（隐藏人物名字及别名）：
+
+> 待填：从 name-hidden reading aid 选取正文；人物身份映射留在完整 evidence，评阅后再打开。
+
+Sample B（隐藏人物名字及别名）：
+
+> 待填：从相同比较条件的另一份 name-hidden reading aid 选取正文。
+
+Human judgment（选择一项）：**Clearly Different / Somewhat Different / Interchangeable**。
+
+Notes：待填具体行为、决定或对白的依据，以及影响比较的输入差异。这里只记录人工判断，不生成自动 Voice Score 或自动 PASS。
+
 ## Review、Revision 与 Human Feedback
 
 1. 将 `weak-character-source.txt` 作为人工编写的待评来源，通过现有合法工作流/评估工具绑定精确 ChapterVersion、Plan 和 Context。保留来源链路；若无法绑定，记 NOT_RUN，不能伪造 AgentRun 或绕过服务直写。

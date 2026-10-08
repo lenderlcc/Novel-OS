@@ -6,7 +6,7 @@ from uuid import UUID
 
 from pydantic import Field, model_validator
 
-from novel_os.agents.schemas import AgentResult, ArtifactText, StrictOutput
+from novel_os.agents.schemas import AgentResult, ArtifactText, Proposal, StrictOutput
 from novel_os.domain.context import SourceType
 from novel_os.domain.quality import (
     IssueCategory,
@@ -194,6 +194,16 @@ class NarrativeAgentResultV2(AgentResult):
     result: NarrativeReviewV2
 
 
+class ComplianceAgentResultV2(ComplianceAgentResult):
+    proposed_changes: list[Proposal] = Field(max_length=0)
+    memory_proposals: list[Proposal] = Field(max_length=0)
+
+
+class NarrativeAgentResultV3(NarrativeAgentResultV2):
+    proposed_changes: list[Proposal] = Field(max_length=0)
+    memory_proposals: list[Proposal] = Field(max_length=0)
+
+
 class ChapterReviewResult(ReviewPassBase):
     kind: Literal["chapter_quality_review"] = "chapter_quality_review"
     overall_verdict: Verdict
@@ -261,8 +271,14 @@ def read_review(body):
 
 
 QUALITY_RESULTS = {
-    "REVIEW_CHAPTER_COMPLIANCE": ("chapter-compliance-review", ComplianceAgentResult),
-    "REVIEW_CHAPTER_NARRATIVE": ("chapter-narrative-review", NarrativeAgentResultV2),
+    "REVIEW_CHAPTER_COMPLIANCE": ("chapter-compliance-review", ComplianceAgentResultV2),
+    "REVIEW_CHAPTER_NARRATIVE": ("chapter-narrative-review", NarrativeAgentResultV3),
 }
 
-QUALITY_SCHEMA_VERSIONS = {"REVIEW_CHAPTER_NARRATIVE": 2}
+LEGACY_QUALITY_RESULTS = {
+    ("REVIEW_CHAPTER_COMPLIANCE", "chapter-compliance-review.v1"): (ComplianceAgentResult, 2),
+    ("REVIEW_CHAPTER_NARRATIVE", "chapter-narrative-review.v1"): (NarrativeAgentResult, 1),
+    ("REVIEW_CHAPTER_NARRATIVE", "chapter-narrative-review.v2"): (NarrativeAgentResultV2, 3),
+}
+
+QUALITY_SCHEMA_VERSIONS = {"REVIEW_CHAPTER_COMPLIANCE": 2, "REVIEW_CHAPTER_NARRATIVE": 3}

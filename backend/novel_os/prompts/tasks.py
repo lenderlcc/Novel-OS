@@ -67,7 +67,11 @@ class TaskDefinitionRegistry:
                     frozenset({mapping.capability}),
                 )
             )
-        from novel_os.agents.planning_schemas import BUSINESS_RESULTS, BUSINESS_SCHEMA_VERSIONS
+        from novel_os.agents.planning_schemas import (
+            BUSINESS_RESULTS,
+            BUSINESS_SCHEMA_VERSIONS,
+            LEGACY_BUSINESS_RESULTS,
+        )
 
         roles = {
             "PARSE_CHAPTER_REQUIREMENT": "requirement-agent",
@@ -97,6 +101,17 @@ class TaskDefinitionRegistry:
                     capabilities=frozenset({mapping.capability}),
                 )
             )
+        for (task_type, schema), (model, template_version) in LEGACY_BUSINESS_RESULTS.items():
+            current = self._definitions[task_type]
+            self._historical_definitions[(task_type, schema)] = replace(
+                current,
+                task_template=ModuleRef(
+                    module_id=current.task_template.module_id, version=template_version
+                ),
+                output_schema=OutputContractGenerator.generate(
+                    current.output_schema.schema_id, int(schema.rsplit(".v", 1)[1]), model
+                ),
+            )
         from novel_os.agents.exploration_schemas import ExplorationAgentResult
 
         self.register(
@@ -116,9 +131,9 @@ class TaskDefinitionRegistry:
             )
         )
         from novel_os.quality.schemas import (
+            LEGACY_QUALITY_RESULTS,
             QUALITY_RESULTS,
             QUALITY_SCHEMA_VERSIONS,
-            NarrativeAgentResult,
         )
 
         for task_type, (schema_id, model) in QUALITY_RESULTS.items():
@@ -138,15 +153,17 @@ class TaskDefinitionRegistry:
                     capabilities=frozenset({Capability.REVIEW}),
                 )
             )
-            if task_type == "REVIEW_CHAPTER_NARRATIVE":
-                # Pending v1 tasks retain their output contract and original task prompt.
-                self._historical_definitions[(task_type, "chapter-narrative-review.v1")] = replace(
-                    self._definitions[task_type],
-                    task_template=ModuleRef(module_id="review-chapter-narrative", version=1),
-                    output_schema=OutputContractGenerator.generate(
-                        schema_id, 1, NarrativeAgentResult
-                    ),
-                )
+        for (task_type, schema), (model, template_version) in LEGACY_QUALITY_RESULTS.items():
+            current = self._definitions[task_type]
+            self._historical_definitions[(task_type, schema)] = replace(
+                current,
+                task_template=ModuleRef(
+                    module_id=current.task_template.module_id, version=template_version
+                ),
+                output_schema=OutputContractGenerator.generate(
+                    current.output_schema.schema_id, int(schema.rsplit(".v", 1)[1]), model
+                ),
+            )
         from novel_os.revision.contracts import LEGACY_CONTRACTS, SCHEMA_VERSIONS
         from novel_os.revision.schemas import revision_results
 
@@ -217,15 +234,6 @@ class TaskDefinitionRegistry:
                 ),
             )
         )
-        from novel_os.agents.planning_schemas import LegacyPlanningAgentResult
-
-        self._historical_definitions[("PLAN_CHAPTER", "chapter-planning-result.v1")] = replace(
-            self._definitions["PLAN_CHAPTER"],
-            task_template=ModuleRef(module_id="plan-chapter", version=5),
-            output_schema=OutputContractGenerator.generate(
-                "chapter-planning-result", 1, LegacyPlanningAgentResult
-            ),
-        )
         from novel_os.feedback.schemas import FeedbackAgentResult
 
         self.register(
@@ -244,7 +252,7 @@ class TaskDefinitionRegistry:
                 capabilities=frozenset({Capability.REPORT_RESULT}),
             )
         )
-        from novel_os.agents.writing_schemas import WritingAgentResult
+        from novel_os.agents.writing_schemas import WritingAgentResult, WritingAgentResultV2
 
         self.register(
             TaskDefinition(
@@ -265,7 +273,7 @@ class TaskDefinitionRegistry:
                 ),
                 quality_profile=ref("writing-quality"),
                 output_schema=OutputContractGenerator.generate(
-                    "chapter-writing-result", 1, WritingAgentResult
+                    "chapter-writing-result", 2, WritingAgentResultV2
                 ),
                 model_profile={
                     "mock-default": "mock-writing",
@@ -273,6 +281,13 @@ class TaskDefinitionRegistry:
                 }.get(model_profile, model_profile),
                 capabilities=frozenset({Capability.PROPOSE_DRAFT}),
             )
+        )
+        self._historical_definitions[("WRITE_CHAPTER", "chapter-writing-result.v1")] = replace(
+            self._definitions["WRITE_CHAPTER"],
+            task_template=ModuleRef(module_id="write-chapter", version=5),
+            output_schema=OutputContractGenerator.generate(
+                "chapter-writing-result", 1, WritingAgentResult
+            ),
         )
         self.register(
             TaskDefinition(

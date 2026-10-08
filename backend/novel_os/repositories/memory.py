@@ -1,8 +1,9 @@
 """Bounded SQL retrieval and flush-only persistence. No model/API dependencies."""
 
+import unicodedata
 from dataclasses import asdict
 
-from sqlalchemy import exists, func, or_, select
+from sqlalchemy import case, exists, func, literal, or_, select
 from sqlalchemy.orm import aliased
 
 from novel_os.domain.errors import DomainError
@@ -137,6 +138,25 @@ class MemoryRepository:
         # A project-scoped name lookup, not retrieval of every memory or a vector search.
         # Structured story leaves stay separate; their boundary cannot invent a name.
         search_text = "\n".join(normalized(part) for part in text.splitlines())
+        folded_text = unicodedata.normalize("NFKC", text).casefold()
+        word_characters = "A-Za-zÀ-ÖØ-öø-ɏ0-9_"
+
+        def name_matches(value):
+            # Preserve normalized space/punctuation forms within complete Latin
+            # boundaries. Blank/punctuation cannot join separate story leaves.
+            pattern = func.concat(
+                f"(^|[^{word_characters}])",
+                func.regexp_replace(value, "(.)", r"\1[[:blank:][:punct:]]*", "g"),
+                f"($|[^{word_characters}])",
+            )
+            return case(
+                (
+                    value.op("~")("^[A-Za-zÀ-ÖØ-öø-ɏ0-9]+$"),
+                    literal(folded_text).op("~")(pattern),
+                ),
+                else_=func.strpos(search_text, value) > 0,
+            )
+
         alias = (
             func.jsonb_array_elements_text(MemorySubjectModel.aliases)
             .table_valued("value")
@@ -148,12 +168,8 @@ class MemoryRepository:
                 MemorySubjectModel.project_id == project_id,
                 or_(
                     MemorySubjectModel.id.in_(explicit_ids),
-                    func.strpos(search_text, MemorySubjectModel.normalized_name) > 0,
-                    exists(
-                        select(1)
-                        .select_from(alias)
-                        .where(func.strpos(search_text, alias.c.value) > 0)
-                    ),
+                    name_matches(MemorySubjectModel.normalized_name),
+                    exists(select(1).select_from(alias).where(name_matches(alias.c.value))),
                 ),
                 or_(
                     MemorySubjectModel.batch_id.is_(None),

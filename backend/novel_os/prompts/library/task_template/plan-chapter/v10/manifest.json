@@ -1,0 +1,22 @@
+{
+  "module_id": "plan-chapter",
+  "module_type": "TASK_TEMPLATE",
+  "version": 10,
+  "status": "STABLE",
+  "description": "Align typed output operations with existing runtime authority restrictions",
+  "content_path": "content.md",
+  "dependencies": [
+    {
+      "module_id": "novel-os-core",
+      "version": 1
+    }
+  ],
+  "compatible_agents": [
+    "A03_PLANNING"
+  ],
+  "compatible_task_types": [
+    "PLAN_CHAPTER"
+  ],
+  "created_at": "2026-10-07T08:42:30.126327+00:00",
+  "content_hash": "191570808253c9363a8c27643b9d0a4a984c014edf8dd0cde498aa41ed7ad083"
+}

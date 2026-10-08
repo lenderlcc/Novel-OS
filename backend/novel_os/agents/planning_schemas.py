@@ -5,7 +5,7 @@ from uuid import UUID
 
 from pydantic import Field, model_validator
 
-from novel_os.agents.schemas import AgentResult, ArtifactText, StrictOutput
+from novel_os.agents.schemas import AgentResult, ArtifactText, Proposal, StrictOutput
 from novel_os.domain.context import SourceType
 from novel_os.domain.planning import ReviewVerdict
 
@@ -279,10 +279,29 @@ class PlanReviewAgentResult(AgentResult):
     result: PlanReviewOutput
 
 
+class RequirementAgentResultV2(RequirementAgentResult):
+    memory_proposals: list[Proposal] = Field(max_length=0)
+
+
+class PlanningAgentResultV3(PlanningAgentResult):
+    memory_proposals: list[Proposal] = Field(max_length=0)
+
+
+class PlanReviewAgentResultV3(PlanReviewAgentResult):
+    memory_proposals: list[Proposal] = Field(max_length=0)
+
+
 BUSINESS_RESULTS = {
-    "PARSE_CHAPTER_REQUIREMENT": ("chapter-requirement-result", RequirementAgentResult),
-    "PLAN_CHAPTER": ("chapter-planning-result", PlanningAgentResult),
-    "REVIEW_CHAPTER_PLAN": ("chapter-plan-review-result", PlanReviewAgentResult),
+    "PARSE_CHAPTER_REQUIREMENT": ("chapter-requirement-result", RequirementAgentResultV2),
+    "PLAN_CHAPTER": ("chapter-planning-result", PlanningAgentResultV3),
+    "REVIEW_CHAPTER_PLAN": ("chapter-plan-review-result", PlanReviewAgentResultV3),
+}
+
+LEGACY_BUSINESS_RESULTS = {
+    ("PARSE_CHAPTER_REQUIREMENT", "chapter-requirement-result.v1"): (RequirementAgentResult, 3),
+    ("PLAN_CHAPTER", "chapter-planning-result.v1"): (LegacyPlanningAgentResult, 5),
+    ("PLAN_CHAPTER", "chapter-planning-result.v2"): (PlanningAgentResult, 9),
+    ("REVIEW_CHAPTER_PLAN", "chapter-plan-review-result.v2"): (PlanReviewAgentResult, 5),
 }
 
 
@@ -291,12 +310,12 @@ def result_model(task_type, output_schema=None):
         from novel_os.agents.exploration_schemas import ExplorationAgentResult
 
         return ExplorationAgentResult
-    from novel_os.quality.schemas import QUALITY_RESULTS, NarrativeAgentResult
+    from novel_os.quality.schemas import LEGACY_QUALITY_RESULTS, QUALITY_RESULTS
     from novel_os.revision.contracts import LEGACY_CONTRACTS
     from novel_os.revision.schemas import revision_results
 
-    if task_type == "PLAN_CHAPTER" and output_schema == "chapter-planning-result.v1":
-        return LegacyPlanningAgentResult
+    if (task_type, output_schema) in LEGACY_BUSINESS_RESULTS:
+        return LEGACY_BUSINESS_RESULTS[(task_type, output_schema)][0]
     if task_type == "EXTRACT_CHAPTER_MEMORY":
         from novel_os.memory.schemas import MemoryAgentResult
 
@@ -312,18 +331,23 @@ def result_model(task_type, output_schema=None):
             return LEGACY_CONTRACTS[(task_type, output_schema)][0]
         return REVISION_RESULTS[task_type][1]
     if task_type in QUALITY_RESULTS:
-        if (
-            task_type == "REVIEW_CHAPTER_NARRATIVE"
-            and output_schema == "chapter-narrative-review.v1"
-        ):
-            return NarrativeAgentResult
+        if (task_type, output_schema) in LEGACY_QUALITY_RESULTS:
+            return LEGACY_QUALITY_RESULTS[(task_type, output_schema)][0]
         return QUALITY_RESULTS[task_type][1]
     if task_type == "WRITE_CHAPTER":
-        from novel_os.agents.writing_schemas import WritingAgentResult
+        from novel_os.agents.writing_schemas import WritingAgentResult, WritingAgentResultV2
 
-        return WritingAgentResult
+        return (
+            WritingAgentResult
+            if output_schema == "chapter-writing-result.v1"
+            else WritingAgentResultV2
+        )
     return BUSINESS_RESULTS[task_type][1] if task_type in BUSINESS_RESULTS else AgentResult
 
 
 # New review calls use a versioned cross-field contract; persisted v1 reports stay untouched.
-BUSINESS_SCHEMA_VERSIONS = {"REVIEW_CHAPTER_PLAN": 2, "PLAN_CHAPTER": 2}
+BUSINESS_SCHEMA_VERSIONS = {
+    "PARSE_CHAPTER_REQUIREMENT": 2,
+    "REVIEW_CHAPTER_PLAN": 3,
+    "PLAN_CHAPTER": 3,
+}

@@ -1,4 +1,4 @@
-# Phase 2 Contract Freeze — CHECKPOINT-001
+# Phase 2 Contract Freeze — VALIDATION-001
 
 2026-10-07。冻结对象是已实现的 001～014 工程边界；工程 PASS 不等于创意、人物自然度或连续章质量已通过真实人工验收。
 
@@ -6,22 +6,24 @@ Frozen means **change only with a correctness bug, real acceptance evidence, or 
 
 ## Frozen contracts
 
-| Contract | 固定边界与代码来源 |
-| --- | --- |
-| Authority | A0 System Rule → A1 User Locked → A2 User Approved → A3 Canon → A4 Approved Plan → A5 User Preference → A6 Derived Memory → A7 AI Inference；不新增级别。`backend/novel_os/domain/enums.py` |
-| Agent roster | 仅 A01 Orchestrator、A02 Requirement、A03 Planning、A04 Writing、A05 Review、A06 Revision、A07 Memory。Explore 归 A03，Profile/Feedback 解释归 A02，Fidelity 归 A05。Agent 不具备 approve/lock/commit/direct DB write。`domain/agents.py`、`agents/registry.py` |
-| Chapter workflow | 复用现有 versioned Chapter workflow；v1/v2/v3 保留历史语义，v4 在 C04 内先 Explore 后 Plan，不新增状态或新的审批 channel。旧 definition/hash 不覆盖。`workflow/definitions/` |
-| Core versions | Approved 数据不原地改；正文 append-only；current 与 approved 分离；审批 exact expected_version；Project/Chapter/User locks 每次 mutation 重查；Service 控制事务，Repository flush-only。 |
-| Memory layers | CanonFact / CharacterState / CharacterKnowledge / RelationshipState / OpenThread / DerivedChapterSummary 六类；静态 identity、动态 state、知识与 behavior tendency 独立。`domain/memory.py`、`memory/schemas.py` |
-| Memory commit | 人工绑定 exact current Draft → accepted source → A07 proposal → 人工显式选中（或显式确认空集）→ 单事务 batch/identity/entries/completed/audit。Proposal ≠ CommittedMemory；不使用 rejected/superseded Draft、探索候选或 Profile 作为新事实证据。`services/memory_commit.py`、`memory_workflow.py` |
-| Knowledge firewall | Global Canon ≠ Character Knowledge。owner、epistemic、KNOWS fact link、before_sequence、task allowlist 共同限制输入。Profile 不增加任何知识授权；倾向不得压过 Lock/Canon/State/Knowledge/ApprovedPlan。`context/policies.py`、`services/canon_context.py` |
-| CreativeExploration | A7，现有 count/mode/selection/unsafe candidate 规则保持。只有 exact selected concept 交给 A03 Plan；所有候选保留为诊断证据，不进入 Writer/Memory。人工批准的是正式 Plan。`agents/exploration_schemas.py`、`services/exploration_context.py` |
-| CharacterBehaviorProfile | sparse tendency，Draft A7 / user-approved A3；immutable body、logical_id/version/hash、独立 current/approved，counterpart 同项目。仅任务相关 approved profiles 与相关 pair modifiers 入 Context；可缺省，非固定行为脚本。`characters/schemas.py`、`domain/character_profile.py` |
-| Revision | exact Draft/Review/feedback/source binding；A06 仅 prose/local elaboration；mutation arrays 空、超出范围用 unresolved/blocked；candidate 必须通过独立 Fidelity 才产生正式下一 Draft；保留旧 Draft，下一 Review 绑定新 Draft。`revision/schemas.py`、`services/revision_results.py` |
-| Human Feedback | 单次反馈绑定 exact source Draft；A02 解释→既有定向 Revision 或澄清/replan/profile-change gate；不自动更新持久 WritingProfile/CharacterProfile/Canon。`feedback/schemas.py`、`services/feedback_results.py` |
-| Prompt and Context | Pydantic 是唯一 output schema source of truth；Prompt 放方法与规则，故事/人物/知识放 Context；Provider request、parser、semantic validator 使用同一契约。Prompt/Context/ModelProfile exact pins/hash 保存到 actual AgentRun，旧版本不覆盖。 |
-| Freshness | Task schedule/pre-IO/result completion 检查 approved Profile/WritingProfile 与 authority/version/scope fingerprints，包括空 selector；新增 Draft 不改变批准输入。新任务可使用创建前已批准的新版本，不强迫旧 Plan 永久重规划。 |
-| Acceptance | 新 Phase 2 真实模型运行只经现有 runner 的显式 `--allow-real-provider`，标准 Worker 单步执行；prepare/status/export 不调用模型；Plan、Profile、Draft finalization、Memory confirmation 都是独立真实人工操作。不得自动跑完五章或替人批准。 |
+本表冻结当前本地工程边界，状态由 VALIDATION-001 的自动测试、隔离 Recorded 集成、浏览器 smoke、迁移与独立 Review 确认。真实 AI Behavior 不在冻结结论内；完整测试仍按用户要求保留本地，不将 fresh HEAD 视为同一绿色交付。
+
+| Contract | Status | 固定边界与代码来源 |
+| --- | --- | --- |
+| Authority | FROZEN | A0 System Rule → A1 User Locked → A2 User Approved → A3 Canon → A4 Approved Plan → A5 User Preference → A6 Derived Memory → A7 AI Inference；不新增级别。`backend/novel_os/domain/enums.py` |
+| Agent roster | FROZEN | 仅 A01 Orchestrator、A02 Requirement、A03 Planning、A04 Writing、A05 Review、A06 Revision、A07 Memory。Explore 归 A03，Profile/Feedback 解释归 A02，Fidelity 归 A05。Agent 不具备 approve/lock/commit/direct DB write。`domain/agents.py`、`agents/registry.py` |
+| Chapter workflow | FROZEN | 复用现有 versioned Chapter workflow；v1/v2/v3 保留历史语义，v4 在 C04 内先 Explore 后 Plan，不新增状态或新的审批 channel。旧 definition/hash 不覆盖。`workflow/definitions/` |
+| Core versions | FROZEN | Approved 数据不原地改；正文 append-only；current 与 approved 分离；审批 exact expected_version；Project/Chapter/User locks 每次 mutation 重查；Service 控制事务，Repository flush-only。 |
+| Memory layers | FROZEN | CanonFact / CharacterState / CharacterKnowledge / RelationshipState / OpenThread / DerivedChapterSummary 六类；静态 identity、动态 state、知识与 behavior tendency 独立。`domain/memory.py`、`memory/schemas.py` |
+| Memory commit | FROZEN | 人工绑定 exact current Draft → accepted source → A07 proposal → 人工显式选中（或显式确认空集）→ 单事务 batch/identity/entries/completed/audit。Proposal ≠ CommittedMemory；不使用 rejected/superseded Draft、探索候选或 Profile 作为新事实证据。`services/memory_commit.py`、`memory_workflow.py` |
+| Knowledge firewall | FROZEN | Global Canon ≠ Character Knowledge。owner、epistemic、KNOWS fact link、before_sequence、task allowlist 共同限制输入。Profile 不增加任何知识授权；倾向不得压过 Lock/Canon/State/Knowledge/ApprovedPlan。`context/policies.py`、`services/canon_context.py` |
+| CreativeExploration | FROZEN | A7，现有 count/mode/selection/unsafe candidate 规则保持。只有 exact selected concept 交给 A03 Plan；所有候选保留为诊断证据，不进入 Writer/Memory。人工批准的是正式 Plan。`agents/exploration_schemas.py`、`services/exploration_context.py` |
+| CharacterBehaviorProfile | FROZEN | sparse tendency，Draft A7 / user-approved A3；immutable body、logical_id/version/hash、独立 current/approved，counterpart 同项目。仅任务相关 approved profiles 与相关 pair modifiers 入 Context；可缺省，非固定行为脚本。`characters/schemas.py`、`domain/character_profile.py` |
+| Revision | FROZEN | exact Draft/Review/feedback/source binding；A06 仅 prose/local elaboration；mutation arrays 空、超出范围用 unresolved/blocked；candidate 必须通过独立 Fidelity 才产生正式下一 Draft；保留旧 Draft，下一 Review 绑定新 Draft。`revision/schemas.py`、`services/revision_results.py` |
+| Human Feedback | FROZEN | 单次反馈绑定 exact source Draft；A02 解释→既有定向 Revision 或澄清/replan/profile-change gate；不自动更新持久 WritingProfile/CharacterProfile/Canon。`feedback/schemas.py`、`services/feedback_results.py` |
+| Prompt and Context | FROZEN | Pydantic 是唯一 output schema source of truth；Prompt 放方法与规则，故事/人物/知识放 Context；Provider request、parser、semantic validator 使用同一契约。Prompt/Context/ModelProfile exact pins/hash 保存到 actual AgentRun，旧版本不覆盖。 |
+| Freshness | FROZEN | Task schedule/pre-IO/result completion 检查 approved Profile/WritingProfile 与 authority/version/scope fingerprints，包括空 selector；新增 Draft 不改变批准输入。新任务可使用创建前已批准的新版本，不强迫旧 Plan 永久重规划。 |
+| Acceptance | FROZEN | 新 Phase 2 真实模型运行只经现有 runner 的显式 `--allow-real-provider`，标准 Worker 单步执行；prepare/status/export 不调用模型；Plan、Profile、Draft finalization、Memory confirmation 都是独立真实人工操作。不得自动跑完五章或替人批准。 |
 
 ## ADR CHECKPOINT-001-01 — standalone A02 report 的真实 lineage
 
@@ -51,6 +53,19 @@ Frozen means **change only with a correctness bug, real acceptance evidence, or 
 | MemoryRequest | `1c20c5c9aac36389b3ec8c93e3effaba6430b4469a4f56895cf50d37b49b91eb` |
 | MemoryCommitBatch | `50c8c9486faedafd732a25925ec4748e6d32127a6d4d7a790a7b0054eba7f842` |
 | CommittedMemory | `171f16260df62aa1a407fbedc3dddafb29e2ac8ba8ff6fcc40ea8ed11dfe7449` |
+
+## VALIDATION-001 — 契约对齐与兼容性
+
+仅修已记录的正确性问题，不改变上述架构：
+
+- 当前 Requirement / Planning / Plan Review / Writing / 两类 Quality Review 使用专用 versioned output envelopes，在 Pydantic Schema 中关闭 Runtime 原已禁止的操作数组；Planning 的合法 task-scoped proposal 保留。Provider、Parser、Service 与实际编译 Prompt 同一定义。旧 Schema/hash/Prompt 不覆盖。
+- 当前 closed output contract 固定匹配新增 Task Prompt；旧任务继续保留 CP 所选择的历史模板。故事/人物/知识仍经 ContextPackage，不进入 Prompt Library。
+- additive `0021_writing_output_contract` 仅更新既有 Writer evidence guard，支持 v1/v2 且精确等于绑定 Task 的 output schema；不新增表/列，不改旧 migration。历史 v1 和当前 v2 写入、populated downgrade/upgrade 均验证。
+- 现有名称 fallback 的 Latin/alnum identity 使用完整词边界，不再子串误匹配 `E`→`meets`、`Mira`→`miracle`，覆盖既有 NFKC 的 accented/decomposed/fullwidth 形式；保留 normalized 多词/标点等价别名，不跨结构化文本行拼接。project/版本/参与者/explicit-ID 边界保留。normalized 同名与字面 homonym 不做语义消歧；必要时使用既有 explicit ID，不引入新检索架构。
+
+Freshness 的 `STALE` 是 Context/source freshness，不是新增 TaskStatus：旧 pending 输入在 pre-IO 检查被 CONTEXT_STALE 阻断，Task FAILED / workflow C90_BLOCKED；模型不被调用。批准 API 不伪造立即写入的 TaskStatus.STALE。
+
+[VALIDATION-001 报告](../reports/VALIDATION-001-post-novel-014.md) 与 [Context Contract Matrix](14-Validation-Context-Contract-Matrix.md) 是本次证据入口。所有 FROZEN 都只针对当前工作区工程行为；E2E-001R / 013R / 014R PENDING。没有因真实验收未执行而虚报任何 AI 质量结论。
 
 ## Deferred candidates
 

@@ -1,0 +1,22 @@
+{
+  "module_id": "review-chapter-narrative",
+  "module_type": "TASK_TEMPLATE",
+  "version": 4,
+  "status": "STABLE",
+  "description": "Align typed output operations with existing runtime authority restrictions",
+  "content_path": "content.md",
+  "dependencies": [
+    {
+      "module_id": "novel-os-core",
+      "version": 1
+    }
+  ],
+  "compatible_agents": [
+    "A05_REVIEW"
+  ],
+  "compatible_task_types": [
+    "REVIEW_CHAPTER_NARRATIVE"
+  ],
+  "created_at": "2026-10-07T08:42:30.128969+00:00",
+  "content_hash": "43444652b071ca942dff9077f19f0a5b10b6a738d717735ae40182e46c76088e"
+}

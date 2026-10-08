@@ -1,0 +1,24 @@
+{
+  "module_id": "parse-chapter-requirement",
+  "module_type": "TASK_TEMPLATE",
+  "version": 4,
+  "status": "STABLE",
+  "description": "Align typed output operations with existing runtime authority restrictions",
+  "content_path": "content.md",
+  "dependencies": [
+    {
+      "module_id": "novel-os-core",
+      "version": 1
+    }
+  ],
+  "compatible_agents": [
+    "*"
+  ],
+  "compatible_task_types": [
+    "PARSE_CHAPTER_REQUIREMENT",
+    "PLAN_CHAPTER",
+    "REVIEW_CHAPTER_PLAN"
+  ],
+  "created_at": "2026-10-07T08:42:30.125275+00:00",
+  "content_hash": "9570e60ca1c82eeda83eaa01822dbffa5d0b60eb3b3ca0a60a593baf5930dc46"
+}

@@ -34,6 +34,37 @@ class PromptRuntime:
         expected_output_schema=None,
     ):
         definition = self.tasks.get(task_type, expected_output_schema)
+        closed_operation_tasks = {
+            "PARSE_CHAPTER_REQUIREMENT",
+            "PLAN_CHAPTER",
+            "REVIEW_CHAPTER_PLAN",
+            "WRITE_CHAPTER",
+            "REVIEW_CHAPTER_COMPLIANCE",
+            "REVIEW_CHAPTER_NARRATIVE",
+        }
+        if task_type in closed_operation_tasks and definition is self.tasks.get(task_type):
+            # Current envelopes require the aligned engineering output rule. The latest
+            # templates keep character tendencies conditional on supplied Context items.
+            definition = replace(
+                definition,
+                task_template=ModuleRef(
+                    module_id=definition.task_template.module_id,
+                    version=self.prompts.resolve(definition.task_template).module.version,
+                ),
+            )
+        elif (task_type, definition.output_schema.version) in {
+            ("PLAN_CHAPTER", 2),
+            ("REVIEW_CHAPTER_PLAN", 2),
+            ("WRITE_CHAPTER", 1),
+            ("REVIEW_CHAPTER_COMPLIANCE", 1),
+            ("REVIEW_CHAPTER_NARRATIVE", 2),
+        }:
+            # These previous envelopes selected a template from their saved ContextProfile.
+            # Retain that original route; older exact pins below still bypass selection.
+            definition = replace(
+                definition,
+                task_template=ModuleRef(module_id=definition.task_template.module_id),
+            )
         if task_type == "PLAN_CHAPTER" and definition.task_template.version is None:
             # A saved ContextProfile selects the immutable prompt contract. Historical
             # tasks retain v6; exploration-enabled Planning consumes selected inference.

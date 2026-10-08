@@ -115,7 +115,8 @@ BUSINESS_STAGE_TASKS = {
         "creative_brief",
         Capability.REPORT_RESULT,
         "AGENT_SUCCEEDED",
-        result_schema="chapter-requirement-result.v1",
+        result_schema="chapter-requirement-result.v2",
+        legacy_result_schema="chapter-requirement-result.v1",
     ),
     State.C04_CHAPTER_PLANNING: StageTaskMapping(
         "PLAN_CHAPTER",
@@ -124,8 +125,9 @@ BUSINESS_STAGE_TASKS = {
         "chapter_plan",
         Capability.PROPOSE_PLAN,
         "PLAN_READY",
-        result_schema="chapter-planning-result.v2",
+        result_schema="chapter-planning-result.v3",
         legacy_result_schema="chapter-planning-result.v1",
+        additional_legacy_schemas=("chapter-planning-result.v2",),
     ),
     State.C05_PLAN_REVIEW: StageTaskMapping(
         "REVIEW_CHAPTER_PLAN",
@@ -135,7 +137,8 @@ BUSINESS_STAGE_TASKS = {
         Capability.REVIEW,
         "PLAN_REVIEW_PASSED",
         "PLAN_REVIEW_FAILED",
-        "chapter-plan-review-result.v2",
+        "chapter-plan-review-result.v3",
+        legacy_result_schema="chapter-plan-review-result.v2",
     ),
 }
 EXPLORATION_TASK = StageTaskMapping(
@@ -155,7 +158,8 @@ WRITING_TASK = StageTaskMapping(
     "writing_result",
     Capability.PROPOSE_DRAFT,
     "DRAFT_READY",
-    result_schema="chapter-writing-result.v1",
+    result_schema="chapter-writing-result.v2",
+    legacy_result_schema="chapter-writing-result.v1",
 )
 QUALITY_STAGE_TASKS = {
     task: StageTaskMapping(
@@ -167,11 +171,16 @@ QUALITY_STAGE_TASKS = {
         "REVIEW_PASSED",
         "REVIEW_FAILED",
         schema,
-        "chapter-narrative-review.v1" if task == "REVIEW_CHAPTER_NARRATIVE" else None,
+        "chapter-narrative-review.v1"
+        if task == "REVIEW_CHAPTER_NARRATIVE"
+        else "chapter-compliance-review.v1",
+        additional_legacy_schemas=("chapter-narrative-review.v2",)
+        if task == "REVIEW_CHAPTER_NARRATIVE"
+        else (),
     )
     for task, kind, schema in (
-        ("REVIEW_CHAPTER_COMPLIANCE", "chapter_compliance_review", "chapter-compliance-review.v1"),
-        ("REVIEW_CHAPTER_NARRATIVE", "chapter_narrative_review", "chapter-narrative-review.v2"),
+        ("REVIEW_CHAPTER_COMPLIANCE", "chapter_compliance_review", "chapter-compliance-review.v2"),
+        ("REVIEW_CHAPTER_NARRATIVE", "chapter_narrative_review", "chapter-narrative-review.v3"),
     )
 }
 REVISION_STAGE_TASKS = {

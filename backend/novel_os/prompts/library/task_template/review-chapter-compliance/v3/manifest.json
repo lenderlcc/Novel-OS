@@ -1,0 +1,22 @@
+{
+  "module_id": "review-chapter-compliance",
+  "module_type": "TASK_TEMPLATE",
+  "version": 3,
+  "status": "STABLE",
+  "description": "Align typed output operations with existing runtime authority restrictions",
+  "content_path": "content.md",
+  "dependencies": [
+    {
+      "module_id": "novel-os-core",
+      "version": 1
+    }
+  ],
+  "compatible_agents": [
+    "A05_REVIEW"
+  ],
+  "compatible_task_types": [
+    "REVIEW_CHAPTER_COMPLIANCE"
+  ],
+  "created_at": "2026-10-07T08:42:30.128351+00:00",
+  "content_hash": "62cd7fa49ade49e3eb411a97b8d536412371dae895d3e885c989225e5ddf1a07"
+}

@@ -5,7 +5,7 @@ from uuid import UUID
 
 from pydantic import Field, model_validator
 
-from novel_os.agents.schemas import AgentResult, ArtifactText, StrictOutput
+from novel_os.agents.schemas import AgentResult, ArtifactText, Proposal, StrictOutput
 from novel_os.domain.writing import DeviationSeverity
 
 Text = Annotated[ArtifactText, Field(max_length=2000)]
@@ -98,3 +98,8 @@ class WritingResult(WritingMetadata):
 
 class WritingAgentResult(AgentResult):
     result: WritingResult
+
+
+class WritingAgentResultV2(WritingAgentResult):
+    proposed_changes: list[Proposal] = Field(max_length=0)
+    memory_proposals: list[Proposal] = Field(max_length=0)
