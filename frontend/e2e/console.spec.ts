@@ -1,5 +1,6 @@
 import { expect, test, type Page } from '@playwright/test'
 import { writeFile } from 'node:fs/promises'
+import type { Context, Lineage, Run, Task } from '../src/types/models'
 
 const raw = '两人在雨夜会合，约定沿河寻找失落的信件。不要新增核心能力。'
 async function createAndStart(page: Page, requirement = raw, loadCase = false) {
@@ -34,8 +35,22 @@ async function ready(page: Page) {
 }
 async function approve(page: Page) {
   await page.getByRole('button', { name: '批准并开始写作' }).click()
+  await currentDraftOne(page)
+}
+async function currentDraftOne(page: Page) {
   await expect(page.getByTestId('draft')).toBeVisible()
-  await expect(page.getByTestId('draft')).toContainText('Draft v1 · DRAFT')
+  const selector = page.getByLabel('正文版本', { exact: true })
+  await expect(selector).toHaveValue('1')
+  await expect(selector.locator('option:checked')).toHaveText('Draft v1 · 当前')
+  const { project, chapter } = await ids(page)
+  const chapterResponse = await page.request.get(`/api/v1/projects/${project}/chapters/${chapter}`)
+  expect(chapterResponse.ok()).toBeTruthy()
+  expect(await chapterResponse.json()).toMatchObject({ current_version: 1, approved_version: null })
+  const draftsResponse = await page.request.get(`/api/v1/projects/${project}/chapters/${chapter}/versions`)
+  expect(draftsResponse.ok()).toBeTruthy()
+  const drafts = await draftsResponse.json()
+  expect(drafts).toHaveLength(1)
+  expect(drafts[0]).toMatchObject({ version: 1, status: 'DRAFT' })
 }
 
  test('Case 01: load natural language → approval → Writing → reader, evaluation and exact lineage', async ({ page }) => {
@@ -65,14 +80,26 @@ async function approve(page: Page) {
   await page.getByRole('button', { name: 'Debug', exact: true }).click()
   await expect(page.locator('#debug-run')).not.toHaveValue('')
   await page.getByText('Context / Prompt', { exact: true }).click()
-  await expect(page.getByText('Compiled Prompt Hash', { exact: true })).toBeVisible()
-  await expect(page.getByText('CP-005 v5', { exact: true })).toBeVisible()
   const get = async (path: string) => { const response = await page.request.get('/api/v1' + path); expect(response.ok()).toBeTruthy(); return response.json() }
+  const tasks: Task[] = await get(`/workflows/${workflow}/agent-tasks`)
+  const writer = tasks.find(task => task.task_type === 'WRITE_CHAPTER')
+  expect(writer).toBeDefined()
+  const runs: Run[] = await get(`/agent-tasks/${writer!.task_id}/runs`)
+  const writerRun = runs.find(run => run.status === 'SUCCEEDED')
+  expect(writerRun).toBeDefined()
+  const context: Context = await get(`/agent-runs/${writerRun!.run_id}/context`)
+  const lineage: Lineage = await get(`/agent-runs/${writerRun!.run_id}/prompt-lineage`)
+  expect(context.package).toMatchObject({ profile_id: 'CP-005', profile_version: 7 })
+  await page.locator('#debug-run').selectOption(writerRun!.run_id)
+  await expect(page.getByText('Compiled Prompt Hash', { exact: true })).toBeVisible()
+  await expect(page.getByText('CP-005 v7', { exact: true })).toBeVisible()
+  await expect(page.locator('#debug-section')).toContainText(context.package.package_hash)
+  await expect(page.locator('#debug-section')).toContainText(lineage.compiled_prompt_hash)
   const snapshot = {
     workflow: await get(`/workflows/${workflow}`), chapter: await get(`/projects/${project}/chapters/${chapter}`),
     gates: await get(`/workflows/${workflow}/human-gates`), brief: await get(`/workflows/${workflow}/creative-brief`),
     plans: await get(`/projects/${project}/chapters/${chapter}/plans`), history: await get(`/workflows/${workflow}/planning/history`),
-    drafts: await get(`/projects/${project}/chapters/${chapter}/versions`), writing: await get(`/workflows/${workflow}/writing/history`), tasks: await get(`/workflows/${workflow}/agent-tasks`),
+    drafts: await get(`/projects/${project}/chapters/${chapter}/versions`), writing: await get(`/workflows/${workflow}/writing/history`), tasks,
   }
   await writeFile(test.info().outputPath('snapshot.json'), JSON.stringify(snapshot, null, 2))
   await page.screenshot({ path: test.info().outputPath('workspace-draft.png'), fullPage: true })
@@ -156,7 +183,7 @@ test('Draft reader remains bound to its workflow while current Plan changes', as
   const next = await page.request.post(`/api/v1/projects/${project}/chapters/${chapter}/plans`, { data: { expected_version: 1, objective: '下一版草案，不应替代批准方案', required_outcome: '保持已批准正文不变' } })
   expect(next.status()).toBe(201)
   await page.getByRole('button', { name: '刷新', exact: true }).click()
-  await expect(page.getByTestId('draft')).toContainText('Draft v1 · DRAFT')
+  await currentDraftOne(page)
   await expect(page.locator('main')).not.toContainText('下一版草案')
   await page.getByRole('button', { name: 'Debug', exact: true }).click()
   await expect(page.getByTestId('version-pointers')).toContainText('ChapterPlanv2v1')
