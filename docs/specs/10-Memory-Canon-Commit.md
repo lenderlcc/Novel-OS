@@ -38,7 +38,7 @@ Pydantic MemoryAgentResult 是 structured output 和 runtime 的同一 source of
 
 规范化对实体名/别名做 NFKC、大小写和标点标准化；明确同批别名在短名之前统一解析。复用已有 logical subject ID；模糊身份、跨类型重名、无法验证的别名和低置信度标为 AMBIGUOUS。value 比较保留小数点等有意义标点。新增实体名及别名必须在正文出现。身份判断的语义正确性仍需要模型提取和用户核对。
 
-低置信、uncertainty 或 Authority 阻断候选不参与同批身份合并。确认时复用相同规范化逻辑重新解析所选候选；若人物标识或别名与展示的提案不一致，拒绝提交并提示调整选择或返回重新整理，防止未选候选的身份依据被隐式写入。
+低置信、非 OPEN_THREAD 的 uncertainty 或 Authority 阻断候选不参与同批身份合并。OPEN_THREAD 的 uncertainty 可记录线索真伪未确认、约定的后续行动尚未发生等故事认知不确定性，本身不阻断身份解析；OPEN / PLANNED 仍保留在 A6 Derived 层，不晋升为已发生事实。实体身份歧义仍由 subject_ref.resolution=AMBIGUOUS、跨类型重名、多个匹配、标识不一致及无法验证的名称/别名阻断；Authority UNCERTAIN / CONFLICT 和低置信保护不变。确认时复用相同规范化逻辑重新解析所选候选；若人物标识或别名与展示的提案不一致，拒绝提交并提示调整选择或返回重新整理，防止未选候选的身份依据被隐式写入。
 
 每项必须对已提供的 approved/locked Requirement、Decision、Plan、锁定 ChapterVersion 和 A3 committed-memory 给出边界检查。选中的边界缺漏属于 SCHEMA_PARSE_ERROR；已确认冲突成为可见候选冲突，不静默覆盖。相同 subject/type/slot/value 为 DUPLICATE；明确 state_before 与旧值相符的状态变化为 STATE_TRANSITION；其他不同值为 CONTRADICTION。不同措辞/属性的语义矛盾由 A07 边界检查与人工确认补充，系统不声称能确定性理解任意自然语言。
 

@@ -1,0 +1,22 @@
+{
+  "module_id": "plan-chapter",
+  "module_type": "TASK_TEMPLATE",
+  "version": 11,
+  "status": "STABLE",
+  "description": "Distinguish chapter progression from prior known facts and expose material/length gaps within existing planning fields",
+  "content_path": "content.md",
+  "dependencies": [
+    {
+      "module_id": "novel-os-core",
+      "version": 1
+    }
+  ],
+  "compatible_agents": [
+    "A03_PLANNING"
+  ],
+  "compatible_task_types": [
+    "PLAN_CHAPTER"
+  ],
+  "created_at": "2026-10-11T08:30:00+00:00",
+  "content_hash": "42e9bb54118ebdc8b07877acac636888beaad843e450f020dfebc5e3ba8988b9"
+}

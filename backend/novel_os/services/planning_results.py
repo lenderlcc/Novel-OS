@@ -6,6 +6,7 @@ from novel_os.agents.planning_schemas import (
     ChapterPlanOutput,
     CreativeBriefOutput,
     HardGateIssue,
+    PlanningClarificationOutput,
     PlanReviewOutput,
 )
 from novel_os.domain.agents import ResultStatus, TaskStatus
@@ -105,14 +106,6 @@ class PlanningResultService:
         brief = self.current_brief(workflow)
         if (SourceType.CREATIVE_BRIEF, workflow.id, brief.version) not in source_keys:
             denied("Result must cite the exact current CreativeBrief")
-        if result.status != ResultStatus.SUCCESS or (
-            result.escalation and result.escalation.required
-        ):
-            denied("A planning artifact requires a successful bounded result")
-        parsed_brief = CreativeBriefOutput.model_validate(brief.body)
-        known_ids = {item.id for item in parsed_brief.constraints}
-        if any(item.constraint_id not in known_ids for item in output.requirement_coverage):
-            denied("Coverage cites an unknown Brief constraint")
         chapter = self.core.repo.get_chapter(workflow.project_id, workflow.chapter_id)
         VersionToken(workflow.plan_version or 0).check(chapter.current_plan_version or 0)
         if task.task_type == "PLAN_CHAPTER":
@@ -124,6 +117,19 @@ class PlanningResultService:
                 and (SourceType.EXTENSION, exploration.id, 1) not in source_keys
             ):
                 denied("Plan must cite its exact selected creative inference")
+        if isinstance(output, PlanningClarificationOutput):
+            if task.task_type != "PLAN_CHAPTER" or not locked_refs(package.items) <= source_keys:
+                denied("Planning clarification must cite every actual locked dependency")
+            return
+        if result.status != ResultStatus.SUCCESS or (
+            result.escalation and result.escalation.required
+        ):
+            denied("A planning artifact requires a successful bounded result")
+        parsed_brief = CreativeBriefOutput.model_validate(brief.body)
+        known_ids = {item.id for item in parsed_brief.constraints}
+        if any(item.constraint_id not in known_ids for item in output.requirement_coverage):
+            denied("Coverage cites an unknown Brief constraint")
+        if task.task_type == "PLAN_CHAPTER":
             pov = getattr(output, "pov_character_id", None)
             if pov is not None and not any(
                 i.selector_id == "memory-subjects"
@@ -204,6 +210,32 @@ class PlanningResultService:
             ],
         )
         output = result.result
+        if isinstance(output, PlanningClarificationOutput):
+            brief = self.current_brief(workflow)
+            self.core.repo.add(
+                AuditRecord(
+                    project_id=task.project_id,
+                    target_type=ObjectType.CHAPTER,
+                    target_id=task.target_ref,
+                    target_version=chapter.version,
+                    action=AuditAction.CREATE,
+                    actor_type=ActorType.AGENT,
+                    actor_id=task.agent_id.value,
+                    request_id=str(run.run_id),
+                    reason="Planning requires a user decision before producing an executable Plan",
+                    after={
+                        "task_id": str(task.task_id),
+                        "agent_run_id": str(run.run_id),
+                        "output_schema": task.expected_output_schema,
+                        "prompt_lineage_id": str(lineage.lineage_id),
+                        "context_package_id": str(package.context_package_id),
+                        "brief_id": str(brief.id),
+                        "brief_version": brief.version,
+                        **output.model_dump(mode="json"),
+                    },
+                )
+            )
+            return "BLOCK", {"reason": result.escalation.reason}, TaskStatus.BLOCKED
         event, payload, terminal = "AGENT_SUCCEEDED", {}, TaskStatus.SUCCEEDED
         if task.task_type == "PARSE_CHAPTER_REQUIREMENT":
             previous = self.repo.brief(workflow.id)

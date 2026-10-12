@@ -276,7 +276,9 @@ export function useConsole(client = api) {
   const sendFeedback = (raw: string, replyTo?: string) => mutate(async () => {
     const w = workflow.value, source = draft.value, s = snapshot.value
     const selectionAtRequest = selectionRevision
-    if (!w || !source || !raw.trim() || source.version !== s?.chapter.current_version || w.status !== 'WAITING_HUMAN' || !['C10_REVISION', 'C11_INTERNAL_PASS'].includes(w.current_state) || w.revision_request_id || w.human_feedback_id) throw new ApiError('STALE_VIEW', '请在当前正文的空闲状态提交修改要求。')
+    if (!w || !source || !s || !raw.trim() || source.version !== s.chapter.current_version ||
+      !s.drafts.some(item => item.id === source.id && item.version === s.chapter.current_version) ||
+      w.human_feedback_id || w.memory_request_id || s.tasks.some(task => task.workflow_instance_id === w.id && ['CLAIMED', 'RUNNING'].includes(task.status))) throw new ApiError('STALE_VIEW', '请在当前正文的空闲状态提交修改要求。')
     const config = await client.executionConfig(controller.signal)
     if (disposed || workflow.value?.id !== w.id) return
     executionConfig.value = config

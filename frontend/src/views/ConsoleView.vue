@@ -2,6 +2,7 @@
 import { computed, onMounted, ref, watch } from 'vue'
 import { useConsole } from '../composables/useConsole'
 import { useRevisionWorkspace } from '../composables/revisionWorkspace'
+import { currentTask, progressLabel } from '../composables/workflowState'
 import BriefView from '../components/BriefView.vue'
 import PlanView from '../components/PlanView.vue'
 import DraftView from '../components/DraftView.vue'
@@ -41,6 +42,9 @@ const requirementStage = computed(() => !workflow.value || state.value === 'C00_
 const processingStage = computed(() => /^C0[1-5]_/.test(state.value))
 const planStage = computed(() => state.value === 'C06_PLAN_APPROVAL')
 const writingStage = computed(() => state.value === 'C07_WRITING')
+const writingTask = computed(() => workflow.value ? currentTask(workflow.value, snapshot.value?.tasks ?? []) : undefined)
+const writingRunning = computed(() => workflow.value?.status === 'WAITING_AGENT' && writingTask.value?.task_type === 'WRITE_CHAPTER' && writingTask.value.status === 'RUNNING')
+const writingHeading = computed(() => workflow.value ? progressLabel(workflow.value, snapshot.value?.tasks ?? [], executionConfig.value) : '等待任务调度')
 const draftStage = computed(() => ['C08_DETERMINISTIC_CHECK', 'C09_INTERNAL_REVIEW', 'C10_REVISION', 'C11_INTERNAL_PASS', 'C13_USER_FEEDBACK_DIAGNOSIS', 'C14_MEMORY_PREPARATION', 'C15_MEMORY_COMMIT', 'C16_COMPLETED'].includes(state.value))
 const { qualityReview, revision, revising, historical, revisionMissingProfile, reviewNeedsRereview, canRevise,
   revisionForDraft, revisionNeedsRereview, fidelityFailed, contextBudgetBlocked, revisionPlanningFailed, revisionEvidenceFailed, blockedReasons, revisionStopped, reviewPending, revisionHeading,
@@ -192,7 +196,15 @@ onMounted(initialize)
           <p v-else class="notice">正在查看历史方案。返回当前方案后才能操作。</p>
         </section>
 
-        <section v-else-if="writingStage" class="writing-workspace"><div class="writing-indicator" aria-hidden="true">···</div><h2>AI 正在写作…</h2><p>需求、方案和审批已经完成。正文生成可能需要一些时间。</p></section>
+        <section v-else-if="writingStage" class="writing-workspace" role="status">
+          <div v-if="writingRunning" class="writing-indicator" aria-hidden="true">···</div>
+          <h2>{{ writingRunning ? 'AI 正在写作…' : writingHeading }}</h2>
+          <p v-if="writingRunning">需求、方案和审批已经完成。正文生成可能需要一些时间。</p>
+          <p v-else-if="workflow?.status === 'PAUSED'">正文生成已暂停，现有内容已保留。</p>
+          <p v-else-if="writingTask?.status === 'PENDING' && !writingEnabled">正文任务未在当前执行范围内。请调整设置后刷新。</p>
+          <p v-else-if="writingTask?.status === 'CLAIMED'">后台已领取正文任务，正在准备执行。</p>
+          <p v-else>尚未开始生成正文。后台执行后，页面会自动更新。</p>
+        </section>
 
         <section v-else-if="(draftStage || revising || /^C9/.test(state)) && draft">
           <section v-if="revising" class="quality-review" aria-label="修改进度">
@@ -211,7 +223,7 @@ onMounted(initialize)
           <DraftView :draft="draft" :chapter-number="currentChapter.sequence" :versions="snapshot?.drafts" :current-version="currentBackendVersion" :review-href="qualityReview ? '#quality-heading' : undefined" @select-version="selectedDraft = $event" @evaluate="openEvaluation">
             <template #before-prose>
               <MemoryCompletion v-if="workflow && snapshot && [3, 4].includes(workflow.workflow_definition_version)" :workflow="workflow" :draft="draft" :current-version="snapshot.chapter.current_version" :memory="snapshot.memory?.find(m => m.request.id === workflow?.memory_request_id)" :disabled="disabled || conflict" @request="completeChapter" @confirm="confirmMemory" @discard="discardMemory" />
-              <HumanFeedback v-if="snapshot && workflow && [3, 4].includes(workflow.workflow_definition_version) && !workflow.memory_request_id && workflow.status !== 'COMPLETED'" :key="workflow.id" :snapshot="snapshot" :draft="draft" :disabled="disabled || conflict" @send="sendFeedback" @discard="discardFeedback" @open-profile="profileOpen = true" @replan="replan" @cancel="control('cancel', '用户取消本次反馈修改流程')" />
+              <HumanFeedback v-if="snapshot && workflow && [3, 4].includes(workflow.workflow_definition_version) && !workflow.memory_request_id && workflow.status !== 'COMPLETED'" :key="workflow.id" :snapshot="snapshot" :draft="draft" :config="executionConfig" :disabled="disabled || conflict" @send="sendFeedback" @discard="discardFeedback" @open-profile="profileOpen = true" @replan="replan" @cancel="control('cancel', '用户取消本次反馈修改流程')" />
               <section v-if="revisionForDraft?.result" class="quality-review"><h2>此版本的修改内容</h2><ul><li v-for="(change, index) in revisionForDraft.result.body.declared_changes" :key="index">{{ change }}</li></ul><p>是否改善请结合重新审阅结果和正文判断。</p></section>
               <QualityReview :review="qualityReview" :pending="reviewPending" :rereviewing="revising" />
               <p v-if="!workflow || ![3, 4].includes(workflow.workflow_definition_version)" class="notice">此章节使用旧版创作流程，尚未接入正文审阅与修改。原稿可以继续阅读和人工评价。</p>

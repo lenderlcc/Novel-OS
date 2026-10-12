@@ -3,7 +3,9 @@
 from dataclasses import asdict, fields
 
 from sqlalchemy import select
+from sqlalchemy.orm import aliased
 
+from novel_os.domain.core import ChapterVersion
 from novel_os.domain.errors import DomainError
 from novel_os.domain.quality import QualityBinding
 from novel_os.domain.revision import (
@@ -12,6 +14,7 @@ from novel_os.domain.revision import (
     RevisionRequest,
     RevisionResult,
 )
+from novel_os.models.core import ChapterVersionModel
 from novel_os.models.quality import QualityBindingModel
 from novel_os.models.revision import (
     RevisionCandidateModel,
@@ -19,6 +22,7 @@ from novel_os.models.revision import (
     RevisionRequestModel,
     RevisionResultModel,
 )
+from novel_os.repositories.core import to_domain
 
 MODELS = {
     RevisionRequest: RevisionRequestModel,
@@ -51,6 +55,40 @@ class RevisionRepository:
         model = MODELS[kind]
         return self.entity(
             self.session.scalar(select(model).where(model.request_id == request_id)), kind
+        )
+
+    def review_evidence(self, project_id, chapter_id, workflow_id, target_version):
+        """The revision that produced this exact Draft, regardless of active request."""
+        source, target = aliased(ChapterVersionModel), aliased(ChapterVersionModel)
+        rows = self.session.execute(
+            select(RevisionRequestModel, RevisionPlanModel, RevisionResultModel, source)
+            .join(RevisionPlanModel, RevisionPlanModel.request_id == RevisionRequestModel.id)
+            .join(
+                RevisionResultModel,
+                (RevisionResultModel.request_id == RevisionRequestModel.id)
+                & (RevisionResultModel.revision_plan_id == RevisionPlanModel.id),
+            )
+            .join(target, target.id == RevisionResultModel.chapter_version_id)
+            .join(source, source.id == RevisionRequestModel.source_chapter_version_id)
+            .where(
+                RevisionRequestModel.project_id == project_id,
+                RevisionRequestModel.chapter_id == chapter_id,
+                RevisionRequestModel.workflow_id == workflow_id,
+                target.project_id == project_id,
+                target.chapter_id == chapter_id,
+                target.version == target_version,
+                source.project_id == project_id,
+                source.chapter_id == chapter_id,
+            )
+        ).one_or_none()
+        if rows is None:
+            return None
+        request, plan, result, source_row = rows
+        return (
+            self.entity(request, RevisionRequest),
+            self.entity(plan, RevisionPlan),
+            self.entity(result, RevisionResult),
+            to_domain(source_row, ChapterVersion),
         )
 
     def history_bundles(self, workflow_id, limit, offset):

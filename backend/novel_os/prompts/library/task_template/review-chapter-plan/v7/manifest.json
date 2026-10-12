@@ -1,0 +1,22 @@
+{
+  "module_id": "review-chapter-plan",
+  "module_type": "TASK_TEMPLATE",
+  "version": 7,
+  "status": "STABLE",
+  "description": "Review actual chapter progression and material/length gaps as bounded quality advice, preserving authority and hard gates",
+  "content_path": "content.md",
+  "dependencies": [
+    {
+      "module_id": "novel-os-core",
+      "version": 1
+    }
+  ],
+  "compatible_agents": [
+    "A05_REVIEW"
+  ],
+  "compatible_task_types": [
+    "REVIEW_CHAPTER_PLAN"
+  ],
+  "created_at": "2026-10-11T08:30:00+00:00",
+  "content_hash": "2d2e7c5da203e9560249d24499fc0b17694e7e9a82e57297ed78f3d07ca34341"
+}

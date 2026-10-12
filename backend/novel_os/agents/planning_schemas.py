@@ -287,13 +287,40 @@ class PlanningAgentResultV3(PlanningAgentResult):
     memory_proposals: list[Proposal] = Field(max_length=0)
 
 
+class PlanningClarificationOutput(StrictOutput):
+    kind: Literal["planning_clarification"]
+    unresolved_ambiguities: list[Ambiguity] = Field(min_length=1, max_length=20)
+    source_refs: list[EvidenceRef] = Field(min_length=1, max_length=MAX_REFERENCES)
+
+
+class PlanningAgentResultV4(AgentResult):
+    result: Annotated[ChapterPlanOutput | PlanningClarificationOutput, Field(discriminator="kind")]
+    memory_proposals: list[Proposal] = Field(max_length=0)
+
+    @model_validator(mode="after")
+    def bounded_disposition(self):
+        if isinstance(self.result, PlanningClarificationOutput):
+            if (
+                self.status != "NEEDS_HUMAN"
+                or not self.escalation
+                or not self.escalation.required
+                or not self.escalation.reason.strip()
+                or not any(a.requires_decision for a in self.result.unresolved_ambiguities)
+                or self.proposed_changes
+            ):
+                raise ValueError("Planning clarification requires an unsafe high-impact decision")
+        elif self.status != "SUCCESS" or (self.escalation and self.escalation.required):
+            raise ValueError("An executable Plan requires SUCCESS without escalation")
+        return self
+
+
 class PlanReviewAgentResultV3(PlanReviewAgentResult):
     memory_proposals: list[Proposal] = Field(max_length=0)
 
 
 BUSINESS_RESULTS = {
     "PARSE_CHAPTER_REQUIREMENT": ("chapter-requirement-result", RequirementAgentResultV2),
-    "PLAN_CHAPTER": ("chapter-planning-result", PlanningAgentResultV3),
+    "PLAN_CHAPTER": ("chapter-planning-result", PlanningAgentResultV4),
     "REVIEW_CHAPTER_PLAN": ("chapter-plan-review-result", PlanReviewAgentResultV3),
 }
 
@@ -301,6 +328,7 @@ LEGACY_BUSINESS_RESULTS = {
     ("PARSE_CHAPTER_REQUIREMENT", "chapter-requirement-result.v1"): (RequirementAgentResult, 3),
     ("PLAN_CHAPTER", "chapter-planning-result.v1"): (LegacyPlanningAgentResult, 5),
     ("PLAN_CHAPTER", "chapter-planning-result.v2"): (PlanningAgentResult, 9),
+    ("PLAN_CHAPTER", "chapter-planning-result.v3"): (PlanningAgentResultV3, 11),
     ("REVIEW_CHAPTER_PLAN", "chapter-plan-review-result.v2"): (PlanReviewAgentResult, 5),
 }
 
@@ -349,5 +377,5 @@ def result_model(task_type, output_schema=None):
 BUSINESS_SCHEMA_VERSIONS = {
     "PARSE_CHAPTER_REQUIREMENT": 2,
     "REVIEW_CHAPTER_PLAN": 3,
-    "PLAN_CHAPTER": 3,
+    "PLAN_CHAPTER": 4,
 }

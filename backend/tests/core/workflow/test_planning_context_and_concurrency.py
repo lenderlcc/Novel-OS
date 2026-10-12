@@ -31,6 +31,21 @@ def test_previous_approved_body_and_exact_brief_are_selected(
             post(core_client, chapter_api + "/versions/approve", {"expected_version": 2})
     project = chapter_api.split("/chapters/")[0]
     target = chapter(core_client, project, 2)
+    future = chapter(core_client, project, 3)
+    post(
+        core_client,
+        future + "/versions",
+        {"expected_version": 0, "content": "Future body", "change_reason": "Future isolation"},
+    )
+    post(core_client, future + "/versions/approve", {"expected_version": 1})
+    other_project = post(core_client, "/api/v1/projects", {"name": "Unrelated history"})
+    foreign = chapter(core_client, "/api/v1/projects/" + other_project["id"], 1)
+    post(
+        core_client,
+        foreign + "/versions",
+        {"expected_version": 0, "content": "Foreign body", "change_reason": "Project isolation"},
+    )
+    post(core_client, foreign + "/versions/approve", {"expected_version": 1})
     d = PlanningDriver(core_client, target)
     provider = RecordedProvider()
     run_one(core_database, d, provider=provider)
@@ -47,7 +62,16 @@ def test_previous_approved_body_and_exact_brief_are_selected(
     )
     briefs = [item for item in package.items if item.source_type == "CREATIVE_BRIEF"]
     assert len(briefs) == 1 and briefs[0].priority == "P0"
-    assert package.profile_id == "CP-004" and package.profile_version == 3
+    assert package.profile_id == "CP-004" and package.profile_version == 8
+    run_one(core_database, d, provider=provider)
+    review_package = provider.requests[2].context_package
+    history = [i for i in review_package.items if i.source_type == "CHAPTER_VERSION"]
+    assert review_package.profile_id == "CP-004R" and review_package.profile_version == 5
+    assert len(history) == 1 and history[0].priority == "P0"
+    assert history[0].source_version == 2
+    assert history[0].structured_payload["content"] == "Body v2"
+    assert str(history[0].logical_id) == chapter_api.split("/")[-1]
+    assert d.workflow["current_state"] == "C06_PLAN_APPROVAL"
 
 
 def test_locked_decision_is_p0_and_omission_blocks_plan(planning_driver, core_database):

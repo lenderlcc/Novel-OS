@@ -1,0 +1,22 @@
+{
+  "module_id": "validate-revision-fidelity",
+  "module_type": "TASK_TEMPLATE",
+  "version": 7,
+  "status": "STABLE",
+  "description": "Require literal evidence spans without invented quotation boundaries",
+  "content_path": "content.md",
+  "dependencies": [
+    {
+      "module_id": "novel-os-core",
+      "version": 1
+    }
+  ],
+  "compatible_agents": [
+    "A05_REVIEW"
+  ],
+  "compatible_task_types": [
+    "VALIDATE_REVISION_FIDELITY"
+  ],
+  "created_at": "2026-10-11T00:00:00Z",
+  "content_hash": "a3eb8b8e061d9474d2a589d3cd2d43d141498cf3bac1f1204eaa477229c339fd"
+}

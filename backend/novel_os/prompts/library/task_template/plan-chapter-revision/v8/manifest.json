@@ -1,0 +1,22 @@
+{
+  "module_id": "plan-chapter-revision",
+  "module_type": "TASK_TEMPLATE",
+  "version": 8,
+  "status": "STABLE",
+  "description": "Clarify contract-bound strength preservation and risk references without changing authority",
+  "content_path": "content.md",
+  "dependencies": [
+    {
+      "module_id": "novel-os-core",
+      "version": 1
+    }
+  ],
+  "compatible_agents": [
+    "A06_REVISION"
+  ],
+  "compatible_task_types": [
+    "PLAN_CHAPTER_REVISION"
+  ],
+  "created_at": "2026-10-10T00:00:00Z",
+  "content_hash": "837b1e663eec754b78e3f1564e3c0045930cf8180698636d3b0044b1d93164cb"
+}

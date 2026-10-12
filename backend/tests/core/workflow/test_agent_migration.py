@@ -10,8 +10,35 @@ pytestmark = pytest.mark.integration
 
 def snapshot(connection):
     return {
-        name: connection.execute(select(table).order_by(*table.primary_key)).mappings().all()
+        name: connection.execute(
+            select(
+                *[
+                    c
+                    for c in table.c
+                    if c.name
+                    not in {"revision_request_id", "human_feedback_id", "memory_request_id"}
+                ]
+            ).order_by(*table.primary_key)
+        )
+        .mappings()
+        .all()
         for name, table in Base.metadata.tables.items()
+        if name
+        not in {
+            "human_feedback",
+            "human_feedback_interpretations",
+            "memory_requests",
+            "memory_commit_proposals",
+            "memory_commit_batches",
+            "memory_subjects",
+            "committed_memory",
+            "creative_explorations",
+            "character_behavior_profiles",
+        }
+        if name
+        not in {"revision_requests", "revision_plans", "revision_results", "revision_candidates"}
+        if name
+        not in {"quality_review_bindings", "quality_review_passes", "chapter_quality_reviews"}
         if name
         not in {
             "agent_tasks",
@@ -23,6 +50,7 @@ def snapshot(connection):
             "plan_review_reports",
             "writing_task_bindings",
             "writing_generations",
+            "project_writing_profiles",
         }
     }
 
@@ -46,7 +74,7 @@ def test_0005_roundtrip_preserves_core_workflow_audit_and_worker_recovers_waitin
         assert snapshot(connection) == before
         command.upgrade(migration_config, "head")
         assert connection.scalar(text("SELECT version_num FROM alembic_version")) == (
-            "0009_writing_agent"
+            "0022_feedback_before_review"
         )
         assert connection.scalar(text("SELECT count(*) FROM agent_tasks")) == 0
         assert snapshot(connection) == before

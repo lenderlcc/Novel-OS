@@ -7,8 +7,6 @@ from threading import Barrier
 from uuid import UUID, uuid4
 
 import pytest
-from agent_test_support import claim, complete, pending_task, task_record
-from agent_test_support import start as start_lease
 from sqlalchemy import inspect, select, text
 from sqlalchemy.exc import IntegrityError
 
@@ -26,6 +24,8 @@ from novel_os.repositories.context_packages import ContextPackageRepository
 from novel_os.repositories.core import CoreRepository
 from novel_os.services.context import ContextService
 from novel_os.worker import AgentWorker
+from tests.core.workflow.agent_test_support import claim, complete, pending_task, task_record
+from tests.core.workflow.agent_test_support import start as start_lease
 
 pytestmark = pytest.mark.integration
 
@@ -379,8 +379,45 @@ def test_context_migration_roundtrip_preserves_all_preexisting_tables(
 
     def snapshot(connection):
         return {
-            name: connection.execute(select(table).order_by(*table.primary_key)).mappings().all()
+            name: connection.execute(
+                select(
+                    *[
+                        c
+                        for c in table.c
+                        if c.name
+                        not in {
+                            "revision_request_id",
+                            "human_feedback_id",
+                            "memory_request_id",
+                            "report_character_id",
+                        }
+                    ]
+                ).order_by(*table.primary_key)
+            )
+            .mappings()
+            .all()
             for name, table in Base.metadata.tables.items()
+            if name
+            not in {
+                "human_feedback",
+                "human_feedback_interpretations",
+                "memory_requests",
+                "memory_commit_proposals",
+                "memory_commit_batches",
+                "memory_subjects",
+                "committed_memory",
+                "creative_explorations",
+                "character_behavior_profiles",
+            }
+            if name
+            not in {
+                "revision_requests",
+                "revision_plans",
+                "revision_results",
+                "revision_candidates",
+            }
+            if name
+            not in {"quality_review_bindings", "quality_review_passes", "chapter_quality_reviews"}
             if name
             not in {
                 "context_packages",
@@ -389,6 +426,7 @@ def test_context_migration_roundtrip_preserves_all_preexisting_tables(
                 "plan_review_reports",
                 "writing_task_bindings",
                 "writing_generations",
+                "project_writing_profiles",
             }
         }
 
@@ -407,7 +445,7 @@ def test_context_migration_roundtrip_preserves_all_preexisting_tables(
         command.upgrade(migration_config, "head")
         assert (
             connection.scalar(text("SELECT version_num FROM alembic_version"))
-            == "0009_writing_agent"
+            == "0022_feedback_before_review"
         )
         assert snapshot(connection) == before
         assert connection.scalar(text("SELECT count(*) FROM context_packages")) == 0

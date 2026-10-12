@@ -12,16 +12,50 @@ ITEM_ADAPTER = TypeAdapter(ContextItem)
 REQUEST_ADAPTER = TypeAdapter(ContextRequest)
 
 
-def item_data(item):
+def item_data(item, *, deduplicate_plan=False):
     data = ITEM_ADAPTER.dump_python(item, mode="json")
     data["structured_payload"] = data.pop("payload_json")
     data["structured_payload"] = item.structured_payload
+    if deduplicate_plan and item.source_type.value == "CHAPTER_PLAN":
+        payload = data["structured_payload"]
+        planning = payload.get("planning")
+        if isinstance(planning, dict):
+            for name, value in tuple(payload.items()):
+                target = name
+                if target not in planning and name == "scene_plans":
+                    target = "scenes"
+                if name == "planning" or target not in planning:
+                    continue
+                if canonical(value) == canonical(planning[target]):
+                    del payload[name]
+                    continue
+                if (
+                    name in {"character_progression", "plot_progression"}
+                    and isinstance(value, dict)
+                    and set(value) == {"items"}
+                ):
+                    value = value["items"]
+                elif (
+                    name == "ending_state"
+                    and isinstance(value, dict)
+                    and set(value) == {"description"}
+                ):
+                    value = value["description"]
+                if canonical(value) == canonical(planning[target]):
+                    del payload[name]
     return data
 
 
 class ContextSerializer:
     @staticmethod
     def payload(request, profile, items, package_hash="0" * 64):
+        # Version the model projection; historical snapshots and prompt hashes retain
+        # their original shape. Token budgeting and final prompts share this path.
+        deduplicate_plan = (
+            request.task_type == "WRITE_CHAPTER"
+            and profile.profile_id == "CP-005"
+            and profile.version >= 8
+        )
         return {
             "context_package_hash": package_hash,
             "profile": {
@@ -32,7 +66,7 @@ class ContextSerializer:
             "task_id": str(request.task_id),
             "chapter_id": str(request.chapter_id),
             "future_knowledge_policy": profile.future_knowledge_policy.value,
-            "items": [item_data(item) for item in items],
+            "items": [item_data(item, deduplicate_plan=deduplicate_plan) for item in items],
         }
 
     @classmethod

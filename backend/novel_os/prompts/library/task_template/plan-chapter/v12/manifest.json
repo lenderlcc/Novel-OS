@@ -1,0 +1,22 @@
+{
+  "module_id": "plan-chapter",
+  "module_type": "TASK_TEMPLATE",
+  "version": 12,
+  "status": "STABLE",
+  "description": "Versioned executable Plan or consequential clarification contract, with prior-history comparison and bounded material/POV decisions",
+  "content_path": "content.md",
+  "dependencies": [
+    {
+      "module_id": "novel-os-core",
+      "version": 1
+    }
+  ],
+  "compatible_agents": [
+    "A03_PLANNING"
+  ],
+  "compatible_task_types": [
+    "PLAN_CHAPTER"
+  ],
+  "created_at": "2026-10-11T10:00:00+00:00",
+  "content_hash": "f1a8655fb829c9025d829d1ea9aaa594f6e69876834d783405dc88ce2cf43703"
+}

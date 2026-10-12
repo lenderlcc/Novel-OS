@@ -1,0 +1,22 @@
+{
+  "module_id": "interpret-chapter-feedback",
+  "module_type": "TASK_TEMPLATE",
+  "version": 4,
+  "status": "STABLE",
+  "description": "Require literal user substrings without added evidence presentation quotes",
+  "content_path": "content.md",
+  "dependencies": [
+    {
+      "module_id": "novel-os-core",
+      "version": 1
+    }
+  ],
+  "compatible_agents": [
+    "A02_REQUIREMENT"
+  ],
+  "compatible_task_types": [
+    "INTERPRET_CHAPTER_FEEDBACK"
+  ],
+  "created_at": "2026-10-08T00:00:00Z",
+  "content_hash": "7ffe9cf96ad2e647d341e115cab7e94e6a5950f23ee4ed083b6c9499a942d075"
+}

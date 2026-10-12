@@ -117,6 +117,12 @@ def classify(candidate, existing):
     return MemoryConflict.CONTRADICTION
 
 
+def blocking_uncertainty(candidate):
+    # An open thread records an unresolved claim or future action, not a confirmed fact.
+    # Identity uncertainty remains subject_ref.resolution / resolve_subject's responsibility.
+    return None if candidate.candidate_type == MemoryType.OPEN_THREAD else candidate.uncertainty
+
+
 def resolve_batch_subjects(output, subjects, project_id, content):
     resolved = list(subjects)
     identities = {}
@@ -126,7 +132,7 @@ def resolve_batch_subjects(output, subjects, project_id, content):
     ):
         # An uncertain/blocked claim cannot establish another candidate's identity.
         if (
-            candidate.uncertainty
+            blocking_uncertainty(candidate)
             or candidate.confidence < 0.6
             or any(check.outcome != "COMPATIBLE" for check in candidate.authority_checks)
         ):
@@ -184,8 +190,9 @@ def normalize_candidates(output, *, project_id, chapter_id, content, subjects, l
             previous is None or previous.id != candidate.existing_entry_id
         ):
             ambiguity = "引用的记忆与实体、类型或属性不一致。"
-        if candidate.uncertainty or candidate.confidence < 0.6:
-            ambiguity = candidate.uncertainty or "提取确定性不足。"
+        uncertainty = blocking_uncertainty(candidate)
+        if uncertainty or candidate.confidence < 0.6:
+            ambiguity = uncertainty or "提取确定性不足。"
         if ambiguity:
             conflict, reason = MemoryConflict.AMBIGUOUS, ambiguity
         checks = candidate.authority_checks

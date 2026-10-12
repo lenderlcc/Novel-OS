@@ -1,7 +1,9 @@
 """OpenAI Responses HTTP adapter. Credentials, native options and errors stay here."""
 
 import json
+import logging
 import time
+from contextlib import suppress
 
 import httpx
 from pydantic import SecretStr
@@ -14,6 +16,8 @@ from novel_os.providers.base import (
     ProviderError,
     TokenUsage,
 )
+
+logger = logging.getLogger(__name__)
 
 
 def native_schema(node):
@@ -97,10 +101,12 @@ class OpenAIAdapter:
 
     @staticmethod
     def response(body, request, latency_ms, *, provider_id="openai"):
+        failure_reason = "malformed_response"
         try:
             if not isinstance(body, dict):
                 raise ValueError
             if body.get("error"):
+                failure_reason = "provider_reported_error"
                 raise OpenAIAdapter.error(200, body)
             output = body.get("output", [])
             contents = [
@@ -110,18 +116,27 @@ class OpenAIAdapter:
                 for part in item.get("content", [])
             ]
             if any(part.get("type") == "refusal" for part in contents):
+                failure_reason = "content_refusal"
                 raise ProviderError("MODEL_CONTENT_BLOCKED")
             if body.get("status") == "incomplete":
                 details = body.get("incomplete_details") or {}
+                reason = details.get("reason")
+                failure_reason = (
+                    "incomplete_" + reason
+                    if isinstance(reason, str) and reason in {"max_output_tokens", "content_filter"}
+                    else "incomplete_other"
+                )
                 raise ProviderError(
                     "MODEL_CONTENT_BLOCKED"
                     if details.get("reason") == "content_filter"
                     else "MODEL_OUTPUT_INVALID"
                 )
             if body.get("status") != "completed":
+                failure_reason = "response_not_completed"
                 raise ProviderError("MODEL_PROVIDER_ERROR")
             text = "".join(part["text"] for part in contents if part.get("type") == "output_text")
             if not text:
+                failure_reason = "empty_output"
                 raise ValueError
             usage = body.get("usage") or {}
             # Response/header IDs, arbitrary metadata and echoed model names are not trusted.
@@ -134,7 +149,20 @@ class OpenAIAdapter:
                 ),
                 latency_ms=latency_ms,
             )
-        except (ValueError, KeyError, TypeError, AttributeError):
+        except (ProviderError, ValueError, KeyError, TypeError, AttributeError) as exc:
+            # Only fixed reason labels reach logs, never response bodies or messages.
+            # A diagnostic sink failure must not alter a completed paid attempt.
+            with suppress(Exception):
+                logger.warning(
+                    "model_response_rejected",
+                    extra={
+                        "request_id": str(request.task_id),
+                        "error_type": failure_reason,
+                        "duration_ms": latency_ms,
+                    },
+                )
+            if isinstance(exc, ProviderError):
+                raise
             raise ProviderError("MODEL_OUTPUT_INVALID") from None
 
 

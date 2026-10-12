@@ -167,6 +167,18 @@ class AgentTaskRepository:
         )
         return [to_domain(row, AgentTask) for row in rows]
 
+    def has_inflight(self, workflow_id):
+        return self.session.scalar(
+            select(
+                select(AgentTaskModel.task_id)
+                .where(
+                    AgentTaskModel.workflow_instance_id == workflow_id,
+                    AgentTaskModel.status.in_(ACTIVE),
+                )
+                .exists()
+            )
+        )
+
     def list_tasks(self, workflow_id, limit=100, offset=0):
         rows = self.session.scalars(
             select(AgentTaskModel)

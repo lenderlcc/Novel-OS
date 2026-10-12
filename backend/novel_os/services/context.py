@@ -72,7 +72,11 @@ class ContextService:
             from novel_os.services.exploration_policy import supports_exploration
 
             workflow = WorkflowRepository(self.session).get(task.workflow_instance_id)
-            return self.registry.resolve("CP-004", 9 if supports_exploration(workflow) else 8)
+            if supports_exploration(workflow):
+                version = 10 if task.expected_output_schema == "chapter-planning-result.v4" else 9
+            else:
+                version = 8
+            return self.registry.resolve("CP-004", version)
         if task.task_type == "EXTRACT_CHAPTER_MEMORY":
             from novel_os.domain.memory import MemoryRequest
             from novel_os.repositories.memory import MemoryRepository

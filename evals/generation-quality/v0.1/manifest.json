@@ -1,0 +1,76 @@
+{
+  "status": "PREPARED_NOT_RUN",
+  "real_model_calls": 0,
+  "formal_chapter_mutations": 0,
+  "baseline_root": "/Users/agiuser/novel-os/Novel-OS/backend/.runtime/generation-quality-20261011",
+  "baseline_manifest_sha256": "86c9b4f5214be26316043a1a5b020d6e7190b651fb8217b6dac48ce23e9cbedb",
+  "historical_prompt_reconstruction": "2/2 EXACT_HASH_MATCH",
+  "cases": [
+    {
+      "case_id": "chapter02",
+      "project_id": "688d6d8a-e6ae-4197-a320-c3cc1b81bf32",
+      "chapter_id": "749f1271-6897-4797-9e58-e2d1da271a7b",
+      "source_draft_id": "8d7a9b11-f48f-4594-99ef-13219d0f2e26",
+      "current_version": 5,
+      "revision_count": 4,
+      "writer_run_id": "f1b4e862-67a0-4400-8299-5790a452408a",
+      "writer_prompt_hash": "11644bd46d61cdf5f58ac888599dc6bf84da42ff87d7d5b2c0424810cd3bd24c",
+      "context_hash": "bda74d774eb314aa08497cdb169a8c909f8de78dc60d23bedfd7b3416a640716",
+      "model_profile": {
+        "profile_id": "lingzhi-structured",
+        "provider": "lingzhi",
+        "model": "gpt-5.6-sol",
+        "capabilities": [
+          "text",
+          "structured_output"
+        ],
+        "structured_output": true,
+        "stream_support": false,
+        "timeout_seconds": 300.0,
+        "max_output_tokens": 8192,
+        "generation": {
+          "temperature": null
+        }
+      },
+      "model_profile_hash": "9ae0b152887db3ea647ff150774605278c53953702322e1cde08dc0cbc5bec47",
+      "approved_profile_id": "688d6d8a-e6ae-4197-a320-c3cc1b81bf32",
+      "approved_profile_version": 3,
+      "approved_profile_hash": "ea711d16a708b30fb53c3e09e9b284c3dff0dd754b90184611769c34706e77e2",
+      "comparison_draft_version": 1,
+      "human_prose_evaluation": "NOT_RUN"
+    },
+    {
+      "case_id": "untouched-chapter06",
+      "project_id": "23c028ee-cd94-4965-af85-731e560c9633",
+      "chapter_id": "5c8f382e-81eb-4dfa-bd9d-005a7e8c8be1",
+      "source_draft_id": "09cd9d2f-9578-49d9-8c16-e60b307b4381",
+      "current_version": 1,
+      "revision_count": 0,
+      "writer_run_id": "6691ded9-ddc9-44bc-b1f4-059dd77619ba",
+      "writer_prompt_hash": "1fc4773f2cc631bdbac3d7b91eba1ac689ddd51e301038fcfd1bc07a66ebd161",
+      "context_hash": "d37b8c679a54e389517dd703be18f9dcb8ab319cbd6ac6eb424ac3a149418760",
+      "model_profile": {
+        "profile_id": "lingzhi-structured",
+        "provider": "lingzhi",
+        "model": "gpt-5.6-sol",
+        "capabilities": [
+          "text",
+          "structured_output"
+        ],
+        "structured_output": true,
+        "stream_support": false,
+        "timeout_seconds": 300.0,
+        "max_output_tokens": 8192,
+        "generation": {
+          "temperature": null
+        }
+      },
+      "model_profile_hash": "9ae0b152887db3ea647ff150774605278c53953702322e1cde08dc0cbc5bec47",
+      "approved_profile_id": "23c028ee-cd94-4965-af85-731e560c9633",
+      "approved_profile_version": 2,
+      "approved_profile_hash": "65b5845a46d30da3db6f4fe5950029442c918035f8b7031bae8db4a6cede7ff3",
+      "comparison_draft_version": 1,
+      "human_prose_evaluation": "NOT_RUN"
+    }
+  ]
+}

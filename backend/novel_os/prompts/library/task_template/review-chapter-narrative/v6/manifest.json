@@ -1,0 +1,22 @@
+{
+  "module_id": "review-chapter-narrative",
+  "module_type": "TASK_TEMPLATE",
+  "version": 6,
+  "status": "STABLE",
+  "description": "Calibrate prose function and adjacent causal evidence without changing quality authority",
+  "content_path": "content.md",
+  "dependencies": [
+    {
+      "module_id": "novel-os-core",
+      "version": 1
+    }
+  ],
+  "compatible_agents": [
+    "A05_REVIEW"
+  ],
+  "compatible_task_types": [
+    "REVIEW_CHAPTER_NARRATIVE"
+  ],
+  "created_at": "2026-10-11T00:00:00+00:00",
+  "content_hash": "7cffcdfc5420698f12b8455fd0dbf6be2b95ff0f13b0f615bad1c3c540e034b7"
+}

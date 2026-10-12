@@ -125,9 +125,9 @@ BUSINESS_STAGE_TASKS = {
         "chapter_plan",
         Capability.PROPOSE_PLAN,
         "PLAN_READY",
-        result_schema="chapter-planning-result.v3",
+        result_schema="chapter-planning-result.v4",
         legacy_result_schema="chapter-planning-result.v1",
-        additional_legacy_schemas=("chapter-planning-result.v2",),
+        additional_legacy_schemas=("chapter-planning-result.v2", "chapter-planning-result.v3"),
     ),
     State.C05_PLAN_REVIEW: StageTaskMapping(
         "REVIEW_CHAPTER_PLAN",

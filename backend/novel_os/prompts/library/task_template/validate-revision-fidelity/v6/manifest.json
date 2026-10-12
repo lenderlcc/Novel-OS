@@ -1,0 +1,22 @@
+{
+  "module_id": "validate-revision-fidelity",
+  "module_type": "TASK_TEMPLATE",
+  "version": 6,
+  "status": "STABLE",
+  "description": "Keep complete fidelity coverage while reducing repetitive report output",
+  "content_path": "content.md",
+  "dependencies": [
+    {
+      "module_id": "novel-os-core",
+      "version": 1
+    }
+  ],
+  "compatible_agents": [
+    "A05_REVIEW"
+  ],
+  "compatible_task_types": [
+    "VALIDATE_REVISION_FIDELITY"
+  ],
+  "created_at": "2026-10-10T00:00:00Z",
+  "content_hash": "cb9d12c5196a8f4f9c9521397d63de6b9d332b989683fb7443104daf519c0225"
+}

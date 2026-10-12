@@ -65,7 +65,13 @@ def advance_feedback(runtime, workflow, command, context):
             context,
             status=WorkflowStatus.WAITING_AGENT,
             human_feedback_id=feedback.id,
+            revision_request_id=None,
             draft_version=feedback.source_draft_version,
+            resume_state=None,
+            resume_status=None,
+            resume_new_stage=False,
+            block_reason=None,
+            blocked_guard=None,
             count_entry=False,
         )
     if (

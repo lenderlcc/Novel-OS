@@ -222,3 +222,95 @@ def test_model_credentials_roundtrip_only_through_protected_config(tmp_path, mon
         assert key not in "".join(p.read_text() for p in (output / "postgres").iterdir())
     else:
         assert "openai_api_key" not in (output / "config.toml").read_text()
+
+
+def test_lingzhi_config_is_file_only_and_survives_docker_rendering(tmp_path, monkeypatch):
+    monkeypatch.setenv("LINGZHI_API_KEY", "environment-key-must-not-be-read")
+    monkeypatch.setenv("REQUIREMENT_SMOKE_PROFILE", "openai-structured")
+    source = write_config(
+        tmp_path / "config.toml",
+        postgres_url=url_with_password("dev-only"),
+        requirement_smoke_profile="lingzhi-requirement",
+        lingzhi_base_url="https://lingzhi.agibot.com/v1",
+        lingzhi_api_key="file-key",
+    )
+    settings = Settings.from_file(source)
+    prepare_docker(settings, tmp_path / "runtime")
+    loaded = Settings.from_file(tmp_path / "runtime/config.toml")
+    assert loaded.lingzhi_api_key.get_secret_value() == "file-key"
+    assert loaded.requirement_smoke_profile == "lingzhi-requirement"
+    assert loaded.lingzhi_base_url == "https://lingzhi.agibot.com/v1"
+    assert loaded.agent_model_profile == "mock-default"
+    assert "file-key" not in repr(loaded)
+    assert Settings(postgres_url=url_with_password("test")).lingzhi_api_key is None
+
+
+def test_lingzhi_worker_requires_explicit_scope_and_uses_file_settings(tmp_path, monkeypatch):
+    values = {
+        "postgres_url": url_with_password("dev"),
+        "agent_model_profile": "lingzhi-requirement",
+    }
+    with pytest.raises(ValidationError, match="requires agent_execution_scope"):
+        Settings(**values)
+    monkeypatch.setenv("AGENT_EXECUTION_SCOPE", "all")
+    monkeypatch.setenv("AGENT_MAX_ATTEMPTS", "3")
+    path = write_config(
+        tmp_path / "worker.toml",
+        **values,
+        agent_execution_scope="requirement-only",
+        agent_max_attempts=1,
+    )
+    configured = Settings.from_file(path)
+    prepare_docker(configured, tmp_path / "runtime")
+    rendered = Settings.from_file(tmp_path / "runtime/config.toml")
+    assert rendered.agent_task_types == ("PARSE_CHAPTER_REQUIREMENT",)
+    assert rendered.agent_max_attempts == 1
+    from novel_os.runtime_factory import build_agent_runtime
+
+    assert build_agent_runtime(rendered).provider.provider_id == "lingzhi"
+
+
+def test_full_lingzhi_workflow_file_configuration_survives_docker_rendering(tmp_path):
+    path = write_config(
+        tmp_path / "worker.toml",
+        postgres_url=url_with_password("dev"),
+        agent_model_profile="lingzhi-structured",
+        agent_execution_scope="chapter-writing",
+        agent_max_attempts=1,
+        lingzhi_api_key="file-test-key",
+    )
+    settings = Settings.from_file(path)
+    prepare_docker(settings, tmp_path / "runtime")
+    loaded = Settings.from_file(tmp_path / "runtime/config.toml")
+    assert loaded.agent_model_profile == "lingzhi-structured"
+    assert loaded.agent_execution_scope == "chapter-writing" and loaded.agent_max_attempts == 1
+    assert loaded.lingzhi_api_key.get_secret_value() == "file-test-key"
+
+
+@pytest.mark.parametrize("scope", ["all", "requirement-only"])
+def test_full_lingzhi_profile_requires_explicit_business_scope(scope):
+    with pytest.raises(ValidationError, match="requires agent_execution_scope=chapter-writing"):
+        Settings(
+            postgres_url=url_with_password("dev"),
+            agent_model_profile="lingzhi-structured",
+            agent_execution_scope=scope,
+        )
+
+
+def test_planning_only_scope_excludes_writing_and_survives_file_rendering(tmp_path):
+    settings = Settings(
+        postgres_url=url_with_password("test"),
+        agent_model_profile="lingzhi-structured",
+        agent_execution_scope="planning-only",
+        agent_max_attempts=1,
+    )
+    assert settings.agent_task_types == (
+        "PARSE_CHAPTER_REQUIREMENT",
+        "EXPLORE_CHAPTER_CONCEPTS",
+        "PLAN_CHAPTER",
+        "REVIEW_CHAPTER_PLAN",
+    )
+    prepare_docker(settings, tmp_path / "runtime")
+    loaded = Settings.from_file(tmp_path / "runtime/config.toml")
+    assert loaded.agent_task_types == settings.agent_task_types
+    assert loaded.agent_max_attempts == 1

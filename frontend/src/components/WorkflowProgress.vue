@@ -7,7 +7,7 @@ defineEmits<{ resume: [] }>()
 const task = computed(() => currentTask(props.workflow, props.tasks))
 const requirementOnly = computed(() => props.config?.task_types?.length === 1 && props.config.task_types[0] === 'PARSE_CHAPTER_REQUIREMENT')
 const stateNumber = computed(() => Number(props.workflow.current_state.slice(1, 3)))
-const phase = computed(() => props.workflow.memory_request_id || stateNumber.value === 16 ? 5 : props.workflow.revision_request_id || props.workflow.revision_count > 0 ? 4 : stateNumber.value <= 3 ? 0 : stateNumber.value <= 6 ? 1 : stateNumber.value <= 8 ? 2 : 3)
+const phase = computed(() => props.workflow.memory_request_id || [14, 15, 16].includes(stateNumber.value) ? 5 : [10, 13].includes(stateNumber.value) ? 4 : stateNumber.value <= 3 ? 0 : stateNumber.value <= 6 ? 1 : stateNumber.value <= 8 ? 2 : 3)
 // A terminal workflow transition advances the state version once. Errors from
 // earlier review/revision attempts must not describe the current stop reason.
 const failedTask = computed(() => props.tasks.find(t => t.workflow_instance_id === props.workflow.id &&
@@ -45,8 +45,10 @@ const failureMessage = computed(() => {
     </div>
     <div v-else-if="workflow.status === 'PAUSED'" class="paused"><p>已保留当前内容，可以继续这个流程。</p><button :disabled="!canResume" @click="$emit('resume')">{{ reviewResume && currentDraftVersion ? `重新审阅正文 v${currentDraftVersion}` : requirementOnly && workflow.current_state === 'C01_REQUIREMENT_INTAKE' ? '继续理解需求' : '继续' }}{{ resumeCallsModel(workflow, config, tasks) ? '（会调用模型）' : '' }}</button></div>
     <p v-else-if="workflow.current_state === 'C06_PLAN_APPROVAL'">方案已经准备好，请确认下一步。</p>
-    <p v-else-if="workflow.current_state === 'C07_WRITING'">AI 正在生成正文，可能需要一些时间。</p>
     <p v-else-if="task?.status === 'PENDING' && config?.task_types && !config.task_types.includes(task.task_type)" class="notice">当前阶段未在本机执行范围内，任务会保持等待。请调整设置后刷新。</p>
-    <p v-else-if="task?.status === 'PENDING'">等待后台开始执行。</p>
+    <p v-else-if="task?.status === 'PENDING'">{{ task.attempt_count > 0 ? '等待后台重试，当前没有模型任务在执行。' : '等待后台开始执行。' }}</p>
+    <p v-else-if="task?.status === 'CLAIMED'">后台已领取任务，正在准备执行。</p>
+    <p v-else-if="workflow.current_state === 'C07_WRITING' && workflow.status === 'WAITING_AGENT' && task?.task_type === 'WRITE_CHAPTER' && task.status === 'RUNNING'">AI 正在生成正文，可能需要一些时间。</p>
+    <p v-else-if="workflow.current_state === 'C07_WRITING'">正文任务尚未开始执行。</p>
   </section>
 </template>

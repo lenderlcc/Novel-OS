@@ -1,0 +1,1349 @@
+{
+  "snapshot": {
+    "workflow": {
+      "id": "0d87c7fb-bf0a-43c8-b032-17a5d154d752",
+      "project_id": "59fcffd7-2a11-4e93-a22f-e47467768ac2",
+      "chapter_id": "cb3a6d11-e8cb-4181-9af7-9b10632da852",
+      "workflow_definition_id": "chapter-planning",
+      "workflow_definition_version": 2,
+      "current_state": "C08_DETERMINISTIC_CHECK",
+      "status": "WAITING_AGENT",
+      "state_version": 9,
+      "retry_count": 0,
+      "state_retry_count": 0,
+      "revision_count": 0,
+      "planning_iteration_count": 1,
+      "plan_version": 1,
+      "draft_version": 1,
+      "resume_state": null,
+      "resume_status": null,
+      "block_reason": null,
+      "blocked_guard": null,
+      "simulation": false,
+      "created_by": "local-user",
+      "created_at": "2026-09-15T11:20:38.061591Z",
+      "updated_at": "2026-09-15T11:20:40.428357Z"
+    },
+    "chapter": {
+      "id": "cb3a6d11-e8cb-4181-9af7-9b10632da852",
+      "project_id": "59fcffd7-2a11-4e93-a22f-e47467768ac2",
+      "object_type": "CHAPTER",
+      "version": 4,
+      "status": "DRAFT",
+      "source": "USER",
+      "authority_level": "A5_USER_PREFERENCE",
+      "locked": false,
+      "created_at": "2026-09-15T11:20:37.949095Z",
+      "updated_at": "2026-09-15T11:20:40.400145Z",
+      "created_by": "local-user",
+      "approved_by": null,
+      "approved_at": null,
+      "tags": [],
+      "metadata": {},
+      "sequence": 1,
+      "title": "雨夜来信",
+      "current_version": 1,
+      "approved_version": null,
+      "current_plan_version": 1,
+      "approved_plan_version": 1
+    },
+    "gates": [
+      {
+        "id": "ebacbc55-4f81-4b22-8489-3e6bb6f6f307",
+        "workflow_id": "0d87c7fb-bf0a-43c8-b032-17a5d154d752",
+        "gate_type": "PLAN_APPROVAL",
+        "status": "APPROVED",
+        "artifact_id": "9d08b334-8a79-4f66-86d3-9d98092e422c",
+        "artifact_version": 1,
+        "opened_state_version": 7,
+        "decision_event_id": "1aabff12-ba98-4424-9acf-3c3a41df6c57",
+        "decided_by": "local-user",
+        "decision": "APPROVE",
+        "reason": "人工批准当前方案",
+        "created_at": "2026-09-15T11:20:39.140828Z",
+        "decided_at": "2026-09-15T11:20:39.931352Z"
+      }
+    ],
+    "brief": {
+      "id": "89b4f048-71a9-44e3-816a-964087d48b55",
+      "project_id": "59fcffd7-2a11-4e93-a22f-e47467768ac2",
+      "chapter_id": "cb3a6d11-e8cb-4181-9af7-9b10632da852",
+      "workflow_id": "0d87c7fb-bf0a-43c8-b032-17a5d154d752",
+      "agent_run_id": "0d0447a3-f3b5-4a73-9a76-b24ca658931f",
+      "prompt_lineage_id": "448cbbc6-bea8-4481-88ea-024e65ec8506",
+      "context_package_id": "142588c9-530e-404e-b6b3-8ce708384a0d",
+      "source_versions": [
+        {
+          "version": 2,
+          "source_id": "bd843c15-2236-466c-9b65-7087ba74e158",
+          "logical_id": "bd843c15-2236-466c-9b65-7087ba74e158",
+          "source_type": "TASK_INPUT"
+        },
+        {
+          "version": 1,
+          "source_id": "cb3a6d11-e8cb-4181-9af7-9b10632da852",
+          "logical_id": "cb3a6d11-e8cb-4181-9af7-9b10632da852",
+          "source_type": "CHAPTER"
+        },
+        {
+          "version": 1,
+          "source_id": "59fcffd7-2a11-4e93-a22f-e47467768ac2",
+          "logical_id": "59fcffd7-2a11-4e93-a22f-e47467768ac2",
+          "source_type": "PROJECT"
+        }
+      ],
+      "created_at": "2026-09-15T11:20:38.436933Z",
+      "version": 1,
+      "raw_requirement": "两人在雨夜会合，约定沿河寻找失落的信件。不要新增核心能力。",
+      "input_event_id": "af6a7e86-71c9-4159-8017-ae31024a8649",
+      "status": "READY",
+      "body": {
+        "kind": "creative_brief",
+        "intent_summary": "两人在雨夜会合，约定沿河寻找失落的信件。不要新增核心能力。",
+        "chapter_objective": "两人在雨夜会合，约定沿河寻找失落的信件。不要新增核心能力。",
+        "must": [
+          {
+            "id": "M1",
+            "text": "两人在雨夜会合，约定沿河寻找失落的信件。不要新增核心能力。",
+            "source_ref": {
+              "source_type": "TASK_INPUT",
+              "logical_id": "bd843c15-2236-466c-9b65-7087ba74e158",
+              "version": 2
+            },
+            "quote": "两人在雨夜会合，约定沿河寻找失落的信件。不要新增核心能力。"
+          }
+        ],
+        "should": [],
+        "preferences": [],
+        "forbidden": [],
+        "preserve": [],
+        "quality_expectations": [],
+        "change_requests": [],
+        "required_outcome": "两人在雨夜会合，约定沿河寻找失落的信件。不要新增核心能力。",
+        "desired_reader_effect": "Follow the requested chapter intent",
+        "character_focus": [],
+        "plot_focus": [],
+        "creative_freedom": {
+          "level": "MEDIUM",
+          "allowed_operations": [
+            "LOCAL_DETAIL",
+            "SCENE_ORDER"
+          ],
+          "scope_description": "Local structure only; major direction remains user-owned",
+          "major_changes": "PROPOSAL_ONLY"
+        },
+        "unresolved_ambiguities": [],
+        "assumptions": [],
+        "conflicts": [],
+        "persistent_preference_candidates": [],
+        "source_refs": [
+          {
+            "source_type": "TASK_INPUT",
+            "logical_id": "bd843c15-2236-466c-9b65-7087ba74e158",
+            "version": 2
+          }
+        ],
+        "confidence": 0.95
+      },
+      "supersedes_id": null
+    },
+    "plans": [
+      {
+        "id": "9d08b334-8a79-4f66-86d3-9d98092e422c",
+        "project_id": "59fcffd7-2a11-4e93-a22f-e47467768ac2",
+        "object_type": "CHAPTER_PLAN",
+        "version": 1,
+        "status": "APPROVED",
+        "source": "AGENT",
+        "authority_level": "A4_APPROVED_PLAN",
+        "locked": false,
+        "created_at": "2026-09-15T11:20:38.779388Z",
+        "updated_at": "2026-09-15T11:20:39.923546Z",
+        "created_by": "A03_PLANNING",
+        "approved_by": "local-user",
+        "approved_at": "2026-09-15T11:20:39.923543Z",
+        "tags": [],
+        "metadata": {},
+        "logical_id": "cb3a6d11-e8cb-4181-9af7-9b10632da852",
+        "supersedes_id": null,
+        "objective": "两人在雨夜会合，约定沿河寻找失落的信件。不要新增核心能力。",
+        "required_outcome": "两人在雨夜会合，约定沿河寻找失落的信件。不要新增核心能力。",
+        "scene_plans": [
+          {
+            "id": "S1",
+            "purpose": "Resolve the requested chapter objective",
+            "conflict": "Characters must choose how to act",
+            "key_change": "The intended outcome becomes possible",
+            "exit_condition": "Required chapter outcome is reached",
+            "information_release": [],
+            "character_state_change": "A consequential local choice is made"
+          }
+        ],
+        "character_progression": {
+          "items": []
+        },
+        "plot_progression": {
+          "items": [
+            "Advance the requested local conflict"
+          ]
+        },
+        "information_release": [],
+        "ending_state": {
+          "description": "两人在雨夜会合，约定沿河寻找失落的信件。不要新增核心能力。"
+        },
+        "constraints": [
+          "两人在雨夜会合，约定沿河寻找失落的信件。不要新增核心能力。"
+        ],
+        "locked_dependencies": [],
+        "risks": [],
+        "chapter_id": "cb3a6d11-e8cb-4181-9af7-9b10632da852"
+      }
+    ],
+    "history": {
+      "briefs": [
+        {
+          "id": "89b4f048-71a9-44e3-816a-964087d48b55",
+          "project_id": "59fcffd7-2a11-4e93-a22f-e47467768ac2",
+          "chapter_id": "cb3a6d11-e8cb-4181-9af7-9b10632da852",
+          "workflow_id": "0d87c7fb-bf0a-43c8-b032-17a5d154d752",
+          "agent_run_id": "0d0447a3-f3b5-4a73-9a76-b24ca658931f",
+          "prompt_lineage_id": "448cbbc6-bea8-4481-88ea-024e65ec8506",
+          "context_package_id": "142588c9-530e-404e-b6b3-8ce708384a0d",
+          "source_versions": [
+            {
+              "version": 2,
+              "source_id": "bd843c15-2236-466c-9b65-7087ba74e158",
+              "logical_id": "bd843c15-2236-466c-9b65-7087ba74e158",
+              "source_type": "TASK_INPUT"
+            },
+            {
+              "version": 1,
+              "source_id": "cb3a6d11-e8cb-4181-9af7-9b10632da852",
+              "logical_id": "cb3a6d11-e8cb-4181-9af7-9b10632da852",
+              "source_type": "CHAPTER"
+            },
+            {
+              "version": 1,
+              "source_id": "59fcffd7-2a11-4e93-a22f-e47467768ac2",
+              "logical_id": "59fcffd7-2a11-4e93-a22f-e47467768ac2",
+              "source_type": "PROJECT"
+            }
+          ],
+          "created_at": "2026-09-15T11:20:38.436933Z",
+          "version": 1,
+          "raw_requirement": "两人在雨夜会合，约定沿河寻找失落的信件。不要新增核心能力。",
+          "input_event_id": "af6a7e86-71c9-4159-8017-ae31024a8649",
+          "status": "READY",
+          "body": {
+            "kind": "creative_brief",
+            "intent_summary": "两人在雨夜会合，约定沿河寻找失落的信件。不要新增核心能力。",
+            "chapter_objective": "两人在雨夜会合，约定沿河寻找失落的信件。不要新增核心能力。",
+            "must": [
+              {
+                "id": "M1",
+                "text": "两人在雨夜会合，约定沿河寻找失落的信件。不要新增核心能力。",
+                "source_ref": {
+                  "source_type": "TASK_INPUT",
+                  "logical_id": "bd843c15-2236-466c-9b65-7087ba74e158",
+                  "version": 2
+                },
+                "quote": "两人在雨夜会合，约定沿河寻找失落的信件。不要新增核心能力。"
+              }
+            ],
+            "should": [],
+            "preferences": [],
+            "forbidden": [],
+            "preserve": [],
+            "quality_expectations": [],
+            "change_requests": [],
+            "required_outcome": "两人在雨夜会合，约定沿河寻找失落的信件。不要新增核心能力。",
+            "desired_reader_effect": "Follow the requested chapter intent",
+            "character_focus": [],
+            "plot_focus": [],
+            "creative_freedom": {
+              "level": "MEDIUM",
+              "allowed_operations": [
+                "LOCAL_DETAIL",
+                "SCENE_ORDER"
+              ],
+              "scope_description": "Local structure only; major direction remains user-owned",
+              "major_changes": "PROPOSAL_ONLY"
+            },
+            "unresolved_ambiguities": [],
+            "assumptions": [],
+            "conflicts": [],
+            "persistent_preference_candidates": [],
+            "source_refs": [
+              {
+                "source_type": "TASK_INPUT",
+                "logical_id": "bd843c15-2236-466c-9b65-7087ba74e158",
+                "version": 2
+              }
+            ],
+            "confidence": 0.95
+          },
+          "supersedes_id": null
+        }
+      ],
+      "plans": [
+        {
+          "id": "445f776e-840a-4a79-85c3-694b2dbb9ab2",
+          "project_id": "59fcffd7-2a11-4e93-a22f-e47467768ac2",
+          "chapter_id": "cb3a6d11-e8cb-4181-9af7-9b10632da852",
+          "workflow_id": "0d87c7fb-bf0a-43c8-b032-17a5d154d752",
+          "agent_run_id": "2ec3addd-f191-4934-b082-bd5fe60f5f22",
+          "prompt_lineage_id": "b5e3e362-877b-41d2-bcb3-e5bba01f865f",
+          "context_package_id": "d95d2092-8c0b-44f0-ac21-5345a769c73a",
+          "source_versions": [
+            {
+              "version": 5,
+              "source_id": "44b17977-3478-40a2-b512-852f055df100",
+              "logical_id": "44b17977-3478-40a2-b512-852f055df100",
+              "source_type": "TASK_INPUT"
+            },
+            {
+              "version": 1,
+              "source_id": "cb3a6d11-e8cb-4181-9af7-9b10632da852",
+              "logical_id": "cb3a6d11-e8cb-4181-9af7-9b10632da852",
+              "source_type": "CHAPTER"
+            },
+            {
+              "version": 1,
+              "source_id": "89b4f048-71a9-44e3-816a-964087d48b55",
+              "logical_id": "0d87c7fb-bf0a-43c8-b032-17a5d154d752",
+              "source_type": "CREATIVE_BRIEF"
+            },
+            {
+              "version": 1,
+              "source_id": "59fcffd7-2a11-4e93-a22f-e47467768ac2",
+              "logical_id": "59fcffd7-2a11-4e93-a22f-e47467768ac2",
+              "source_type": "PROJECT"
+            }
+          ],
+          "created_at": "2026-09-15T11:20:38.785027Z",
+          "plan_id": "9d08b334-8a79-4f66-86d3-9d98092e422c",
+          "brief_id": "89b4f048-71a9-44e3-816a-964087d48b55",
+          "planning_iteration": 1,
+          "body": {
+            "kind": "chapter_plan",
+            "objective": "两人在雨夜会合，约定沿河寻找失落的信件。不要新增核心能力。",
+            "required_outcome": "两人在雨夜会合，约定沿河寻找失落的信件。不要新增核心能力。",
+            "opening_function": "Establish the chapter conflict",
+            "scenes": [
+              {
+                "id": "S1",
+                "purpose": "Resolve the requested chapter objective",
+                "conflict": "Characters must choose how to act",
+                "key_change": "The intended outcome becomes possible",
+                "information_release": [],
+                "character_state_change": "A consequential local choice is made",
+                "exit_condition": "Required chapter outcome is reached"
+              }
+            ],
+            "character_progression": [],
+            "plot_progression": [
+              "Advance the requested local conflict"
+            ],
+            "information_release": [],
+            "foreshadow_actions": [],
+            "ending_function": "Complete the requested change",
+            "ending_state": "两人在雨夜会合，约定沿河寻找失落的信件。不要新增核心能力。",
+            "creative_freedom": {
+              "level": "MEDIUM",
+              "allowed_operations": [
+                "LOCAL_DETAIL",
+                "SCENE_ORDER"
+              ],
+              "scope_description": "Local structure only; major direction remains user-owned",
+              "major_changes": "PROPOSAL_ONLY"
+            },
+            "constraints": [
+              "两人在雨夜会合，约定沿河寻找失落的信件。不要新增核心能力。"
+            ],
+            "preserved_elements": [],
+            "locked_dependencies": [],
+            "assumptions": [],
+            "risks": [],
+            "proposed_new_elements": [],
+            "proposed_major_changes": [],
+            "requirement_coverage": [
+              {
+                "constraint_id": "M1",
+                "covered": true,
+                "scope": "SCENE",
+                "scene_ids": [
+                  "S1"
+                ],
+                "explanation": "Applied in the scene intent"
+              }
+            ],
+            "source_refs": [
+              {
+                "source_type": "CREATIVE_BRIEF",
+                "logical_id": "0d87c7fb-bf0a-43c8-b032-17a5d154d752",
+                "version": 1
+              }
+            ]
+          }
+        }
+      ],
+      "reviews": [
+        {
+          "id": "67b48c3e-6464-4f1b-9ca7-71081d56753d",
+          "project_id": "59fcffd7-2a11-4e93-a22f-e47467768ac2",
+          "chapter_id": "cb3a6d11-e8cb-4181-9af7-9b10632da852",
+          "workflow_id": "0d87c7fb-bf0a-43c8-b032-17a5d154d752",
+          "agent_run_id": "d2a42fc1-59d6-4d7c-9736-95534b5bcff6",
+          "prompt_lineage_id": "7776e0f6-50d8-4709-9efb-554917117918",
+          "context_package_id": "51bb1f05-9f05-47fd-ac08-aa48e1defe67",
+          "source_versions": [
+            {
+              "version": 2,
+              "source_id": "cb3a6d11-e8cb-4181-9af7-9b10632da852",
+              "logical_id": "cb3a6d11-e8cb-4181-9af7-9b10632da852",
+              "source_type": "CHAPTER"
+            },
+            {
+              "version": 6,
+              "source_id": "4c064152-6d7e-429d-8857-df11142657f8",
+              "logical_id": "4c064152-6d7e-429d-8857-df11142657f8",
+              "source_type": "TASK_INPUT"
+            },
+            {
+              "version": 1,
+              "source_id": "9d08b334-8a79-4f66-86d3-9d98092e422c",
+              "logical_id": "cb3a6d11-e8cb-4181-9af7-9b10632da852",
+              "source_type": "CHAPTER_PLAN"
+            },
+            {
+              "version": 1,
+              "source_id": "89b4f048-71a9-44e3-816a-964087d48b55",
+              "logical_id": "0d87c7fb-bf0a-43c8-b032-17a5d154d752",
+              "source_type": "CREATIVE_BRIEF"
+            },
+            {
+              "version": 1,
+              "source_id": "59fcffd7-2a11-4e93-a22f-e47467768ac2",
+              "logical_id": "59fcffd7-2a11-4e93-a22f-e47467768ac2",
+              "source_type": "PROJECT"
+            }
+          ],
+          "created_at": "2026-09-15T11:20:39.103410Z",
+          "plan_id": "9d08b334-8a79-4f66-86d3-9d98092e422c",
+          "brief_id": "89b4f048-71a9-44e3-816a-964087d48b55",
+          "verdict": "PASS",
+          "body": {
+            "kind": "plan_review",
+            "verdict": "PASS",
+            "hard_gate_issues": [],
+            "quality_issues": [],
+            "requirement_coverage": [
+              {
+                "constraint_id": "M1",
+                "covered": true,
+                "scope": "SCENE",
+                "scene_ids": [
+                  "S1"
+                ],
+                "explanation": "Applied in the scene intent"
+              }
+            ],
+            "missing_requirements": [],
+            "forbidden_violations": [],
+            "locked_conflicts": [],
+            "direction_conflicts": [],
+            "logic_risks": [],
+            "over_specification_issues": [],
+            "recommendations": [],
+            "source_refs": [
+              {
+                "source_type": "CREATIVE_BRIEF",
+                "logical_id": "0d87c7fb-bf0a-43c8-b032-17a5d154d752",
+                "version": 1
+              },
+              {
+                "source_type": "CHAPTER_PLAN",
+                "logical_id": "cb3a6d11-e8cb-4181-9af7-9b10632da852",
+                "version": 1
+              }
+            ],
+            "confidence": 0.95
+          }
+        }
+      ]
+    },
+    "drafts": [
+      {
+        "id": "112ee070-f8b0-4c79-8525-e1864d673a55",
+        "project_id": "59fcffd7-2a11-4e93-a22f-e47467768ac2",
+        "object_type": "CHAPTER_VERSION",
+        "version": 1,
+        "status": "DRAFT",
+        "source": "AGENT",
+        "authority_level": "A7_AI_INFERENCE",
+        "locked": false,
+        "created_at": "2026-09-15T11:20:40.397980Z",
+        "updated_at": "2026-09-15T11:20:40.397983Z",
+        "created_by": "A04_WRITING",
+        "approved_by": null,
+        "approved_at": null,
+        "tags": [],
+        "metadata": {},
+        "logical_id": "cb3a6d11-e8cb-4181-9af7-9b10632da852",
+        "supersedes_id": null,
+        "content": "门上的铜环还带着雨水。林舟握住它，听见院里有人把碗轻轻搁下。\n\n“再晚一点，门就关了。”阿岚没有回头，仍在擦桌上的水。\n\n他把湿透的信放在桌角。纸黏着袖口，抽了两次才松开。她看着信，没有伸手。\n\n“路断了。”他说。\n\n“哪一段？”\n\n林舟抬眼看她。来时准备的解释忽然显得多余。他挪开挡着灯光的椅子，让她看清封口的泥。阿岚放下布，从柜底取出另一张旧地图，压在碗下。\n\n雨顺着屋檐落成一条线。他们各握地图一角，纸在中间拱起。她指向靠河的那条小路，他用指背抹掉那里的一滴水。\n\n“走这边，要多半天。”\n\n“我等得起。”\n\n他松开地图，终于坐了下来。阿岚将那封信移到灯下，却没有拆。两人把要带的东西一件件排在桌上；最后剩下那只空碗，没有人把它收走。\n\n天亮前，院门开了一道缝。林舟将地图折好，放进已经干了半边的袖子。阿岚站在门内，把灯举高了一点，等他看清台阶。\n",
+        "change_reason": "Writing from approved Plan v1",
+        "chapter_id": "cb3a6d11-e8cb-4181-9af7-9b10632da852",
+        "parent_version_id": null
+      }
+    ],
+    "writing": [
+      {
+        "id": "8b576501-dfc1-46f0-b430-d03782631a20",
+        "project_id": "59fcffd7-2a11-4e93-a22f-e47467768ac2",
+        "chapter_id": "cb3a6d11-e8cb-4181-9af7-9b10632da852",
+        "workflow_id": "0d87c7fb-bf0a-43c8-b032-17a5d154d752",
+        "agent_task_id": "7018cc60-f4ae-4fc5-908f-e6aac4733681",
+        "agent_run_id": "c4fac6c6-7a31-40f0-a4bf-ef7c396a0cd0",
+        "prompt_lineage_id": "e92ed93c-6cab-4068-9814-c6d3deae7b73",
+        "context_package_id": "2e94bf56-9d89-4113-adb9-fe2b4ec774c3",
+        "plan_id": "9d08b334-8a79-4f66-86d3-9d98092e422c",
+        "plan_version": 1,
+        "brief_id": "89b4f048-71a9-44e3-816a-964087d48b55",
+        "chapter_version_id": "112ee070-f8b0-4c79-8525-e1864d673a55",
+        "model_profile": "mock-writing",
+        "provider": "mock",
+        "model": "mock-v1",
+        "content_hash": "2c44c232f768090b0eed8d7929fd89c9ae6ef6e1ff129608992f80df9243d0fb",
+        "metadata": {
+          "kind": "writing_result",
+          "chapter_id": "cb3a6d11-e8cb-4181-9af7-9b10632da852",
+          "plan_id": "9d08b334-8a79-4f66-86d3-9d98092e422c",
+          "plan_version": 1,
+          "scene_execution": [
+            {
+              "scene_id": "S1",
+              "planned_function": "Resolve the requested chapter objective",
+              "execution_summary": "人物通过相互询问作出下一步选择。",
+              "source_location": "院门至准备行装",
+              "function_completed": true,
+              "deviation": null
+            }
+          ],
+          "introduced_elements": [],
+          "proposed_new_facts": [],
+          "plan_deviations": [],
+          "unresolved_questions": [],
+          "assumptions": [],
+          "knowledge_risk_flags": [],
+          "style_notes": [
+            "以动作和简短对白呈现互动；这是离线契约样例。"
+          ],
+          "confidence": 0.95
+        },
+        "check_status": "PASS",
+        "check_codes": [],
+        "created_at": "2026-09-15T11:20:40.402651Z"
+      }
+    ],
+    "tasks": [
+      {
+        "task_id": "bd843c15-2236-466c-9b65-7087ba74e158",
+        "project_id": "59fcffd7-2a11-4e93-a22f-e47467768ac2",
+        "workflow_instance_id": "0d87c7fb-bf0a-43c8-b032-17a5d154d752",
+        "workflow_state": "C01_REQUIREMENT_INTAKE",
+        "workflow_state_version": 2,
+        "agent_id": "A02_REQUIREMENT",
+        "task_type": "PARSE_CHAPTER_REQUIREMENT",
+        "objective": "两人在雨夜会合，约定沿河寻找失落的信件。不要新增核心能力。",
+        "target_ref": "cb3a6d11-e8cb-4181-9af7-9b10632da852",
+        "requirements": [],
+        "constraints": [
+          "Planning only; no chapter prose",
+          "No approval, lock, canon commit or direct database access"
+        ],
+        "capabilities": [
+          "REPORT_RESULT"
+        ],
+        "expected_output_schema": "chapter-requirement-result.v1",
+        "status": "SUCCEEDED",
+        "priority": 0,
+        "version": 4,
+        "attempt_count": 1,
+        "max_attempts": 3,
+        "created_at": "2026-09-15T11:20:38.002066Z",
+        "available_at": "2026-09-15T11:20:38.002066Z",
+        "claimed_at": "2026-09-15T11:20:38.093702Z",
+        "started_at": "2026-09-15T11:20:38.110029Z",
+        "completed_at": "2026-09-15T11:20:38.345773Z",
+        "lease_owner": null,
+        "lease_expires_at": null,
+        "heartbeat_at": null,
+        "last_error_code": null,
+        "last_error_message": null,
+        "result_ref": "0d0447a3-f3b5-4a73-9a76-b24ca658931f",
+        "result_metadata": {
+          "kind": "creative_brief",
+          "model": {
+            "usage": {
+              "input_tokens": null,
+              "total_tokens": null,
+              "output_tokens": null
+            },
+            "latency_ms": 2,
+            "finish_reason": "stop"
+          },
+          "verdict": null,
+          "confidence": 0.95,
+          "result_status": "SUCCESS",
+          "escalation_required": false
+        }
+      },
+      {
+        "task_id": "44b17977-3478-40a2-b512-852f055df100",
+        "project_id": "59fcffd7-2a11-4e93-a22f-e47467768ac2",
+        "workflow_instance_id": "0d87c7fb-bf0a-43c8-b032-17a5d154d752",
+        "workflow_state": "C04_CHAPTER_PLANNING",
+        "workflow_state_version": 5,
+        "agent_id": "A03_PLANNING",
+        "task_type": "PLAN_CHAPTER",
+        "objective": "两人在雨夜会合，约定沿河寻找失落的信件。不要新增核心能力。",
+        "target_ref": "cb3a6d11-e8cb-4181-9af7-9b10632da852",
+        "requirements": [],
+        "constraints": [
+          "Planning only; no chapter prose",
+          "No approval, lock, canon commit or direct database access"
+        ],
+        "capabilities": [
+          "PROPOSE_PLAN"
+        ],
+        "expected_output_schema": "chapter-planning-result.v1",
+        "status": "SUCCEEDED",
+        "priority": 0,
+        "version": 4,
+        "attempt_count": 1,
+        "max_attempts": 3,
+        "created_at": "2026-09-15T11:20:38.407218Z",
+        "available_at": "2026-09-15T11:20:38.407218Z",
+        "claimed_at": "2026-09-15T11:20:38.419877Z",
+        "started_at": "2026-09-15T11:20:38.429060Z",
+        "completed_at": "2026-09-15T11:20:38.694126Z",
+        "lease_owner": null,
+        "lease_expires_at": null,
+        "heartbeat_at": null,
+        "last_error_code": null,
+        "last_error_message": null,
+        "result_ref": "2ec3addd-f191-4934-b082-bd5fe60f5f22",
+        "result_metadata": {
+          "kind": "chapter_plan",
+          "model": {
+            "usage": {
+              "input_tokens": null,
+              "total_tokens": null,
+              "output_tokens": null
+            },
+            "latency_ms": 0,
+            "finish_reason": "stop"
+          },
+          "verdict": null,
+          "confidence": 0.95,
+          "result_status": "SUCCESS",
+          "escalation_required": false
+        }
+      },
+      {
+        "task_id": "4c064152-6d7e-429d-8857-df11142657f8",
+        "project_id": "59fcffd7-2a11-4e93-a22f-e47467768ac2",
+        "workflow_instance_id": "0d87c7fb-bf0a-43c8-b032-17a5d154d752",
+        "workflow_state": "C05_PLAN_REVIEW",
+        "workflow_state_version": 6,
+        "agent_id": "A05_REVIEW",
+        "task_type": "REVIEW_CHAPTER_PLAN",
+        "objective": "两人在雨夜会合，约定沿河寻找失落的信件。不要新增核心能力。",
+        "target_ref": "cb3a6d11-e8cb-4181-9af7-9b10632da852",
+        "requirements": [],
+        "constraints": [
+          "Planning only; no chapter prose",
+          "No approval, lock, canon commit or direct database access"
+        ],
+        "capabilities": [
+          "REVIEW"
+        ],
+        "expected_output_schema": "chapter-plan-review-result.v1",
+        "status": "SUCCEEDED",
+        "priority": 0,
+        "version": 4,
+        "attempt_count": 1,
+        "max_attempts": 3,
+        "created_at": "2026-09-15T11:20:38.716971Z",
+        "available_at": "2026-09-15T11:20:38.716971Z",
+        "claimed_at": "2026-09-15T11:20:38.730117Z",
+        "started_at": "2026-09-15T11:20:38.738884Z",
+        "completed_at": "2026-09-15T11:20:39.012902Z",
+        "lease_owner": null,
+        "lease_expires_at": null,
+        "heartbeat_at": null,
+        "last_error_code": null,
+        "last_error_message": null,
+        "result_ref": "d2a42fc1-59d6-4d7c-9736-95534b5bcff6",
+        "result_metadata": {
+          "kind": "plan_review",
+          "model": {
+            "usage": {
+              "input_tokens": null,
+              "total_tokens": null,
+              "output_tokens": null
+            },
+            "latency_ms": 0,
+            "finish_reason": "stop"
+          },
+          "verdict": "PASS",
+          "confidence": 0.95,
+          "result_status": "SUCCESS",
+          "escalation_required": false
+        }
+      },
+      {
+        "task_id": "7018cc60-f4ae-4fc5-908f-e6aac4733681",
+        "project_id": "59fcffd7-2a11-4e93-a22f-e47467768ac2",
+        "workflow_instance_id": "0d87c7fb-bf0a-43c8-b032-17a5d154d752",
+        "workflow_state": "C07_WRITING",
+        "workflow_state_version": 8,
+        "agent_id": "A04_WRITING",
+        "task_type": "WRITE_CHAPTER",
+        "objective": "两人在雨夜会合，约定沿河寻找失落的信件。不要新增核心能力。",
+        "target_ref": "cb3a6d11-e8cb-4181-9af7-9b10632da852",
+        "requirements": [
+          "{\"decision\":\"APPROVE\",\"plan_id\":\"9d08b334-8a79-4f66-86d3-9d98092e422c\",\"plan_version\":1,\"reason\":\"人工批准当前方案\",\"type\":\"USER_PLANNING_DIRECTIVE\"}"
+        ],
+        "constraints": [
+          "Write from the exact approved Plan; local creativity only",
+          "No approval, lock, canon commit or direct database access"
+        ],
+        "capabilities": [
+          "PROPOSE_DRAFT"
+        ],
+        "expected_output_schema": "chapter-writing-result.v1",
+        "status": "SUCCEEDED",
+        "priority": 0,
+        "version": 4,
+        "attempt_count": 1,
+        "max_attempts": 3,
+        "created_at": "2026-09-15T11:20:39.858655Z",
+        "available_at": "2026-09-15T11:20:39.858655Z",
+        "claimed_at": "2026-09-15T11:20:39.930118Z",
+        "started_at": "2026-09-15T11:20:39.944354Z",
+        "completed_at": "2026-09-15T11:20:40.313504Z",
+        "lease_owner": null,
+        "lease_expires_at": null,
+        "heartbeat_at": null,
+        "last_error_code": null,
+        "last_error_message": null,
+        "result_ref": "c4fac6c6-7a31-40f0-a4bf-ef7c396a0cd0",
+        "result_metadata": {
+          "kind": "writing_result",
+          "model": {
+            "usage": {
+              "input_tokens": null,
+              "total_tokens": null,
+              "output_tokens": null
+            },
+            "latency_ms": 2,
+            "finish_reason": "stop"
+          },
+          "verdict": null,
+          "confidence": 0.95,
+          "result_status": "SUCCESS",
+          "escalation_required": false
+        }
+      }
+    ]
+  },
+  "context": {
+    "package": {
+      "project_id": "59fcffd7-2a11-4e93-a22f-e47467768ac2",
+      "task_id": "7018cc60-f4ae-4fc5-908f-e6aac4733681",
+      "workflow_id": "0d87c7fb-bf0a-43c8-b032-17a5d154d752",
+      "request": {
+        "project_id": "59fcffd7-2a11-4e93-a22f-e47467768ac2",
+        "task_id": "7018cc60-f4ae-4fc5-908f-e6aac4733681",
+        "task_type": "WRITE_CHAPTER",
+        "chapter_id": "cb3a6d11-e8cb-4181-9af7-9b10632da852",
+        "workflow_id": "0d87c7fb-bf0a-43c8-b032-17a5d154d752",
+        "workflow_state_version": 8,
+        "attempt_number": 1,
+        "target_version": null,
+        "approved_plan_version": 1,
+        "chapter_sequence": 1,
+        "objective": "两人在雨夜会合，约定沿河寻找失落的信件。不要新增核心能力。",
+        "requirements": [
+          "{\"decision\":\"APPROVE\",\"plan_id\":\"9d08b334-8a79-4f66-86d3-9d98092e422c\",\"plan_version\":1,\"reason\":\"人工批准当前方案\",\"type\":\"USER_PLANNING_DIRECTIVE\"}"
+        ],
+        "constraints": [
+          "Write from the exact approved Plan; local creativity only",
+          "No approval, lock, canon commit or direct database access"
+        ],
+        "explicit_refs": [],
+        "required_refs": [],
+        "missing_bindings": [],
+        "required_future_refs": [],
+        "knowledge_scope": "GLOBAL_ONLY",
+        "character_id": null,
+        "request_id": null
+      },
+      "profile_id": "CP-005",
+      "profile_version": 3,
+      "profile_hash": "10f8501248c2ba3bad9faf94584bc5f7bc676df35d7417c0f1e42236d26f984f",
+      "profile_json": "{\"allowed_task_types\":[\"WRITE_CHAPTER\"],\"description\":\"Exact approved Writing inputs with required-only future dependencies\",\"future_horizon\":1,\"future_knowledge_policy\":\"REQUIRED_ONLY\",\"profile_id\":\"CP-005\",\"selectors\":[{\"allowed_statuses\":[\"ACTIVE\"],\"authority_floor\":\"A7_AI_INFERENCE\",\"max_items\":1,\"priority\":\"P0\",\"ranking_policy\":\"PRIORITY_AUTHORITY_RELEVANCE_SCOPE_FRESHNESS\",\"required\":true,\"requirement_types\":[],\"scope\":\"TARGET_CHAPTER\",\"selector_id\":\"task-input\",\"serialization_policy\":\"STRUCTURED\",\"source_type\":\"TASK_INPUT\",\"version_policy\":\"EXACT\"},{\"allowed_statuses\":[\"DRAFT\",\"ACTIVE\",\"LOCKED\",\"APPROVED\"],\"authority_floor\":\"A7_AI_INFERENCE\",\"max_items\":1,\"priority\":\"P0\",\"ranking_policy\":\"PRIORITY_AUTHORITY_RELEVANCE_SCOPE_FRESHNESS\",\"required\":true,\"requirement_types\":[],\"scope\":\"TARGET_CHAPTER\",\"selector_id\":\"target-chapter\",\"serialization_policy\":\"STRUCTURED\",\"source_type\":\"CHAPTER\",\"version_policy\":\"TARGET_VERSION\"},{\"allowed_statuses\":[\"APPROVED\",\"LOCKED\"],\"authority_floor\":\"A4_APPROVED_PLAN\",\"max_items\":1,\"priority\":\"P0\",\"ranking_policy\":\"PRIORITY_AUTHORITY_RELEVANCE_SCOPE_FRESHNESS\",\"required\":true,\"requirement_types\":[],\"scope\":\"TARGET_CHAPTER\",\"selector_id\":\"approved-plan\",\"serialization_policy\":\"STRUCTURED\",\"source_type\":\"CHAPTER_PLAN\",\"version_policy\":\"APPROVED\"},{\"allowed_statuses\":[\"APPROVED\",\"LOCKED\"],\"authority_floor\":\"A2_USER_APPROVED\",\"max_items\":200,\"priority\":\"P0\",\"ranking_policy\":\"PRIORITY_AUTHORITY_RELEVANCE_SCOPE_FRESHNESS\",\"required\":false,\"requirement_types\":[\"MUST\",\"FORBIDDEN\",\"PRESERVE\",\"CHANGE_REQUEST\"],\"scope\":\"TARGET_CHAPTER\",\"selector_id\":\"effective-requirements\",\"serialization_policy\":\"STRUCTURED\",\"source_type\":\"REQUIREMENT\",\"version_policy\":\"EFFECTIVE\"},{\"allowed_statuses\":[\"APPROVED\",\"LOCKED\"],\"authority_floor\":\"A1_USER_LOCKED\",\"max_items\":200,\"priority\":\"P0\",\"ranking_policy\":\"PRIORITY_AUTHORITY_RELEVANCE_SCOPE_FRESHNESS\",\"required\":false,\"requirement_types\":[],\"scope\":\"TARGET_CHAPTER\",\"selector_id\":\"locked-decisions\",\"serialization_policy\":\"STRUCTURED\",\"source_type\":\"DECISION\",\"version_policy\":\"LOCKED\"},{\"allowed_statuses\":[\"APPROVED\",\"LOCKED\"],\"authority_floor\":\"A2_USER_APPROVED\",\"max_items\":200,\"priority\":\"P1\",\"ranking_policy\":\"PRIORITY_AUTHORITY_RELEVANCE_SCOPE_FRESHNESS\",\"required\":false,\"requirement_types\":[\"SHOULD\",\"PREFERENCE\",\"QUALITY_EXPECTATION\"],\"scope\":\"TARGET_CHAPTER\",\"selector_id\":\"supporting-requirements\",\"serialization_policy\":\"STRUCTURED\",\"source_type\":\"REQUIREMENT\",\"version_policy\":\"EFFECTIVE\"},{\"allowed_statuses\":[\"APPROVED\",\"LOCKED\"],\"authority_floor\":\"A2_USER_APPROVED\",\"max_items\":200,\"priority\":\"P0\",\"ranking_policy\":\"PRIORITY_AUTHORITY_RELEVANCE_SCOPE_FRESHNESS\",\"required\":false,\"requirement_types\":[],\"scope\":\"TARGET_CHAPTER\",\"selector_id\":\"effective-decisions\",\"serialization_policy\":\"STRUCTURED\",\"source_type\":\"DECISION\",\"version_policy\":\"EFFECTIVE\"},{\"allowed_statuses\":[\"APPROVED\",\"LOCKED\"],\"authority_floor\":\"A2_USER_APPROVED\",\"max_items\":1,\"priority\":\"P1\",\"ranking_policy\":\"PRIORITY_AUTHORITY_RELEVANCE_SCOPE_FRESHNESS\",\"required\":false,\"requirement_types\":[],\"scope\":\"PREVIOUS_CHAPTER\",\"selector_id\":\"previous-approved-chapter\",\"serialization_policy\":\"STRUCTURED\",\"source_type\":\"CHAPTER_VERSION\",\"version_policy\":\"APPROVED\"},{\"allowed_statuses\":[\"LOCKED\"],\"authority_floor\":\"A1_USER_LOCKED\",\"max_items\":100,\"priority\":\"P0\",\"ranking_policy\":\"PRIORITY_AUTHORITY_RELEVANCE_SCOPE_FRESHNESS\",\"required\":false,\"requirement_types\":[],\"scope\":\"EXPLICIT\",\"selector_id\":\"dependency-chapter_plan\",\"serialization_policy\":\"STRUCTURED\",\"source_type\":\"CHAPTER_PLAN\",\"version_policy\":\"APPROVED\"},{\"allowed_statuses\":[\"LOCKED\"],\"authority_floor\":\"A1_USER_LOCKED\",\"max_items\":100,\"priority\":\"P0\",\"ranking_policy\":\"PRIORITY_AUTHORITY_RELEVANCE_SCOPE_FRESHNESS\",\"required\":false,\"requirement_types\":[],\"scope\":\"EXPLICIT\",\"selector_id\":\"dependency-chapter_version\",\"serialization_policy\":\"STRUCTURED\",\"source_type\":\"CHAPTER_VERSION\",\"version_policy\":\"APPROVED\"},{\"allowed_statuses\":[\"LOCKED\"],\"authority_floor\":\"A1_USER_LOCKED\",\"max_items\":100,\"priority\":\"P0\",\"ranking_policy\":\"PRIORITY_AUTHORITY_RELEVANCE_SCOPE_FRESHNESS\",\"required\":false,\"requirement_types\":[],\"scope\":\"EXPLICIT\",\"selector_id\":\"dependency-requirement\",\"serialization_policy\":\"STRUCTURED\",\"source_type\":\"REQUIREMENT\",\"version_policy\":\"LOCKED\"},{\"allowed_statuses\":[\"LOCKED\"],\"authority_floor\":\"A1_USER_LOCKED\",\"max_items\":100,\"priority\":\"P0\",\"ranking_policy\":\"PRIORITY_AUTHORITY_RELEVANCE_SCOPE_FRESHNESS\",\"required\":false,\"requirement_types\":[],\"scope\":\"EXPLICIT\",\"selector_id\":\"dependency-decision\",\"serialization_policy\":\"STRUCTURED\",\"source_type\":\"DECISION\",\"version_policy\":\"LOCKED\"}],\"status\":\"STABLE\",\"token_budget\":48000,\"version\":3}",
+      "build_status": "READY",
+      "items": [
+        {
+          "context_item_id": "34f281fc-8a53-598e-8e78-199b586f5220",
+          "selector_id": "approved-plan",
+          "source_type": "CHAPTER_PLAN",
+          "source_id": "9d08b334-8a79-4f66-86d3-9d98092e422c",
+          "logical_id": "cb3a6d11-e8cb-4181-9af7-9b10632da852",
+          "source_version": 1,
+          "project_id": "59fcffd7-2a11-4e93-a22f-e47467768ac2",
+          "status": "APPROVED",
+          "authority_level": "A4_APPROVED_PLAN",
+          "locked": false,
+          "priority": "P0",
+          "scope": "TARGET_CHAPTER",
+          "payload_json": "{\"character_progression\":{\"items\":[]},\"constraints\":[\"两人在雨夜会合，约定沿河寻找失落的信件。不要新增核心能力。\"],\"ending_state\":{\"description\":\"两人在雨夜会合，约定沿河寻找失落的信件。不要新增核心能力。\"},\"information_release\":[],\"locked_dependencies\":[],\"objective\":\"两人在雨夜会合，约定沿河寻找失落的信件。不要新增核心能力。\",\"planning\":{\"assumptions\":[],\"character_progression\":[],\"constraints\":[\"两人在雨夜会合，约定沿河寻找失落的信件。不要新增核心能力。\"],\"creative_freedom\":{\"allowed_operations\":[\"LOCAL_DETAIL\",\"SCENE_ORDER\"],\"level\":\"MEDIUM\",\"major_changes\":\"PROPOSAL_ONLY\",\"scope_description\":\"Local structure only; major direction remains user-owned\"},\"ending_function\":\"Complete the requested change\",\"ending_state\":\"两人在雨夜会合，约定沿河寻找失落的信件。不要新增核心能力。\",\"foreshadow_actions\":[],\"information_release\":[],\"kind\":\"chapter_plan\",\"locked_dependencies\":[],\"objective\":\"两人在雨夜会合，约定沿河寻找失落的信件。不要新增核心能力。\",\"opening_function\":\"Establish the chapter conflict\",\"plot_progression\":[\"Advance the requested local conflict\"],\"preserved_elements\":[],\"proposed_major_changes\":[],\"proposed_new_elements\":[],\"required_outcome\":\"两人在雨夜会合，约定沿河寻找失落的信件。不要新增核心能力。\",\"requirement_coverage\":[{\"constraint_id\":\"M1\",\"covered\":true,\"explanation\":\"Applied in the scene intent\",\"scene_ids\":[\"S1\"],\"scope\":\"SCENE\"}],\"risks\":[],\"scenes\":[{\"character_state_change\":\"A consequential local choice is made\",\"conflict\":\"Characters must choose how to act\",\"exit_condition\":\"Required chapter outcome is reached\",\"id\":\"S1\",\"information_release\":[],\"key_change\":\"The intended outcome becomes possible\",\"purpose\":\"Resolve the requested chapter objective\"}],\"source_refs\":[{\"logical_id\":\"0d87c7fb-bf0a-43c8-b032-17a5d154d752\",\"source_type\":\"CREATIVE_BRIEF\",\"version\":1}]},\"plot_progression\":{\"items\":[\"Advance the requested local conflict\"]},\"required_outcome\":\"两人在雨夜会合，约定沿河寻找失落的信件。不要新增核心能力。\",\"risks\":[],\"scene_plans\":[{\"character_state_change\":\"A consequential local choice is made\",\"conflict\":\"Characters must choose how to act\",\"exit_condition\":\"Required chapter outcome is reached\",\"id\":\"S1\",\"information_release\":[],\"key_change\":\"The intended outcome becomes possible\",\"purpose\":\"Resolve the requested chapter objective\"}]}",
+          "selected_reason": "TARGET_CHAPTER/APPROVED",
+          "source_created_at": "2026-09-15T11:20:38.779388Z",
+          "source_updated_at": "2026-09-15T11:20:39.923546Z",
+          "chapter_id": "cb3a6d11-e8cb-4181-9af7-9b10632da852",
+          "chapter_sequence": 1,
+          "relevance_score": 100,
+          "knowledge_scope": "GLOBAL_ONLY",
+          "character_id": null,
+          "future_knowledge": false,
+          "is_plan": true,
+          "provenance": [
+            "structured_database",
+            "version_policy:APPROVED"
+          ]
+        },
+        {
+          "context_item_id": "078e0b48-a9c1-5f38-968a-41d33dfd4293",
+          "selector_id": "target-chapter",
+          "source_type": "CHAPTER",
+          "source_id": "cb3a6d11-e8cb-4181-9af7-9b10632da852",
+          "logical_id": "cb3a6d11-e8cb-4181-9af7-9b10632da852",
+          "source_version": 3,
+          "project_id": "59fcffd7-2a11-4e93-a22f-e47467768ac2",
+          "status": "DRAFT",
+          "authority_level": "A5_USER_PREFERENCE",
+          "locked": false,
+          "priority": "P0",
+          "scope": "TARGET_CHAPTER",
+          "payload_json": "{\"approved_plan_version\":1,\"current_version\":null,\"sequence\":1,\"title\":\"雨夜来信\"}",
+          "selected_reason": "TARGET_CHAPTER/TARGET_VERSION",
+          "source_created_at": "2026-09-15T11:20:37.949095Z",
+          "source_updated_at": "2026-09-15T11:20:39.928105Z",
+          "chapter_id": "cb3a6d11-e8cb-4181-9af7-9b10632da852",
+          "chapter_sequence": 1,
+          "relevance_score": 100,
+          "knowledge_scope": "GLOBAL_ONLY",
+          "character_id": null,
+          "future_knowledge": false,
+          "is_plan": false,
+          "provenance": [
+            "structured_database",
+            "version_policy:TARGET_VERSION"
+          ]
+        },
+        {
+          "context_item_id": "5f10069e-ab4a-5c55-a056-b5637c494598",
+          "selector_id": "task-input",
+          "source_type": "TASK_INPUT",
+          "source_id": "7018cc60-f4ae-4fc5-908f-e6aac4733681",
+          "logical_id": "7018cc60-f4ae-4fc5-908f-e6aac4733681",
+          "source_version": 8,
+          "project_id": "59fcffd7-2a11-4e93-a22f-e47467768ac2",
+          "status": "ACTIVE",
+          "authority_level": "A5_USER_PREFERENCE",
+          "locked": false,
+          "priority": "P0",
+          "scope": "TARGET_CHAPTER",
+          "payload_json": "{\"constraints\":[\"Write from the exact approved Plan; local creativity only\",\"No approval, lock, canon commit or direct database access\"],\"objective\":\"两人在雨夜会合，约定沿河寻找失落的信件。不要新增核心能力。\",\"requirements\":[\"{\\\"decision\\\":\\\"APPROVE\\\",\\\"plan_id\\\":\\\"9d08b334-8a79-4f66-86d3-9d98092e422c\\\",\\\"plan_version\\\":1,\\\"reason\\\":\\\"人工批准当前方案\\\",\\\"type\\\":\\\"USER_PLANNING_DIRECTIVE\\\"}\"]}",
+          "selected_reason": "Explicit task input; data does not grant authority",
+          "source_created_at": "2026-09-15T11:20:39.858655Z",
+          "source_updated_at": "2026-09-15T11:20:39.858655Z",
+          "chapter_id": "cb3a6d11-e8cb-4181-9af7-9b10632da852",
+          "chapter_sequence": 1,
+          "relevance_score": 100,
+          "knowledge_scope": "GLOBAL_ONLY",
+          "character_id": null,
+          "future_knowledge": false,
+          "is_plan": false,
+          "provenance": [
+            "agent_task"
+          ]
+        }
+      ],
+      "excluded_items": [],
+      "missing_required_items": [],
+      "authority_conflicts": [],
+      "source_snapshots": [
+        {
+          "selector_id": "approved-plan",
+          "fingerprint": "0f224a92a8ab520397c523692d3fe46e529f41fd7be87694b005398cd786deca"
+        },
+        {
+          "selector_id": "dependency-chapter_plan",
+          "fingerprint": "7d389b099aa8823b927c29d4fe8ae72744439ed3591bf866860e8350ce8a7fb5"
+        },
+        {
+          "selector_id": "dependency-chapter_version",
+          "fingerprint": "7d389b099aa8823b927c29d4fe8ae72744439ed3591bf866860e8350ce8a7fb5"
+        },
+        {
+          "selector_id": "dependency-decision",
+          "fingerprint": "7d389b099aa8823b927c29d4fe8ae72744439ed3591bf866860e8350ce8a7fb5"
+        },
+        {
+          "selector_id": "dependency-requirement",
+          "fingerprint": "7d389b099aa8823b927c29d4fe8ae72744439ed3591bf866860e8350ce8a7fb5"
+        },
+        {
+          "selector_id": "effective-decisions",
+          "fingerprint": "7d389b099aa8823b927c29d4fe8ae72744439ed3591bf866860e8350ce8a7fb5"
+        },
+        {
+          "selector_id": "effective-requirements",
+          "fingerprint": "7d389b099aa8823b927c29d4fe8ae72744439ed3591bf866860e8350ce8a7fb5"
+        },
+        {
+          "selector_id": "locked-decisions",
+          "fingerprint": "7d389b099aa8823b927c29d4fe8ae72744439ed3591bf866860e8350ce8a7fb5"
+        },
+        {
+          "selector_id": "previous-approved-chapter",
+          "fingerprint": "a61108e20eca9bfa1c329c7b989dae23b888474bc80ae39625c76d0f1f00aae7"
+        },
+        {
+          "selector_id": "supporting-requirements",
+          "fingerprint": "7d389b099aa8823b927c29d4fe8ae72744439ed3591bf866860e8350ce8a7fb5"
+        },
+        {
+          "selector_id": "target-chapter",
+          "fingerprint": "53ddcb418be77586bc6d558edef5e0819d0bca86d4e6a45c71e4569dcc3e2197"
+        },
+        {
+          "selector_id": "task-input",
+          "fingerprint": "762a03c8d5c9a37b7720fe43b09bdeb4516af108227b4af12461bb7a0b29cdf4"
+        }
+      ],
+      "token_budget": 48000,
+      "prompt_overhead": 16234,
+      "output_reservation": 8192,
+      "estimated_tokens": 5907,
+      "future_knowledge_policy": "REQUIRED_ONLY",
+      "package_hash": "23328fc8b383c166392fbbc26623c6fe7e685f83f297b71d5641d00bbe155269",
+      "error_code": null,
+      "context_package_id": "2e94bf56-9d89-4113-adb9-fe2b4ec774c3",
+      "created_at": "2026-09-15T11:20:40.095695Z"
+    },
+    "freshness": "STALE",
+    "error_code": "CONTEXT_STALE"
+  },
+  "lineage": {
+    "lineage_id": "e92ed93c-6cab-4068-9814-c6d3deae7b73",
+    "agent_run_id": "c4fac6c6-7a31-40f0-a4bf-ef7c396a0cd0",
+    "task_id": "7018cc60-f4ae-4fc5-908f-e6aac4733681",
+    "system_policy": {
+      "module_id": "novel-os-core",
+      "version": 1,
+      "content_hash": "8cd5e1025f58a6e6bd5a9d5380b31ed3edfea735f51100134beaa2401c874e07",
+      "execution_hash": "fb091ba33e3f0093bd02045155866d6ced39eb16e03e734492c25fdd7cbf57d0"
+    },
+    "agent_role": {
+      "module_id": "writing-agent",
+      "version": 1,
+      "content_hash": "70d7b146f2b2cc60e60633d918ee41f289659004e697d9f15a673e8b4dc7e2a0",
+      "execution_hash": "90ea70b3d303828b298c7107775367d750be823a04518299b2c493725143a1e0"
+    },
+    "task_template": {
+      "module_id": "write-chapter",
+      "version": 1,
+      "content_hash": "fe2edd0f6f5bce0d10bafdffc8a6cda0364e5c24ccda246e0d8f3bc563a32bfc",
+      "execution_hash": "54edb5e036cd88004f68d4bcc78d37c0ded8a1f3df4f8f89eec5c8338a36f3a1"
+    },
+    "skills": [
+      {
+        "module_id": "character-voice",
+        "version": 1,
+        "content_hash": "6dfe26a69afa215a7a016deca40aabd5c7c44011dad8a5a62673e508e5ce4f02",
+        "execution_hash": "1657b2ea1e3c38b6ebe28c19d3fef1261d6c81d0b45ebf76596cdff3ae965fcb"
+      },
+      {
+        "module_id": "dialogue",
+        "version": 1,
+        "content_hash": "454a353168dfd3665f59437c46a94232d3105ca6b87d1f1827b0f816d67831d9",
+        "execution_hash": "bb115ab71236903ad460ccfc5e6ad2760371ac419564ee0980039d4e3c51fdec"
+      },
+      {
+        "module_id": "narrative-rhythm",
+        "version": 1,
+        "content_hash": "c285814c4335349770c6f4d9129d8d3d0abbb818ae8584657920676207a241bb",
+        "execution_hash": "fd28f565bb770f0a5c9b36cb7466b175dfe525fe5d48966b08f17af6fb71714f"
+      },
+      {
+        "module_id": "natural-prose",
+        "version": 1,
+        "content_hash": "4c1120687e848044038bc3aa0a1ebf18c9cef9500fb179f9e2e4abf8950a3ff4",
+        "execution_hash": "b03427fdeabe1bd06227dbcddd17eb83098582ca5ead206b8d41e33d93e946c7"
+      },
+      {
+        "module_id": "scene-execution",
+        "version": 1,
+        "content_hash": "a9946e3341562845d2dd9eb947670e4ace86cd60e1bf39402cc34edba5f6e757",
+        "execution_hash": "57bb298544718832555deaa448bd4cf07da4fab5092e8e573a88373ed55cae3e"
+      }
+    ],
+    "quality_profile": {
+      "module_id": "writing-quality",
+      "version": 1,
+      "content_hash": "a526984424d46ebc4790f1104547495439000f461360533da172f3aca97ee5f4",
+      "execution_hash": "23bf396e0fc1aa9e604749bf714e74a6a628ada4530e421464d2aaee126121cf"
+    },
+    "output_schema_id": "chapter-writing-result",
+    "output_schema_version": 1,
+    "output_schema_hash": "53650a0455ea4e0e7490f3d6caa731ca67ef651626727059a9dd9bd7efd300c7",
+    "model_profile_id": "mock-writing",
+    "model_profile_hash": "ef0752cf4f225a7b3df54823ef753ce335f6137d89a9a8c418c16691a3ffbade",
+    "model_profile": {
+      "profile_id": "mock-writing",
+      "provider": "mock",
+      "model": "mock-v1",
+      "capabilities": [
+        "text"
+      ],
+      "structured_output": false,
+      "stream_support": false,
+      "timeout_seconds": 90.0,
+      "max_output_tokens": 8192,
+      "generation": {
+        "temperature": 0.2
+      }
+    },
+    "compiled_prompt_hash": "fbd459e2cb69904187e17fdb501cd892ad66817259e3d08057af8d7166aa11dd",
+    "compiler_version": 2,
+    "created_at": "2026-09-15T11:20:40.014788Z"
+  },
+  "runs": [
+    {
+      "run_id": "0d0447a3-f3b5-4a73-9a76-b24ca658931f",
+      "task_id": "bd843c15-2236-466c-9b65-7087ba74e158",
+      "attempt_number": 1,
+      "worker_id": "worker-555a1f47528d454ea1e8eb1349e44c5d",
+      "status": "SUCCEEDED",
+      "claimed_at": "2026-09-15T11:20:38.093702Z",
+      "started_at": "2026-09-15T11:20:38.110029Z",
+      "finished_at": "2026-09-15T11:20:38.413555Z",
+      "duration_ms": 303,
+      "provider": "mock",
+      "model": "mock-v1",
+      "input_metadata": {
+        "task_type": "PARSE_CHAPTER_REQUIREMENT",
+        "output_schema": "chapter-requirement-result.v1",
+        "state_version": 2
+      },
+      "output_metadata": {
+        "kind": "creative_brief",
+        "model": {
+          "usage": {
+            "input_tokens": null,
+            "total_tokens": null,
+            "output_tokens": null
+          },
+          "latency_ms": 2,
+          "finish_reason": "stop"
+        },
+        "verdict": null,
+        "confidence": 0.95,
+        "result_status": "SUCCESS",
+        "escalation_required": false
+      },
+      "error_code": null,
+      "error_message": null,
+      "result_status": "SUCCESS",
+      "disposition": "APPLIED"
+    },
+    {
+      "run_id": "2ec3addd-f191-4934-b082-bd5fe60f5f22",
+      "task_id": "44b17977-3478-40a2-b512-852f055df100",
+      "attempt_number": 1,
+      "worker_id": "worker-555a1f47528d454ea1e8eb1349e44c5d",
+      "status": "SUCCEEDED",
+      "claimed_at": "2026-09-15T11:20:38.419877Z",
+      "started_at": "2026-09-15T11:20:38.429060Z",
+      "finished_at": "2026-09-15T11:20:38.723988Z",
+      "duration_ms": 294,
+      "provider": "mock",
+      "model": "mock-v1",
+      "input_metadata": {
+        "task_type": "PLAN_CHAPTER",
+        "output_schema": "chapter-planning-result.v1",
+        "state_version": 5
+      },
+      "output_metadata": {
+        "kind": "chapter_plan",
+        "model": {
+          "usage": {
+            "input_tokens": null,
+            "total_tokens": null,
+            "output_tokens": null
+          },
+          "latency_ms": 0,
+          "finish_reason": "stop"
+        },
+        "verdict": null,
+        "confidence": 0.95,
+        "result_status": "SUCCESS",
+        "escalation_required": false
+      },
+      "error_code": null,
+      "error_message": null,
+      "result_status": "SUCCESS",
+      "disposition": "APPLIED"
+    },
+    {
+      "run_id": "d2a42fc1-59d6-4d7c-9736-95534b5bcff6",
+      "task_id": "4c064152-6d7e-429d-8857-df11142657f8",
+      "attempt_number": 1,
+      "worker_id": "worker-555a1f47528d454ea1e8eb1349e44c5d",
+      "status": "SUCCEEDED",
+      "claimed_at": "2026-09-15T11:20:38.730117Z",
+      "started_at": "2026-09-15T11:20:38.738884Z",
+      "finished_at": "2026-09-15T11:20:39.053485Z",
+      "duration_ms": 314,
+      "provider": "mock",
+      "model": "mock-v1",
+      "input_metadata": {
+        "task_type": "REVIEW_CHAPTER_PLAN",
+        "output_schema": "chapter-plan-review-result.v1",
+        "state_version": 6
+      },
+      "output_metadata": {
+        "kind": "plan_review",
+        "model": {
+          "usage": {
+            "input_tokens": null,
+            "total_tokens": null,
+            "output_tokens": null
+          },
+          "latency_ms": 0,
+          "finish_reason": "stop"
+        },
+        "verdict": "PASS",
+        "confidence": 0.95,
+        "result_status": "SUCCESS",
+        "escalation_required": false
+      },
+      "error_code": null,
+      "error_message": null,
+      "result_status": "SUCCESS",
+      "disposition": "APPLIED"
+    },
+    {
+      "run_id": "c4fac6c6-7a31-40f0-a4bf-ef7c396a0cd0",
+      "task_id": "7018cc60-f4ae-4fc5-908f-e6aac4733681",
+      "attempt_number": 1,
+      "worker_id": "worker-555a1f47528d454ea1e8eb1349e44c5d",
+      "status": "SUCCEEDED",
+      "claimed_at": "2026-09-15T11:20:39.930118Z",
+      "started_at": "2026-09-15T11:20:39.944354Z",
+      "finished_at": "2026-09-15T11:20:40.341007Z",
+      "duration_ms": 396,
+      "provider": "mock",
+      "model": "mock-v1",
+      "input_metadata": {
+        "task_type": "WRITE_CHAPTER",
+        "output_schema": "chapter-writing-result.v1",
+        "state_version": 8
+      },
+      "output_metadata": {
+        "kind": "writing_result",
+        "model": {
+          "usage": {
+            "input_tokens": null,
+            "total_tokens": null,
+            "output_tokens": null
+          },
+          "latency_ms": 2,
+          "finish_reason": "stop"
+        },
+        "verdict": null,
+        "confidence": 0.95,
+        "result_status": "SUCCESS",
+        "escalation_required": false
+      },
+      "error_code": null,
+      "error_message": null,
+      "result_status": "SUCCESS",
+      "disposition": "APPLIED"
+    }
+  ],
+  "transitions": [
+    {
+      "id": "db88154d-8c2a-48a2-aa26-fd2795b37d4a",
+      "workflow_id": "0d87c7fb-bf0a-43c8-b032-17a5d154d752",
+      "event_id": "af6a7e86-71c9-4159-8017-ae31024a8649",
+      "from_state": null,
+      "to_state": "C00_CREATED",
+      "from_status": null,
+      "to_status": "CREATED",
+      "from_version": 0,
+      "to_version": 1,
+      "guards": [
+        "writable"
+      ],
+      "reason": "Create chapter workflow",
+      "audit_record_id": "35e486a0-973c-4001-82d6-ec85c75ae0ee",
+      "created_at": "2026-09-15T11:20:38.068115Z"
+    },
+    {
+      "id": "9985184f-dfb0-419a-bee1-0ef1c7589454",
+      "workflow_id": "0d87c7fb-bf0a-43c8-b032-17a5d154d752",
+      "event_id": "cbc5b7e4-4b16-46d4-a9c9-12d91c5f5cc1",
+      "from_state": "C00_CREATED",
+      "to_state": "C01_REQUIREMENT_INTAKE",
+      "from_status": "CREATED",
+      "to_status": "WAITING_AGENT",
+      "from_version": 1,
+      "to_version": 2,
+      "guards": [
+        "writable"
+      ],
+      "reason": "USER_SUBMITTED",
+      "audit_record_id": "18d41229-d6f5-42b6-a544-8b412efc6e47",
+      "created_at": "2026-09-15T11:20:38.091318Z"
+    },
+    {
+      "id": "8f44219d-36de-4082-916f-bb9a3cd21554",
+      "workflow_id": "0d87c7fb-bf0a-43c8-b032-17a5d154d752",
+      "event_id": "0d0447a3-f3b5-4a73-9a76-b24ca658931f",
+      "from_state": "C01_REQUIREMENT_INTAKE",
+      "to_state": "C02_CONTEXT_ASSEMBLY",
+      "from_status": "WAITING_AGENT",
+      "to_status": "WAITING_AGENT",
+      "from_version": 2,
+      "to_version": 3,
+      "guards": [
+        "writable"
+      ],
+      "reason": "AGENT_SUCCEEDED",
+      "audit_record_id": "2b3b3a25-5b2e-441a-943b-650aedf19cc4",
+      "created_at": "2026-09-15T11:20:38.460754Z"
+    },
+    {
+      "id": "5b72bbbb-0090-4af9-a778-3a7c1db1cc50",
+      "workflow_id": "0d87c7fb-bf0a-43c8-b032-17a5d154d752",
+      "event_id": "65a888e5-0d40-50ce-a41d-e482b82f0d08",
+      "from_state": "C02_CONTEXT_ASSEMBLY",
+      "to_state": "C03_REQUIREMENT_READY",
+      "from_status": "WAITING_AGENT",
+      "to_status": "WAITING_AGENT",
+      "from_version": 3,
+      "to_version": 4,
+      "guards": [
+        "writable"
+      ],
+      "reason": "CONTEXT_READY",
+      "audit_record_id": "4b7a9bc5-f33b-48bb-83da-475d91fa523c",
+      "created_at": "2026-09-15T11:20:38.480035Z"
+    },
+    {
+      "id": "9b01483e-5bd4-4c53-b41f-d13c4cfa8b19",
+      "workflow_id": "0d87c7fb-bf0a-43c8-b032-17a5d154d752",
+      "event_id": "8d87ca6b-dc63-59ab-b1c2-c91c561dc7e6",
+      "from_state": "C03_REQUIREMENT_READY",
+      "to_state": "C04_CHAPTER_PLANNING",
+      "from_status": "WAITING_AGENT",
+      "to_status": "WAITING_AGENT",
+      "from_version": 4,
+      "to_version": 5,
+      "guards": [
+        "writable"
+      ],
+      "reason": "REQUIREMENT_READY",
+      "audit_record_id": "d8c3b84c-b1c0-4170-9071-a114535d9652",
+      "created_at": "2026-09-15T11:20:38.499327Z"
+    },
+    {
+      "id": "30d52328-3db4-46f9-9b9a-8f648027e3e3",
+      "workflow_id": "0d87c7fb-bf0a-43c8-b032-17a5d154d752",
+      "event_id": "2ec3addd-f191-4934-b082-bd5fe60f5f22",
+      "from_state": "C04_CHAPTER_PLANNING",
+      "to_state": "C05_PLAN_REVIEW",
+      "from_status": "WAITING_AGENT",
+      "to_status": "WAITING_AGENT",
+      "from_version": 5,
+      "to_version": 6,
+      "guards": [
+        "writable"
+      ],
+      "reason": "PLAN_READY",
+      "audit_record_id": "bfb69c96-862d-45eb-a4d6-520cb34ebf88",
+      "created_at": "2026-09-15T11:20:38.809305Z"
+    },
+    {
+      "id": "f33f31f2-dc69-41e0-bac3-59d8414cdf01",
+      "workflow_id": "0d87c7fb-bf0a-43c8-b032-17a5d154d752",
+      "event_id": "d2a42fc1-59d6-4d7c-9736-95534b5bcff6",
+      "from_state": "C05_PLAN_REVIEW",
+      "to_state": "C06_PLAN_APPROVAL",
+      "from_status": "WAITING_AGENT",
+      "to_status": "WAITING_HUMAN",
+      "from_version": 6,
+      "to_version": 7,
+      "guards": [
+        "writable",
+        "plan_current"
+      ],
+      "reason": "PLAN_REVIEW_PASSED",
+      "audit_record_id": "a22b0cd6-e9e1-468e-b33c-11c903004db2",
+      "created_at": "2026-09-15T11:20:39.143985Z"
+    },
+    {
+      "id": "af9f6713-d6f5-4611-aa50-2c84628cd01f",
+      "workflow_id": "0d87c7fb-bf0a-43c8-b032-17a5d154d752",
+      "event_id": "1aabff12-ba98-4424-9acf-3c3a41df6c57",
+      "from_state": "C06_PLAN_APPROVAL",
+      "to_state": "C07_WRITING",
+      "from_status": "WAITING_HUMAN",
+      "to_status": "WAITING_AGENT",
+      "from_version": 7,
+      "to_version": 8,
+      "guards": [
+        "writable",
+        "plan_approved"
+      ],
+      "reason": "USER_APPROVED",
+      "audit_record_id": "7badcd03-96bd-403e-add2-fa05db08edb0",
+      "created_at": "2026-09-15T11:20:39.950256Z"
+    },
+    {
+      "id": "f077c5dc-4dbd-426c-8161-cd01cfef0250",
+      "workflow_id": "0d87c7fb-bf0a-43c8-b032-17a5d154d752",
+      "event_id": "c4fac6c6-7a31-40f0-a4bf-ef7c396a0cd0",
+      "from_state": "C07_WRITING",
+      "to_state": "C08_DETERMINISTIC_CHECK",
+      "from_status": "WAITING_AGENT",
+      "to_status": "WAITING_AGENT",
+      "from_version": 8,
+      "to_version": 9,
+      "guards": [
+        "writable",
+        "plan_approved"
+      ],
+      "reason": "DRAFT_READY",
+      "audit_record_id": "7d28815f-72ba-42ce-9165-0eb016f363a2",
+      "created_at": "2026-09-15T11:20:40.431526Z"
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+import { expect, test } from '@playwright/test'
+
+test('v4 keeps exploration internal and exposes exact diagnostic lineage in Debug', async ({ page }) => {
+  await page.goto('/')
+  await page.getByText('＋ 新建项目', { exact: true }).click()
+  await page.getByLabel('项目名称', { exact: true }).fill(`Offline Exploration ${Date.now()}`)
+  await page.getByRole('button', { name: '创建项目', exact: true }).click()
+  await expect(page.locator('#project')).not.toHaveValue('')
+  await page.getByText('＋ 新建章节', { exact: true }).click()
+  await page.getByLabel('章节标题', { exact: true }).fill('离线探索诊断')
+  await page.getByRole('button', { name: '创建章节', exact: true }).click()
+  await expect(page.getByRole('heading', { name: '离线探索诊断' })).toBeVisible()
+  await page.getByLabel('章节需求').fill('[E2E:EXPLORATION] One bounded local change; Mock contract only.')
+  await page.getByRole('button', { name: '生成方案', exact: true }).click()
+  await expect(page.getByTestId('human-gate')).toBeVisible()
+  await expect(page.locator('main')).not.toContainText('selected_candidate')
+  await expect(page.locator('main')).not.toContainText('Creative Exploration')
+  await page.getByRole('button', { name: 'Debug', exact: true }).click()
+  await page.getByText('A03 Creative Exploration', { exact: true }).click()
+  await expect(page.locator('#debug-section')).toContainText('A7_AI_INFERENCE')
+  await expect(page.locator('#debug-section')).toContainText('MOCK')
+  await expect(page.locator('#debug-section')).toContainText('ContextPackage / PromptLineage')
+  await page.getByText('A03 Creative Exploration', { exact: true }).scrollIntoViewIfNeeded()
+  await page.screenshot({ path: '../backend/.runtime/novel013/debug-exploration.png', fullPage: true })
+  // Leave the gate undecided. BrowserTestProvider is Mock on an isolated _test schema.
+})

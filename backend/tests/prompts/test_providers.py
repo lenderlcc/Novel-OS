@@ -171,6 +171,57 @@ def test_finish_and_malformed_response_errors(prepared, body, error):
     assert exc.value.code == error
 
 
+@pytest.mark.parametrize(
+    "body,reason",
+    [
+        (
+            {"status": "incomplete", "incomplete_details": {"reason": "max_output_tokens"}},
+            "incomplete_max_output_tokens",
+        ),
+        (
+            {"status": "incomplete", "incomplete_details": {"reason": "content_filter"}},
+            "incomplete_content_filter",
+        ),
+        ({"status": "completed", "output": []}, "empty_output"),
+        ([], "malformed_response"),
+        ({"status": "completed", "output": [{"content": "invalid"}]}, "empty_output"),
+        (
+            {"status": "completed", "output": [{"type": "message", "content": "invalid"}]},
+            "malformed_response",
+        ),
+    ],
+)
+def test_rejected_response_logs_only_bounded_reason(prepared, caplog, body, reason):
+    caplog.set_level("WARNING", logger="novel_os.providers.openai")
+    with pytest.raises(ProviderError):
+        OpenAIAdapter.response(body, prepared, 10)
+    record = next(item for item in caplog.records if item.message == "model_response_rejected")
+    assert record.request_id == str(prepared.task_id)
+    assert record.error_type == reason
+    assert record.duration_ms == 10
+
+
+def test_failure_diagnostics_do_not_log_provider_strings_or_change_error(prepared, caplog):
+    caplog.set_level("WARNING", logger="novel_os.providers.openai")
+    secret = "sk-untrusted-provider-secret"
+    body = {"status": "incomplete", "incomplete_details": {"reason": secret}, "extra": secret}
+    with pytest.raises(ProviderError, match="MODEL_OUTPUT_INVALID"):
+        OpenAIAdapter.response(body, prepared, 10)
+    assert secret not in caplog.text
+    record = next(item for item in caplog.records if item.message == "model_response_rejected")
+    assert record.error_type == "incomplete_other"
+
+
+def test_failure_diagnostics_sink_failure_preserves_provider_error(prepared, monkeypatch):
+    def broken_log(*args, **kwargs):
+        raise RuntimeError("diagnostic log unavailable")
+
+    monkeypatch.setattr("novel_os.providers.openai.logger.warning", broken_log)
+    body = {"status": "incomplete", "incomplete_details": {"reason": "max_output_tokens"}}
+    with pytest.raises(ProviderError, match="MODEL_OUTPUT_INVALID"):
+        OpenAIAdapter.response(body, prepared, 10)
+
+
 def test_missing_key_is_nonretryable_and_does_not_send(prepared):
     with pytest.raises(ProviderError) as exc:
         OpenAIModelProvider(None).generate(prepared)
@@ -291,3 +342,39 @@ def test_wrong_provider_profile_fails_before_network(prompt_task):
         ),
     )
     assert AgentRuntime(provider).execute(prompt_task).error_code == "MODEL_INVALID_REQUEST"
+
+
+@pytest.mark.parametrize(
+    "task_type",
+    [
+        "PARSE_CHAPTER_REQUIREMENT",
+        "PLAN_CHAPTER",
+        "REVIEW_CHAPTER_PLAN",
+        "WRITE_CHAPTER",
+    ],
+)
+def test_native_structured_schemas_require_all_properties_including_nullable(task_type):
+    from copy import deepcopy
+
+    schema = json.loads(TaskDefinitionRegistry().get(task_type).output_schema.schema_json)
+    original = deepcopy(schema)
+    native = native_schema(schema)
+
+    def check(node):
+        if isinstance(node, dict):
+            assert "default" not in node
+            if node.get("type") == "object":
+                assert set(node.get("required", [])) == set(node["properties"])
+                assert node["additionalProperties"] is False
+            for value in node.values():
+                check(value)
+        elif isinstance(node, list):
+            for value in node:
+                check(value)
+
+    check(native)
+    assert schema == original  # Never rewrite the local versioned contract/hash.
+    if task_type == "REVIEW_CHAPTER_PLAN":
+        issue = native["$defs"]["HardGateIssue"]
+        assert "constraint_id" in issue["required"]
+        assert {"type": "null"} in issue["properties"]["constraint_id"]["anyOf"]

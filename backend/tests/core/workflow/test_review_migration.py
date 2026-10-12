@@ -22,7 +22,18 @@ WORKFLOW_TABLES = {
 
 def history_snapshot(connection):
     return {
-        name: connection.execute(select(Base.metadata.tables[name])).mappings().all()
+        name: connection.execute(
+            select(
+                *[
+                    c
+                    for c in Base.metadata.tables[name].c
+                    if c.name
+                    not in {"revision_request_id", "human_feedback_id", "memory_request_id"}
+                ]
+            )
+        )
+        .mappings()
+        .all()
         for name in sorted(WORKFLOW_TABLES - {"workflow_instances"} | {"audit_records"})
     }
 

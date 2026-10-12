@@ -9,9 +9,12 @@ from novel_os.domain.core import ObjectRef
 from novel_os.domain.enums import ObjectType
 from novel_os.domain.errors import DomainError
 from novel_os.domain.feedback import FEEDBACK_TASK, HumanFeedback
+from novel_os.domain.revision import RevisionResult
 from novel_os.domain.workflow import ChapterState, WorkflowStatus
+from novel_os.repositories.agent_tasks import AgentTaskRepository
 from novel_os.repositories.feedback import FeedbackRepository
 from novel_os.repositories.quality import QualityRepository
+from novel_os.repositories.revision import RevisionRepository
 from novel_os.services.core_base import CoreService, validate_payload
 from novel_os.services.quality_binding import QualityBindingService, supports_quality
 
@@ -55,15 +58,28 @@ class FeedbackBindingService:
             command.payload,
             {"raw_feedback", "source_chapter_version_id", "reply_to_feedback_id", "reason"},
         )
+        ready = workflow.status == WorkflowStatus.WAITING_HUMAN and workflow.current_state in {
+            ChapterState.C10_REVISION,
+            ChapterState.C11_INTERNAL_PASS,
+        }
+        before_review = (
+            workflow.current_state == ChapterState.C09_INTERNAL_REVIEW
+            and workflow.status == WorkflowStatus.WAITING_AGENT
+        ) or (
+            workflow.status == WorkflowStatus.PAUSED
+            and workflow.resume_state == ChapterState.C09_INTERNAL_REVIEW
+        )
         if (
             not supports_quality(workflow)
-            or workflow.status != WorkflowStatus.WAITING_HUMAN
-            or workflow.current_state
-            not in {ChapterState.C10_REVISION, ChapterState.C11_INTERNAL_PASS}
-            or workflow.revision_request_id is not None
+            or not (ready or before_review)
             or workflow.human_feedback_id is not None
+            or workflow.memory_request_id is not None
         ):
             raise DomainError("INVALID_STATE", "Feedback requires an idle current Draft")
+        # Workflow dispatch and task claiming hold the same Project root lock.
+        # Pending Review may be superseded; an already executing task must finish.
+        if AgentTaskRepository(self.session).has_inflight(workflow.id):
+            raise DomainError("INVALID_STATE", "Wait for the active model task before feedback")
         raw = command.payload["raw_feedback"]
         if not isinstance(raw, str) or not raw.strip() or "\x00" in raw or len(raw) > 12000:
             raise DomainError("VALIDATION_ERROR", "Feedback must contain 1–12000 characters")
@@ -75,6 +91,18 @@ class FeedbackBindingService:
         )
         if draft.id != UUID(command.payload["source_chapter_version_id"]):
             raise DomainError("VERSION_CONFLICT", "Feedback must target the exact current Draft")
+        if workflow.revision_request_id is not None:
+            revisions = RevisionRepository(self.session)
+            request = revisions.get(workflow.revision_request_id)
+            result = revisions.evidence(request.id, RevisionResult)
+            if (
+                not before_review
+                or (request.project_id, request.chapter_id, request.workflow_id)
+                != (workflow.project_id, chapter.id, workflow.id)
+                or result is None
+                or result.chapter_version_id != draft.id
+            ):
+                raise DomainError("INVALID_STATE", "Feedback requires a completed revision")
         reply_to = command.payload.get("reply_to_feedback_id")
         if reply_to is not None:
             parent = self.repo.get(UUID(reply_to))
@@ -109,7 +137,9 @@ class FeedbackBindingService:
                 source_review_id=review.id if review else None,
                 raw_feedback=raw,
                 reply_to_feedback_id=UUID(reply_to) if reply_to is not None else None,
-                return_state=workflow.current_state,
+                # C09 only accepts WAITING_AGENT. Reuse the idle revision state
+                # for clarification, no-change and discard before any AI Review.
+                return_state=ChapterState.C10_REVISION if before_review else workflow.current_state,
                 profile_json=profile.model_dump_json(),
                 created_at=timestamp,
                 authority_snapshot=self.snapshot(

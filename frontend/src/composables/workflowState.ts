@@ -6,7 +6,7 @@ const names: Record<string, string> = {
   C04_CHAPTER_PLANNING: '正在生成方案', C05_PLAN_REVIEW: '正在检查方案',
   C06_PLAN_APPROVAL: '等待人工审批方案', C07_WRITING: '正在写作',
   C08_DETERMINISTIC_CHECK: 'Draft 已生成，本次测试流程结束',
-  C09_INTERNAL_REVIEW: '正在审阅正文', C10_REVISION: '审阅完成，建议修改', C11_INTERNAL_PASS: '审阅完成',
+  C09_INTERNAL_REVIEW: '正在审阅正文', C10_REVISION: '等待确认修改', C11_INTERNAL_PASS: '审阅完成',
   C13_USER_FEEDBACK_DIAGNOSIS: '正在理解你的反馈',
   C14_MEMORY_PREPARATION: '正在整理本章记忆', C15_MEMORY_COMMIT: '等待确认本章记忆', C16_COMPLETED: '章节已完成',
   C90_BLOCKED: '流程受阻', C91_FAILED: '流程失败', C92_CANCELLED: '流程已取消',
@@ -26,6 +26,7 @@ export function resumeCallsModel(w: Workflow, config?: ExecutionConfig | null, t
 }
 export function progressLabel(w: Workflow, tasks: Task[], config?: ExecutionConfig | null): string {
   if (w.status === 'PAUSED') return '流程已暂停'
+  if (w.current_state === 'C07_WRITING' && w.status !== 'WAITING_AGENT') return '正文任务未在执行'
   if (w.revision_request_id && w.current_state === 'C10_REVISION' && w.status === 'WAITING_AGENT') {
     const task = currentTask(w, tasks)
     if (task?.status === 'PENDING' && config?.task_types && !config.task_types.includes(task.task_type)) return '本阶段执行已停用'

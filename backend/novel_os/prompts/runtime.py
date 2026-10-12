@@ -92,9 +92,8 @@ class PromptRuntime:
             "WRITE_CHAPTER": ("CP-005", 7, 4, 5),
             "REVIEW_CHAPTER_COMPLIANCE": ("CP-006", 4, 1, 2),
             "REVIEW_CHAPTER_NARRATIVE": ("CP-006", 4, 2, 3),
-            "PLAN_CHAPTER_REVISION": ("CP-007", 8, 6, 7),
+            "PLAN_CHAPTER_REVISION": ("CP-007", 8, 6, 8),
             "REVISE_CHAPTER": ("CP-007", 8, 7, 8),
-            "INTERPRET_CHAPTER_FEEDBACK": ("CP-008", 2, 2, 3),
         }
         if task_type in profile_prompts and definition.task_template.version is None:
             profile_id, context_version, old_prompt, new_prompt = profile_prompts[task_type]
