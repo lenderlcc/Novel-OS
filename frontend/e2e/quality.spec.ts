@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test'
 
-test('Mock chapter progresses through four steps to a read-only review', async ({ page }) => {
+test('Mock chapter reaches a read-only review with all workflow stage labels', async ({ page }) => {
   await page.goto('/')
   await page.getByText('＋ 新建项目', { exact: true }).click()
   await page.getByLabel('项目名称', { exact: true }).fill(`Quality ${Date.now()}`)
@@ -14,10 +14,13 @@ test('Mock chapter progresses through four steps to a read-only review', async (
   await expect(page.getByTestId('human-gate')).toBeVisible()
   await page.getByRole('button', { name: '批准并开始写作' }).click()
   await expect(page.getByRole('heading', { name: '审阅完成', exact: true })).toBeVisible()
-  await expect(page.locator('.progress li')).toHaveCount(5)
+  await expect(page.locator('.progress li')).toHaveText([
+    /需求/, /方案/, /正文/, /审阅/, /修改/, /完成/,
+  ])
   await expect(page.getByTestId('draft')).toBeVisible()
-  await expect(page.locator('.quality-review')).toContainText('值得保留')
-  await expect(page.locator('.quality-review')).not.toContainText('prompt_lineage_id')
+  const review = page.getByRole('region', { name: '正文审阅', exact: true })
+  await expect(review).toContainText('值得保留')
+  await expect(review).not.toContainText('prompt_lineage_id')
   await page.screenshot({ path: '/tmp/novel009-workspace-review.png', fullPage: true })
   await page.getByRole('button', { name: 'Debug', exact: true }).click()
   await page.getByText('Chapter Quality Reviews', { exact: true }).click()

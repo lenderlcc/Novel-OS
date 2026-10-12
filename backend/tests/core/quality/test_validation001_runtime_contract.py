@@ -20,6 +20,7 @@ from novel_os.agents.runtime import AgentRuntime, execution_failure
 from novel_os.db.base import Base
 from novel_os.domain.agents import AgentId, AgentTask
 from novel_os.domain.enums import Authority
+from novel_os.prompts.contracts import ModuleRef
 from novel_os.prompts.registry import PromptRegistry
 from novel_os.prompts.tasks import TaskDefinitionRegistry
 from tests.context.test_character_profile_context import character, profile_version
@@ -176,9 +177,11 @@ def test_new_operations_schema_rejects_only_currently_forbidden_envelope_fields(
 
 @pytest.mark.parametrize("task_type", CHANGED_TASKS)
 def test_prior_output_model_hash_and_task_prompt_are_unchanged(task_type):
+    # Captured from committed pre-validation source, never from a runtime evidence cache.
+    historical_pins = ROOT / "tests/fixtures/historical-contract-pins.json"
     old = next(
         row
-        for row in json.loads((EVIDENCE / "runtime-task-contract-audit.json").read_text())["tasks"]
+        for row in json.loads(historical_pins.read_text())["tasks"]
         if row["task_type"] == task_type
     )
     tasks, prompts = TaskDefinitionRegistry(), PromptRegistry()
@@ -186,15 +189,19 @@ def test_prior_output_model_hash_and_task_prompt_are_unchanged(task_type):
     assert historical.output_schema.schema_hash == old["schema_hash"]
     assert historical.output_schema.model is result_model(task_type, old["output_schema"])
     previous = prompts.resolve(historical.task_template)
-    pin = next(
-        module
-        for module in old["prompt_modules"]
-        if module["module_id"] == (historical.task_template.module_id)
-    )
+    pin = old["task_prompt"]
     assert previous.module.pin().model_dump(mode="json") == pin
     current = prompts.resolve(tasks.get(task_type).task_template)
-    assert current.module.version == previous.module.version + 1
-    assert current.content.startswith(previous.content)
+    assert current.module.version > previous.module.version
+    # Later writing fixes may revise the current template. The first operations
+    # contract release must still preserve its predecessor as originally published.
+    operations_release = prompts.resolve(
+        ModuleRef(
+            module_id=previous.module.module_id,
+            version=previous.module.version + 1,
+        )
+    )
+    assert operations_release.content.startswith(previous.content)
     historical.output_schema.parse(json.dumps(recorded_envelope(task_type)))
 
 

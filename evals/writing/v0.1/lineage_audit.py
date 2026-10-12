@@ -10,6 +10,7 @@ from sqlalchemy import select
 from novel_os.agents.provider import MockModelProvider
 from novel_os.agents.runtime import AgentRuntime, ExecutionResult
 from novel_os.agents.writing_schemas import WritingMetadata
+from novel_os.context.profiles import ContextProfile, ContextProfileRegistry
 from novel_os.context.serialization import ContextSerializer
 from novel_os.models.agents import AgentRunModel, AgentTaskModel
 from novel_os.models.context import ContextPackageModel
@@ -59,7 +60,22 @@ def audit(session):
         package = ContextSerializer.restore(context.snapshot)
         assert context.package_hash == ContextSerializer.hash(package) == package.package_hash
         assert context.build_status == "READY" and package.profile_id == "CP-005"
-        assert package.profile_version == 3
+        bound_profile = ContextProfile.model_validate_json(binding.profile_json)
+        assert "WRITE_CHAPTER" in bound_profile.allowed_task_types
+        assert (
+            (context.profile_id, context.profile_version, context.profile_hash)
+            == (
+                package.profile_id,
+                package.profile_version,
+                package.profile_hash,
+            )
+            == (bound_profile.profile_id, bound_profile.version, bound_profile.profile_hash)
+        )
+        ContextProfileRegistry().resolve(
+            bound_profile.profile_id,
+            bound_profile.version,
+            expected_hash=bound_profile.profile_hash,
+        )
         assert package.request.project_id == generation.project_id
         assert package.request.chapter_id == generation.chapter_id
         assert package.request.workflow_id == generation.workflow_id
@@ -135,6 +151,7 @@ def audit(session):
                 "context_package_id": str(context.context_package_id),
                 "context_package_hash": context.package_hash,
                 "context_profile": f"{package.profile_id}.v{package.profile_version}",
+                "context_profile_hash": package.profile_hash,
                 "context_sources": [
                     {
                         "type": str(source.source_type),

@@ -88,7 +88,7 @@ def test_a02_report_entry_cannot_execute_writer_or_approve():
         ("WRITE_CHAPTER", "CP-005", 6, 7, 4, 5),
         ("REVIEW_CHAPTER_COMPLIANCE", "CP-006", 3, 4, 1, 2),
         ("REVIEW_CHAPTER_NARRATIVE", "CP-006", 3, 4, 2, 3),
-        ("PLAN_CHAPTER_REVISION", "CP-007", 7, 8, 6, 7),
+        ("PLAN_CHAPTER_REVISION", "CP-007", 7, 8, 6, 8),
         ("REVISE_CHAPTER", "CP-007", 7, 8, 7, 8),
         ("INTERPRET_CHAPTER_FEEDBACK", "CP-008", 1, 2, 4, 4),
     ],
