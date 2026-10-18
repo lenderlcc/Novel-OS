@@ -5,8 +5,27 @@ from datetime import datetime
 from enum import StrEnum
 from uuid import UUID, uuid4
 
+from novel_os.domain.context import ContextItem, SourceRef, SourceType
 from novel_os.domain.core import now
 from novel_os.domain.enums import Authority
+
+LOCKED_DEPENDENCY_TYPES = {
+    SourceType.REQUIREMENT,
+    SourceType.DECISION,
+    SourceType.CHAPTER_PLAN,
+    SourceType.CHAPTER_VERSION,
+}
+
+
+def exploration_required_refs(items: tuple[ContextItem, ...]) -> frozenset[SourceRef]:
+    """The existing exploration citation boundary, shared by input and validation."""
+    return frozenset(
+        item.ref
+        for item in items
+        if item.source_type == SourceType.CREATIVE_BRIEF
+        or item.authority_level == Authority.A3_CANON
+        or (item.locked and item.source_type in LOCKED_DEPENDENCY_TYPES)
+    )
 
 
 class BriefStatus(StrEnum):

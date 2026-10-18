@@ -1,0 +1,216 @@
+{
+  "profile_id": "CP-004E",
+  "version": 4,
+  "status": "STABLE",
+  "description": "A03 bounded exploration: exact Brief, approved preferences, relevant committed continuity and recent compact approved history; no prose or rejected concepts; approved task-relevant character tendencies and relationship modifiers; render exact required citation triples from selected items using the same domain rule as result validation; distinguish the exact Brief record binding from its logical citation ID",
+  "allowed_task_types": [
+    "EXPLORE_CHAPTER_CONCEPTS"
+  ],
+  "token_budget": 100000,
+  "future_knowledge_policy": "REQUIRED_ONLY",
+  "future_horizon": 0,
+  "selectors": [
+    {
+      "selector_id": "task-input",
+      "source_type": "TASK_INPUT",
+      "priority": "P0",
+      "required": true,
+      "authority_floor": "A7_AI_INFERENCE",
+      "allowed_statuses": [
+        "ACTIVE"
+      ],
+      "version_policy": "EXACT",
+      "scope": "TARGET_CHAPTER",
+      "max_items": 1
+    },
+    {
+      "selector_id": "target-chapter",
+      "source_type": "CHAPTER",
+      "priority": "P0",
+      "required": true,
+      "authority_floor": "A7_AI_INFERENCE",
+      "allowed_statuses": [
+        "DRAFT",
+        "ACTIVE",
+        "LOCKED",
+        "APPROVED"
+      ],
+      "version_policy": "TARGET_VERSION",
+      "scope": "TARGET_CHAPTER",
+      "max_items": 1
+    },
+    {
+      "selector_id": "effective-requirements",
+      "source_type": "REQUIREMENT",
+      "priority": "P0",
+      "required": false,
+      "authority_floor": "A2_USER_APPROVED",
+      "allowed_statuses": [
+        "APPROVED",
+        "LOCKED"
+      ],
+      "version_policy": "EFFECTIVE",
+      "scope": "TARGET_CHAPTER",
+      "max_items": 200
+    },
+    {
+      "selector_id": "effective-decisions",
+      "source_type": "DECISION",
+      "priority": "P0",
+      "required": false,
+      "authority_floor": "A2_USER_APPROVED",
+      "allowed_statuses": [
+        "APPROVED",
+        "LOCKED"
+      ],
+      "version_policy": "EFFECTIVE",
+      "scope": "TARGET_CHAPTER",
+      "max_items": 200
+    },
+    {
+      "selector_id": "project-metadata",
+      "source_type": "PROJECT",
+      "priority": "P2",
+      "required": false,
+      "authority_floor": "A7_AI_INFERENCE",
+      "allowed_statuses": [
+        "ACTIVE",
+        "LOCKED"
+      ],
+      "version_policy": "CURRENT",
+      "scope": "PROJECT",
+      "max_items": 1
+    },
+    {
+      "selector_id": "dependency-chapter_plan",
+      "source_type": "CHAPTER_PLAN",
+      "priority": "P0",
+      "required": false,
+      "authority_floor": "A1_USER_LOCKED",
+      "allowed_statuses": [
+        "LOCKED"
+      ],
+      "version_policy": "LOCKED",
+      "scope": "EXPLICIT",
+      "max_items": 100
+    },
+    {
+      "selector_id": "dependency-requirement",
+      "source_type": "REQUIREMENT",
+      "priority": "P0",
+      "required": false,
+      "authority_floor": "A1_USER_LOCKED",
+      "allowed_statuses": [
+        "LOCKED"
+      ],
+      "version_policy": "LOCKED",
+      "scope": "EXPLICIT",
+      "max_items": 100
+    },
+    {
+      "selector_id": "dependency-decision",
+      "source_type": "DECISION",
+      "priority": "P0",
+      "required": false,
+      "authority_floor": "A1_USER_LOCKED",
+      "allowed_statuses": [
+        "LOCKED"
+      ],
+      "version_policy": "LOCKED",
+      "scope": "EXPLICIT",
+      "max_items": 100
+    },
+    {
+      "selector_id": "planning-brief-with-policy",
+      "source_type": "CREATIVE_BRIEF",
+      "priority": "P0",
+      "required": true,
+      "authority_floor": "A7_AI_INFERENCE",
+      "allowed_statuses": [
+        "ACTIVE"
+      ],
+      "version_policy": "EXACT",
+      "scope": "EXPLICIT",
+      "max_items": 1
+    },
+    {
+      "selector_id": "approved-project-writing-profile",
+      "source_type": "PROJECT_WRITING_PROFILE",
+      "priority": "P0",
+      "required": false,
+      "authority_floor": "A5_USER_PREFERENCE",
+      "allowed_statuses": [
+        "APPROVED"
+      ],
+      "version_policy": "APPROVED",
+      "scope": "PROJECT",
+      "max_items": 1
+    },
+    {
+      "selector_id": "committed-memory",
+      "source_type": "EXTENSION",
+      "priority": "P0",
+      "required": false,
+      "authority_floor": "A6_DERIVED_MEMORY",
+      "allowed_statuses": [
+        "ACTIVE"
+      ],
+      "version_policy": "EFFECTIVE",
+      "scope": "PROJECT",
+      "max_items": 100
+    },
+    {
+      "selector_id": "memory-subjects",
+      "source_type": "EXTENSION",
+      "priority": "P2",
+      "required": false,
+      "authority_floor": "A3_CANON",
+      "allowed_statuses": [
+        "ACTIVE"
+      ],
+      "version_policy": "EFFECTIVE",
+      "scope": "PROJECT",
+      "max_items": 100
+    },
+    {
+      "selector_id": "recent-approved-plans",
+      "source_type": "CHAPTER_PLAN",
+      "priority": "P1",
+      "required": false,
+      "authority_floor": "A4_APPROVED_PLAN",
+      "allowed_statuses": [
+        "APPROVED",
+        "LOCKED"
+      ],
+      "version_policy": "APPROVED",
+      "scope": "RECENT_APPROVED_CHAPTERS",
+      "max_items": 3
+    },
+    {
+      "selector_id": "recent-final-summaries",
+      "source_type": "EXTENSION",
+      "priority": "P1",
+      "required": false,
+      "authority_floor": "A6_DERIVED_MEMORY",
+      "allowed_statuses": [
+        "ACTIVE"
+      ],
+      "version_policy": "EFFECTIVE",
+      "scope": "PROJECT",
+      "max_items": 3
+    },
+    {
+      "selector_id": "approved-character-behavior-profiles",
+      "source_type": "EXTENSION",
+      "priority": "P0",
+      "required": false,
+      "authority_floor": "A3_CANON",
+      "allowed_statuses": [
+        "APPROVED"
+      ],
+      "version_policy": "APPROVED",
+      "scope": "TARGET_CHAPTER",
+      "max_items": 100
+    }
+  ]
+}

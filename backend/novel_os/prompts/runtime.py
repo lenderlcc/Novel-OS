@@ -86,8 +86,17 @@ class PromptRuntime:
                     for skill in definition.skills
                 ),
             )
+        if task_type == "EXPLORE_CHAPTER_CONCEPTS" and definition.task_template.version is None:
+            data = context_payload.get("profile", {})
+            version = data.get("version", 1) if context_payload else 4
+            definition = replace(
+                definition,
+                task_template=ModuleRef(
+                    module_id=definition.task_template.module_id,
+                    version=min(max(version, 1), 4),
+                ),
+            )
         profile_prompts = {
-            "EXPLORE_CHAPTER_CONCEPTS": ("CP-004E", 2, 1, 2),
             "REVIEW_CHAPTER_PLAN": ("CP-004R", 4, 4, 5),
             "WRITE_CHAPTER": ("CP-005", 7, 4, 5),
             "REVIEW_CHAPTER_COMPLIANCE": ("CP-006", 4, 1, 2),

@@ -3,13 +3,7 @@
 from novel_os.agents.planning_schemas import REQUIREMENT_FIELDS
 from novel_os.domain.context import SourceType
 from novel_os.domain.errors import DomainError
-
-LOCKED_DEPENDENCY_TYPES = {
-    SourceType.REQUIREMENT,
-    SourceType.DECISION,
-    SourceType.CHAPTER_PLAN,
-    SourceType.CHAPTER_VERSION,
-}
+from novel_os.domain.planning import LOCKED_DEPENDENCY_TYPES
 
 
 def ref_key(ref):

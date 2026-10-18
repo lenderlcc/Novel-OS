@@ -5,6 +5,7 @@ from dataclasses import replace
 from pydantic import TypeAdapter
 
 from novel_os.domain.context import ContextItem, ContextPackage, ContextRequest
+from novel_os.domain.planning import exploration_required_refs
 from novel_os.prompts.contracts import canonical, digest
 
 PACKAGE_ADAPTER = TypeAdapter(ContextPackage)
@@ -60,7 +61,7 @@ class ContextSerializer:
             and profile.profile_id == "CP-006"
             and profile.version >= 6
         )
-        return {
+        data = {
             "context_package_hash": package_hash,
             "profile": {
                 "id": profile.profile_id,
@@ -72,6 +73,28 @@ class ContextSerializer:
             "future_knowledge_policy": profile.future_knowledge_policy.value,
             "items": [item_data(item, deduplicate_plan=deduplicate_plan) for item in items],
         }
+        if (
+            request.task_type == "EXPLORE_CHAPTER_CONCEPTS"
+            and profile.profile_id == "CP-004E"
+            and profile.version >= 3
+        ):
+            data["required_source_refs"] = [
+                {
+                    "source_type": ref.source_type,
+                    "logical_id": str(ref.logical_id),
+                    "version": ref.version,
+                }
+                for ref in sorted(
+                    exploration_required_refs(items),
+                    key=lambda ref: (ref.source_type, str(ref.logical_id), ref.version),
+                )
+            ]
+            if profile.version >= 4:
+                data["brief_record_id"] = next(
+                    (str(item.source_id) for item in items if item.source_type == "CREATIVE_BRIEF"),
+                    None,
+                )
+        return data
 
     @classmethod
     def serialize(cls, package):

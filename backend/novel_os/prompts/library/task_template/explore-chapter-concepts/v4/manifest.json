@@ -1,0 +1,22 @@
+{
+  "module_id": "explore-chapter-concepts",
+  "module_type": "TASK_TEMPLATE",
+  "version": 4,
+  "status": "STABLE",
+  "description": "Exact Brief record binding and complete required source references",
+  "content_path": "content.md",
+  "dependencies": [
+    {
+      "module_id": "novel-os-core",
+      "version": 1
+    }
+  ],
+  "compatible_agents": [
+    "A03_PLANNING"
+  ],
+  "compatible_task_types": [
+    "EXPLORE_CHAPTER_CONCEPTS"
+  ],
+  "created_at": "2026-10-06T00:00:00Z",
+  "content_hash": "9f0023e0831e432a7bca774dc906670991905a1d1080facaace2cfdf4b88a6f8"
+}

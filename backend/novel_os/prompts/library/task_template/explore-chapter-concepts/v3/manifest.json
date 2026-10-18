@@ -1,0 +1,22 @@
+{
+  "module_id": "explore-chapter-concepts",
+  "module_type": "TASK_TEMPLATE",
+  "version": 3,
+  "status": "STABLE",
+  "description": "Align exploration citations with the exact server-derived required source set; preserve story and authority boundaries",
+  "content_path": "content.md",
+  "dependencies": [
+    {
+      "module_id": "novel-os-core",
+      "version": 1
+    }
+  ],
+  "compatible_agents": [
+    "A03_PLANNING"
+  ],
+  "compatible_task_types": [
+    "EXPLORE_CHAPTER_CONCEPTS"
+  ],
+  "created_at": "2026-10-06T00:00:00Z",
+  "content_hash": "63b65e725706ceb30bd6e1a4d20f5d51aba5aa4f6bc9213493cfa667b5528a8d"
+}
