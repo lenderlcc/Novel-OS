@@ -110,6 +110,10 @@ uv run --locked python ../evals/e2e/multi-chapter/run.py --state .runtime/014r-a
 
 `scenario.json` 定义独立 Project、Writing Profile 和语义实体 A/B/L1/L2/X/K/T/Y/Z。`chapter-01.json`～`chapter-05.json` 定义逐章输入。`expected-memory.json`、`expected-context.json` 和 `coverage.json` 保存验收预期与测试映射。语义实体由证据中的实际 `subject_id` / `logical_id` 绑定，不把显示名称当成持久身份。
 
+第五章 `B.X = ABSENT` 同时要求上下文隔离和本章不发生主动披露；`chapter-05.json`
+现已明确携带“不告知暗号”的输入约束。仅有检索过滤不能禁止人物在故事中主动告知。
+2026-10-18 之前已运行的输入和首次失败结果仍按原快照保留，不用新输入追认旧验收通过。
+
 ## 离线工程验收
 
 在 `backend/` 使用现有 pytest/PostgreSQL 隔离测试库。按 `coverage.json` 的节点运行五章链路及已有负向测试。配置文件中的 `test_database_url` 必须指向 `_test` 数据库；不需要 Provider credential，不调用外部模型。

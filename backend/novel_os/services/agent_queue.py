@@ -32,6 +32,7 @@ class AgentQueue:
         profile_for_task=None,
         task_types=None,
         task_ids=None,
+        project_id=None,
         max_attempts=None,
     ) -> TaskLease | None:
         if not re.fullmatch(r"[A-Za-z0-9_.:-]{1,128}", worker_id):
@@ -39,11 +40,13 @@ class AgentQueue:
         if max_attempts is not None and (type(max_attempts) is not int or max_attempts < 1):
             raise ValueError("Attempt limit must be a positive integer")
         with self.session.begin():
-            task = self.repo.next_claimable(task_types=task_types, task_ids=task_ids)
+            task = self.repo.next_claimable(
+                task_types=task_types, task_ids=task_ids, project_id=project_id
+            )
             if task is None:
                 # Scoped workers only consume explicitly scheduled tasks. Legacy backfill
                 # remains with the general worker and must not schedule excluded stages.
-                if task_types is not None or task_ids is not None:
+                if task_types is not None or task_ids is not None or project_id is not None:
                     return None
                 workflow_id = self.repo.unscheduled_workflow(
                     business_states=tuple(BUSINESS_STAGE_TASKS)

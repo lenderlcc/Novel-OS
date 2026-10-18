@@ -1,0 +1,22 @@
+{
+  "module_id": "extract-chapter-memory",
+  "module_type": "TASK_TEMPLATE",
+  "version": 6,
+  "status": "STABLE",
+  "description": "Extract evidenced continuity changes, owned knowledge and performed commitments without promoting belief to Canon",
+  "content_path": "content.md",
+  "dependencies": [
+    {
+      "module_id": "novel-os-core",
+      "version": 1
+    }
+  ],
+  "compatible_agents": [
+    "A07_MEMORY"
+  ],
+  "compatible_task_types": [
+    "EXTRACT_CHAPTER_MEMORY"
+  ],
+  "created_at": "2026-10-18T00:00:00Z",
+  "content_hash": "77dc3896a990bd08a4c980af418393206d479f6d8f64ef4b779e2195f5264b87"
+}

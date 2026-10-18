@@ -32,7 +32,6 @@ export function progressLabel(w: Workflow, tasks: Task[], config?: ExecutionConf
     if (task?.status === 'PENDING' && config?.task_types && !config.task_types.includes(task.task_type)) return '本阶段执行已停用'
     return task?.task_type === 'VALIDATE_REVISION_FIDELITY' ? '正在检查修改范围' : task?.task_type === 'REVISE_CHAPTER' ? '正在修改正文' : '正在确定修改范围'
   }
-  if (w.revision_request_id && w.current_state === 'C09_INTERNAL_REVIEW' && w.status === 'WAITING_AGENT') return '正在重新审阅'
   if (w.status !== 'WAITING_AGENT' || !(/^C0[1-9]_/.test(w.current_state) || w.current_state === 'C13_USER_FEEDBACK_DIAGNOSIS')) return stateLabel(w.current_state)
   const task = currentTask(w, tasks)
   if (!task) return '等待任务调度'
@@ -41,7 +40,7 @@ export function progressLabel(w: Workflow, tasks: Task[], config?: ExecutionConf
     return task.attempt_count > 0 ? '等待后台重试' : '等待后台执行'
   }
   if (task.status === 'CLAIMED') return '任务已领取，准备执行'
-  if (task.status === 'RUNNING') return stateLabel(w.current_state)
+  if (task.status === 'RUNNING') return w.revision_request_id && w.current_state === 'C09_INTERNAL_REVIEW' ? '正在重新审阅' : stateLabel(w.current_state)
   return '任务已结束，正在同步流程状态'
 }
 export const isWritingWorkflow = (w: Workflow) => !w.simulation && w.workflow_definition_id === 'chapter-planning' && [2, 3, 4].includes(w.workflow_definition_version)

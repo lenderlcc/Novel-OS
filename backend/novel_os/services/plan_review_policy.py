@@ -97,9 +97,6 @@ def effective_verdict(review, brief, plan):
     ):
         for message in getattr(review, field):
             add(code, message)
-    for risk in review.logic_risks:
-        if risk.impact == "HIGH":
-            add("MAJOR_LOGIC_BREAK", risk.description)
     if any(proposal.required_for_plan for proposal in plan.proposed_major_changes):
         add("DIRECTION_CONFLICT", "Executable plan requires an unapproved major change")
     if issues:

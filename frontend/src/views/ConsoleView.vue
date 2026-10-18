@@ -47,8 +47,8 @@ const writingRunning = computed(() => workflow.value?.status === 'WAITING_AGENT'
 const writingHeading = computed(() => workflow.value ? progressLabel(workflow.value, snapshot.value?.tasks ?? [], executionConfig.value) : '等待任务调度')
 const draftStage = computed(() => ['C08_DETERMINISTIC_CHECK', 'C09_INTERNAL_REVIEW', 'C10_REVISION', 'C11_INTERNAL_PASS', 'C13_USER_FEEDBACK_DIAGNOSIS', 'C14_MEMORY_PREPARATION', 'C15_MEMORY_COMMIT', 'C16_COMPLETED'].includes(state.value))
 const { qualityReview, revision, revising, historical, revisionMissingProfile, reviewNeedsRereview, canRevise,
-  revisionForDraft, revisionNeedsRereview, fidelityFailed, contextBudgetBlocked, revisionPlanningFailed, revisionEvidenceFailed, blockedReasons, revisionStopped, reviewPending, revisionHeading,
-} = useRevisionWorkspace(snapshot, draft)
+  revisionForDraft, revisionNeedsRereview, fidelityFailed, contextBudgetBlocked, revisionPlanningFailed, revisionEvidenceFailed, blockedReasons, revisionStopped, reviewProgress, revisionHeading,
+} = useRevisionWorkspace(snapshot, draft, executionConfig)
 const overlayOpen = computed(() =>
   (profileOpen.value && Boolean(projectId.value)) ||
   (charactersOpen.value && Boolean(projectId.value)) ||
@@ -214,8 +214,8 @@ onMounted(initialize)
             <p v-else-if="revisionPlanningFailed" role="status">修改方案未通过输出校验，尚未修改正文。现有正文已保留；可在 Debug 中查看失败阶段和错误码。</p>
             <p v-else-if="contextBudgetBlocked">修改所需内容超出当前处理预算，当前阶段尚未调用模型。已有正文版本已保留；配置修复后可重新审阅，再发起修改。</p>
             <p v-else-if="revisionNeedsRereview">本次修改已停止。需要补充依据或重新审阅后，才能发起新的修改。</p>
-            <p v-else-if="!revisionStopped">{{ state === 'C09_INTERNAL_REVIEW' ? '正在重新审阅' : revision?.candidate ? '正在检查修改范围' : revision?.plan ? '正在修改正文' : '正在确定修改范围' }}</p>
-            <p v-else>已保留现有正文。可在上方查看流程状态和允许的恢复操作。</p>
+            <p v-else-if="!revisionStopped && state !== 'C09_INTERNAL_REVIEW'">{{ revision?.candidate ? '正在检查修改范围' : revision?.plan ? '正在修改正文' : '正在确定修改范围' }}</p>
+            <p v-else-if="revisionStopped">已保留现有正文。可在上方查看流程状态和允许的恢复操作。</p>
             <button v-if="revisionNeedsRereview && !historical" :disabled="disabled || conflict" @click="rereviewRevision">重新审阅正文 v{{ currentBackendVersion }}（会调用模型）</button>
             <details v-if="fidelityFailed"><summary>查看详情</summary><p>修改稿未通过原稿保留与范围检查。现有正文没有被替换；具体检查记录可在 Debug 中查看。</p><details v-if="revision?.candidate?.body.content"><summary>查看未采用的修改稿</summary><pre class="revision-candidate">{{ revision.candidate.body.content }}</pre></details><button @click="toggleDebug">查看检查记录</button></details>
             <ul v-if="blockedReasons.length"><li v-for="item in blockedReasons" :key="item.issue_id">{{ item.reason }}</li></ul>
@@ -225,7 +225,7 @@ onMounted(initialize)
               <MemoryCompletion v-if="workflow && snapshot && [3, 4].includes(workflow.workflow_definition_version)" :workflow="workflow" :draft="draft" :current-version="snapshot.chapter.current_version" :memory="snapshot.memory?.find(m => m.request.id === workflow?.memory_request_id)" :disabled="disabled || conflict" @request="completeChapter" @confirm="confirmMemory" @discard="discardMemory" />
               <HumanFeedback v-if="snapshot && workflow && [3, 4].includes(workflow.workflow_definition_version) && !workflow.memory_request_id && workflow.status !== 'COMPLETED'" :key="workflow.id" :snapshot="snapshot" :draft="draft" :config="executionConfig" :disabled="disabled || conflict" @send="sendFeedback" @discard="discardFeedback" @open-profile="profileOpen = true" @replan="replan" @cancel="control('cancel', '用户取消本次反馈修改流程')" />
               <section v-if="revisionForDraft?.result" class="quality-review"><h2>此版本的修改内容</h2><ul><li v-for="(change, index) in revisionForDraft.result.body.declared_changes" :key="index">{{ change }}</li></ul><p>是否改善请结合重新审阅结果和正文判断。</p></section>
-              <QualityReview :review="qualityReview" :pending="reviewPending" :rereviewing="revising" />
+              <QualityReview :review="qualityReview" :progress="reviewProgress" />
               <p v-if="!workflow || ![3, 4].includes(workflow.workflow_definition_version)" class="notice">此章节使用旧版创作流程，尚未接入正文审阅与修改。原稿可以继续阅读和人工评价。</p>
               <div v-if="reviewNeedsRereview && !workflow?.memory_request_id && workflow?.status !== 'COMPLETED'" class="reader-actions">
                 <p v-if="revisionMissingProfile">这份审阅没有绑定已批准的写作偏好。请先创建并批准写作偏好，再重新审阅当前正文。</p>

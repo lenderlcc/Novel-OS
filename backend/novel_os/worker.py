@@ -37,6 +37,7 @@ class AgentWorker:
         retry_seconds=1,
         task_types=None,
         task_ids=None,
+        project_id=None,
         max_attempts=None,
     ):
         if not 0 < heartbeat_seconds < lease_seconds:
@@ -49,6 +50,7 @@ class AgentWorker:
         self.retry_seconds = retry_seconds
         self.task_types = task_types
         self.task_ids = task_ids
+        self.project_id = project_id
         self.max_attempts = max_attempts
 
     def run_once(self):
@@ -58,6 +60,7 @@ class AgentWorker:
                 profile_for_task=self.runtime.profile_for_task,
                 task_types=self.task_types,
                 task_ids=self.task_ids,
+                project_id=self.project_id,
                 max_attempts=self.max_attempts,
             )
         if lease is None:
@@ -163,6 +166,9 @@ def main():
         action="append",
         help="Limit --once to audited task IDs (repeatable)",
     )
+    parser.add_argument(
+        "--project-id", type=UUID, help="Only execute this project's tasks, including future stages"
+    )
     args = parser.parse_args()
     if args.task_id is not None and not args.once:
         parser.error("--task-id requires --once")
@@ -180,6 +186,7 @@ def main():
         retry_seconds=settings.agent_retry_seconds,
         task_types=settings.agent_task_types,
         task_ids=args.task_id,
+        project_id=args.project_id,
         max_attempts=settings.agent_max_attempts,
     )
     try:

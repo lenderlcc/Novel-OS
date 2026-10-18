@@ -11,10 +11,21 @@ from novel_os.domain.memory import DERIVED_TYPES, EpistemicStatus, MemoryType
 
 
 class SubjectRef(StrictOutput):
-    name: ShortText
+    name: ShortText = Field(
+        description=(
+            "For EXISTING, reuse the supplied canonical subject name. For NEW, copy a "
+            "contiguous name from the accepted prose exactly; do not append a type or label."
+        )
+    )
     kind: Literal["CHARACTER", "OBJECT", "LOCATION", "EVENT", "GROUP"]
     logical_id: UUID | None
-    aliases: list[ShortText] = Field(max_length=10)
+    aliases: list[ShortText] = Field(
+        max_length=10,
+        description=(
+            "For NEW subjects, every alias must also appear verbatim in the accepted prose. "
+            "Do not synthesize names or translations; use [] when no explicit alias is evidenced."
+        ),
+    )
     resolution: Literal["EXISTING", "NEW", "AMBIGUOUS"]
 
     @model_validator(mode="after")
@@ -52,10 +63,23 @@ class MemoryCandidate(StrictOutput):
     target_layer: Literal["CANON", "DERIVED"]
     source_refs: list[EvidenceRef] = Field(min_length=1, max_length=1)
     confidence: Confidence
-    existing_entry_id: UUID | None
+    existing_entry_id: UUID | None = Field(
+        description=(
+            "The current committed memory record ID: copy the matching context item's "
+            "source_id for the same subject, memory_type and slot. Do not use its "
+            "logical_id, subject_id or source_chapter_version_id. Use null if no entry matches."
+        )
+    )
     known_fact_id: UUID | None = None
     authority_checks: list[BoundaryCheck] = Field(max_length=400)
-    uncertainty: ShortText | None
+    uncertainty: ShortText | None = Field(
+        description=(
+            "Unresolved truth of an OPEN_THREAD or an owner's BELIEVES/SUSPECTS/DOUBTS "
+            "claim is allowed, without asserting Canon truth. Uncertain owner identity "
+            "must use subject_ref.resolution=AMBIGUOUS; confidence measures evidence "
+            "that the owner holds this belief. Uncertainty still blocks confirmed facts/KNOWS."
+        )
+    )
 
     @model_validator(mode="after")
     def type_boundaries(self):

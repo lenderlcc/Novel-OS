@@ -55,6 +55,10 @@ class ContextSerializer:
             request.task_type == "WRITE_CHAPTER"
             and profile.profile_id == "CP-005"
             and profile.version >= 8
+        ) or (
+            request.task_type in {"REVIEW_CHAPTER_COMPLIANCE", "REVIEW_CHAPTER_NARRATIVE"}
+            and profile.profile_id == "CP-006"
+            and profile.version >= 6
         )
         return {
             "context_package_hash": package_hash,

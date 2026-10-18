@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { QualityReview } from '../types/models'
-const props = defineProps<{ review: QualityReview | null; pending?: boolean; rereviewing?: boolean }>()
+const props = defineProps<{ review: QualityReview | null; progress?: string | null }>()
 const verdicts = { PASS: '通过', PASS_WITH_WARNINGS: '有改进空间', FAIL: '建议修改' }
 const issues = computed(() => props.review ? [...props.review.body.hard_gate_issues, ...props.review.body.quality_issues] : [])
 const audienceEvidence = computed(() => props.review && 'audience_evidence' in props.review.body ? props.review.body.audience_evidence : [])
@@ -22,7 +22,7 @@ const displayPreference = (value: string | string[]) => Array.isArray(value) ? v
 <template>
   <section class="quality-review" aria-labelledby="quality-heading">
     <h2 id="quality-heading" tabindex="-1">正文审阅</h2>
-    <p v-if="pending" role="status">{{ rereviewing ? 'AI 正在重新审阅…' : 'AI 正在审阅正文…' }} 正文可以先阅读，完成后将自动更新。</p>
+    <p v-if="progress" role="status">{{ progress }}。正文可以先阅读，完成后将自动更新。</p>
     <p v-else-if="!review">这个版本尚无 AI 审阅结果。你可以先进行人工评价。</p>
     <template v-else>
       <p class="muted">Review v{{ review.version }} · 对应 Draft v{{ review.binding.draft_version }}</p>

@@ -248,7 +248,6 @@ class PlanReviewOutput(PlanReviewRecord):
             or self.forbidden_violations
             or self.locked_conflicts
             or self.direction_conflicts
-            or any(r.impact == "HIGH" for r in self.logic_risks)
         )
         if self.verdict == ReviewVerdict.FAIL and not hard_evidence:
             raise ValueError("FAIL requires hard evidence; quality advice alone cannot fail a Plan")

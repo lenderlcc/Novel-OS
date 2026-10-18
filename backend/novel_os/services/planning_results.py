@@ -137,6 +137,16 @@ class PlanningResultService:
                 and i.structured_payload["subject"]["kind"] == "CHARACTER"
                 for i in package.items
             ):
+                if any(
+                    i.selector_id == "memory-subjects"
+                    and i.source_id == pov
+                    and i.reason == "TOKEN_BUDGET"
+                    for i in package.excluded_items
+                ):
+                    raise DomainError(
+                        "CONTEXT_BUDGET_EXCEEDED",
+                        "Planning POV identity was excluded by the context budget",
+                    )
                 raise ValueError("Planning POV must identify a supplied Character subject")
             canonical_plan_constraints(output, parsed_brief)
             freedom = output.creative_freedom

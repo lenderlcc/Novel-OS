@@ -118,9 +118,16 @@ def classify(candidate, existing):
 
 
 def blocking_uncertainty(candidate):
-    # An open thread records an unresolved claim or future action, not a confirmed fact.
+    # Uncertainty of a belief's truth is not uncertainty that its owner holds it.
     # Identity uncertainty remains subject_ref.resolution / resolve_subject's responsibility.
-    return None if candidate.candidate_type == MemoryType.OPEN_THREAD else candidate.uncertainty
+    uncertain_claim = candidate.candidate_type == MemoryType.CHARACTER_KNOWLEDGE and (
+        candidate.epistemic_status in {"BELIEVES", "SUSPECTS", "DOUBTS"}
+    )
+    return (
+        None
+        if candidate.candidate_type == MemoryType.OPEN_THREAD or uncertain_claim
+        else candidate.uncertainty
+    )
 
 
 def resolve_batch_subjects(output, subjects, project_id, content):

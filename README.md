@@ -101,7 +101,7 @@ NOVEL-001
 - Phase 2: NOVEL-013 Creative Exploration、NOVEL-014 Character Depth & Voice Engineering Complete；真实验收 PENDING
 - 已实现 NOVEL-001～014、STYLE-001/002 和 Personal Creative Workspace；沿用 TOML 配置和现有基础设施
 - CHECKPOINT-001: PASS_WITH_BLOCKERS_RESOLVED；后续验收队列隔离与 Writing Profile 版本绑定修复已通过针对性回归
-- Next Action: 用户显式触发真实模型与人工验收；NOVEL-015/016/017 延后，详见 `docs/PROJECT-STATUS.md`
+- 当前目标：工程收敛与新章节初稿验证；测试操作按用户授权代办，暂停新增功能和单章反复润色。NOVEL-015/016/017 延后，详见 `docs/PROJECT-STATUS.md`
 
 具体规格见 `docs/specs/`，开发任务见 `docs/tickets/`。
 
@@ -908,6 +908,12 @@ uv run pytest tests/core/writing/test_live.py --live-model
    cd backend
    uv run --locked python -m novel_os.worker --config config.toml
    ```
+
+   限定一个验收项目持续运行时，可增加 `--project-id <Project UUID>`。后续阶段新建的
+   任务也会被领取；其他项目的待执行任务和过期租约不会被消费。原有 TOML 任务范围、
+   尝试次数和人工关卡仍生效。`--once --task-id <Task UUID>` 只用于单次诊断，执行后
+   Worker 会退出，不能作为日常启动方式。持续使用时应由进程管理器托管 Worker，
+   并检查进程状态；API `/health` 正常不代表 Worker 已运行。
 
    也可在仓库根目录执行 `docker compose --profile worker up --build -d worker`，使用同一份渲染后的 TOML 启动独立 Worker 服务；用 `docker compose logs --tail=30 worker` 检查状态。Worker 不随 FastAPI 启动。不要同时启动两种 Worker 以免混用执行范围。停止容器执行器用 `docker compose stop worker`。
 

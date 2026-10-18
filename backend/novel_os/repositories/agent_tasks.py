@@ -67,7 +67,7 @@ class AgentTaskRepository:
         )
         return to_domain(row, AgentRun) if row else None
 
-    def next_claimable(self, *, task_types=None, task_ids=None):
+    def next_claimable(self, *, task_types=None, task_ids=None, project_id=None):
         query = (
             select(AgentTaskModel)
             .join(ProjectModel, ProjectModel.id == AgentTaskModel.project_id)
@@ -98,6 +98,8 @@ class AgentTaskRepository:
             query = query.where(AgentTaskModel.task_type.in_(task_types))
         if task_ids is not None:
             query = query.where(AgentTaskModel.task_id.in_(task_ids))
+        if project_id is not None:
+            query = query.where(AgentTaskModel.project_id == project_id)
         # Take the same Project root lock as all workflow mutations before the task lock.
         skipped = []
         while True:

@@ -1,6 +1,7 @@
 import { computed, type Ref } from 'vue'
-import type { Draft, QualityReview, Task } from '../types/models'
+import type { Draft, ExecutionConfig, QualityReview, Task } from '../types/models'
 import type { Snapshot } from './useConsole'
+import { progressLabel } from './workflowState'
 
 // A chapter may have several reviews of the same immutable version. Select by
 // identity and the backend review revision, never by response array order.
@@ -16,7 +17,7 @@ export function revisionOutputFailure(task?: Task) {
   return stage ? { stage, errorCode: task.last_error_code, reason: task.last_error_code === 'REVISION_EVIDENCE_MISMATCH' ? 'Evidence Binding Failed' : 'Output Validation Failed' } : null
 }
 
-export function useRevisionWorkspace(snapshot: Ref<Snapshot | null>, draft: Ref<Draft | null>) {
+export function useRevisionWorkspace(snapshot: Ref<Snapshot | null>, draft: Ref<Draft | null>, config: Ref<ExecutionConfig | null>) {
   const workflow = computed(() => snapshot.value?.workflow)
   const qualityReview = computed(() => reviewForDraft(snapshot.value?.qualityReviews ?? [], draft.value?.id))
   const revising = computed(() => Boolean(workflow.value?.revision_request_id))
@@ -48,16 +49,17 @@ export function useRevisionWorkspace(snapshot: Ref<Snapshot | null>, draft: Ref<
     return [item?.result?.body.blocked_reasons, item?.candidate?.body.blocked_reasons, item?.plan?.body.blocked_reasons].find(reasons => reasons?.length) ?? []
   })
   const revisionStopped = computed(() => Boolean(workflow.value && ['BLOCKED', 'FAILED', 'CANCELLED', 'PAUSED'].includes(workflow.value.status)))
-  const reviewPending = computed(() => workflow.value?.current_state === 'C09_INTERNAL_REVIEW' && workflow.value.status === 'WAITING_AGENT' && draft.value?.version === workflow.value.draft_version)
+  const reviewProgress = computed(() => workflow.value?.current_state === 'C09_INTERNAL_REVIEW' && workflow.value.status === 'WAITING_AGENT' && draft.value?.version === workflow.value.draft_version
+    ? progressLabel(workflow.value, snapshot.value?.tasks ?? [], config.value) : null)
   const revisionHeading = computed(() => {
     if (workflow.value?.status === 'PAUSED') return '修改已暂停'
     if (workflow.value?.status === 'CANCELLED') return '修改已取消'
     if (revisionPlanningFailed.value) return '修改任务未能开始。'
     if (revisionNeedsRereview.value) return '修改需要处理'
     if (revisionStopped.value) return workflow.value?.resume_state === 'C09_INTERNAL_REVIEW' ? '重新审阅失败' : '修改正文失败'
-    if (workflow.value?.current_state === 'C09_INTERNAL_REVIEW') return 'AI 正在重新审阅…'
+    if (workflow.value?.current_state === 'C09_INTERNAL_REVIEW') return progressLabel(workflow.value, snapshot.value?.tasks ?? [], config.value)
     return revision.value?.candidate ? 'AI 正在检查修改范围…' : revision.value?.plan ? 'AI 正在修改正文…' : 'AI 正在分析修改范围…'
   })
   return { qualityReview, revising, revision, historical, revisionMissingProfile, reviewNeedsRereview, canRevise,
-    revisionForDraft, fidelityFailed, contextBudgetBlocked, revisionPlanningFailed, revisionEvidenceFailed, revisionNeedsRereview, blockedReasons, revisionStopped, reviewPending, revisionHeading }
+    revisionForDraft, fidelityFailed, contextBudgetBlocked, revisionPlanningFailed, revisionEvidenceFailed, revisionNeedsRereview, blockedReasons, revisionStopped, reviewProgress, revisionHeading }
 }
