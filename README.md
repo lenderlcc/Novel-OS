@@ -915,6 +915,10 @@ uv run pytest tests/core/writing/test_live.py --live-model
    Worker 会退出，不能作为日常启动方式。持续使用时应由进程管理器托管 Worker，
    并检查进程状态；API `/health` 正常不代表 Worker 已运行。
 
+   使用 `lingzhi-structured` 时，当前 A07 Memory 提取会复用任务 profile 路由，选择
+   `lingzhi-memory` 的 16,384 token 输出上限，以容纳逐候选权限检查。模型、超时、采样和
+   其他阶段保持原配置；该容量不是完整性保证，也不会触发自动重试。
+
    也可在仓库根目录执行 `docker compose --profile worker up --build -d worker`，使用同一份渲染后的 TOML 启动独立 Worker 服务；用 `docker compose logs --tail=30 worker` 检查状态。Worker 不随 FastAPI 启动。不要同时启动两种 Worker 以免混用执行范围。停止容器执行器用 `docker compose stop worker`。
 
 3. 使用 Node.js 22.12+（本次验证 22.22.0）启动前端：

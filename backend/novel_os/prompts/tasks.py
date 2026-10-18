@@ -221,13 +221,16 @@ class TaskDefinitionRegistry:
                 output_schema=OutputContractGenerator.generate(
                     "chapter-memory-result", 2, MemoryAgentResult
                 ),
-                model_profile=model_profile,
+                model_profile={"lingzhi-structured": "lingzhi-memory"}.get(
+                    model_profile, model_profile
+                ),
                 capabilities=frozenset({Capability.REPORT_RESULT}),
             )
         )
         self._historical_definitions[("EXTRACT_CHAPTER_MEMORY", "chapter-memory-result.v1")] = (
             replace(
                 self._definitions["EXTRACT_CHAPTER_MEMORY"],
+                model_profile=model_profile,
                 task_template=ModuleRef(module_id="extract-chapter-memory", version=2),
                 output_schema=OutputContractGenerator.generate(
                     "chapter-memory-result", 1, MemoryAgentResult

@@ -18,6 +18,12 @@
 测试代码、本机配置和原始运行日志仍不提交，发布版本以 Git 记录为准。
 [五章原运行记录](reports/FIVE-CHAPTER-20261018.md)保留此前失败快照，其中错误定位已更正。
 
+最新后续结果见 [Memory 容量与 Planning 对照](reports/CONTINUITY-CAPACITY-20261018.md)：
+已有修复已推送 main（`9e0128e`）。第四章 Memory 截断根因确认，独立 A07 输出预算修复后
+取得完整诊断结果，但未提交这些新候选；第三章补核遇到 MODEL_UNAVAILABLE 后停止。
+Planning v13 对照仍有重复场景，仅留作 EXPERIMENTAL，默认保持 v12，没有生成新正文。
+现有五章都是 Workflow v3，未覆盖 v4 Creative Exploration，下一轮需纠正验收范围。
+
 以下保留 2026-10-08 的历史工程验收快照；其中当时的部署、测试资产与等待授权状态
 不代表当前运行状态，当前状态以上述收敛记录为准。
 

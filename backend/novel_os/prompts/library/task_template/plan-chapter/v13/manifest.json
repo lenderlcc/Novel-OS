@@ -1,0 +1,22 @@
+{
+  "module_id": "plan-chapter",
+  "module_type": "TASK_TEMPLATE",
+  "version": 13,
+  "status": "EXPERIMENTAL",
+  "description": "Assess scene capacity through distinct choices and consequences without treating safeguards as story beats",
+  "content_path": "content.md",
+  "dependencies": [
+    {
+      "module_id": "novel-os-core",
+      "version": 1
+    }
+  ],
+  "compatible_agents": [
+    "A03_PLANNING"
+  ],
+  "compatible_task_types": [
+    "PLAN_CHAPTER"
+  ],
+  "created_at": "2026-10-18T00:00:00Z",
+  "content_hash": "c8d2c9abcb7a25ec1575eb86e1e08e1383832a5d2797bab43c3d011168893014"
+}
