@@ -1,0 +1,22 @@
+{
+  "module_id": "memory-quality",
+  "module_type": "QUALITY_PROFILE",
+  "version": 2,
+  "status": "EXPERIMENTAL",
+  "description": "Evidence-bounded continuity coverage without a candidate quota or relaxed authority",
+  "content_path": "content.md",
+  "dependencies": [
+    {
+      "module_id": "novel-os-core",
+      "version": 1
+    }
+  ],
+  "compatible_agents": [
+    "A07_MEMORY"
+  ],
+  "compatible_task_types": [
+    "EXTRACT_CHAPTER_MEMORY"
+  ],
+  "created_at": "2026-10-18T00:00:00Z",
+  "content_hash": "cd6204938cfb4d37ca035260b2718a3f890c7bb879edf12e167416c2d5cad1bc"
+}

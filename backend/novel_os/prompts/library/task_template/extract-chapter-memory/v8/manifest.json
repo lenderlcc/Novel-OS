@@ -1,0 +1,22 @@
+{
+  "module_id": "extract-chapter-memory",
+  "module_type": "TASK_TEMPLATE",
+  "version": 8,
+  "status": "EXPERIMENTAL",
+  "description": "Event-first extraction with evidence-bounded acquisition scope before serialization",
+  "content_path": "content.md",
+  "dependencies": [
+    {
+      "module_id": "novel-os-core",
+      "version": 1
+    }
+  ],
+  "compatible_agents": [
+    "A07_MEMORY"
+  ],
+  "compatible_task_types": [
+    "EXTRACT_CHAPTER_MEMORY"
+  ],
+  "created_at": "2026-10-18T00:00:00Z",
+  "content_hash": "177837ebc5f50ab811c532218cb8a0cc1c91629ddc535ef106f7b955f04308fc"
+}
